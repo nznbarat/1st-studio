@@ -1,1 +1,529 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<meta name="theme-color" content="#0a0a0a"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="1st Studio"/>
+<title>1st Studio</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{--red:#E24B4A;--bg:#0a0a0a;--card:#111;--border:#1e1e1e;--gray:#666;--light:#ccc;}
+body{background:var(--bg);color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:430px;margin:0 auto;min-height:100vh;overflow-x:hidden;}
+.screen{display:none;min-height:100vh;padding-bottom:64px;}
+.screen.active{display:block;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:0.5px solid var(--border);position:sticky;top:0;background:rgba(10,10,10,0.95);backdrop-filter:blur(12px);z-index:50;}
+.topbar-logo{font-size:20px;font-weight:800;letter-spacing:2px;}
+.topbar-logo span{color:var(--red);}
+.topbar-icons{display:flex;gap:16px;}
+.topbar-icons svg{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:1.5;cursor:pointer;}
 
+/* STORIES */
+.stories{display:flex;gap:12px;padding:14px 16px;overflow-x:auto;scrollbar-width:none;}
+.stories::-webkit-scrollbar{display:none;}
+.story{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;cursor:pointer;}
+.story-ring{width:58px;height:66px;border-radius:50% 45% 50% 45%/45% 50% 45% 55%;background:linear-gradient(45deg,var(--red),#ff6b35,#ffd700);padding:2px;}
+.story-ring.seen{background:linear-gradient(45deg,#333,#444);}
+.story-inner{width:100%;height:100%;border-radius:50% 45% 50% 45%/45% 50% 45% 55%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#444;border:2px solid var(--bg);}
+.story-name{font-size:11px;color:var(--light);max-width:64px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* POSTS */
+.post{border-bottom:0.5px solid var(--border);margin-bottom:4px;}
+.post-header{display:flex;align-items:center;gap:10px;padding:12px 16px;}
+.post-avatar{width:36px;height:36px;border-radius:50% 45% 50% 45%/45% 50% 45% 55%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;}
+.post-info{flex:1;}
+.post-username{font-size:13px;font-weight:700;}
+.post-tag{font-size:11px;color:var(--gray);}
+.post-media{width:100%;aspect-ratio:1;background:var(--card);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.post-media-inner{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.post-waveform{display:flex;align-items:center;gap:3px;height:60px;padding:0 24px;width:100%;}
+.post-waveform-bar{flex:1;border-radius:2px;}
+.post-waveform-bar.on{background:var(--red);}
+.post-waveform-bar.off{background:#2a2a2a;}
+.post-play{width:56px;height:56px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.post-play svg{width:22px;height:22px;fill:#fff;margin-left:3px;}
+.post-track-info{text-align:center;}
+.post-track-title{font-size:16px;font-weight:800;margin-bottom:4px;}
+.post-track-artist{font-size:12px;color:var(--gray);letter-spacing:1px;cursor:pointer;}
+.post-track-artist:hover{color:var(--red);}
+.post-track-tag{display:inline-block;font-size:10px;letter-spacing:2px;color:var(--red);background:rgba(226,75,74,0.12);padding:3px 10px;border-radius:20px;margin-top:6px;}
+.post-actions{display:flex;align-items:center;gap:16px;padding:10px 16px 6px;}
+.post-actions svg{width:26px;height:26px;stroke:#fff;fill:none;stroke-width:1.5;cursor:pointer;}
+.post-actions svg.liked{fill:var(--red);stroke:var(--red);}
+.post-save{margin-left:auto;}
+.post-likes{font-size:13px;font-weight:700;padding:0 16px 6px;}
+.post-caption{font-size:13px;padding:0 16px 12px;color:var(--light);line-height:1.5;}
+.post-caption strong{color:#fff;}
+.post-time{font-size:11px;color:var(--gray);padding:0 16px 14px;}
+
+/* MUSIC */
+.music-tabs{display:flex;gap:0;border-bottom:0.5px solid var(--border);}
+.music-tab{flex:1;text-align:center;font-size:13px;font-weight:600;padding:12px 8px;color:var(--gray);cursor:pointer;border-bottom:2px solid transparent;}
+.music-tab.active{color:#fff;border-bottom-color:var(--red);}
+.music-list{padding:8px 0;}
+.music-item{display:flex;align-items:center;gap:12px;padding:10px 16px;cursor:pointer;}
+.music-item:active{background:#111;}
+.music-num{width:20px;text-align:center;font-size:13px;color:var(--gray);}
+.music-cover{width:52px;height:52px;border-radius:8px;background:linear-gradient(135deg,#1a1a1a,#2d1a1a);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;}
+.music-info{flex:1;}
+.music-title{font-size:14px;font-weight:700;margin-bottom:3px;}
+.music-artist{font-size:12px;color:var(--gray);}
+.music-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+.music-dur{font-size:12px;color:var(--gray);}
+.music-tag{font-size:9px;letter-spacing:1px;color:var(--red);background:rgba(226,75,74,0.12);padding:2px 8px;border-radius:10px;}
+.yt-banner{margin:16px;background:linear-gradient(135deg,#1a0a0a,#2d1010);border:1px solid rgba(226,75,74,0.3);border-radius:12px;padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer;}
+.yt-banner svg{flex-shrink:0;}
+.yt-banner-text{flex:1;}
+.yt-banner-title{font-size:14px;font-weight:700;margin-bottom:3px;}
+.yt-banner-sub{font-size:12px;color:var(--gray);}
+.yt-banner-arrow{color:var(--red);font-size:20px;}
+
+/* ARTIST PAGE */
+.artist-page{display:none;position:fixed;inset:0;background:var(--bg);z-index:200;overflow-y:auto;max-width:430px;margin:0 auto;}
+.artist-page.open{display:block;}
+.ap-back{position:fixed;top:14px;left:16px;z-index:210;width:36px;height:36px;background:rgba(0,0,0,0.6);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(8px);}
+.ap-back svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2;}
+.ap-poster{width:100%;aspect-ratio:9/16;display:flex;align-items:flex-end;position:relative;overflow:hidden;}
+.ap-poster-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+.ap-poster-initial{font-size:160px;font-weight:900;opacity:0.12;color:#fff;user-select:none;}
+.ap-poster-overlay{position:relative;z-index:1;width:100%;padding:40px 20px 24px;background:linear-gradient(transparent,rgba(0,0,0,0.97));}
+.ap-name{font-size:32px;font-weight:900;margin-bottom:6px;}
+.ap-genre{font-size:12px;letter-spacing:4px;color:var(--red);margin-bottom:16px;}
+.ap-stats{display:flex;gap:24px;}
+.ap-stat-num{font-size:18px;font-weight:800;}
+.ap-stat-label{font-size:10px;color:var(--gray);letter-spacing:1px;}
+.ap-content{padding:16px;}
+.ap-tracks{margin-bottom:16px;}
+.ap-track-title{font-size:15px;font-weight:800;margin-bottom:12px;}
+.ap-track-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:0.5px solid var(--border);cursor:pointer;}
+.ap-track-num{font-size:13px;color:var(--gray);width:20px;}
+.ap-track-info{flex:1;}
+.ap-track-name{font-size:14px;font-weight:600;margin-bottom:2px;}
+.ap-track-dur{font-size:12px;color:var(--gray);}
+.ap-yt-btn{width:100%;background:#ff0000;color:#fff;border:none;font-size:15px;font-weight:700;padding:15px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;}
+
+/* CONTACT */
+.contact-wrap{padding:16px;}
+.contact-hero{background:var(--card);border-radius:16px;padding:24px 20px;margin-bottom:14px;text-align:center;}
+.contact-logo{font-size:36px;font-weight:900;letter-spacing:2px;margin-bottom:4px;}
+.contact-logo span{color:var(--red);}
+.contact-sub{font-size:11px;color:var(--gray);letter-spacing:4px;margin-bottom:20px;}
+.contact-info-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:0.5px solid var(--border);text-align:left;}
+.contact-info-row:last-child{border-bottom:none;}
+.ci-icon{width:36px;height:36px;border-radius:50%;background:rgba(226,75,74,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ci-icon svg{width:16px;height:16px;stroke:var(--red);fill:none;stroke-width:1.5;}
+.ci-label{font-size:10px;color:var(--gray);letter-spacing:2px;margin-bottom:2px;}
+.ci-val{font-size:13px;color:var(--light);}
+.social-row{display:flex;gap:10px;margin-bottom:14px;}
+.soc-btn{flex:1;background:var(--card);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;border:0.5px solid var(--border);}
+.soc-btn svg{width:22px;height:22px;margin-bottom:5px;display:block;margin:0 auto 5px;}
+.soc-btn span{display:block;font-size:10px;color:var(--gray);}
+
+/* SERVICES SECTION */
+.services-section{margin-bottom:14px;}
+.services-title{font-size:16px;font-weight:800;margin-bottom:12px;}
+.service-card{background:var(--card);border-radius:12px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;border:0.5px solid var(--border);}
+.service-card:active{background:#1a1a1a;}
+.service-emoji{font-size:24px;width:44px;height:44px;background:#1a1a1a;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.service-info{flex:1;}
+.service-name{font-size:14px;font-weight:700;margin-bottom:3px;}
+.service-desc{font-size:12px;color:var(--gray);line-height:1.4;}
+.service-price{font-size:11px;color:var(--red);font-weight:700;margin-top:3px;}
+.service-arrow{color:var(--gray);font-size:16px;}
+
+/* COLLAB */
+.collab-section{background:linear-gradient(135deg,#1a0a0a,#0a0a1a);border-radius:16px;padding:20px;margin-bottom:14px;border:0.5px solid rgba(226,75,74,0.2);}
+.collab-title{font-size:16px;font-weight:800;margin-bottom:6px;}
+.collab-sub{font-size:13px;color:var(--gray);margin-bottom:16px;line-height:1.5;}
+.collab-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+.collab-tag{font-size:11px;color:var(--red);background:rgba(226,75,74,0.1);padding:6px 12px;border-radius:20px;border:0.5px solid rgba(226,75,74,0.3);}
+.collab-btn{width:100%;background:var(--red);color:#fff;border:none;font-size:14px;font-weight:700;padding:13px;border-radius:10px;cursor:pointer;}
+
+/* FORM */
+.form-section{background:var(--card);border-radius:16px;padding:16px;}
+.form-title{font-size:16px;font-weight:800;margin-bottom:14px;}
+.form-input{width:100%;background:#1a1a1a;border:0.5px solid var(--border);color:#fff;font-size:14px;padding:13px 14px;border-radius:10px;margin-bottom:10px;outline:none;font-family:inherit;}
+.form-input::placeholder{color:#444;}
+.form-input:focus{border-color:var(--red);}
+.form-select{width:100%;background:#1a1a1a;border:0.5px solid var(--border);color:#fff;font-size:14px;padding:13px 14px;border-radius:10px;margin-bottom:10px;outline:none;font-family:inherit;appearance:none;}
+.form-select option{background:#1a1a1a;}
+textarea.form-input{height:80px;resize:none;}
+.form-submit{width:100%;background:var(--red);color:#fff;border:none;font-size:15px;font-weight:700;padding:15px;border-radius:10px;cursor:pointer;margin-top:4px;}
+
+/* NOW PLAYING */
+.now-playing{position:fixed;bottom:64px;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#1a1a1a;border-top:0.5px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:12px;z-index:40;}
+.np-cover{width:40px;height:40px;border-radius:6px;background:linear-gradient(135deg,var(--red),#ff6b35);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.np-info{flex:1;}
+.np-title{font-size:13px;font-weight:700;}
+.np-artist{font-size:11px;color:var(--gray);}
+.np-controls{display:flex;gap:10px;align-items:center;}
+.np-controls svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:1.5;cursor:pointer;}
+.np-play-btn{width:32px;height:32px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;}
+.np-play-btn svg{fill:#fff;stroke:none;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(10,10,10,0.97);backdrop-filter:blur(20px);border-top:0.5px solid var(--border);display:flex;z-index:100;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 0 14px;cursor:pointer;gap:3px;}
+.nav-item svg{width:24px;height:24px;stroke:#555;fill:none;stroke-width:1.5;transition:stroke 0.15s;}
+.nav-item.active svg{stroke:#fff;}
+.dot{width:4px;height:4px;border-radius:50%;background:var(--red);opacity:0;}
+.nav-item.active .dot{opacity:1;}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div class="screen active" id="s-home">
+  <div class="topbar">
+    <div class="topbar-logo">1<span>ST</span> STUDIO</div>
+    <div class="topbar-icons">
+      <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      <svg viewBox="0 0 24 24" onclick="go('s-contact')"><path d="M22 16.92v3a2 2 0 01-2.18 2A19.79 19.79 0 013.07 13.5 19.79 19.79 0 01.21 4.84 2 2 0 012.22 2.68h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 10.09a16 16 0 006 6l1.51-1.51a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+    </div>
+  </div>
+  <div class="stories" id="storiesRow"></div>
+  <div id="postFeed"></div>
+</div>
+
+<!-- MUSIC -->
+<div class="screen" id="s-music">
+  <div class="topbar"><div style="font-size:16px;font-weight:800;">Бүтээлүүд</div></div>
+  <div class="yt-banner" onclick="window.open('https://youtube.com/@1ststudioz','_blank')">
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="#ff0000"><path d="M22.54 6.42a2.78 2.78 0 00-1.94-1.96C18.88 4 12 4 12 4s-6.88 0-8.6.46A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58A2.78 2.78 0 003.4 19.54C5.12 20 12 20 12 20s6.88 0 8.6-.46a2.78 2.78 0 001.94-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#fff"/></svg>
+    <div class="yt-banner-text">
+      <div class="yt-banner-title">YouTube дээр үзэх</div>
+      <div class="yt-banner-sub">@1ststudioz • Бүх дуунуудыг сонсох</div>
+    </div>
+    <div class="yt-banner-arrow">→</div>
+  </div>
+  <div class="music-tabs">
+    <div class="music-tab active" onclick="filterTracks('all',this)">Бүгд</div>
+    <div class="music-tab" onclick="filterTracks('HIP-HOP',this)">Hip-Hop</div>
+    <div class="music-tab" onclick="filterTracks('POP',this)">Pop</div>
+    <div class="music-tab" onclick="filterTracks('ROCK',this)">Rock</div>
+  </div>
+  <div class="music-list" id="musicList"></div>
+</div>
+
+<!-- CONTACT -->
+<div class="screen" id="s-contact">
+  <div class="topbar"><div style="font-size:16px;font-weight:800;">Захиалга</div></div>
+  <div class="contact-wrap">
+    <div class="contact-hero">
+      <div class="contact-logo">1<span>ST</span></div>
+      <div class="contact-sub">RECORDING STUDIO</div>
+      <div class="contact-info-row">
+        <div class="ci-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+        <div><div class="ci-label">ХАЯГ</div><div class="ci-val">Сүхбаатар дүүрэг, Улаанбаатар</div></div>
+      </div>
+      <div class="contact-info-row">
+        <div class="ci-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 13.5 19.79 19.79 0 01.21 4.84 2 2 0 012.22 2.68h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 10.09a16 16 0 006 6l1.51-1.51a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></div>
+        <div><div class="ci-label">УТАС</div><div class="ci-val">+976 9114 1516</div></div>
+      </div>
+    </div>
+
+    <div class="social-row">
+      <div class="soc-btn" onclick="window.open('https://www.facebook.com/ilgeemg','_blank')">
+        <svg viewBox="0 0 24 24" fill="#1877f2" stroke="none"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+        <span>Facebook</span>
+      </div>
+      <div class="soc-btn" onclick="window.open('https://www.instagram.com/bara_91141516','_blank')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#e1306c" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="#e1306c"/></svg>
+        <span>Instagram</span>
+      </div>
+      <div class="soc-btn" onclick="window.open('https://youtube.com/@1ststudioz','_blank')">
+        <svg viewBox="0 0 24 24" fill="#ff0000" stroke="none"><path d="M22.54 6.42a2.78 2.78 0 00-1.94-1.96C18.88 4 12 4 12 4s-6.88 0-8.6.46A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58A2.78 2.78 0 003.4 19.54C5.12 20 12 20 12 20s6.88 0 8.6-.46a2.78 2.78 0 001.94-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#fff"/></svg>
+        <span>YouTube</span>
+      </div>
+    </div>
+
+    <div class="services-section">
+      <div class="services-title">Үйлчилгээ & Сургалт</div>
+      <div class="service-card" onclick="selectService('Бичлэг хийх')">
+        <div class="service-emoji">🎙️</div>
+        <div class="service-info"><div class="service-name">Бичлэг хийх</div><div class="service-desc">Мэргэжлийн vocal & хөгжмийн бичлэг</div><div class="service-price">100,000₮ / цаг</div></div>
+        <div class="service-arrow">›</div>
+      </div>
+      <div class="service-card" onclick="selectService('Mixing & Mastering')">
+        <div class="service-emoji">🎛️</div>
+        <div class="service-info"><div class="service-name">Mixing & Mastering</div><div class="service-desc">Дуу чанар, баланс тохируулах</div><div class="service-price">150,000₮ / дуу</div></div>
+        <div class="service-arrow">›</div>
+      </div>
+      <div class="service-card" onclick="selectService('Beat хийх')">
+        <div class="service-emoji">🎹</div>
+        <div class="service-info"><div class="service-name">Beat хийх</div><div class="service-desc">Оригинал instrumental & beat</div><div class="service-price">200,000₮ эхлэлт</div></div>
+        <div class="service-arrow">›</div>
+      </div>
+      <div class="service-card" onclick="selectService('Зөвлөмж багш')">
+        <div class="service-emoji">🎓</div>
+        <div class="service-info"><div class="service-name">Зөвлөмж багш</div><div class="service-desc">Урлагийн чиглэл, карьер хөгжүүлэх</div><div class="service-price">80,000₮ / цаг</div></div>
+        <div class="service-arrow">›</div>
+      </div>
+      <div class="service-card" onclick="selectService('Дууны багш')">
+        <div class="service-emoji">🎤</div>
+        <div class="service-info"><div class="service-name">Дууны багш</div><div class="service-desc">Vocal technique, breathing, performance</div><div class="service-price">90,000₮ / цаг</div></div>
+        <div class="service-arrow">›</div>
+      </div>
+      <div class="service-card" onclick="selectService('Хөгжмийн багш')">
+        <div class="service-emoji">🎸</div>
+        <div class="service-info"><div class="service-name">Хөгжмийн багш</div><div class="service-desc">Гитар, төгөлдөр хуур, ятга болон бусад</div><div class="service-price">90,000₮ / цаг</div></div>
+        <div class="service-arrow">›</div>
+      </div>
+      <div class="service-card" onclick="selectService('Артист бэлтгэх сургалт')">
+        <div class="service-emoji">⭐</div>
+        <div class="service-info"><div class="service-name">Артист бэлтгэх сургалт</div><div class="service-desc">Stage performance, image, branding</div><div class="service-price">120,000₮ / цаг</div></div>
+        <div class="service-arrow">›</div>
+      </div>
+    </div>
+
+    <div class="collab-section">
+      <div class="collab-title">🤝 Хамтын ажиллагаа</div>
+      <div class="collab-sub">Авьяаслаг сурагчид болон залуу артистуудтай хамтран ажиллахад бид үргэлж нээлттэй!</div>
+      <div class="collab-tags">
+        <span class="collab-tag">🎵 Залуу артист</span>
+        <span class="collab-tag">🎓 Авьяаслаг сурагч</span>
+        <span class="collab-tag">🎹 Хөгжимчин</span>
+        <span class="collab-tag">✍️ Дуу зохиогч</span>
+        <span class="collab-tag">🎬 Видео найруулагч</span>
+      </div>
+      <button class="collab-btn" onclick="selectService('Хамтын ажиллагаа')">Хамтрах хүсэлт илгээх</button>
+    </div>
+
+    <div class="form-section">
+      <div class="form-title">Захиалга өгөх</div>
+      <input class="form-input" type="text" placeholder="Таны нэр" id="f-name"/>
+      <input class="form-input" type="text" placeholder="Утасны дугаар" id="f-phone"/>
+      <select class="form-select" id="f-service">
+        <option value="">Үйлчилгээ сонгох...</option>
+        <option>Бичлэг хийх</option>
+        <option>Mixing & Mastering</option>
+        <option>Beat хийх</option>
+        <option>Зөвлөмж багш</option>
+        <option>Дууны багш</option>
+        <option>Хөгжмийн багш</option>
+        <option>Артист бэлтгэх сургалт</option>
+        <option>Хамтын ажиллагаа</option>
+      </select>
+      <textarea class="form-input" placeholder="Нэмэлт мэдэгдэл..." id="f-msg"></textarea>
+      <button class="form-submit" onclick="sendForm()">ИЛГЭЭХ 🎵</button>
+    </div>
+  </div>
+</div>
+
+<!-- ARTIST PAGE -->
+<div class="artist-page" id="artistPage">
+  <div class="ap-back" onclick="closeArtist()">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </div>
+  <div class="ap-poster" id="ap-poster">
+    <div class="ap-poster-bg" id="ap-bg">
+      <div class="ap-poster-initial" id="ap-initial">MN</div>
+    </div>
+    <div class="ap-poster-overlay">
+      <div class="ap-name" id="ap-name">Munkh-Naran</div>
+      <div class="ap-genre" id="ap-genre">HIP-HOP · R&B</div>
+      <div class="ap-stats">
+        <div class="ap-stat"><div class="ap-stat-num" id="ap-tcount">4</div><div class="ap-stat-label">ДУУ</div></div>
+        <div class="ap-stat"><div class="ap-stat-num">4.2K</div><div class="ap-stat-label">ДАГАГЧ</div></div>
+        <div class="ap-stat"><div class="ap-stat-num">18K</div><div class="ap-stat-label">СОНСОЛТ</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="ap-content">
+    <div class="ap-tracks">
+      <div class="ap-track-title">Бүтээлүүд</div>
+      <div id="ap-track-list"></div>
+    </div>
+    <button class="ap-yt-btn" onclick="window.open('https://youtube.com/@1ststudioz','_blank')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M22.54 6.42a2.78 2.78 0 00-1.94-1.96C18.88 4 12 4 12 4s-6.88 0-8.6.46A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58A2.78 2.78 0 003.4 19.54C5.12 20 12 20 12 20s6.88 0 8.6-.46a2.78 2.78 0 001.94-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#ff0000"/></svg>
+      YouTube дээр үзэх
+    </button>
+  </div>
+</div>
+
+<!-- NOW PLAYING -->
+<div class="now-playing" id="nowPlaying" style="display:none;">
+  <div class="np-cover" id="np-cover">🎵</div>
+  <div class="np-info">
+    <div class="np-title" id="np-title">-</div>
+    <div class="np-artist" id="np-artist">-</div>
+  </div>
+  <div class="np-controls">
+    <svg viewBox="0 0 24 24"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg>
+    <div class="np-play-btn" onclick="toggleNP()">
+      <svg id="np-icon" viewBox="0 0 24 24" width="14" height="14"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    </div>
+    <svg viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <div class="nav-item active" id="n-home" onclick="go('s-home')">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <div class="dot"></div>
+  </div>
+  <div class="nav-item" id="n-music" onclick="go('s-music')">
+    <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+    <div class="dot"></div>
+  </div>
+  <div class="nav-item" id="n-contact" onclick="go('s-contact')">
+    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    <div class="dot"></div>
+  </div>
+</nav>
+
+<script>
+const tracks=[
+  {num:"01",tag:"HIP-HOP",title:"Шөнийн гэрэл",artist:"Munkh-Naran",dur:"3:42",emoji:"🌙",bars:[30,60,80,45,90,55,70,40,85,50,65,35,75,90,45,60,80,40,70,55,30,60,80,45]},
+  {num:"02",tag:"POP",title:"Хэзээ ч үл мартах",artist:"Zorigt Lhagva",dur:"4:10",emoji:"💫",bars:[50,70,40,85,60,90,35,75,55,80,45,65,90,50,70,40,85,60,75,55,40,70,50,85]},
+  {num:"03",tag:"R&B",title:"Зүрхний дуу",artist:"Enkhjin S.",dur:"3:28",emoji:"❤️",bars:[70,45,80,55,90,40,65,75,50,85,35,70,60,80,45,90,55,70,40,65,70,45,80,55]},
+  {num:"04",tag:"ROCK",title:"Чөлөөт салхи",artist:"Bold Dagva",dur:"5:03",emoji:"🔥",bars:[80,55,35,70,90,45,60,85,40,75,55,90,35,65,80,50,70,45,85,60,80,55,35,70]},
+  {num:"05",tag:"FOLK",title:"Нутгийн дуу",artist:"Enkhjin S.",dur:"3:55",emoji:"🌿",bars:[40,75,60,85,45,70,90,55,35,80,65,50,75,40,85,60,70,45,90,55,40,75,60,85]},
+  {num:"06",tag:"TRAP",title:"Гэрэл харанхуй",artist:"Munkh-Naran",dur:"2:58",emoji:"⚡",bars:[90,50,70,35,80,60,45,85,55,75,40,65,90,50,70,35,80,55,65,45,90,50,70,35]},
+];
+
+const artists=[
+  {init:"MN",name:"Munkh-Naran",genre:"HIP-HOP · R&B",bg:"linear-gradient(135deg,#1a0808,#E24B4A,#ff6b35)",ytUrl:"https://youtube.com/@1ststudioz"},
+  {init:"ZL",name:"Zorigt Lhagva",genre:"POP · SOUL",bg:"linear-gradient(135deg,#080818,#7b4de8,#c84b7b)",ytUrl:"https://youtube.com/@1ststudioz"},
+  {init:"BD",name:"Bold Dagva",genre:"ROCK · INDIE",bg:"linear-gradient(135deg,#081808,#1a6b3c,#2d9e5f)",ytUrl:"https://youtube.com/@1ststudioz"},
+  {init:"ES",name:"Enkhjin S.",genre:"FOLK · ACOUSTIC",bg:"linear-gradient(135deg,#181008,#c4862a,#e8b84b)",ytUrl:"https://youtube.com/@1ststudioz"},
+];
+
+// STORIES
+document.getElementById('storiesRow').innerHTML=artists.map((a,i)=>`
+<div class="story" onclick="openArtist(${i})">
+  <div class="story-ring"><div class="story-inner" style="background:${a.bg};color:#fff;">${a.init}</div></div>
+  <span class="story-name">${a.name.split(' ')[0]}</span>
+</div>`).join('');
+
+// FEED
+document.getElementById('postFeed').innerHTML=tracks.map((t,i)=>`
+<div class="post">
+  <div class="post-header">
+    <div class="post-avatar" style="background:${artists[i%4].bg}">${artists[i%4].init}</div>
+    <div class="post-info">
+      <div class="post-username" style="cursor:pointer" onclick="openArtist(${i%4})">${t.artist.toLowerCase().replace(' ','_')}</div>
+      <div class="post-tag">${t.tag}</div>
+    </div>
+    <div style="color:var(--gray)">···</div>
+  </div>
+  <div class="post-media" style="background:linear-gradient(160deg,#0d0d0d,#1a1a1a);">
+    <div class="post-media-inner">
+      <div style="font-size:48px">${t.emoji}</div>
+      <div class="post-track-info">
+        <div class="post-track-title">${t.title}</div>
+        <div class="post-track-artist" onclick="openArtist(${i%4})">${t.artist}</div>
+        <div class="post-track-tag">${t.tag}</div>
+      </div>
+      <div class="post-waveform">${t.bars.map((h,j)=>`<div class="post-waveform-bar ${j<8?'on':'off'}" style="height:${h}%"></div>`).join('')}</div>
+      <div class="post-play" onclick="playTrack(${i})"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+    </div>
+  </div>
+  <div class="post-actions">
+    <svg viewBox="0 0 24 24" onclick="this.classList.toggle('liked')"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+    <svg class="post-save" viewBox="0 0 24 24"><polygon points="19 21 12 16 5 21 5 3 19 3 19 21"/></svg>
+  </div>
+  <div class="post-likes">${Math.floor(Math.random()*900+100)} likes</div>
+  <div class="post-caption"><strong>${t.artist.toLowerCase().replace(' ','_')}</strong> ${t.title} 🎵 #1ststudio</div>
+  <div class="post-time">${i+1} цагийн өмнө</div>
+</div>`).join('');
+
+// MUSIC LIST
+function buildMusicList(filter){
+  const filtered=filter==='all'?tracks:tracks.filter(t=>t.tag===filter);
+  document.getElementById('musicList').innerHTML=filtered.map((t,i)=>`
+  <div class="music-item" onclick="window.open('https://youtube.com/@1ststudioz','_blank')">
+    <div class="music-num">${String(i+1).padStart(2,'0')}</div>
+    <div class="music-cover">${t.emoji}</div>
+    <div class="music-info"><div class="music-title">${t.title}</div><div class="music-artist">${t.artist}</div></div>
+    <div class="music-right"><div class="music-tag">${t.tag}</div><div class="music-dur">${t.dur}</div></div>
+  </div>`).join('');
+}
+buildMusicList('all');
+
+function filterTracks(f,el){
+  document.querySelectorAll('.music-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  buildMusicList(f);
+}
+
+// ARTIST PAGE
+function openArtist(i){
+  const a=artists[i];
+  document.getElementById('ap-bg').style.background=a.bg;
+  document.getElementById('ap-initial').textContent=a.init;
+  document.getElementById('ap-name').textContent=a.name;
+  document.getElementById('ap-genre').textContent=a.genre;
+  const at=tracks.filter(t=>t.artist===a.name||t.artist.startsWith(a.name.split(' ')[0]));
+  document.getElementById('ap-tcount').textContent=at.length||2;
+  document.getElementById('ap-track-list').innerHTML=at.map((t,j)=>`
+  <div class="ap-track-item" onclick="playTrack(${tracks.indexOf(t)})">
+    <div class="ap-track-num">${j+1}</div>
+    <div style="font-size:18px">${t.emoji}</div>
+    <div class="ap-track-info"><div class="ap-track-name">${t.title}</div><div class="ap-track-dur">${t.tag} · ${t.dur}</div></div>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+  </div>`).join('');
+  document.getElementById('artistPage').classList.add('open');
+  document.getElementById('artistPage').scrollTop=0;
+}
+function closeArtist(){
+  document.getElementById('artistPage').classList.remove('open');
+}
+
+// NAV
+const navMap={'s-home':'n-home','s-music':'n-music','s-contact':'n-contact'};
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(navMap[id])document.getElementById(navMap[id]).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// PLAYER
+let playing=false;
+function playTrack(i){
+  const t=tracks[i];
+  document.getElementById('np-cover').textContent=t.emoji;
+  document.getElementById('np-title').textContent=t.title;
+  document.getElementById('np-artist').textContent=t.artist;
+  document.getElementById('nowPlaying').style.display='flex';
+  playing=true;
+  document.getElementById('np-icon').innerHTML='<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+}
+function toggleNP(){
+  playing=!playing;
+  document.getElementById('np-icon').innerHTML=playing
+    ?'<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>'
+    :'<polygon points="5 3 19 12 5 21 5 3"/>';
+}
+
+// FORM
+function selectService(s){
+  document.getElementById('f-service').value=s;
+  go('s-contact');
+  setTimeout(()=>document.getElementById('f-name').focus(),300);
+}
+function sendForm(){
+  const n=document.getElementById('f-name').value;
+  const p=document.getElementById('f-phone').value;
+  const s=document.getElementById('f-service').value;
+  const m=document.getElementById('f-msg').value;
+  if(!n||!p){alert('Нэр болон утасны дугаараа оруулна уу!');return;}
+  const msg=`🎵 Шинэ захиалга!\n👤 Нэр: ${n}\n📞 Утас: ${p}\n🎤 Үйлчилгээ: ${s}\n💬 Мэдэгдэл: ${m}`;
+  fetch(`https://api.telegram.org/bot8786835140:AAHYJwcpd3TdhfgoXlJNg1q_O_dbAorVcUM/sendMessage?chat_id=5887820817&text=${encodeURIComponent(msg)}`)
+  .then(()=>{
+    alert('Захиалга амжилттай илгээгдлээ! 🎵');
+    document.getElementById('f-name').value='';
+    document.getElementById('f-phone').value='';
+    document.getElementById('f-service').value='';
+    document.getElementById('f-msg').value='';
+  });
+}
+</script>
+</body>
+</html>
