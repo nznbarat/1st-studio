@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0d141c">
+<meta name="description" content="AI видео бүтээгчдэд зориулсан 60 камерын хөдөлгөөний промт сан — монгол тайлбар, хөдөлгөөнт урьдчилсан харагдац, автомат промт угсрагч. Kling, Runway, Veo, Sora, Higgsfield, Seedance.">
+<title>Камерын хөдөлгөөний промт сан — AI кино бүтээгчдэд · 1st Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0d141c;        /* шөнийн студи */
+  --panel:#141e29;
+  --panel2:#18242f;
+  --line:#25333f;
+  --text:#e9eff5;
+  --dim:#93a5b5;
+  --tungsten:#f5a83c;   /* 3200K гэрэл */
+  --daylight:#6fb7dc;   /* 5600K гэрэл */
+  --rec:#ff5252;
+  --ok:#57d98a;
+  --star:#ffd166;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--ink);
+  color:var(--text);
+  font-family:'Inter',system-ui,sans-serif;
+  font-size:15px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--tungsten);color:#181008}
+
+/* ---------- ерөнхий ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+h1,h2,h3,.disp{font-family:'Oswald',sans-serif;letter-spacing:.01em}
+a{color:var(--daylight)}
+.eyebrow{
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--tungsten);
+}
+button{font-family:inherit;cursor:pointer}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* ---------- топ хэсэг ---------- */
+.topbar{
+  position:sticky;top:0;z-index:60;background:rgba(13,20,28,.9);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:14px;padding-top:11px;padding-bottom:11px}
+.brand{display:flex;align-items:baseline;gap:7px;font-family:'Oswald';font-size:17px;letter-spacing:.14em;text-transform:uppercase}
+.brand i{font-style:normal;color:var(--tungsten)}
+.topnav{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tlink{
+  font-size:12.5px;color:var(--dim);text-decoration:none;padding:6px 10px;border-radius:6px;
+  border:1px solid transparent;
+}
+.tlink:hover{color:var(--text);border-color:var(--line)}
+.mini{
+  border:1px solid var(--line);background:var(--panel);color:var(--dim);
+  border-radius:6px;padding:6px 11px;font-size:12.5px;transition:all .15s ease;
+}
+.mini:hover{border-color:var(--dim);color:var(--text)}
+.mini.on{background:var(--tungsten);border-color:var(--tungsten);color:#1b1206}
+
+/* ---------- толгой хэсэг ---------- */
+header.hero{
+  padding:56px 0 44px;
+  border-bottom:1px solid var(--line);
+  background:
+    radial-gradient(900px 420px at 12% -10%, rgba(245,168,60,.10), transparent 60%),
+    radial-gradient(900px 420px at 95% 0%, rgba(111,183,220,.08), transparent 60%);
+}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:44px;align-items:center}
+.hero h1{
+  font-size:clamp(32px,5vw,56px);font-weight:700;line-height:1.08;
+  text-transform:uppercase;margin:14px 0 18px;
+}
+.hero h1 .amber{color:var(--tungsten)}
+.hero p.lead{color:var(--dim);max-width:52ch}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+.btn{
+  display:inline-block;padding:12px 20px;border-radius:8px;border:1px solid var(--line);
+  font-weight:600;font-size:14px;text-decoration:none;color:var(--text);
+  background:var(--panel);transition:transform .15s ease, border-color .15s ease;
+}
+.btn:hover{transform:translateY(-2px);border-color:var(--dim)}
+.btn.primary{background:var(--tungsten);border-color:var(--tungsten);color:#1b1206}
+.stats{display:flex;gap:28px;margin-top:30px;flex-wrap:wrap}
+.stat b{font-family:'Oswald';font-size:26px;font-weight:600;display:block}
+.stat span{font-size:12px;color:var(--dim);letter-spacing:.06em;text-transform:uppercase}
+
+/* ---------- viewfinder (гарын үсэг-элемент) ---------- */
+.vf{
+  position:relative;overflow:hidden;border-radius:10px;
+  aspect-ratio:16/9;background:#0a1017;
+  border:1px solid var(--line);
+  isolation:isolate;
+}
+.vf .scene{position:absolute;inset:-8% -35%;transform-origin:50% 60%;will-change:transform}
+.sky{position:absolute;inset:0;background:linear-gradient(#16283a 0%, #23405a 55%, #3a5d76 74%, #7d8ba0 100%)}
+.sun{
+  position:absolute;top:16%;left:58%;width:15%;aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle,#ffd98a 0 55%,rgba(255,217,138,.25) 70%,transparent 72%);
+}
+.m1,.m2,.ground{position:absolute;left:0;right:0;background-repeat:repeat-x}
+.m1{top:34%;bottom:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 280 90' preserveAspectRatio='none'%3E%3Cpath d='M0 90 L0 52 L34 24 L66 48 L104 12 L146 50 L182 22 L224 46 L252 34 L280 52 L280 90 Z' fill='%231a2a3a'/%3E%3C/svg%3E");
+  background-size:280px 100%;background-position:bottom;
+}
+.m2{top:48%;bottom:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 70' preserveAspectRatio='none'%3E%3Cpath d='M0 70 L0 40 L28 18 L58 38 L92 10 L128 40 L162 20 L196 38 L220 40 L220 70 Z' fill='%23121e2a'/%3E%3C/svg%3E");
+  background-size:220px 100%;background-position:bottom;
+}
+.ground{
+  top:72%;bottom:0;
+  background-color:#0c151e;
+  background-image:repeating-linear-gradient(90deg,transparent 0 36px,rgba(255,255,255,.05) 36px 40px,transparent 40px 48px);
+  background-size:48px 100%;
+}
+.subj{
+  position:absolute;left:47%;bottom:14%;width:6.5%;aspect-ratio:1/2.6;
+  background:linear-gradient(#05090d,#0b1219);border-radius:40% 40% 22% 22%/16% 16% 8% 8%;
+}
+.subj::before{
+  content:"";position:absolute;top:-34%;left:22%;width:56%;aspect-ratio:1;border-radius:50%;
+  background:#05090d;
+}
+.fg{
+  position:absolute;right:6%;bottom:4%;width:16%;aspect-ratio:2/1;
+  background:radial-gradient(60% 100% at 50% 100%,#060b10 0 70%,transparent 71%);
+}
+/* HUD */
+.vf .hud{
+  position:absolute;top:8px;left:10px;z-index:3;display:flex;align-items:center;gap:6px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;color:#ffdede;
+}
+.vf .rec{width:7px;height:7px;border-radius:50%;background:var(--rec);animation:blink 1.2s steps(1) infinite}
+.vf .tc{position:absolute;right:10px;bottom:6px;z-index:3;font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(233,239,245,.65)}
+.vf .cr{position:absolute;width:14px;height:14px;border:2px solid rgba(233,239,245,.75);z-index:3}
+.vf .cr.tl{top:8px;left:8px;border-right:0;border-bottom:0}
+.vf .cr.tr{top:8px;right:8px;border-left:0;border-bottom:0}
+.vf .cr.bl{bottom:8px;left:8px;border-right:0;border-top:0}
+.vf .cr.br{bottom:8px;right:8px;border-left:0;border-top:0}
+@keyframes blink{0%,60%{opacity:1}61%,100%{opacity:.15}}
+
+/* ---------- хөдөлгөөний ангиуд ---------- */
+@keyframes kx{to{background-position-x:var(--bx,-70px)}}
+@keyframes kmx{to{transform:translateX(var(--mx,-70px))}}
+@keyframes kvy{to{transform:translateY(var(--vy,34px))}}
+@keyframes kscale{to{transform:scale(var(--zs,1.3))}}
+@keyframes kcr{to{transform:translateY(var(--vy,56px)) scale(var(--zs,.82))}}
+@keyframes kblurmid{0%,100%{filter:blur(0)}45%{filter:blur(4px)}}
+@keyframes ksway{from{transform:rotate(-.7deg) translateY(1px)}to{transform:rotate(.7deg) translateY(-1px)}}
+@keyframes kshake{
+  0%{transform:translate(0,0) rotate(0)}
+  20%{transform:translate(1.5px,-1px) rotate(.35deg)}
+  40%{transform:translate(-1px,1.5px) rotate(-.3deg)}
+  60%{transform:translate(1px,1px) rotate(.25deg)}
+  80%{transform:translate(-1.5px,-1px) rotate(-.35deg)}
+  100%{transform:translate(0,0) rotate(0)}
+}
+@keyframes ksnor{from{transform:rotate(-3.5deg) translateX(-7px)}to{transform:rotate(3.5deg) translateX(7px)}}
+@keyframes ksnorS{from{transform:rotate(3.5deg)}to{transform:rotate(-3.5deg)}}
+@keyframes karc{to{transform:skewX(var(--sk,-7deg)) translateX(var(--mx,-30px))}}
+@keyframes kheli{from{transform:scale(.82) translateX(28px)}to{transform:scale(.82) translateX(-28px)}}
+@keyframes kinf{0%{transform:scale(1)}100%{transform:scale(2.5)}}
+@keyframes kearth{0%{transform:scale(1.9)}100%{transform:scale(.55)}}
+@keyframes ksun{0%{transform:translate(-46px,20px)}50%{transform:translate(10px,-8px)}100%{transform:translate(70px,22px)}}
+@keyframes ksky{0%{filter:brightness(1) hue-rotate(0)}50%{filter:brightness(1.25) hue-rotate(-12deg)}100%{filter:brightness(.7) hue-rotate(18deg)}}
+@keyframes kpush{0%{transform:translateX(45%) scale(1)}62%{transform:translateX(-190%) scale(2.8)}100%{transform:translateX(-190%) scale(2.8)}}
+@keyframes kpass{0%{transform:scale(.55);opacity:1}72%{transform:scale(4.4);opacity:1}86%{transform:scale(4.4);opacity:0}100%{transform:scale(.55);opacity:0}}
+@keyframes kzollyS{to{transform:scale(1.45)}}
+@keyframes kzollyB{to{transform:scale(.7)}}
+@keyframes kfocusA{0%,40%{filter:blur(3.5px)}72%,100%{filter:blur(0)}}
+@keyframes kfocusB{0%,40%{filter:blur(0)}72%,100%{filter:blur(3.5px)}}
+@keyframes kroll{from{transform:rotate(0) scale(1.04)}to{transform:rotate(-9deg) scale(1.12)}}
+@keyframes kbx{0%,14%{background-position-x:0}86%,100%{background-position-x:var(--bx,-200px)}}
+@keyframes krampx{0%{background-position-x:0}38%{background-position-x:-22px}66%{background-position-x:-210px}100%{background-position-x:-270px}}
+@keyframes kquake{
+  0%{transform:translate(0,0) rotate(0)}
+  12%{transform:translate(-4px,3px) rotate(-.8deg)}
+  26%{transform:translate(5px,-3px) rotate(.9deg)}
+  41%{transform:translate(-5px,-2px) rotate(-.6deg)}
+  57%{transform:translate(4px,4px) rotate(.7deg)}
+  73%{transform:translate(-3px,2px) rotate(-.5deg)}
+  88%{transform:translate(3px,-3px) rotate(.6deg)}
+  100%{transform:translate(0,0) rotate(0)}
+}
+@keyframes kbob{0%{transform:translateY(0) rotate(-1.1deg)}50%{transform:translateY(-7px) rotate(1.1deg)}100%{transform:translateY(0) rotate(-1.1deg)}}
+@keyframes krev{from{transform:translateX(0) scale(1.7)}to{transform:translateX(165%) scale(1.7)}}
+
+/* дуусгавартай шилжилт (swp) — параллакс */
+.swp .m1{animation:kx 6s ease-in-out infinite alternate;--bx:calc(var(--dir,-1)*46px*var(--mul,1))}
+.swp .m2{animation:kx 6s ease-in-out infinite alternate;--bx:calc(var(--dir,-1)*66px*var(--mul,1))}
+.swp .ground{animation:kx 6s ease-in-out infinite alternate;--bx:calc(var(--dir,-1)*96px*var(--mul,1))}
+.swp .subj{animation:kmx 6s ease-in-out infinite alternate;--mx:calc(var(--dir,-1)*72px*var(--mul,1))}
+.swp .fg{animation:kmx 6s ease-in-out infinite alternate;--mx:calc(var(--dir,-1)*118px*var(--mul,1))}
+.swp.eq .m1,.swp.eq .m2,.swp.eq .ground{--bx:calc(var(--dir,-1)*70px)}
+.swp.eq .subj,.swp.eq .fg{--mx:calc(var(--dir,-1)*70px)}
+.swp.sm{--mul:.4}
+.swp.rev{--dir:1}
+.swp.whip .m1,.swp.whip .m2,.swp.whip .ground,.swp.whip .subj,.swp.whip .fg{animation-duration:1.5s;animation-timing-function:cubic-bezier(.75,0,.25,1)}
+.swp.whip .scene{animation:kblurmid 1.5s cubic-bezier(.75,0,.25,1) infinite alternate}
+
+/* тасралтгүй давталт (lp) */
+.lp .m1{animation:kx calc(9s*var(--spd,1)) linear infinite;--bx:calc(var(--dir,-1)*280px)}
+.lp .m2{animation:kx calc(5.2s*var(--spd,1)) linear infinite;--bx:calc(var(--dir,-1)*220px)}
+.lp .ground{animation:kx calc(1.5s*var(--spd,1)) linear infinite;--bx:calc(var(--dir,-1)*96px)}
+.lp.rev{--dir:1}
+.lp.fast{--spd:.45}
+.lp.slow{--spd:1.7}
+.lp.low .scene{transform:translateY(-16%) scale(1.18)}
+
+/* босоо, zoom, кран */
+.vrt .scene{animation:kvy 6s ease-in-out infinite alternate}
+.vrt.ped .scene{--vy:46px}
+.vrt.rev .scene{animation-direction:alternate-reverse}
+.vrt.whip .scene{animation-duration:1.4s;animation-timing-function:cubic-bezier(.75,0,.25,1)}
+.vrt.whip .sky,.vrt.whip .m1,.vrt.whip .m2,.vrt.whip .ground,.vrt.whip .subj,.vrt.whip .fg{
+  animation:kblurmid 1.4s cubic-bezier(.75,0,.25,1) infinite alternate;
+}
+.zm .scene{animation:kscale 8s ease-in-out infinite alternate;--zs:1.32}
+.zm.rev .scene{animation-direction:alternate-reverse}
+.zm.zfast .scene{animation-duration:2.3s}
+.zm.zcrash .scene{animation-duration:1s;animation-timing-function:cubic-bezier(.8,0,.4,1);--zs:1.5}
+.zm.dolly .scene{--zs:1.2}
+.zm.dolly .subj{animation:kscale 8s ease-in-out infinite alternate;--zs:1.28;transform-origin:50% 100%}
+.zm.dolly.rev .subj{animation-direction:alternate-reverse}
+.crane .scene{animation:kcr 7s ease-in-out infinite alternate}
+.crane.rev .scene{animation-direction:alternate-reverse}
+.crane.drone .scene{animation-duration:9s;--vy:-16px;--zs:1.45}
+.heli .scene{animation:kheli 9s ease-in-out infinite alternate}
+
+/* хүний камер, тусгай */
+.sway .scene{animation:ksway 2.8s ease-in-out infinite alternate}
+.lp.sway .scene{animation:ksway 2.8s ease-in-out infinite alternate}
+.shake .scene{animation:kshake 1s linear infinite}
+.lp.shake .scene{animation:kshake .7s linear infinite}
+.snorri .scene{animation:ksnor 2.4s ease-in-out infinite alternate}
+.snorri .subj{animation:ksnorS 2.4s ease-in-out infinite alternate;transform-origin:50% 80%}
+.arc .scene{perspective:400px}
+.arc .subj{animation:karc 6.5s ease-in-out infinite alternate}
+.arc.rev .subj{--sk:7deg;--mx:30px}
+.pushfx .fg{
+  right:auto;left:50%;bottom:-6%;width:34%;aspect-ratio:1.2/1;
+  background:radial-gradient(55% 100% at 50% 100%,#04080c 0 72%,transparent 73%);
+  animation:kpush 4s ease-in-out infinite;
+}
+.pushfx .scene{animation:kscale 4s ease-in-out infinite;--zs:1.12}
+.passt .fg{
+  inset:0;width:auto;aspect-ratio:auto;
+  background:radial-gradient(circle at 50% 52%,transparent 0 24%,#131e29 25%);
+  animation:kpass 3.6s ease-in infinite;transform-origin:50% 52%;
+}
+.passt .scene{animation:kscale 3.6s ease-in infinite;--zs:1.18}
+.infz .scene{animation:kinf 3.2s cubic-bezier(.45,0,.85,.4) infinite;transform-origin:50% 45%}
+.earthz .scene{animation:kearth 3.8s cubic-bezier(.2,.6,.5,1) infinite;transform-origin:52% 40%}
+.tl .sun{animation:ksun 3s linear infinite}
+.tl .sky{animation:ksky 3s linear infinite}
+.tl .ground{animation:kx 3s linear infinite;--bx:-96px}
+.tsh::before,.tsh::after{
+  content:"";position:absolute;left:0;right:0;z-index:2;backdrop-filter:blur(3.5px);
+  -webkit-backdrop-filter:blur(3.5px);pointer-events:none;
+}
+.tsh::before{top:0;height:32%}
+.tsh::after{bottom:0;height:26%}
+.tsh .scene{animation:ksway 5s ease-in-out infinite alternate}
+.fpvfx .scene{animation:kscale 3.4s ease-in-out infinite alternate,ksway 1.6s ease-in-out infinite alternate;--zs:1.3}
+
+/* --- шинэ хөдөлгөөнүүд --- */
+.zolly .scene{animation:kzollyS 5s ease-in-out infinite alternate;transform-origin:47% 62%}
+.zolly .subj{animation:kzollyB 5s ease-in-out infinite alternate;transform-origin:50% 100%}
+.rack .subj{animation:kfocusA 4s ease-in-out infinite alternate}
+.rack .fg,.rack .m1,.rack .m2{animation:kfocusB 4s ease-in-out infinite alternate}
+.dutch .scene{animation:kroll 5s ease-in-out infinite alternate}
+.bird .scene{transform:perspective(620px) rotateX(56deg) scale(1.3);transform-origin:50% 72%}
+.bird .ground{animation:kx 6s linear infinite;--bx:-96px}
+.bird .subj{animation:kmx 6s ease-in-out infinite alternate;--mx:-40px}
+.worm .scene{transform:perspective(620px) rotateX(-20deg) scale(1.18);transform-origin:50% 100%}
+.worm .subj{animation:kscale 5s ease-in-out infinite alternate;--zs:1.26;transform-origin:50% 100%}
+.bullet .m1{animation:kbx 3.4s cubic-bezier(.7,0,.3,1) infinite;--bx:-170px}
+.bullet .m2{animation:kbx 3.4s cubic-bezier(.7,0,.3,1) infinite;--bx:-250px}
+.bullet .ground{animation:kbx 3.4s cubic-bezier(.7,0,.3,1) infinite;--bx:-330px}
+.bullet .subj{animation:kscale 3.4s ease-in-out infinite alternate;--zs:1.06;transform-origin:50% 100%}
+.hyper .ground{animation:kx .8s linear infinite;--bx:-96px}
+.hyper .m2{animation:kx 1.8s linear infinite;--bx:-220px}
+.hyper .m1{animation:kx 3s linear infinite;--bx:-280px}
+.hyper .sky{animation:ksky 2.4s linear infinite}
+.hyper .sun{animation:ksun 2.4s linear infinite}
+.ramp .m1,.ramp .m2,.ramp .ground{animation:krampx 3.6s linear infinite}
+.ots .fg{
+  right:auto;left:3%;bottom:0;width:30%;aspect-ratio:auto;height:84%;
+  background:radial-gradient(72% 58% at 52% 26%,#05090d 0 66%,transparent 68%);filter:blur(2px);
+}
+.ots .scene{animation:kscale 6s ease-in-out infinite alternate;--zs:1.16;transform-origin:58% 60%}
+.quake .scene{animation:kquake .5s linear infinite}
+.povrun .scene{animation:kbob .62s ease-in-out infinite;transform-origin:50% 60%}
+.povrun .ground{animation:kx .9s linear infinite;--bx:-96px}
+.povrun .m2{animation:kx 3s linear infinite;--bx:-220px}
+.povrun .m1{animation:kx 6s linear infinite;--bx:-280px}
+.reveal .fg{
+  right:auto;left:-6%;bottom:-14%;width:44%;aspect-ratio:1/1.35;
+  background:radial-gradient(62% 78% at 50% 58%,#04080c 0 74%,transparent 76%);
+  animation:krev 5s ease-in-out infinite alternate;
+}
+.reveal .m1,.reveal .m2,.reveal .ground{animation:kx 5s ease-in-out infinite alternate;--bx:-44px}
+
+/* ---------- хөдөлгөөний удирдлага (гүйцэтгэлд) ---------- */
+.vf.paused *,body.nomotion .vf *{animation-play-state:paused !important}
+@media (prefers-reduced-motion:reduce){
+  .vf *,.vf::before,.vf::after,.tsh::before,.tsh::after{animation:none !important}
+}
+
+/* ---------- шүүлтүүр / хайлт ---------- */
+#finder{padding:44px 0 8px}
+.finder-head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:16px;margin-bottom:18px}
+.finder-head h2{font-size:clamp(24px,3vw,34px);text-transform:uppercase;font-weight:600;margin-top:8px}
+.search{
+  display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);
+  border-radius:8px;padding:10px 14px;min-width:min(340px,100%);
+}
+.search input{
+  background:none;border:0;outline:0;color:var(--text);font-family:inherit;font-size:14px;width:100%;
+}
+.search input::placeholder{color:var(--dim)}
+.search kbd{
+  font-family:'JetBrains Mono';font-size:10px;color:var(--dim);border:1px solid var(--line);
+  border-radius:4px;padding:2px 6px;flex-shrink:0;
+}
+.filters{
+  position:sticky;top:53px;z-index:40;background:var(--ink);
+  padding:12px 0 10px;border-bottom:1px solid var(--line);margin-bottom:20px;
+}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips+.chips{margin-top:9px}
+.chip{
+  border:1px solid var(--line);background:var(--panel);color:var(--dim);
+  padding:7px 14px;border-radius:999px;font-size:13px;font-weight:500;
+  transition:all .15s ease;
+}
+.chip b{color:var(--text);font-weight:600;margin-left:5px;font-family:'JetBrains Mono';font-size:11px}
+.chip:hover{border-color:var(--dim);color:var(--text)}
+.chip.on{background:var(--tungsten);border-color:var(--tungsten);color:#1b1206}
+.chip.on b{color:#1b1206}
+.chip.alt.on{background:var(--daylight);border-color:var(--daylight);color:#08161e}
+.chip.alt.on b{color:#08161e}
+.chip.fav.on{background:var(--star);border-color:var(--star);color:#231a04}
+.chip.fav.on b{color:#231a04}
+.toolsrow{
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px;justify-content:space-between;
+  margin:12px 0 16px;font-size:13px;color:var(--dim);
+}
+.toolsrow .right{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.toolsrow select{
+  background:var(--panel);border:1px solid var(--line);border-radius:6px;color:var(--text);
+  font-family:inherit;font-size:12.5px;padding:6px 9px;outline:none;
+}
+
+/* ---------- картууд ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:20px;padding-bottom:56px}
+.card{
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;
+  display:flex;flex-direction:column;transition:transform .18s ease,border-color .18s ease;
+  position:relative;
+}
+.card:hover{transform:translateY(-3px);border-color:#37485a}
+.card .vf{border:0;border-bottom:1px solid var(--line);border-radius:0}
+.card-body{padding:16px 16px 18px;display:flex;flex-direction:column;gap:10px;flex:1}
+.card-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:'JetBrains Mono';font-size:10.5px;letter-spacing:.1em;color:var(--dim);text-transform:uppercase}
+.tag{border:1px solid var(--line);border-radius:4px;padding:2px 7px;color:var(--daylight)}
+.tempo{border:1px solid var(--line);border-radius:4px;padding:2px 7px;color:var(--tungsten)}
+.card h3{font-size:19px;font-weight:600;line-height:1.25}
+.card h3 small{display:block;font-family:'Inter';font-size:12px;font-weight:500;color:var(--dim);letter-spacing:.02em;margin-top:2px}
+.card .expl{font-size:13.5px;color:var(--dim)}
+.card .expl b{color:var(--tungsten);font-weight:600}
+.prompt{
+  background:#0a1118;border:1px solid var(--line);border-radius:8px;padding:12px;
+  font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.55;color:#c8d6e2;
+  white-space:pre-wrap;word-break:break-word;
+}
+.card-actions{margin-top:auto;display:flex;gap:8px;flex-wrap:wrap}
+.copy{
+  flex:1;min-width:120px;padding:10px;border-radius:8px;border:1px solid var(--line);
+  background:var(--panel2);color:var(--text);font-weight:600;font-size:13px;
+  transition:all .15s ease;
+}
+.copy:hover{border-color:var(--tungsten);color:var(--tungsten)}
+.copy.done{background:rgba(87,217,138,.12);border-color:var(--ok);color:var(--ok)}
+.ghost{
+  padding:10px 12px;border-radius:8px;border:1px solid var(--line);
+  background:transparent;color:var(--dim);font-size:13px;font-weight:500;transition:all .15s ease;
+}
+.ghost:hover{border-color:var(--daylight);color:var(--daylight)}
+.star{
+  position:absolute;top:9px;right:9px;z-index:4;width:32px;height:32px;border-radius:8px;
+  border:1px solid rgba(37,51,63,.9);background:rgba(10,17,24,.72);color:var(--dim);
+  font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);transition:all .15s ease;
+}
+.star:hover{color:var(--star);border-color:var(--star)}
+.star.on{color:var(--star);border-color:var(--star);background:rgba(255,209,102,.14)}
+.empty{grid-column:1/-1;text-align:center;color:var(--dim);padding:56px 0;display:none}
+.empty button{margin-top:12px}
+
+/* ---------- дэлгэрэнгүй цонх ---------- */
+.modal{
+  position:fixed;inset:0;z-index:120;background:rgba(5,9,13,.72);backdrop-filter:blur(6px);
+  display:none;align-items:center;justify-content:center;padding:20px;
+}
+.modal.open{display:flex}
+.modal-box{
+  background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  width:min(680px,100%);max-height:88vh;overflow:auto;
+}
+.modal-box .vf{border:0;border-radius:14px 14px 0 0}
+.modal-in{padding:20px;display:flex;flex-direction:column;gap:12px}
+.modal-in h3{font-size:24px;font-weight:600}
+.modal-in h3 small{display:block;font-family:'Inter';font-size:13px;font-weight:500;color:var(--dim);margin-top:2px}
+.modal-close{
+  position:absolute;top:14px;right:16px;z-index:130;width:36px;height:36px;border-radius:9px;
+  border:1px solid var(--line);background:rgba(10,17,24,.8);color:var(--text);font-size:17px;
+}
+.kv{display:flex;flex-wrap:wrap;gap:8px}
+.kv span{border:1px solid var(--line);border-radius:6px;padding:4px 9px;font-size:12px;color:var(--dim)}
+.rel{display:flex;flex-wrap:wrap;gap:8px}
+.rel button{
+  border:1px solid var(--line);background:var(--panel2);color:var(--daylight);
+  border-radius:999px;padding:6px 12px;font-size:12.5px;
+}
+.rel button:hover{border-color:var(--daylight)}
+
+/* ---------- угсрагч ---------- */
+#builder{border-top:1px solid var(--line);padding:52px 0 66px;background:var(--panel)}
+#builder .inner{max-width:880px;margin:0 auto}
+#builder h2{font-size:clamp(24px,3vw,32px);text-transform:uppercase;font-weight:600;margin:8px 0 8px}
+#builder p.sub{color:var(--dim);margin-bottom:22px}
+.b-step{margin-bottom:18px}
+.b-step label.hd{display:flex;align-items:center;gap:10px;font-weight:600;font-size:14px;margin-bottom:8px}
+.b-num{
+  font-family:'JetBrains Mono';font-size:11px;color:var(--tungsten);
+  border:1px solid var(--tungsten);border-radius:4px;padding:1px 6px;
+}
+.b-step select,.b-step textarea,.b-step input[type=text]{
+  width:100%;background:var(--ink);border:1px solid var(--line);border-radius:8px;
+  color:var(--text);font-family:inherit;font-size:14px;padding:12px;outline:none;
+}
+.b-step select:focus,.b-step textarea:focus,.b-step input[type=text]:focus{border-color:var(--daylight)}
+.b-step textarea{min-height:70px;resize:vertical}
+.b-two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.b-three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.b-opts{display:flex;flex-wrap:wrap;gap:14px;font-size:13.5px;color:var(--dim)}
+.b-opts label{display:flex;align-items:center;gap:7px;font-weight:500;cursor:pointer}
+.b-opts input{accent-color:var(--tungsten)}
+.hint{font-size:12px;color:var(--dim);margin-top:6px}
+.picks{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.pick{
+  border:1px dashed var(--line);background:transparent;color:var(--dim);
+  border-radius:999px;padding:4px 10px;font-size:12px;transition:all .15s ease;
+}
+.pick:hover{border-style:solid;border-color:var(--daylight);color:var(--daylight)}
+#b-out{margin-top:8px;min-height:80px}
+#b-neg{margin-top:8px;font-size:11.5px;color:#9fb0be}
+.outbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+#builder .copy{flex:none;padding:11px 22px}
+.b-note{font-size:12px;color:var(--dim);margin-top:12px}
+.counter{font-family:'JetBrains Mono';font-size:11px;color:var(--dim);margin-left:auto}
+
+/* ---------- хураангуй хүснэгт ---------- */
+#sheet{border-top:1px solid var(--line);padding:48px 0 60px}
+#sheet h2{font-size:clamp(22px,3vw,30px);text-transform:uppercase;font-weight:600;margin:8px 0 6px}
+#sheet p.sub{color:var(--dim);margin-bottom:20px}
+.sheet-cat{margin-bottom:22px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.sheet-cat h3{
+  background:var(--panel);padding:11px 14px;font-size:14px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--line);
+}
+.sheet-cat table{width:100%;border-collapse:collapse;font-size:13px}
+.sheet-cat td{padding:9px 14px;border-bottom:1px solid rgba(37,51,63,.55);vertical-align:top}
+.sheet-cat tr:last-child td{border-bottom:0}
+.sheet-cat td.n{width:52px;font-family:'JetBrains Mono';font-size:11px;color:var(--dim)}
+.sheet-cat td.mn{width:34%;font-weight:600}
+.sheet-cat td.mn i{display:block;font-style:normal;font-weight:400;font-size:12px;color:var(--dim)}
+.sheet-cat td.use{color:var(--dim)}
+.sheet-cat tr{cursor:pointer}
+.sheet-cat tr:hover td{background:rgba(111,183,220,.06)}
+
+/* ---------- faq ---------- */
+#faq{border-top:1px solid var(--line);padding:44px 0 56px;background:var(--panel)}
+#faq h2{font-size:clamp(22px,3vw,30px);text-transform:uppercase;font-weight:600;margin:8px 0 18px}
+details{border:1px solid var(--line);border-radius:9px;padding:12px 14px;margin-bottom:10px;background:var(--ink)}
+details summary{cursor:pointer;font-weight:600;font-size:14px}
+details p{color:var(--dim);font-size:13.5px;margin-top:9px}
+
+/* ---------- toast ---------- */
+#toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+  background:var(--panel2);border:1px solid var(--ok);color:var(--ok);
+  padding:10px 18px;border-radius:999px;font-size:13px;font-weight:600;
+  opacity:0;pointer-events:none;transition:all .2s ease;z-index:200;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+#top{
+  position:fixed;right:18px;bottom:18px;z-index:70;width:42px;height:42px;border-radius:50%;
+  border:1px solid var(--line);background:var(--panel);color:var(--dim);font-size:16px;
+  display:none;align-items:center;justify-content:center;
+}
+#top.show{display:flex}
+#top:hover{color:var(--tungsten);border-color:var(--tungsten)}
+
+footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--dim);font-size:13px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between}
+
+@media (max-width:820px){
+  .hero-grid{grid-template-columns:1fr}
+  .stats{gap:18px}
+  .b-two,.b-three{grid-template-columns:1fr}
+  .topnav .tlink{display:none}
+  .filters{top:52px}
+}
+:focus-visible{outline:2px solid var(--daylight);outline-offset:2px}
+@media print{
+  .topbar,header.hero,#finder,#builder,#faq,footer,#top,.modal{display:none !important}
+  body{background:#fff;color:#000}
+  #sheet{border:0}
+  .sheet-cat h3{background:#eee;color:#000}
+  .sheet-cat td{color:#000}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ ТОП ══════════ -->
+<div class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#" style="text-decoration:none;color:inherit"><span>1<i>ST</i></span><span style="font-size:13px;letter-spacing:.2em;color:var(--dim)">STUDIO</span></a>
+    <nav class="topnav">
+      <a class="tlink" href="#finder">Сан</a>
+      <a class="tlink" href="#builder">Угсрагч</a>
+      <a class="tlink" href="#sheet">Хураангуй</a>
+      <a class="tlink" href="#faq">Тусламж</a>
+      <button class="mini" id="motion-toggle" title="Урьдчилсан харагдацын хөдөлгөөнийг унтраах/асаах">⏸ Хөдөлгөөн</button>
+    </nav>
+  </div>
+</div>
+
+<!-- ══════════ HERO ══════════ -->
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">AI кино бүтээгчдэд · 1st Studio</span>
+      <h1>Камерын <span class="amber">хөдөлгөөний</span> промт сан</h1>
+      <p class="lead">Kling, Runway, Veo, Sora, Higgsfield, Seedance зэрэг AI видео хэрэгслүүдэд шууд хуулж хэрэглэх <b id="hero-count">60</b> камерын хөдөлгөөн — тус бүр монгол тайлбар, хөдөлгөөнт урьдчилсан харагдацтай. Сонгоод, дүрээ бичихэд промт өөрөө угсрагдана.</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#finder">Санг үзэх</a>
+        <a class="btn" href="#builder">Промт угсрагч</a>
+        <button class="btn" id="hero-random">🎲 Санамсаргүй хөдөлгөөн</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><b id="s-moves">60</b><span>хөдөлгөөн</span></div>
+        <div class="stat"><b id="s-cats">7</b><span>ангилал</span></div>
+        <div class="stat"><b id="s-tools">7</b><span>хэрэгслийн формат</span></div>
+        <div class="stat"><b>100%</b><span>монгол тайлбар</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="vf lp" id="hero-vf" aria-hidden="true">
+        <div class="scene">
+          <div class="sky"></div><div class="sun"></div>
+          <div class="m1"></div><div class="m2"></div>
+          <div class="ground"></div><div class="subj"></div><div class="fg"></div>
+        </div>
+        <div class="hud"><span class="rec"></span><span id="hero-hud">REC · ORBIT</span></div>
+        <span class="tc">00:00:04:12</span>
+        <i class="cr tl"></i><i class="cr tr"></i><i class="cr bl"></i><i class="cr br"></i>
+      </div>
+      <p class="mono" style="font-size:11px;color:var(--dim);margin-top:10px;letter-spacing:.08em">▲ <span id="hero-cap">ORBIT — дүрийг тойрон эргэх хөдөлгөөн</span></p>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════ САН ══════════ -->
+<main id="finder" class="wrap">
+  <div class="finder-head">
+    <div>
+      <span class="eyebrow">Хөдөлгөөний сан</span>
+      <h2>Кадртаа тохирох хөдөлгөөнөө ол</h2>
+    </div>
+    <div class="search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--dim);flex-shrink:0"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="q" type="search" placeholder="Хайх… (жишээ: zoom, тойрох, дрон, аймшиг)" aria-label="Хөдөлгөөн хайх">
+      <kbd>/</kbd>
+    </div>
+  </div>
+
+  <div class="filters">
+    <div class="chips" id="chips" role="tablist" aria-label="Ангиллаар шүүх"></div>
+    <div class="chips" id="chips2" aria-label="Хурдаар шүүх"></div>
+  </div>
+
+  <div class="toolsrow">
+    <span id="count">…</span>
+    <div class="right">
+      <label for="sort" style="font-size:12.5px">Эрэмбэ:</label>
+      <select id="sort">
+        <option value="def">Дугаараар</option>
+        <option value="mn">Нэрээр (А–Я)</option>
+        <option value="cat">Ангиллаар</option>
+        <option value="sp">Хурдаар</option>
+      </select>
+      <button class="mini" id="copy-all">Харагдаж буйг бүгдийг хуулах</button>
+      <button class="mini" id="share">🔗 Холбоос хуулах</button>
+      <button class="mini" id="reset">Цэвэрлэх</button>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <p class="empty" id="empty">
+    Тохирох хөдөлгөөн олдсонгүй.<br>
+    <button class="mini" id="empty-reset">Шүүлтүүрийг цэвэрлэх</button>
+  </p>
+</main>
+
+<!-- ══════════ УГСРАГЧ ══════════ -->
+<section id="builder">
+  <div class="wrap inner">
+    <span class="eyebrow">Промт угсрагч</span>
+    <h2>Өөрийн кадраа угсар</h2>
+    <p class="sub">Хэсгүүдээ сонгоод бөглөхөд бэлэн промт автоматаар угсрагдана. AI видео хэрэгслүүд англи хэл дээр хамгийн сайн ажилладаг тул доорх <b>санал болгох үгсээс</b> товшиж сонгоход л англи промт бүрдэнэ. Бүх сонголт таны хөтөч дээр автоматаар хадгалагдана.</p>
+
+    <div class="b-step">
+      <label class="hd" for="b-move"><span class="b-num">1</span> Үндсэн камерын хөдөлгөөн</label>
+      <select id="b-move"></select>
+      <div class="b-two" style="margin-top:12px">
+        <div>
+          <label class="hd" for="b-move2" style="font-size:13px"><span class="b-num">1b</span> Хосолсон хөдөлгөөн (заавал биш)</label>
+          <select id="b-move2"></select>
+        </div>
+        <div>
+          <label class="hd" for="b-tool" style="font-size:13px"><span class="b-num">1c</span> Аль хэрэгсэлд зориулах</label>
+          <select id="b-tool"></select>
+        </div>
+      </div>
+      <p class="hint" id="tool-tip"></p>
+    </div>
+
+    <div class="b-step">
+      <label class="hd"><span class="b-num">2</span> Дүр, үйлдэл, байршил</label>
+      <div class="b-three">
+        <div>
+          <input id="b-subject" type="text" placeholder="Дүр — a lone horseman">
+          <div class="picks" data-for="b-subject"></div>
+        </div>
+        <div>
+          <input id="b-action" type="text" placeholder="Үйлдэл — riding at full gallop">
+          <div class="picks" data-for="b-action"></div>
+        </div>
+        <div>
+          <input id="b-place" type="text" placeholder="Байршил — on the Mongolian steppe">
+          <div class="picks" data-for="b-place"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="b-step">
+      <label class="hd"><span class="b-num">3</span> Цаг, гэрэл, линз</label>
+      <div class="b-three">
+        <select id="b-time"></select>
+        <select id="b-lens"></select>
+        <select id="b-mood"></select>
+      </div>
+    </div>
+
+    <div class="b-step">
+      <label class="hd"><span class="b-num">4</span> Нэмэлт хэв маяг</label>
+      <div class="b-opts" id="b-styles"></div>
+    </div>
+
+    <div class="b-step">
+      <label class="hd" for="b-extra"><span class="b-num">5</span> Нэмэлт тайлбар (заавал биш)</label>
+      <textarea id="b-extra" placeholder="Жишээ: dust in the air, warm rim light, 3 second shot"></textarea>
+    </div>
+
+    <div class="b-step">
+      <label class="hd"><span class="b-num">6</span> Бэлэн промт</label>
+      <div class="prompt" id="b-out">Эхлээд хөдөлгөөнөө сонгоорой…</div>
+      <div class="prompt" id="b-neg" style="display:none"></div>
+      <div class="outbar">
+        <button class="copy" id="b-copy">Промт хуулах</button>
+        <button class="ghost" id="b-copy-neg" style="display:none">Negative хуулах</button>
+        <button class="ghost" id="b-dice">🎲 Санамсаргүй санаа</button>
+        <button class="ghost" id="b-save">⬇ .txt хадгалах</button>
+        <button class="ghost" id="b-clear">Цэвэрлэх</button>
+        <span class="counter" id="b-count">0 тэмдэгт</span>
+      </div>
+      <p class="b-note">Зөвлөгөө: эхний фрейм (зураг) ашиглаж байгаа бол дүр зургийн хэсгээ товчилж, камерын хөдөлгөөний хэсгийг нь голлуулаарай. Нэг кадрт 1–2 хөдөлгөөнөөс илүүг битгий хий — AI загварууд төөрдөг.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ ХУРААНГУЙ ══════════ -->
+<section id="sheet" class="wrap">
+  <span class="eyebrow">Хураангуй хүснэгт</span>
+  <h2>Бүх хөдөлгөөн нэг дор</h2>
+  <p class="sub">Ангилал тус бүрээр — мөр дээр товшвол дэлгэрэнгүй нээгдэнэ. <button class="mini" id="print">🖨 Хэвлэх / PDF</button></p>
+  <div id="sheet-body"></div>
+</section>
+
+<!-- ══════════ ТУСЛАМЖ ══════════ -->
+<section id="faq">
+  <div class="wrap inner" style="max-width:880px;margin:0 auto">
+    <span class="eyebrow">Тусламж</span>
+    <h2>Түгээмэл асуултууд</h2>
+    <details open>
+      <summary>Промтоо яаж хэрэглэх вэ?</summary>
+      <p>Картын «Промт хуулах» товчийг дараад Kling, Runway, Veo, Sora гэх мэт хэрэгслийнхээ промт талбарт буулгана. Хэрвээ зурагнаас видео (image-to-video) хийж байгаа бол зөвхөн камерын хөдөлгөөний өгүүлбэрийг үлдээж, дүрийн тайлбарыг богиносгоорой.</p>
+    </details>
+    <details>
+      <summary>Яагаад англиар бичих ёстой вэ?</summary>
+      <p>Одоогийн AI видео загварууд ихэвчлэн англи өгүүлбэр дээр сургагдсан тул англи промт хамгийн тогтвортой үр дүн өгдөг. Тийм учраас угсрагч дээр «санал болгох үгс» бэлдсэн — товшиж сонгоод англи промтоо угсарч болно.</p>
+    </details>
+    <details>
+      <summary>Нэг кадрт хэдэн хөдөлгөөн хийж болох вэ?</summary>
+      <p>Ихэнх загвар дээр нэг хөдөлгөөн хамгийн тод гардаг. Хоёрыг хослуулах бол логикоор нийцэх хосыг сонго (жишээ: <b>dolly in + tilt up</b>). Гурав ба түүнээс дээш бол загвар аль нэгийг нь орхигдуулах магадлалтай.</p>
+    </details>
+    <details>
+      <summary>Хөдөлгөөнт харагдац компьютерийг удаашруулж байвал?</summary>
+      <p>Дээд талын «⏸ Хөдөлгөөн» товчийг дарж бүх урьдчилсан харагдацыг зогсоож болно. Мөн дэлгэц дээр харагдахгүй байгаа картуудын хөдөлгөөн автоматаар зогсдог, таны системд «reduced motion» тохиргоо асаалттай бол огт хөдөлдөггүй.</p>
+    </details>
+    <details>
+      <summary>Дуртай хөдөлгөөнөө хадгалж болох уу?</summary>
+      <p>Тийм. Картын баруун дээд буланд байгаа ★ товчийг дар — хөтөч дээр чинь хадгалагдана. Дараа нь «★ Дуртай» шүүлтүүрээр зөвхөн тэдгээрийг харна. Шүүлтүүр, хайлт бүр хаягийн мөрөнд бичигддэг тул холбоосоо хуваалцаж болно.</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Камерын хөдөлгөөний промт сан · Монгол AI бүтээгчдэд зориулав</span>
+    <span class="mono" style="font-size:11px">3200K ✦ 5600K</span>
+  </div>
+</footer>
+
+<!-- дэлгэрэнгүй цонх -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Хөдөлгөөний дэлгэрэнгүй">
+  <div class="modal-box" style="position:relative">
+    <button class="modal-close" id="modal-close" aria-label="Хаах">✕</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite">Хуулагдлаа</div>
+<button id="top" aria-label="Дээш">↑</button>
+
+<script>
+"use strict";
+
+/* ═══════════════════════════════════════════════════════════
+   1. ӨГӨГДӨЛ — бүх зүйл эндээс автоматаар үүсдэг
+   Шинэ хөдөлгөөн нэмэхийн тулд зөвхөн доорх жагсаалтад
+   нэг мөр нэмэхэд: карт, шүүлтүүр, тоолуур, угсрагчийн
+   сонголт, хураангуй хүснэгт бүгд өөрөө шинэчлэгдэнэ.
+   талбарууд: n=дугаар, id=түлхүүр, en/mn=нэр, c=ангилал,
+   a=хөдөлгөөнт анги, sp=хурд(1-3), k=хайлтын түлхүүр үгс,
+   p=англи промт, t=монгол тайлбар
+   ═══════════════════════════════════════════════════════════ */
+const CATS = {
+  pan:   "Pan / Tilt",
+  zoom:  "Zoom / Линз",
+  dolly: "Dolly / Дагах",
+  phys:  "Биет хөдөлгөөн",
+  human: "Гар камер",
+  drone: "Дрон / Кран",
+  sp:    "Тусгай"
+};
+const TEMPO = {1:"Удаан",2:"Дунд",3:"Хурдан"};
+
+const MOVES = [
+{n:"01",id:"static",en:"Static shot",mn:"Хөдөлгөөнгүй кадр",c:"pan",a:"",sp:1,k:"тогтмол суурин бэхэлсэн locked off яриа ярилцлага",
+p:"static locked-off shot, the camera stays completely fixed for the whole clip, no pan, no zoom, no drift, composition and horizon remain identical from the first frame to the last.",
+t:"Камер огт хөдөлдөггүй. <b>Хэзээ:</b> тайван яриа, ажиглалт, эсвэл кадр доторх хөдөлгөөнийг өөрийг нь онцлохдоо."},
+{n:"02",id:"pan-right",en:"Pan right",mn:"Баруун pan",c:"pan",a:"swp eq",sp:2,k:"эргэх орчин танилцуулах хажуу",
+p:"pan right, the camera rotates smoothly to the right from a fixed position, steady even rotation, horizon stays level as new space appears from the right, ending settled on a clean final frame.",
+t:"Нэг цэг дээрээс баруун тийш эргэнэ. <b>Хэзээ:</b> орчноо танилцуулах, хоёр объектыг нэг кадрт холбоход."},
+{n:"03",id:"pan-left",en:"Pan left",mn:"Зүүн pan",c:"pan",a:"swp eq rev",sp:2,k:"эргэх орчин танилцуулах хажуу",
+p:"pan left, the camera rotates smoothly to the left from a fixed position, steady even rotation, horizon stays level as new space appears from the left, ending settled on a clean final frame.",
+t:"Нэг цэг дээрээс зүүн тийш эргэнэ. <b>Хэзээ:</b> баруун pan-тай адил, зүгээр л эсрэг чиглэлд."},
+{n:"04",id:"whip-pan-right",en:"Whip pan right",mn:"Огцом эргэлт (баруун)",c:"pan",a:"swp eq whip",sp:3,k:"хурдан бүдгэрэлт шилжилт монтаж экшн",
+p:"fast whip pan to the right, the camera snaps rapidly toward a new target with brief motion blur mid-move, starting on one clear composition and landing sharply on the next.",
+t:"Маш хурдан эргэлт, дундаа бүдэг зурвас үүснэ. <b>Хэзээ:</b> хоёр үзэгдлийг эрч хүчтэй холбох шилжилт, экшн, комеди."},
+{n:"05",id:"whip-pan-left",en:"Whip pan left",mn:"Огцом эргэлт (зүүн)",c:"pan",a:"swp eq whip rev",sp:3,k:"хурдан бүдгэрэлт шилжилт монтаж экшн",
+p:"fast whip pan to the left, the camera snaps rapidly toward a new target with brief motion blur mid-move, starting on one clear composition and landing sharply on the next.",
+t:"Огцом эргэлтийн зүүн хувилбар. <b>Хэзээ:</b> монтажийн шилжилт, эргэн дурсамж руу орох мөчид."},
+{n:"06",id:"tilt-up",en:"Tilt up",mn:"Дээш tilt",c:"pan",a:"vrt",sp:2,k:"өнгийх дээш барилга уул сүрлэг",
+p:"tilt up, the camera rotates upward from a fixed position, smooth constant tilt, the tall subject stays centered as the frame climbs, ending on the upper target.",
+t:"Камер доороос дээш өнгийнө. <b>Хэзээ:</b> барилга, уул, дүрийг сүрлэг, том харагдуулах."},
+{n:"07",id:"tilt-down",en:"Tilt down",mn:"Доош tilt",c:"pan",a:"vrt rev",sp:2,k:"өнгийх доош газар деталь",
+p:"tilt down, the camera rotates downward from a fixed position, smooth constant tilt, the vertical subject stays centered as the frame descends, ending on the lower target.",
+t:"Дээрээс доош өнгийнө. <b>Хэзээ:</b> дүрийг жижиг, эмзэг харагдуулах, газрын дэлгэрэнгүйг илчлэх."},
+{n:"08",id:"slow-zoom-in",en:"Slow zoom in",mn:"Удаан zoom in",c:"zoom",a:"zm",sp:1,k:"ойртох линз томсгох сэтгэл хөдлөл",
+p:"slow zoom in, the lens focal length increases gradually and evenly, the main subject grows larger while staying sharp and readable, ending on a stable tighter frame.",
+t:"Линз аажмаар ойртуулна. <b>Хэзээ:</b> анхаарлыг нэг цэгт төвлөрүүлэх, сэтгэл хөдлөл, нууцлаг мэдрэмж нэмэхэд."},
+{n:"09",id:"slow-zoom-out",en:"Slow zoom out",mn:"Удаан zoom out",c:"zoom",a:"zm rev",sp:1,k:"холдох линз ганцаардал өргөн",
+p:"slow zoom out, the lens focal length decreases gradually and evenly, the main subject stays readable as more surrounding space appears, ending on a stable wider frame.",
+t:"Линз аажмаар холдуулна. <b>Хэзээ:</b> дүрийг орчинтой нь харьцуулж ганцаардал, цар хүрээг мэдрүүлэх."},
+{n:"10",id:"fast-zoom-in",en:"Fast zoom in",mn:"Хурдан zoom in",c:"zoom",a:"zm zfast",sp:3,k:"ойртох хурдан нээлт деталь",
+p:"fast zoom in, the lens pushes quickly toward the main subject, decisive rapid zoom, the target stays centered through the scale change, ending on a stable tighter frame.",
+t:"Шийдэмгий хурдан ойртолт. <b>Хэзээ:</b> гэнэтийн нээлт, чухал деталь руу үсрэх мөчид."},
+{n:"11",id:"fast-zoom-out",en:"Fast zoom out",mn:"Хурдан zoom out",c:"zoom",a:"zm zfast rev",sp:3,k:"холдох хурдан илчлэх",
+p:"fast zoom out, the lens pulls quickly away from the main subject, decisive rapid zoom, the target stays readable as the wider space appears, ending on a stable wider frame.",
+t:"Хурдан холдолт. <b>Хэзээ:</b> нөхцөл байдлын бүрэн дүр зургийг огцом илчлэхэд."},
+{n:"12",id:"crash-zoom-in",en:"Crash zoom in",mn:"Crash zoom in",c:"zoom",a:"zm zcrash",sp:3,k:"цохилт аниме экшн драм хошин",
+p:"aggressive crash zoom in, the lens punches toward the subject almost instantly, very fast and punchy, landing hard on a tight dramatic close frame.",
+t:"Бараг агшин зуурын цохилттой zoom. <b>Хэзээ:</b> аниме, экшн, драмын оргил мөч, хошин эффектэд их хэрэглэгддэг."},
+{n:"13",id:"crash-zoom-out",en:"Crash zoom out",mn:"Crash zoom out",c:"zoom",a:"zm zcrash rev",sp:3,k:"цохилт огцом масштаб",
+p:"aggressive crash zoom out, the lens snaps away from the subject almost instantly, very fast and punchy, landing hard on a bold wide frame.",
+t:"Огцом холдолт. <b>Хэзээ:</b> \"хаана байгаагаа хар\" гэсэн мэдрэмж, гэнэтийн масштабын илчлэлт."},
+{n:"14",id:"dolly-in",en:"Dolly in",mn:"Dolly in — урагшлах",c:"dolly",a:"zm dolly",sp:2,k:"урагшлах гүн параллакс ойртох",
+p:"dolly in, the camera physically moves forward in a straight line toward the subject, smooth constant push, height and lens direction stay locked, ending on a closer frame with natural parallax depth.",
+t:"Zoom-оос ялгаатай нь камер <b>өөрөө</b> урагшилдаг тул орон зайн гүн (parallax) мэдрэгдэнэ. <b>Хэзээ:</b> дүрийн дотоод ертөнц рүү \"орох\" мэдрэмж."},
+{n:"15",id:"dolly-out",en:"Dolly out",mn:"Dolly out — ухрах",c:"dolly",a:"zm dolly rev",sp:2,k:"ухрах холдох төгсгөл ганцаардал",
+p:"dolly out, the camera physically moves backward in a straight line away from the subject, smooth constant retreat, height and lens direction stay locked, ending on a wider frame as the environment opens up.",
+t:"Камер өөрөө ухарна. <b>Хэзээ:</b> дүрээс сэтгэл зүйн хувьд холдох, ганцаардал, төгсгөлийн кадр."},
+{n:"16",id:"truck-right",en:"Truck right",mn:"Баруун truck",c:"phys",a:"swp",sp:2,k:"хажуу шилжилт параллакс давхарга",
+p:"truck right, the camera slides horizontally to the right while the lens keeps facing the same direction, steady lateral travel, scene layers drift across the frame with parallax, ending on a clean lateral composition.",
+t:"Камер хажуу тийшээ зөөгдөнө (эргэдэггүй!). <b>Хэзээ:</b> орчны давхаргуудыг гүнтэй харуулах, хананы цаана юу байгааг илчлэх."},
+{n:"17",id:"truck-left",en:"Truck left",mn:"Зүүн truck",c:"phys",a:"swp rev",sp:2,k:"хажуу шилжилт параллакс давхарга",
+p:"truck left, the camera slides horizontally to the left while the lens keeps facing the same direction, steady lateral travel, scene layers drift across the frame with parallax, ending on a clean lateral composition.",
+t:"Хажуу шилжилтийн зүүн хувилбар. <b>Хэзээ:</b> баруун truck-тай адил."},
+{n:"18",id:"pedestal-up",en:"Pedestal up",mn:"Pedestal up — босоо өргөлт",c:"phys",a:"vrt ped",sp:2,k:"босоо өргөх дээш шилжих",
+p:"pedestal up, the whole camera rises straight up in a vertical line, the lens stays level and pointed forward, smooth constant lift, ending with the higher framing clearly readable.",
+t:"Камер бүхэлдээ дээш өргөгдөнө (tilt шиг эргэдэггүй). <b>Хэзээ:</b> ширээн дээрх зүйлээс дүрийн нүүр рүү шилжих гэх мэт."},
+{n:"19",id:"pedestal-down",en:"Pedestal down",mn:"Pedestal down — босоо буулт",c:"phys",a:"vrt ped rev",sp:2,k:"босоо буух доош шилжих",
+p:"pedestal down, the whole camera descends straight down in a vertical line, the lens stays level and pointed forward, smooth constant descent, ending with the lower framing clearly readable.",
+t:"Камер бүхэлдээ доош буана. <b>Хэзээ:</b> нүүрнээс гар дахь зүйл рүү анхаарал шилжүүлэх."},
+{n:"20",id:"slider-right",en:"Slider right",mn:"Баруун slider",c:"phys",a:"swp sm",sp:1,k:"богино гулсалт ярилцлага бүтээгдэхүүн",
+p:"short slider move to the right, the camera glides a small distance sideways, slow and precise motion, foreground and background separate softly through parallax, ending on a refined composition.",
+t:"Богино, нарийн гулсалт. <b>Хэзээ:</b> ярилцлага, бүтээгдэхүүний кадр, тайван үзэгдэлд \"амьд\" мэдрэмж нэмэх."},
+{n:"21",id:"slider-left",en:"Slider left",mn:"Зүүн slider",c:"phys",a:"swp sm rev",sp:1,k:"богино гулсалт ярилцлага бүтээгдэхүүн",
+p:"short slider move to the left, the camera glides a small distance sideways, slow and precise motion, foreground and background separate softly through parallax, ending on a refined composition.",
+t:"Богино гулсалтын зүүн хувилбар. <b>Хэзээ:</b> баруун slider-тай адил, тайван кадрт амь оруулна."},
+{n:"22",id:"push-past",en:"Push past",mn:"Push past — дэргэдүүр нэвтрэх",c:"phys",a:"pushfx",sp:2,k:"шургах урд тал илчлэх орох кадр",
+p:"push past, the camera glides forward past a close foreground object or opening, the foreground sweeps close by the lens edge, revealing the clear space beyond, ending inside or past the foreground layer.",
+t:"Урд талын объектын хажуугаар \"шургаж\" гарна. <b>Хэзээ:</b> шинэ орон зайг илчлэх, кинематик орох кадр."},
+{n:"23",id:"arc-right",en:"Arc right",mn:"Баруун arc — нум зам",c:"phys",a:"swp arc",sp:2,k:"нум хагас тойрох өнцөг",
+p:"arc right, the camera travels on a shallow curved path around the subject toward their right side, distance and height stay constant, ending on a fresh angle of the same subject.",
+t:"Дүрийн эргэн тойронд нум замаар хагас тойрно. <b>Хэзээ:</b> дүрийг шинэ өнцгөөс, гүнтэйгээр харуулах."},
+{n:"24",id:"arc-left",en:"Arc left",mn:"Зүүн arc — нум зам",c:"phys",a:"swp arc rev",sp:2,k:"нум хагас тойрох өнцөг",
+p:"arc left, the camera travels on a shallow curved path around the subject toward their left side, distance and height stay constant, ending on a fresh angle of the same subject.",
+t:"Нум замын зүүн хувилбар. <b>Хэзээ:</b> баруун arc-тай адил, эсрэг чиглэлээс."},
+{n:"25",id:"orbit-cw",en:"Orbit clockwise",mn:"Цагийн зүүний дагуу orbit",c:"phys",a:"lp",sp:2,k:"тойрох эргэлдэх баатарлаг кинематик 360",
+p:"clockwise orbit around the subject, the camera circles at a constant radius and height, the subject stays centered while the background rotates behind them, completing a smooth continuous arc.",
+t:"Дүрийг бүтэн тойрно, дүр төвдөө хөдөлгөөнгүй. <b>Хэзээ:</b> баатарлаг мөч, чухал шийдвэрийн агшин — хамгийн \"кинематик\" хөдөлгөөнүүдийн нэг."},
+{n:"26",id:"orbit-ccw",en:"Orbit counterclockwise",mn:"Цагийн зүүний эсрэг orbit",c:"phys",a:"lp rev",sp:2,k:"тойрох эргэлдэх баатарлаг кинематик 360",
+p:"counterclockwise orbit around the subject, the camera circles at a constant radius and height, the subject stays centered while the background rotates behind them, completing a smooth continuous arc.",
+t:"Тойролтын эсрэг чиглэлийн хувилбар. <b>Хэзээ:</b> цагийн зүүний дагуу orbit-тай адил."},
+{n:"27",id:"tracking",en:"Tracking shot",mn:"Tracking — хамт хөдлөх",c:"dolly",a:"lp",sp:2,k:"дагах хамт явах аялал зам",
+p:"tracking shot, the camera travels through the scene together with the moving subject, matching their pace, the subject stays consistently readable while the environment streams past around them.",
+t:"Хөдөлж буй дүртэй хамт явна. <b>Хэзээ:</b> аялал, замын кадр, дүрийн хөдөлгөөнийг үзэгчид мэдрүүлэх."},
+{n:"28",id:"follow",en:"Follow shot",mn:"Ард нь дагах",c:"dolly",a:"lp sway",sp:2,k:"ард дагах мөр тоглоом адал явдал",
+p:"follow shot from behind at shoulder height, the camera trails the subject along their path matching their pace, back and shoulders lead the frame while the route ahead stays visible.",
+t:"Мөрний өндрөөс ард нь дагана. <b>Хэзээ:</b> үзэгчийг дүрийн \"аялалд\" оруулах — тоглоом, адал явдалт кинонд түгээмэл."},
+{n:"29",id:"reverse-tracking",en:"Reverse tracking",mn:"Урдаас ухарч дагах",c:"dolly",a:"lp rev",sp:2,k:"урдаас ухрах нүүр яриатай алхалт",
+p:"reverse tracking shot, the camera moves backward directly in front of the walking subject at matching pace, face and upper body stay stable in frame while the background recedes behind them.",
+t:"Алхаж буй дүрийн урдаас ухарна — нүүр нь тод харагдана. <b>Хэзээ:</b> яриатай алхалт (walk-and-talk), сэтгэл хөдлөлийг нүүрнээс нь уншуулах."},
+{n:"30",id:"side-tracking",en:"Side tracking",mn:"Хажуугаас дагах",c:"dolly",a:"lp fast",sp:3,k:"хажуу зэрэгцэх гүйлт уралдаан",
+p:"side tracking shot, the camera moves parallel beside the subject along their direction of travel, profile view at a constant distance, strong horizontal motion in the background.",
+t:"Хажуугаас нь зэрэгцэн дагана. <b>Хэзээ:</b> гүйлт, уралдаан, эрч хүчтэй хөдөлгөөнийг онцлох."},
+{n:"31",id:"low-tracking",en:"Low tracking",mn:"Намхан дагалт",c:"dolly",a:"lp low",sp:3,k:"намхан газар хурд аюул",
+p:"low tracking shot near ground level, the camera skims alongside the subject's footsteps or wheels, the ground plane rushes through the frame, the low perspective stays clearly maintained.",
+t:"Газартай шахуу намхан өнцгөөс дагана. <b>Хэзээ:</b> хурд, аюул, эрч хүчийг газрын хөдөлгөөнөөр мэдрүүлэх."},
+{n:"32",id:"vehicle-tracking",en:"Vehicle tracking",mn:"Тээвэр дагах",c:"dolly",a:"lp fast",sp:3,k:"машин морь мотоцикл зам хурд",
+p:"vehicle tracking shot, the camera travels with the moving vehicle along its route at matching speed, the vehicle stays stable in frame while the road and environment sweep past.",
+t:"Машин, морь, мотоциклтой хамт хөдөлнө. <b>Хэзээ:</b> замын үзэгдэл, хөөцөлдөөний өмнөх хурдны мэдрэмж."},
+{n:"33",id:"chase",en:"Chase shot",mn:"Хөөцөлдөөний кадр",c:"dolly",a:"lp fast shake",sp:3,k:"хөөцөлдөх зугтах адреналин экшн",
+p:"chase shot, the camera pursues the moving subject fast and physically close, energetic reactive reframing allowed, staying locked on the action throughout.",
+t:"Хурдан, ойрхон, бага зэрэг сэгсэрдэг. <b>Хэзээ:</b> хөөцөлдөөн, зугталт — адреналин шаардсан бүх үзэгдэлд."},
+{n:"34",id:"handheld",en:"Handheld shot",mn:"Гар камер",c:"human",a:"shake",sp:2,k:"чичиргээ баримтат бодит айдас",
+p:"handheld shot at operator height, natural body sway and subtle micro shakes, the subject stays readable inside an organic slightly unstable frame, ending on a natural handheld composition.",
+t:"Хүний гарын байгалийн чичиргээтэй. <b>Хэзээ:</b> баримтат мэдрэмж, айдас, бодит байдал — үзэгчийг үйл явдлын \"дотор\" оруулна."},
+{n:"35",id:"snorricam",en:"Snorricam",mn:"Snorricam — биед бэхэлсэн",c:"human",a:"snorri",sp:2,k:"биед бэхлэх согтуурал сандрал хямрал",
+p:"body-mounted snorricam, the camera stays locked to the subject's torso facing them, the subject remains fixed and centered in frame while the world sways and moves behind them.",
+t:"Камер дүрийн биед бэхлэгдсэн тул дүр хөдөлгөөнгүй, ертөнц нь эргэлдэнэ. <b>Хэзээ:</b> согтуурал, сандрал, сэтгэл зүйн хямралыг дүрслэх."},
+{n:"36",id:"crane-up",en:"Crane up",mn:"Кран дээш",c:"drone",a:"crane",sp:1,k:"кран дээш хөөрөх төгсгөл",
+p:"crane up, the camera rises smoothly upward through open air, slow controlled vertical lift, the scene scale expands below, ending on a high commanding view.",
+t:"Нээлттэй агаараар дээш хөөрнө. <b>Хэзээ:</b> үзэгдлийн төгсгөл, \"дэлхий үргэлжилсээр\" гэсэн мэдрэмж."},
+{n:"37",id:"crane-down",en:"Crane down",mn:"Кран доош",c:"drone",a:"crane rev",sp:1,k:"кран доош буух нээлт шумбах",
+p:"crane down, the camera descends smoothly through open air, slow controlled vertical drop, moving from the wide view down toward the subject, ending close to the destination.",
+t:"Өндрөөс дүр рүү буана. <b>Хэзээ:</b> киноны нээлт — том зургаас тодорхой дүр рүү \"шумбах\"."},
+{n:"38",id:"drone-push",en:"Drone push in",mn:"Дрон урагшлах",c:"drone",a:"crane drone",sp:2,k:"дрон агаар нисэх байршил эпик",
+p:"aerial drone push in, the camera flies smoothly forward over the landscape toward the subject or destination, controlled aerial glide, ending on a closer aerial view of the target.",
+t:"Агаараас нисэн ойртоно. <b>Хэзээ:</b> байршил танилцуулах, аяллын кадр, эпик нээлт."},
+{n:"39",id:"drone-pull",en:"Drone pull back",mn:"Дрон ухрах",c:"drone",a:"crane drone rev",sp:2,k:"дрон агаар холдох эрх чөлөө",
+p:"aerial drone pull back, the camera flies smoothly backward away from the subject, controlled aerial retreat, more landscape appears around them, ending on a wide aerial view.",
+t:"Агаараас нисэн холдоно. <b>Хэзээ:</b> дүрийг асар том орчинд \"живүүлэх\" — ганцаардал, эрх чөлөө."},
+{n:"40",id:"helicopter",en:"Helicopter shot",mn:"Нисдэг тэрэгний кадр",c:"drone",a:"heli",sp:1,k:"нисдэг тэрэг өндөр уул хот тал",
+p:"high-altitude helicopter-style aerial shot, broad slow flight path over the landscape, steady controlled motion, the wide scale of the terrain stays clearly readable, ending on a stable high view.",
+t:"Маш өндрөөс өргөн замаар нисэлт. <b>Хэзээ:</b> уул нуруу, хот, тал нутгийн цар хүрээг харуулах эпик кадр."},
+{n:"41",id:"fpv",en:"First-person view",mn:"FPV — нэгдүгээр бие",c:"sp",a:"fpvfx",sp:2,k:"нүдээр pov тоглоом аймшиг",
+p:"first-person view at eye height, the camera moves as the character's own eyes along their path, natural walking rhythm with slight organic sway, arriving at the next point of action from the same viewpoint.",
+t:"Дүрийн нүдээр харна. <b>Хэзээ:</b> тоглоомын мэдрэмж, аймшиг, үзэгчийг шууд дүр болгох."},
+{n:"42",id:"tilt-shift",en:"Tilt-shift",mn:"Tilt-shift — миниатюр",c:"sp",a:"tsh",sp:1,k:"миниатюр тоглоом хот бүдгэрэлт",
+p:"tilt-shift miniature look from a high angle, a narrow band of sharp focus runs across the key subject area with soft blur above and below, tiny precise camera drift, the toy-scale illusion stays intact.",
+t:"Дээрээс харахад бүх зүйл тоглоом шиг жижигхэн харагдана. <b>Хэзээ:</b> хотын үзэгдэл, хөгжилтэй монтаж, цаг хугацааны шилжилт."},
+{n:"43",id:"infinite-zoom",en:"Infinite zoom",mn:"Төгсгөлгүй zoom",c:"sp",a:"infz",sp:3,k:"төгсгөлгүй мөрөөдөл шилжилт гүн",
+p:"infinite zoom, the camera dives continuously inward toward the exact center target with smooth accelerating motion, one visual world opens into the next as the center expands to fill the frame.",
+t:"Нэг зургийн төв рүү орсоор дараагийн ертөнцөд шилжинэ. <b>Хэзээ:</b> шилжилтийн эффект, мөрөөдөл, санах ойн гүн рүү орох."},
+{n:"44",id:"earth-zoom-out",en:"Earth zoom out",mn:"Дэлхийн zoom out",c:"sp",a:"earthz",sp:3,k:"дэлхий сансар масштаб төгсгөл",
+p:"earth zoom out, the camera pulls rapidly upward from the starting spot through rooftop, city, country and planet scale, the original location stays centered as the view expands, ending on a planet-wide frame.",
+t:"Нэг цэгээс дэлхийн хэмжээ хүртэл татагдана. <b>Хэзээ:</b> \"энэ бол зөвхөн эхлэл\" гэх масштабын эффект, төгсгөлийн кадр."},
+{n:"45",id:"time-lapse",en:"Time-lapse",mn:"Time-lapse — хугацааны шахалт",c:"sp",a:"tl",sp:3,k:"цаг хугацаа өдөр шөнө үүл",
+p:"locked-camera time-lapse, fixed framing while hours pass in seconds, light shifts and motion streak rapidly through an unchanging composition, ending from the same angle with visible passage of time.",
+t:"Камер хөдөлгөөнгүй, цаг хугацаа хурдан урсана. <b>Хэзээ:</b> өдөр шөнө солигдох, хотын амьдрал, хүлээлтийг товчлох."},
+{n:"46",id:"pass-through",en:"Pass-through",mn:"Нэвт гарах",c:"sp",a:"passt",sp:2,k:"нэвтрэх цонх хаалга ид шид",
+p:"pass-through move, the camera glides forward into a window, doorway or object surface and continues seamlessly into the space beyond it, the opening stays centered as the transition point.",
+t:"Цонх, хаалга, объектын \"дундуур\" нэвтэрнэ. <b>Хэзээ:</b> хоёр орон зайг ид шидтэйгээр холбох — аниме, уран зөгнөлт кинонд гоё."},
+{n:"47",id:"dolly-zoom",en:"Dolly zoom (Vertigo)",mn:"Dolly zoom — Vertigo эффект",c:"zoom",a:"zolly",sp:2,k:"vertigo zolly толгой эргэх сандрал хичкок",
+p:"dolly zoom vertigo effect, the camera moves forward while the lens zooms out at the same rate, the subject stays exactly the same size in frame while the background stretches and warps behind them, unsettling perspective shift.",
+t:"Камер урагшилж, линз нь зэрэг холддог тул дүр яг хэвээрээ, ард нь орон зай нь \"сунана\". <b>Хэзээ:</b> цочрол, айдас, ухаан алдах мэт мөч — Hitchcock-ийн сонгодог арга."},
+{n:"48",id:"rack-focus",en:"Rack focus",mn:"Rack focus — фокус шилжүүлэх",c:"sp",a:"rack",sp:1,k:"фокус бүдгэрэлт анхаарал шилжих гүн",
+p:"rack focus, the camera stays still while focus shifts from the foreground element to the subject behind it, the out-of-focus layer softens into creamy bokeh as the new plane becomes razor sharp.",
+t:"Камер хөдөлдөггүй, зөвхөн фокус нь урд талаас ар тал руу шилжинэ. <b>Хэзээ:</b> анхаарлыг чимээгүйхэн шилжүүлэх, хоёр зүйлийн хамаарлыг харуулах."},
+{n:"49",id:"dutch-roll",en:"Dutch angle roll",mn:"Голланд өнцөг — налуу эргэлт",c:"human",a:"dutch",sp:2,k:"налуу хазайх тэнцвэргүй сэтгэцийн түгшүүр",
+p:"dutch angle roll, the camera slowly rolls along the lens axis until the horizon sits noticeably tilted, the framing stays otherwise stable, creating an off-balance uneasy composition.",
+t:"Тэнгэрийн хаяа налуу болтол камер тэнхлэгээ тойрч эргэнэ. <b>Хэзээ:</b> түгшүүр, эмх замбараагүй байдал, дүрийн сэтгэл санааны тогтворгүй байдлыг илэрхийлэх."},
+{n:"50",id:"birds-eye",en:"Bird's eye view",mn:"Шувууны нүд — дээрээс",c:"drone",a:"bird",sp:1,k:"дээрээс top down хөндлөн хараа зураглал",
+p:"bird's eye view directly overhead, the camera looks straight down at the scene from high above, slow steady drift over the pattern below, the top-down geometry stays clearly readable.",
+t:"Яг дээрээс доош харна — бүх зүйл зураглал шиг харагдана. <b>Хэзээ:</b> байршлыг тайлбарлах, дүрийг \"хувь тавилангийн\" өнцгөөс харах, эмх цэгцтэй композици."},
+{n:"51",id:"worms-eye",en:"Worm's eye push",mn:"Өтний нүд — доороос",c:"phys",a:"worm",sp:2,k:"доороос намхан өнцөг хүч сүр",
+p:"worm's eye low angle push, the camera sits near the ground looking sharply upward at the subject and pushes slowly forward, the subject towers over the lens against the sky.",
+t:"Газраас дээш харан ойртоно — дүр асар том, хүчтэй харагдана. <b>Хэзээ:</b> баатрын гарц, дарангуйлагч дүр, хүч чадлыг онцлох."},
+{n:"52",id:"bullet-time",en:"Bullet time",mn:"Bullet time — хөлдсөн агшин",c:"sp",a:"bullet",sp:3,k:"матриц хөлдөх удаашрах эргэх 360",
+p:"bullet time shot, the action freezes almost completely while the camera sweeps rapidly around the subject in a wide arc, extreme slow motion in the scene with fast camera travel, ending back on a clean angle.",
+t:"Үйл явдал бараг хөлдөж, камер нь дүрийг эргэн тойрон хурдан гүйнэ. <b>Хэзээ:</b> тулааны оргил, ид шидийн агшин — \"Матриц\" маягийн эффект."},
+{n:"53",id:"hyperlapse",en:"Hyperlapse",mn:"Hyperlapse — хөдөлгөөнт time-lapse",c:"sp",a:"hyper",sp:3,k:"хурдасгасан хот аялал урсгал",
+p:"hyperlapse, the camera travels a long distance through the scene while time is heavily compressed, smooth accelerated motion with the main subject staying centered as the surroundings streak past.",
+t:"Time-lapse шиг хурдасгасан ч камер нь урт зам туулна. <b>Хэзээ:</b> хотын аялал, замын товчлол, эрч хүчтэй нээлтийн кадр."},
+{n:"54",id:"speed-ramp",en:"Speed ramp",mn:"Speed ramp — хурдны шилжилт",c:"sp",a:"ramp",sp:3,k:"удаанаас хурдан рамп монтаж хэмнэл",
+p:"speed ramp, the shot starts in slow motion then accelerates sharply to real time mid-move (or the reverse), the camera keeps a single continuous movement while the tempo changes.",
+t:"Нэг кадрын дотор удаанаас хурдан руу (эсвэл эсрэгээр) хурд огцом өөрчлөгдөнө. <b>Хэзээ:</b> хөгжмийн видео, спорт, экшний хэмнэл тогтоох."},
+{n:"55",id:"whip-tilt-up",en:"Whip tilt up",mn:"Огцом дээш эргэлт",c:"pan",a:"vrt whip",sp:3,k:"хурдан дээш бүдгэрэлт шилжилт",
+p:"fast whip tilt up, the camera snaps upward with brief motion blur mid-move, leaving the lower composition and landing sharply on the target above.",
+t:"Whip pan-ийн босоо хувилбар — доороос дээш огцом. <b>Хэзээ:</b> тэнгэр, барилгын орой руу эрч хүчтэй үсрэх, шилжилтийн цэг."},
+{n:"56",id:"whip-tilt-down",en:"Whip tilt down",mn:"Огцом доош эргэлт",c:"pan",a:"vrt whip rev",sp:3,k:"хурдан доош бүдгэрэлт шилжилт",
+p:"fast whip tilt down, the camera snaps downward with brief motion blur mid-move, leaving the upper composition and landing sharply on the target below.",
+t:"Огцом доош эргэх хөдөлгөөн. <b>Хэзээ:</b> тэнгэрээс газар руу, эсвэл нүүрнээс гар руу хурдан шилжих."},
+{n:"57",id:"ots-push",en:"Over-the-shoulder push",mn:"Мөрөн дээгүүрх ойртолт",c:"dolly",a:"ots",sp:1,k:"мөрөн дээгүүр ярианы кадр хоёр хүн",
+p:"over-the-shoulder shot pushing gently in, the near character's shoulder and head frame one side of the image in soft focus while the camera creeps toward the face of the person opposite.",
+t:"Нэг дүрийн мөрөн дээгүүр нөгөө рүү харна, аажим ойртоно. <b>Хэзээ:</b> хоёр хүний яриа, зөрчил, айлдвар — драмын үндсэн кадр."},
+{n:"58",id:"quake",en:"Earthquake shake",mn:"Газар хөдлөлтийн сэгсрэлт",c:"human",a:"quake",sp:3,k:"сэгсрэх дэлбэрэлт цохилт гамшиг",
+p:"violent camera shake, the whole frame jolts and vibrates as if the ground itself is moving, sharp irregular impacts with dust and debris trembling, the subject stays roughly centered through the chaos.",
+t:"Бүх кадр хүчтэй доргино. <b>Хэзээ:</b> дэлбэрэлт, газар хөдлөлт, аварга биетийн алхаа — гамшгийн үзэгдэл."},
+{n:"59",id:"pov-run",en:"Running POV",mn:"Гүйж буй POV",c:"human",a:"povrun",sp:3,k:"гүйх нүдээр pov зугтах амьсгаа",
+p:"running point-of-view shot, the camera moves fast at eye height with a strong rhythmic vertical bob of footsteps, the environment rushes past on both sides, breathless urgent motion.",
+t:"Гүйж буй хүний нүдээр — алхаа тутамд дээш доош үсэрнэ. <b>Хэзээ:</b> зугталт, хөөцөлдөөн, аймшиг — үзэгчийн зүрхийг дэлсэх кадр."},
+{n:"60",id:"reveal",en:"Reveal from foreground",mn:"Илчлэх кадр",c:"phys",a:"reveal",sp:2,k:"илчлэх нээх ард гарах хад мод",
+p:"reveal shot, the camera slides out from behind a foreground element such as a rock, wall or tree, the obstruction clears the frame and the main subject or landscape is revealed behind it.",
+t:"Хад, хана, модны ард гарч ирснээр гол дүр/байршил илчлэгдэнэ. <b>Хэзээ:</b> үзэгдлийн нээлт, гэнэтийн танилцуулга, кинематик эхлэл."}
+];
+
+/* ── хэрэгслийн формат (автомат тохируулга) ── */
+const TOOLS = {
+  gen:{name:"Ерөнхий (бүх хэрэгсэл)",
+    tip:"Ерөнхий формат: дүр → үйлдэл → байршил → камер → хэв маяг. Бараг бүх хэрэгсэлд ажиллана.",
+    neg:""},
+  kling:{name:"Kling AI",
+    tip:"Kling богино, тодорхой промт илүү дуртай. Нэг кадрт нэг л гол хөдөлгөөн үлдээ. Negative prompt-ыг тусад нь буулгана.",
+    neg:"blurry, distorted face, extra limbs, deformed hands, watermark, text, low quality, jitter"},
+  runway:{name:"Runway Gen-4",
+    tip:"Runway дээр камерын хөдөлгөөнөө промтын ЭХЭНД бичих нь илүү тогтвортой. Богино өгүүлбэр ашигла.",
+    neg:""},
+  veo:{name:"Google Veo",
+    tip:"Veo урт, дэлгэрэнгүй кино маягийн өгүүлбэрийг сайн ойлгодог. Гэрэл, линз, уур амьсгалыг нэмээрэй.",
+    neg:""},
+  sora:{name:"Sora",
+    tip:"Sora өгүүлэмжтэй, бүтэн өгүүлбэртэй тайлбарыг илүүд үздэг. Кадрын үргэлжлэх хугацааг дурдаж болно.",
+    neg:""},
+  higgs:{name:"Higgsfield",
+    tip:"Higgsfield дээр хөдөлгөөний нэрийг тод бичих нь чухал (жишээ: CRASH ZOOM IN). Preset-тэй нь давхар ашиглаж болно.",
+    neg:""},
+  seed:{name:"Seedance / Hailuo",
+    tip:"Seedance богино, шууд промтод сайн хариулдаг. Дүр + үйлдэл + камер гэсэн 3 хэсэгт багтаа.",
+    neg:"blurry, low quality, distorted, watermark"}
+};
+
+/* ── угсрагчийн сонголтууд ── */
+const TIMES = [
+  ["","— Цаг / гэрэл —"],
+  ["at golden hour, warm low sun","Алтан цаг (golden hour)"],
+  ["at blue hour, cool soft twilight","Хөх цаг (blue hour)"],
+  ["at midday, hard overhead sunlight","Үд дунд, хатуу гэрэл"],
+  ["at night under a sky full of stars","Оддын шөнө"],
+  ["at night, neon city lights","Шөнийн неон гэрэл"],
+  ["in thick morning fog","Өтгөн манан"],
+  ["during heavy snowfall","Цасан шуурга"],
+  ["during a rainstorm, wet reflective ground","Аадар бороо"],
+  ["in warm candlelight indoors","Лааны гэрэл (дотор)"]
+];
+const LENSES = [
+  ["","— Линз / хүрээ —"],
+  ["wide angle lens, deep focus","Өргөн өнцөг (wide)"],
+  ["24mm lens, natural perspective","24mm — байгалийн"],
+  ["50mm lens, human eye perspective","50mm — хүний нүд"],
+  ["85mm portrait lens, shallow depth of field","85mm — портрет, бүдэг ар тал"],
+  ["telephoto lens, compressed background","Телефото — шахсан ар тал"],
+  ["macro lens, extreme close detail","Макро — маш ойрын деталь"],
+  ["anamorphic lens, wide cinematic flares","Анаморфик — киноны эффект"]
+];
+const MOODS = [
+  ["","— Уур амьсгал —"],
+  ["epic and heroic mood","Эпик, баатарлаг"],
+  ["calm and meditative mood","Тайван, бясалгалт"],
+  ["tense and suspenseful mood","Хурцадмал, түгшүүртэй"],
+  ["melancholic and lonely mood","Гунигтай, ганцаардмал"],
+  ["warm and nostalgic mood","Дулаан, дурсамжтай"],
+  ["energetic and chaotic mood","Эрч хүчтэй, замбараагүй"],
+  ["mysterious and dreamlike mood","Нууцлаг, зүүд мэт"]
+];
+const STYLES = [
+  ["anime style, clean line art, vivid colors","Аниме"],
+  ["cinematic lighting, film grain, shallow depth of field","Кино гэрэлтүүлэг"],
+  ["photorealistic, natural light, ultra detailed","Бодит дүрслэл"],
+  ["slow motion, dreamy atmosphere","Удаан хөдөлгөөн"],
+  ["documentary style, natural colors","Баримтат"],
+  ["black and white, high contrast","Хар цагаан"],
+  ["traditional Mongolian aesthetic, deel costumes","Монгол өнгө аяс"],
+  ["8k, sharp details, high dynamic range","Өндөр нарийвчлал"]
+];
+const PICKS = {
+  "b-subject":["a lone horseman","a young woman in a traditional deel","an old herder","a running child","a wolf in the snow","an eagle in flight","a motorcyclist","a warrior in armor","a modern city crowd","a single ger on the plain"],
+  "b-action":["riding at full gallop","walking slowly","turning to look at the camera","standing still in the wind","drawing a bow","drinking hot tea","running through the crowd","raising their head to the sky","working by the fire"],
+  "b-place":["on the endless Mongolian steppe","in the Gobi desert","inside a traditional ger","on a snowy mountain ridge","on a neon-lit city street","by a frozen river","among tall grass","in an abandoned factory"]
+};
+
+/* ═══════════════════════════════════════════════════════════
+   2. ТУСЛАХ ФУНКЦУУД
+   ═══════════════════════════════════════════════════════════ */
+const $  = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+const byId = Object.fromEntries(MOVES.map((m,i)=>[m.id,i]));
+const stripTags = s => s.replace(/<[^>]+>/g,"");
+
+const LS = {
+  get(k,d){ try{ const v=localStorage.getItem("cm_"+k); return v===null?d:JSON.parse(v);}catch(e){return d} },
+  set(k,v){ try{ localStorage.setItem("cm_"+k,JSON.stringify(v)); }catch(e){} }
+};
+
+let favs = new Set(LS.get("favs",[]));
+const saveFavs = ()=>LS.set("favs",[...favs]);
+
+function toast(msg){
+  const t=$("#toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove("show"),1700);
+}
+async function copyText(txt,btn,label){
+  try{ await navigator.clipboard.writeText(txt); }
+  catch(e){
+    const ta=document.createElement("textarea");
+    ta.value=txt; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand("copy"); }catch(_){}
+    ta.remove();
+  }
+  if(btn){
+    const old=btn.textContent;
+    btn.textContent="Хуулагдлаа ✓"; btn.classList.add("done");
+    setTimeout(()=>{btn.textContent=old;btn.classList.remove("done")},1600);
+  }
+  toast(label||"Промт хуулагдлаа ✓");
+}
+const sceneHTML = (a,hud) => `
+  <div class="vf ${a} paused">
+    <div class="scene">
+      <div class="sky"></div><div class="sun"></div>
+      <div class="m1"></div><div class="m2"></div>
+      <div class="ground"></div><div class="subj"></div><div class="fg"></div>
+    </div>
+    <div class="hud"><span class="rec"></span>${hud||"REC"}</div>
+    <i class="cr tl"></i><i class="cr tr"></i><i class="cr bl"></i><i class="cr br"></i>
+  </div>`;
+
+/* ═══════════════════════════════════════════════════════════
+   3. САН — картууд, шүүлтүүр, эрэмбэ (бүгд автомат)
+   ═══════════════════════════════════════════════════════════ */
+const grid=$("#grid");
+
+function cardHTML(m,i){
+  return `
+    ${sceneHTML(m.a)}
+    <button class="star${favs.has(m.id)?" on":""}" data-fav="${m.id}" title="Дуртайд нэмэх" aria-label="Дуртайд нэмэх">★</button>
+    <div class="card-body">
+      <div class="card-meta">
+        <span>Кадр ${m.n}</span>
+        <span class="tag">${CATS[m.c]}</span>
+        <span class="tempo">${TEMPO[m.sp]}</span>
+      </div>
+      <h3>${m.mn}<small>${m.en}</small></h3>
+      <p class="expl">${m.t}</p>
+      <pre class="prompt">${m.p}</pre>
+      <div class="card-actions">
+        <button class="copy" data-copy="${m.id}">Промт хуулах</button>
+        <button class="ghost" data-open="${m.id}">Дэлгэрэнгүй</button>
+        <button class="ghost" data-use="${m.id}" title="Промт угсрагч руу илгээх">Угсрагчид →</button>
+      </div>
+    </div>`;
+}
+
+MOVES.forEach((m,i)=>{
+  const el=document.createElement("article");
+  el.className="card";
+  el.id="mv-"+m.id;
+  el.dataset.id=m.id;
+  el.dataset.cat=m.c;
+  el.dataset.sp=m.sp;
+  el.dataset.text=(m.en+" "+m.mn+" "+CATS[m.c]+" "+m.k+" "+stripTags(m.t)+" "+m.p).toLowerCase();
+  el.innerHTML=cardHTML(m,i);
+  grid.appendChild(el);
+});
+
+/* ── харагдаж буй картын хөдөлгөөнийг л ажиллуулна (гүйцэтгэл) ── */
+const io = ("IntersectionObserver" in window)
+  ? new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle("paused",!e.isIntersecting)),{rootMargin:"120px"})
+  : null;
+function observeAll(){ if(io) $$(".card .vf").forEach(v=>io.observe(v)); else $$(".card .vf").forEach(v=>v.classList.remove("paused")); }
+observeAll();
+
+/* ── шүүлтүүрийн чипүүд ── */
+const chipsEl=$("#chips"), chips2El=$("#chips2");
+const counts={all:MOVES.length};
+MOVES.forEach(m=>counts[m.c]=(counts[m.c]||0)+1);
+[["all","Бүгд"],...Object.entries(CATS)].forEach(([k,label],idx)=>{
+  const c=document.createElement("button");
+  c.className="chip"+(idx===0?" on":"");
+  c.dataset.cat=k;
+  c.innerHTML=`${label}<b>${counts[k]||0}</b>`;
+  chipsEl.appendChild(c);
+});
+const spCounts={};
+MOVES.forEach(m=>spCounts[m.sp]=(spCounts[m.sp]||0)+1);
+[["0","Бүх хурд"],["1",TEMPO[1]],["2",TEMPO[2]],["3",TEMPO[3]]].forEach(([k,label],idx)=>{
+  const c=document.createElement("button");
+  c.className="chip alt"+(idx===0?" on":"");
+  c.dataset.sp=k;
+  c.innerHTML=`${label}${k==="0"?"":`<b>${spCounts[k]||0}</b>`}`;
+  chips2El.appendChild(c);
+});
+const favChip=document.createElement("button");
+favChip.className="chip fav"; favChip.dataset.fav="1";
+favChip.innerHTML=`★ Дуртай<b id="fav-count">${favs.size}</b>`;
+chips2El.appendChild(favChip);
+
+const state={cat:"all",sp:"0",q:"",fav:false,sort:"def"};
+
+chipsEl.addEventListener("click",e=>{
+  const c=e.target.closest(".chip"); if(!c)return;
+  $$(".chip",chipsEl).forEach(x=>x.classList.remove("on"));
+  c.classList.add("on"); state.cat=c.dataset.cat; apply();
+});
+chips2El.addEventListener("click",e=>{
+  const c=e.target.closest(".chip"); if(!c)return;
+  if(c.dataset.fav){ state.fav=!state.fav; c.classList.toggle("on",state.fav); }
+  else{
+    $$(".chip.alt",chips2El).forEach(x=>x.classList.remove("on"));
+    c.classList.add("on"); state.sp=c.dataset.sp;
+  }
+  apply();
+});
+const q=$("#q");
+let qt; q.addEventListener("input",()=>{clearTimeout(qt);qt=setTimeout(()=>{state.q=q.value.trim().toLowerCase();apply()},130)});
+$("#sort").addEventListener("change",e=>{state.sort=e.target.value;apply()});
+
+const SORTS={
+  def:(a,b)=>a.n.localeCompare(b.n),
+  mn:(a,b)=>a.mn.localeCompare(b.mn,"mn"),
+  cat:(a,b)=>Object.keys(CATS).indexOf(a.c)-Object.keys(CATS).indexOf(b.c)||a.n.localeCompare(b.n),
+  sp:(a,b)=>a.sp-b.sp||a.n.localeCompare(b.n)
+};
+let visible=[];
+
+function apply(push=true){
+  const term=state.q;
+  visible=[];
+  $$(".card",grid).forEach(card=>{
+    const m=MOVES[byId[card.dataset.id]];
+    const okCat = state.cat==="all"||m.c===state.cat;
+    const okSp  = state.sp==="0"||String(m.sp)===state.sp;
+    const okFav = !state.fav||favs.has(m.id);
+    const okQ   = !term||card.dataset.text.includes(term);
+    const show  = okCat&&okSp&&okFav&&okQ;
+    card.style.display=show?"":"none";
+    if(show)visible.push(m);
+  });
+  /* эрэмбэ */
+  [...visible].sort(SORTS[state.sort]).forEach(m=>grid.appendChild($("#mv-"+m.id)));
+  $("#empty").style.display=visible.length?"none":"block";
+  $("#count").innerHTML=`<b style="color:var(--text)">${visible.length}</b> / ${MOVES.length} хөдөлгөөн харагдаж байна`;
+  $("#fav-count").textContent=favs.size;
+  if(push)syncURL();
+}
+
+/* ── URL синхрон (холбоосоор хуваалцах) ── */
+function syncURL(){
+  const p=new URLSearchParams();
+  if(state.cat!=="all")p.set("cat",state.cat);
+  if(state.sp!=="0")p.set("sp",state.sp);
+  if(state.q)p.set("q",state.q);
+  if(state.fav)p.set("fav","1");
+  if(state.sort!=="def")p.set("sort",state.sort);
+  const url=location.pathname+(p.toString()?"?"+p:"" )+location.hash;
+  history.replaceState(null,"",url);
+}
+function readURL(){
+  const p=new URLSearchParams(location.search);
+  state.cat=p.get("cat")||"all";
+  state.sp=p.get("sp")||"0";
+  state.q=(p.get("q")||"").toLowerCase();
+  state.fav=p.get("fav")==="1";
+  state.sort=p.get("sort")||"def";
+  q.value=state.q;
+  $("#sort").value=state.sort;
+  $$(".chip",chipsEl).forEach(c=>c.classList.toggle("on",c.dataset.cat===state.cat));
+  $$(".chip.alt",chips2El).forEach(c=>c.classList.toggle("on",c.dataset.sp===state.sp));
+  favChip.classList.toggle("on",state.fav);
+}
+readURL();
+apply(false);
+
+/* ── картын үйлдлүүд ── */
+grid.addEventListener("click",e=>{
+  const fav=e.target.closest("[data-fav]");
+  if(fav){
+    const id=fav.dataset.fav;
+    if(favs.has(id)){favs.delete(id);fav.classList.remove("on");toast("Дуртайгаас хаслаа")}
+    else{favs.add(id);fav.classList.add("on");toast("Дуртайд нэмлээ ★")}
+    saveFavs(); if(state.fav)apply(); else $("#fav-count").textContent=favs.size;
+    return;
+  }
+  const cp=e.target.closest("[data-copy]");
+  if(cp){ copyText(MOVES[byId[cp.dataset.copy]].p,cp); return; }
+  const op=e.target.closest("[data-open]");
+  if(op){ openModal(op.dataset.open); return; }
+  const us=e.target.closest("[data-use]");
+  if(us){ sendToBuilder(us.dataset.use); return; }
+});
+
+/* ── багажны мөр ── */
+$("#copy-all").addEventListener("click",e=>{
+  if(!visible.length){toast("Хуулах промт алга");return}
+  const txt=visible.map(m=>`# ${m.n}. ${m.mn} (${m.en})\n${m.p}`).join("\n\n");
+  copyText(txt,null,`${visible.length} промт хуулагдлаа ✓`);
+});
+$("#share").addEventListener("click",()=>copyText(location.href,null,"Холбоос хуулагдлаа ✓"));
+function resetAll(){
+  state.cat="all";state.sp="0";state.q="";state.fav=false;state.sort="def";
+  q.value="";$("#sort").value="def";
+  $$(".chip",chipsEl).forEach((c,i)=>c.classList.toggle("on",i===0));
+  $$(".chip.alt",chips2El).forEach((c,i)=>c.classList.toggle("on",i===0));
+  favChip.classList.remove("on");
+  apply();
+}
+$("#reset").addEventListener("click",resetAll);
+$("#empty-reset").addEventListener("click",resetAll);
+
+/* ═══════════════════════════════════════════════════════════
+   4. ДЭЛГЭРЭНГҮЙ ЦОНХ (холбоотой хөдөлгөөнийг автоматаар олно)
+   ═══════════════════════════════════════════════════════════ */
+const modal=$("#modal");
+function related(m){
+  const same=MOVES.filter(x=>x.c===m.c&&x.id!==m.id);
+  const pair=MOVES.filter(x=>x.id!==m.id&&(
+    x.en.replace(/(left|right|up|down|in|out|clockwise|counterclockwise)/gi,"").trim()===
+    m.en.replace(/(left|right|up|down|in|out|clockwise|counterclockwise)/gi,"").trim()));
+  return [...new Set([...pair,...same])].slice(0,5);
+}
+function openModal(id){
+  const m=MOVES[byId[id]];
+  $("#modal-content").innerHTML=`
+    ${sceneHTML(m.a,"REC · "+m.en.toUpperCase())}
+    <div class="modal-in">
+      <h3>${m.mn}<small>${m.en} · Кадр ${m.n}</small></h3>
+      <div class="kv">
+        <span>Ангилал: <b style="color:var(--daylight)">${CATS[m.c]}</b></span>
+        <span>Хурд: <b style="color:var(--tungsten)">${TEMPO[m.sp]}</b></span>
+      </div>
+      <p class="expl" style="color:var(--dim);font-size:14px">${m.t}</p>
+      <pre class="prompt">${m.p}</pre>
+      <div class="card-actions">
+        <button class="copy" data-copy="${m.id}">Промт хуулах</button>
+        <button class="ghost" data-use="${m.id}">Угсрагчид →</button>
+        <button class="ghost" data-fav="${m.id}">${favs.has(m.id)?"★ Дуртайд байна":"☆ Дуртайд нэмэх"}</button>
+      </div>
+      <div>
+        <p class="eyebrow" style="margin-bottom:8px">Холбоотой хөдөлгөөн</p>
+        <div class="rel">${related(m).map(r=>`<button data-open="${r.id}">${r.mn}</button>`).join("")}</div>
+      </div>
+    </div>`;
+  modal.classList.add("open");
+  document.body.style.overflow="hidden";
+  const v=$(".vf",modal); if(v)v.classList.remove("paused");
+}
+function closeModal(){ modal.classList.remove("open"); document.body.style.overflow=""; }
+$("#modal-close").addEventListener("click",closeModal);
+modal.addEventListener("click",e=>{
+  if(e.target===modal){closeModal();return}
+  const cp=e.target.closest("[data-copy]"); if(cp){copyText(MOVES[byId[cp.dataset.copy]].p,cp);return}
+  const us=e.target.closest("[data-use]"); if(us){closeModal();sendToBuilder(us.dataset.use);return}
+  const op=e.target.closest("[data-open]"); if(op){openModal(op.dataset.open);return}
+  const fv=e.target.closest("[data-fav]");
+  if(fv){
+    const id=fv.dataset.fav;
+    if(favs.has(id)){favs.delete(id);fv.textContent="☆ Дуртайд нэмэх"}
+    else{favs.add(id);fv.textContent="★ Дуртайд байна"}
+    saveFavs();
+    const s=$(`.card[data-id="${id}"] .star`); if(s)s.classList.toggle("on",favs.has(id));
+    $("#fav-count").textContent=favs.size; if(state.fav)apply();
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════
+   5. ПРОМТ УГСРАГЧ — автомат, хадгалагддаг
+   ═══════════════════════════════════════════════════════════ */
+const bMove=$("#b-move"), bMove2=$("#b-move2"), bTool=$("#b-tool"),
+      bSubject=$("#b-subject"), bAction=$("#b-action"), bPlace=$("#b-place"),
+      bTime=$("#b-time"), bLens=$("#b-lens"), bMood=$("#b-mood"),
+      bExtra=$("#b-extra"), bOut=$("#b-out"), bNeg=$("#b-neg");
+
+const optList = arr => arr.map(([v,l])=>`<option value="${v}">${l}</option>`).join("");
+const moveOpts = MOVES.map((m,i)=>`<option value="${m.id}">${m.n}. ${m.mn} (${m.en})</option>`).join("");
+bMove.innerHTML =`<option value="">— Хөдөлгөөн сонгох —</option>`+moveOpts;
+bMove2.innerHTML=`<option value="">— Байхгүй —</option>`+moveOpts;
+bTool.innerHTML = Object.entries(TOOLS).map(([k,t])=>`<option value="${k}">${t.name}</option>`).join("");
+bTime.innerHTML=optList(TIMES); bLens.innerHTML=optList(LENSES); bMood.innerHTML=optList(MOODS);
+$("#b-styles").innerHTML=STYLES.map(([v,l])=>`<label><input type="checkbox" class="b-style" value="${v}"> ${l}</label>`).join("");
+$$(".picks").forEach(box=>{
+  const target=box.dataset.for;
+  box.innerHTML=(PICKS[target]||[]).map(p=>`<button type="button" class="pick" data-t="${target}" data-v="${p}">${p}</button>`).join("");
+});
+document.addEventListener("click",e=>{
+  const p=e.target.closest(".pick"); if(!p)return;
+  const inp=$("#"+p.dataset.t);
+  inp.value = inp.value.trim() ? inp.value.trim().replace(/,\s*$/,"")+", "+p.dataset.v : p.dataset.v;
+  build();
+});
+
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+/* богиносгосон камерын өгүүлбэр — Kling/Seedance зэрэг богино промт дуртай хэрэгслүүдэд */
+function shortP(m){ return m.p.split(", ").slice(0,2).join(", "); }
+/* блокуудыг зөв цэг таслалтай нийлүүлнэ */
+function joinBlocks(blocks){
+  return blocks
+    .map(b=>(b||"").trim().replace(/[.,\s]+$/,""))
+    .filter(Boolean)
+    .map(cap)
+    .join(". ")+".";
+}
+
+function build(save=true){
+  const tool=TOOLS[bTool.value]||TOOLS.gen;
+  $("#tool-tip").textContent="💡 "+tool.tip;
+
+  const m1 = bMove.value ? MOVES[byId[bMove.value]] : null;
+  let   m2 = bMove2.value ? MOVES[byId[bMove2.value]] : null;
+  if(m1&&m2&&m2.id===m1.id) m2=null;   /* ижил хөдөлгөөнийг давхардуулахгүй */
+
+  if(!m1){
+    bOut.textContent="Эхлээд хөдөлгөөнөө сонгоорой…";
+    bNeg.style.display="none"; $("#b-copy-neg").style.display="none";
+    $("#b-count").textContent="0 тэмдэгт";
+    if(save)saveBuilder();
+    return;
+  }
+
+  /* дүр зургийн өгүүлбэр */
+  const subj=bSubject.value.trim(), act=bAction.value.trim(), place=bPlace.value.trim();
+  let scene=[subj,act,place].filter(Boolean).join(" ");
+  const context=[bTime.value,bMood.value].filter(Boolean).join(", ");
+  const look=[...$$(".b-style:checked")].map(x=>x.value);
+  if(bLens.value)look.unshift(bLens.value);
+  const extra=bExtra.value.trim();
+
+  /* камерын хэсэг (богино / бүтэн хувилбар) */
+  const compact = (bTool.value==="kling"||bTool.value==="seed");
+  let cam = (compact ? shortP(m1) : m1.p).replace(/[.\s]+$/,"");
+  if(m2) cam += ", at the same time "+shortP(m2).replace(/[.\s]+$/,"");
+
+  const sceneCtx=[scene,context].filter(Boolean).join(", ");
+  /* линз, хэв маягийн давхардсан хэллэгийг автоматаар цэвэрлэнэ */
+  const lookTxt=[...new Set(look.join(", ").split(/,\s*/).map(s=>s.trim()).filter(Boolean))].join(", ");
+  let blocks;
+  switch(bTool.value){
+    case "runway":              /* камерын хөдөлгөөн эхэнд */
+      blocks=[cam,scene,context,lookTxt]; break;
+    case "kling": case "seed":  /* богино, шахсан */
+      blocks=[sceneCtx,cam,lookTxt]; break;
+    case "higgs":               /* хөдөлгөөний нэрийг тодруулна */
+      blocks=[`[${m1.en.toUpperCase()}]${m2?" + ["+m2.en.toUpperCase()+"]":""}`,scene,cam,context,lookTxt]; break;
+    case "veo": case "sora":    /* кино маягийн бүтэн өгүүлбэр */
+      blocks=[sceneCtx,cam,lookTxt]; break;
+    default:
+      blocks=[scene,context,cam,lookTxt];
+  }
+  if(extra)blocks.push(extra);
+  const out=joinBlocks(blocks).replace(/\s+/g," ");
+
+  bOut.textContent=out;
+  $("#b-count").textContent=out.length+" тэмдэгт";
+  if(tool.neg){
+    bNeg.textContent="Negative prompt: "+tool.neg;
+    bNeg.style.display=""; $("#b-copy-neg").style.display="";
+  }else{
+    bNeg.style.display="none"; $("#b-copy-neg").style.display="none";
+  }
+  if(save)saveBuilder();
+}
+
+function saveBuilder(){
+  LS.set("builder",{
+    move:bMove.value,move2:bMove2.value,tool:bTool.value,
+    subject:bSubject.value,action:bAction.value,place:bPlace.value,
+    time:bTime.value,lens:bLens.value,mood:bMood.value,extra:bExtra.value,
+    styles:[...$$(".b-style:checked")].map(x=>x.value)
+  });
+}
+function loadBuilder(){
+  const d=LS.get("builder",null); if(!d)return;
+  bMove.value=d.move||"";bMove2.value=d.move2||"";bTool.value=d.tool||"gen";
+  bSubject.value=d.subject||"";bAction.value=d.action||"";bPlace.value=d.place||"";
+  bTime.value=d.time||"";bLens.value=d.lens||"";bMood.value=d.mood||"";bExtra.value=d.extra||"";
+  (d.styles||[]).forEach(v=>{const c=$$(".b-style").find(x=>x.value===v); if(c)c.checked=true});
+}
+loadBuilder();
+build(false);
+
+[bMove,bMove2,bTool,bTime,bLens,bMood].forEach(el=>el.addEventListener("change",()=>build()));
+[bSubject,bAction,bPlace,bExtra].forEach(el=>el.addEventListener("input",()=>build()));
+document.addEventListener("change",e=>{ if(e.target.classList.contains("b-style"))build(); });
+
+function sendToBuilder(id){
+  bMove.value=id; build();
+  document.getElementById("builder").scrollIntoView({behavior:"smooth"});
+  toast(MOVES[byId[id]].mn+" — угсрагчид нэмлээ");
+}
+
+$("#b-copy").addEventListener("click",e=>{
+  if(!bMove.value){toast("Эхлээд хөдөлгөөнөө сонго");return}
+  copyText(bOut.textContent,e.target);
+});
+$("#b-copy-neg").addEventListener("click",()=>{
+  const t=TOOLS[bTool.value]; if(t&&t.neg)copyText(t.neg,null,"Negative prompt хуулагдлаа ✓");
+});
+$("#b-dice").addEventListener("click",()=>{
+  const rnd=a=>a[Math.floor(Math.random()*a.length)];
+  bMove.value=rnd(MOVES).id;
+  bSubject.value=rnd(PICKS["b-subject"]);
+  bAction.value=rnd(PICKS["b-action"]);
+  bPlace.value=rnd(PICKS["b-place"]);
+  bTime.value=rnd(TIMES.slice(1))[0];
+  bMood.value=rnd(MOODS.slice(1))[0];
+  bLens.value=rnd(LENSES.slice(1))[0];
+  $$(".b-style").forEach(c=>c.checked=false);
+  const s=rnd(STYLES)[0]; const c=$$(".b-style").find(x=>x.value===s); if(c)c.checked=true;
+  build(); toast("Санамсаргүй санаа бэлэн 🎲");
+});
+$("#b-save").addEventListener("click",()=>{
+  if(!bMove.value){toast("Эхлээд хөдөлгөөнөө сонго");return}
+  const t=TOOLS[bTool.value];
+  const body=bOut.textContent+(t&&t.neg?"\n\nNegative prompt: "+t.neg:"")+"\n";
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([body],{type:"text/plain;charset=utf-8"}));
+  a.download="camera-prompt-"+(bMove.value||"shot")+".txt";
+  a.click(); URL.revokeObjectURL(a.href);
+  toast("Файл татагдлаа ⬇");
+});
+$("#b-clear").addEventListener("click",()=>{
+  bMove.value="";bMove2.value="";bSubject.value="";bAction.value="";bPlace.value="";
+  bTime.value="";bLens.value="";bMood.value="";bExtra.value="";
+  $$(".b-style").forEach(c=>c.checked=false);
+  build(); toast("Цэвэрлэлээ");
+});
+
+/* ═══════════════════════════════════════════════════════════
+   6. ХУРААНГУЙ ХҮСНЭГТ (өгөгдлөөс автоматаар)
+   ═══════════════════════════════════════════════════════════ */
+$("#sheet-body").innerHTML=Object.entries(CATS).map(([k,label])=>{
+  const rows=MOVES.filter(m=>m.c===k).map(m=>`
+    <tr data-open="${m.id}">
+      <td class="n">${m.n}</td>
+      <td class="mn">${m.mn}<i>${m.en}</i></td>
+      <td class="use">${stripTags(m.t).replace(/^.*?Хэзээ:\s*/,"")}</td>
+    </tr>`).join("");
+  return `<div class="sheet-cat"><h3>${label} <span style="color:var(--dim);font-weight:400">· ${counts[k]||0}</span></h3><table><tbody>${rows}</tbody></table></div>`;
+}).join("");
+$("#sheet-body").addEventListener("click",e=>{
+  const tr=e.target.closest("[data-open]"); if(tr)openModal(tr.dataset.open);
+});
+$("#print").addEventListener("click",()=>window.print());
+
+/* ═══════════════════════════════════════════════════════════
+   7. HERO — автомат демо, статистик
+   ═══════════════════════════════════════════════════════════ */
+$("#s-moves").textContent=MOVES.length;
+$("#hero-count").textContent=MOVES.length;
+$("#s-cats").textContent=Object.keys(CATS).length;
+$("#s-tools").textContent=Object.keys(TOOLS).length;
+
+const HERO_DEMO=["orbit-cw","dolly-in","crane-up","whip-pan-right","dolly-zoom","drone-push","handheld","bullet-time"];
+const heroVf=$("#hero-vf");
+let heroIdx=0, heroTimer=null;
+function heroShow(i){
+  const m=MOVES[byId[HERO_DEMO[i%HERO_DEMO.length]]];
+  heroVf.className="vf "+m.a;
+  $("#hero-hud").textContent="REC · "+m.en.toUpperCase();
+  $("#hero-cap").textContent=m.en.toUpperCase()+" — "+m.mn;
+}
+function heroStart(){
+  heroShow(heroIdx);
+  clearInterval(heroTimer);
+  heroTimer=setInterval(()=>{heroIdx++;heroShow(heroIdx)},5200);
+}
+heroStart();
+$("#hero-random").addEventListener("click",()=>{
+  const m=MOVES[Math.floor(Math.random()*MOVES.length)];
+  resetAll(); openModal(m.id);
+});
+
+/* ═══════════════════════════════════════════════════════════
+   8. ХӨДӨЛГӨӨНИЙ ТОГЛУУЛАГЧ, ГАРЫН ХОВЛОЛТ, БУСАД
+   ═══════════════════════════════════════════════════════════ */
+const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let motionOn=LS.get("motion",!reduce);
+function applyMotion(){
+  document.body.classList.toggle("nomotion",!motionOn);
+  const b=$("#motion-toggle");
+  b.textContent=motionOn?"⏸ Хөдөлгөөн":"▶ Хөдөлгөөн";
+  b.classList.toggle("on",!motionOn);
+  if(motionOn)heroStart(); else clearInterval(heroTimer);
+}
+applyMotion();
+$("#motion-toggle").addEventListener("click",()=>{motionOn=!motionOn;LS.set("motion",motionOn);applyMotion()});
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"&&modal.classList.contains("open")){closeModal();return}
+  const typing=/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);
+  if(typing)return;
+  if(e.key==="/"){e.preventDefault();q.focus();q.select()}
+  if(e.key.toLowerCase()==="r"){$("#hero-random").click()}
+});
+
+const topBtn=$("#top");
+addEventListener("scroll",()=>topBtn.classList.toggle("show",scrollY>700),{passive:true});
+topBtn.addEventListener("click",()=>scrollTo({top:0,behavior:"smooth"}));
+
+/* хаягийн мөрөнд #mv-<id> байвал шууд нээх */
+if(location.hash.startsWith("#mv-")){
+  const id=location.hash.slice(4);
+  if(id in byId)setTimeout(()=>openModal(id),300);
+}
+</script>
+</body>
+</html>
