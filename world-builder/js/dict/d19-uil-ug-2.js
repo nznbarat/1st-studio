@@ -1,0 +1,68 @@
+/* ═══ 19 · Үйл үг II — өөрчлөлт, харилцан үйлдэл, төлөв ═══ */
+WB.dict.add({ id:"verb-change", label:"Үйл үг · өөрчлөлт, төлөв", icon:"🔄", w:{
+"өөрчлөгдөх":"changing","өөрчлөх":"altering","хувирах":"transforming","хувиргах":"transmuting",
+"солигдох":"being replaced","сольж тавих":"swapping","шинэчлэх":"renewing","сэргээх":"restoring",
+"хуучрах":"growing old","элэгдэх":"wearing out","муудах":"deteriorating","сайжрах":"improving",
+"өсөх":"growing","томрох":"enlarging","жижгэрэх":"shrinking","өргөсөх":"widening","нарийсах":"narrowing",
+"уртсах":"lengthening","богиносох":"shortening","өндөрсөх":"rising higher","намсах":"lowering",
+"хүчирхэгжих":"strengthening","суларх":"weakening","хатуурах":"hardening","зөөлрөх":"softening",
+"хөлдөх":"freezing over","гэсэх":"thawing","хайлах":"melting","буцлах":"boiling","уурших":"evaporating",
+"хатах (ус)":"drying up","норох":"getting wet","бүрхэгдэх":"becoming covered","цэвэрших":"becoming clean",
+"бохирдох":"becoming dirty","тодрох":"becoming clear","бүдгэрэх (өнгө)":"fading","гэрэлтэх (болох)":"brightening",
+"харанхуйлах":"darkening","улайх":"reddening","цайх":"paling","хөхрөх":"turning blue","шарлах":"yellowing",
+"ногоорох (болох)":"greening","хөгжих":"developing","дэвших (ахих)":"progressing","ухрах (буурах)":"regressing",
+"нэмэгдэх":"increasing","хасагдах":"decreasing","дүүрэх":"filling up","хоосрох":"emptying",
+"эхлүүлэх (эхлэх)":"initiating","дуусгах":"completing","таслах":"interrupting","үргэлжлүүлэх":"resuming",
+"хойшлох":"being delayed","түргэсэх":"speeding up","удаашрах (болох)":"slowing down","зогсонги болох":"stalling",
+"нээгдэх":"opening up","хаагдах":"closing up","задрах":"coming apart","нийлэх (нэгдэх)":"merging",
+"холилдох":"blending","салангид болох":"separating","тархах (өргөжих)":"expanding","хумигдах":"contracting",
+"илрэх":"appearing","алга болох":"disappearing","нуугдах (болох)":"becoming hidden","илчлэгдэх":"being revealed",
+"мартагдах":"being forgotten","дурсагдах":"being remembered","танигдах":"being recognised","үл танигдах":"going unrecognised",
+"төрөх":"being born","үхэх (амьтан)":"dying off","сэргэх (амилах)":"reviving","мөхөх":"perishing",
+"үүсэх":"arising","бий болох":"coming into being","устах":"being destroyed","сүйрэх":"collapsing in ruin",
+"босгогдох":"being erected","эвдрэх":"breaking down","засагдах":"being repaired","бэхжих":"becoming firm"
+}});
+
+WB.dict.add({ id:"verb-social", label:"Үйл үг · харилцан үйлдэл", icon:"🤝", w:{
+"уулзалт хийх":"holding a meeting","танилцуулах":"introducing","мэндлэх":"greeting","золгох":"exchanging new-year greetings",
+"ёслох":"bowing in respect","хүндлэх":"honouring","хүлээн авах (зочин)":"receiving a guest","үдэх (гарах)":"seeing off",
+"урих":"inviting","зочлох":"visiting","айлчлах":"paying a visit","хамтрах":"collaborating","нэгдэх":"joining forces",
+"тусалах":"helping","дэмжих":"supporting","хамгаалах (өмгөөлөх)":"defending","аврах":"rescuing",
+"өршөөх":"pardoning","өрөвдөн туслах":"helping out of pity","хайхрах":"caring for","халамжлах":"looking after",
+"хүмүүжүүлэх":"bringing up","сургах":"instructing","удирдах":"directing","тушаах":"commanding",
+"даалгах":"assigning","зөвшөөрөх (болох)":"permitting","хориглох":"forbidding","албадах":"forcing",
+"ятгах (уриалах)":"urging","уриалах":"appealing","гуйх (гуйлт)":"begging","шаардах":"demanding",
+"сануулах":"reminding","анхааруулах":"warning","заналхийлэх":"threatening","доромжлох":"insulting",
+"шоолох":"mocking","элэглэх":"ridiculing","гүтгэх":"slandering","хов ярих":"gossiping","худал хэлэх":"telling lies",
+"мэхлэх":"deceiving","урвах":"betraying","итгүүлэх":"convincing","үнэнийг хэлэх":"telling the truth",
+"нууцлах":"keeping secret","илчлэх":"disclosing","гэрчлэх":"testifying","буруутгах":"accusing",
+"өмгөөлөх":"speaking in defence","шүүх (шийдвэрлэх)":"passing judgement","шийтгэх":"punishing",
+"уучлал гуйх":"apologising","эвлэрүүлэх":"reconciling","зөрчилдөх":"clashing","хэрэлдэх":"quarrelling",
+"муудалцах":"falling out","салах (харилцаа)":"breaking off","тэвчих (хүнийг)":"putting up with",
+"хүлээн зөвшөөрөх":"accepting","татгалзах (хүсэлт)":"turning down","хүлээлгэх":"keeping waiting",
+"баярлуулах":"pleasing","гомдоох":"offending","тайвшруулах":"comforting","урамшуулах":"encouraging",
+"магтан сайшаах":"commending","шагнах":"rewarding","хамтдаа ажиллах":"working together","хуваалцах":"sharing",
+"солилцох":"exchanging","зээлдүүлэх":"lending","зээлэх":"borrowing","буцаах (эд)":"giving back","бэлэглэх":"gifting"
+}});
+
+WB.dict.add({ id:"verb-state", label:"Үйл үг · оршил, шинж", icon:"🌀", w:{
+"оршин байх":"existing","байрлах":"being situated","харагдах":"being visible","сонсогдох":"being audible",
+"мэдрэгдэх":"being perceptible","үнэртэх":"giving off a smell","амтагдах":"tasting of","гялалзах":"sparkling",
+"гэрэлтүүлэх":"illuminating","сүүдэрлэх":"casting shade","бүрхэх":"covering","халхлах":"obscuring",
+"тусах":"falling upon","ойх":"reflecting","нэвтрэх":"penetrating","шүүрэх":"seeping through",
+"дүүргэх":"filling","хүрээлэх":"surrounding","тойрох (хүрээлэх)":"encircling","дагалдах":"accompanying",
+"хамаарах":"pertaining to","тохирох":"fitting","зохицох":"harmonising","ялгарах":"standing out",
+"төстэй байх":"resembling","эсрэгцэх":"contrasting","давхцах":"overlapping","үргэлжлэн байх":"persisting",
+"хадгалагдах":"being preserved","хуримтлагдах":"accumulating","дутагдах":"being lacking","илүүдэх":"being in excess",
+"хангалттай байх":"sufficing","шаардагдах":"being required","хэрэгтэй байх":"being needed","ашиглагдах":"being used",
+"хамаарагдах":"belonging","эзэмших":"possessing","алдагдах":"being lost","олдох":"being found",
+"тохиолдох":"happening","болох (тохиох)":"occurring","үргэлжлэх (үйл явдал)":"unfolding","эхэлж байх":"beginning to happen",
+"дуусах дөхөх":"nearing its end","ойртож ирэх":"drawing near","хол байх":"being far off","хүрч ирэх":"reaching here",
+"дутуу байх":"falling short","хэтрэх":"exceeding","тэнцэх":"being equal","давуу байх":"having the advantage",
+"дарагдах":"being suppressed","чөлөөлөгдөх":"being freed","хамгаалагдах":"being protected","аюулд орох":"falling into danger",
+"аврагдах (болох)":"being saved","мартагдах (болох)":"slipping from memory","санагдах":"coming to mind",
+"төсөөлөгдөх":"being imagined","мэдэгдэх":"becoming known","тодорхойлогдох":"being determined",
+"хүлээгдэх":"being awaited","гарцаагүй болох":"becoming inevitable","боломжтой байх":"being possible",
+"боломжгүй байх":"being impossible","хялбар байх":"being easy","хэцүү байх":"being difficult",
+"чухал байх":"mattering","хэрэггүй болох":"becoming pointless","дуусгавар болох":"coming to a close"
+}});

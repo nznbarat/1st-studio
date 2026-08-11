@@ -1,0 +1,68 @@
+/* ═══ 38 · Нэмэлт үгс I — олон салбар ═══ */
+WB.dict.add({ id:"nemelt-ner", label:"Нэмэлт нэр үг", icon:"➕", w:{
+"эхлэл цэг":"a starting point","төгсгөлийн цэг":"an end point","дунд цэг":"a midpoint","уулзвар цэг":"a junction",
+"дамжлага":"a stage in a process","үе шат (ажлын)":"a work phase","дараалал (үйл явц)":"the order of steps",
+"хэлхээ":"a chain of links","холбоос (гинжин)":"a link","суурь (үндэс)":"a base","тулгуур (санаа)":"a foundation",
+"хүрээ (хязгаар)":"a scope","хамрах хүрээ":"coverage","цар хүрээ (үйл ажиллагаа)":"the extent of an undertaking",
+"хэмжээ (хүч)":"a magnitude","эзлэх хувь":"a share of the whole","үлдэгдэл":"a remainder",
+"нөөц":"a reserve","нөөц хүч":"reserve strength","эх үүсвэр":"a source of supply","гарц":"an outlet",
+"орц":"an inlet","дамжуулах суваг":"a channel","урсгал (мэдээллийн)":"a flow","чиглэл (хөдөлгөөний)":"a course",
+"эргэлт (тойрог)":"a revolution","давтамж (үйл явдал)":"a recurrence","хэмнэл (үйл явц)":"a tempo",
+"хурдац":"a rate","өсөлтийн хурд":"a rate of growth","бууралтын хурд":"a rate of decline",
+"хэлбэлзэл":"a fluctuation","тогтвортой байдал":"steadiness","тэнцвэргүй байдал":"imbalance",
+"тохируулга":"an adjustment","хязгаарлалт":"a restriction","чөлөөлөлт":"an exemption","онцгой тохиолдол":"an exception",
+"жишиг үзүүлэлт":"a benchmark","шалгуур":"a criterion","үнэлгээний оноо":"a rating","эрэмбэ":"a ranking",
+"ангилал":"a category","бүлэглэл":"a grouping","хэлбэр төрөл":"a type","хувилбар (загвар)":"a version",
+"загварын өөрчлөлт":"a design change","шинэчлэл":"an update","сайжруулалт":"an enhancement","залруулга":"a correction",
+"нэмэлт":"an addition","хасалт":"a deletion","орлуулалт":"a substitution","давхардал":"a duplication",
+"зөрүү":"a discrepancy","алдааны шалтгаан":"the cause of an error","үр дагавар":"a consequence",
+"нөлөөлөл":"an impact","хариу үйлдэл":"a reaction","эргэх холбоо":"feedback","сануулга (систем)":"a prompt",
+"заавар":"an instruction","гарын авлага (заавар)":"a manual","журам (алхам)":"a procedure","алхам (заавар)":"a step",
+"жагсаалт":"a list","хуваарь":"a roster","товлосон цаг":"an appointed time","хугацааны хязгаар":"a time limit",
+"дараалалд орох":"getting in line","хүлээлгийн хугацаа":"a waiting period","хариу хугацаа":"a response time",
+"баталгаа":"a guarantee","батламж":"a warrant","гэрчилгээ (баталгаа)":"a certificate of assurance",
+"хамгаалалтын арга":"a safeguard measure","сэргийлэх арга":"a preventive measure","хариу арга хэмжээ":"a countermeasure",
+"төлөвлөгөө Б":"a fallback plan","нөөц хувилбар":"an alternative option","эцсийн арга":"a last resort"
+}});
+
+WB.dict.add({ id:"nemelt-baidal", label:"Нэмэлт төлөв, шинж", icon:"🔹", w:{
+"бүрэн бүтэн байдал":"wholeness","эмх цэгцтэй байдал (шинж)":"orderliness","эмх замбараагүй байдал":"disarray",
+"тодорхой байдал":"clarity","бүрхэг байдал":"obscurity","илэрхий байдал":"obviousness","далд байдал":"hiddenness",
+"хөдөлгөөнт байдал":"mobility","хөдөлгөөнгүй байдал":"immobility","идэвхтэй байдал":"activeness",
+"идэвхгүй байдал":"inertness","хурцадмал байдал (орчны)":"an air of tension","тайван байдал (орчны)":"an air of calm",
+"хүчтэй байдал":"forcefulness","сул байдал":"feebleness","тогтсон байдал":"a settled state",
+"өөрчлөгдөж буй байдал":"a shifting state","шилжилтийн байдал":"a transitional state","эцсийн байдал":"a final state",
+"анхны байдал":"an original state","сэргээгдсэн байдал":"a restored state","эвдэрсэн байдал":"a damaged state",
+"хамгаалагдсан байдал":"a protected state","ил задгай байдал":"an exposed state","хаалттай байдал":"a sealed state",
+"дүүрэн байдал":"fullness","хоосон байдал":"emptiness","элбэг байдал":"abundance","хомс байдал":"scarcity",
+"цэвэр байдал":"cleanliness","бохир байдал":"filth","шинэлэг байдал":"freshness","хуучин байдал":"age and wear",
+"дулаан байдал":"warmth","хүйтэн байдал":"coldness","чийглэг байдал":"dampness","хуурай байдал":"dryness",
+"гэрэлт байдал":"brightness","харанхуй байдал":"darkness","чимээт байдал":"noisiness","чимээгүй байдал (шинж)":"quietness",
+"өндөр байдал":"loftiness","нам байдал":"lowness","гүн байдал":"depth","өргөн байдал":"breadth",
+"нарийн байдал":"narrowness","хатуу байдал":"hardness","зөөлөн байдал":"softness","хурц байдал":"sharpness",
+"мохоо байдал":"bluntness","хүнд байдал":"heaviness","хөнгөн байдал":"lightness","хурдан байдал":"swiftness",
+"удаан байдал":"slowness","эрт байдал":"earliness","орой байдал":"lateness","ойрхон байдал":"nearness",
+"хол байдал":"remoteness","олон байдал":"numerousness","цөөн байдал":"fewness","том байдал":"largeness",
+"жижиг байдал":"smallness","хялбар байдал":"ease","хүнд хэцүү байдал":"difficulty","аюултай байдал":"perilousness",
+"аюулгүй байдал (шинж)":"safeness","найдвартай байдал":"dependability","эргэлзээтэй байдал":"dubiousness"
+}});
+
+WB.dict.add({ id:"nemelt-uil", label:"Нэмэлт үйл, үйл явц", icon:"🔸", w:{
+"эхлүүлэлт":"an initiation","гүйцэтгэл":"an execution","дуусгалт":"a completion","тасалдал":"an interruption",
+"үргэлжлэл":"a continuation","давталт":"a repetition","солилцоо":"an interchange","шилжилт (үйл явц)":"a transition",
+"хувирал":"a transformation","өсөлт (үйл явц)":"an increase","бууралт":"a reduction","тархалт":"a spread",
+"хуримтлал (үйл явц)":"an accumulation","задрал":"a breakdown","нэгдэл (үйл явц)":"a merging","салалт":"a splitting",
+"холилдол":"a mingling","цэвэршилт":"a purification","бохирдол (үйл явц)":"a contamination","хатуурал":"a hardening",
+"зөөлрөлт":"a softening","хайлалт":"a melting","хөлдөлт (үйл явц)":"a freezing","ууршилт":"an evaporation",
+"тунадас":"a settling of sediment","урсгал (шингэн)":"a flowing","дуслалт":"a dripping","цацралт":"a spraying",
+"тархалт (гэрлийн)":"a diffusion","ойлт (гэрлийн)":"a reflecting","хугарал (гэрлийн)":"a refracting",
+"шингээлт":"an absorption","цацруулалт":"an emission","чичирхийлэл":"a vibration","доргилт":"a tremor",
+"цохилт":"an impact","мөргөлдөөн":"a collision","дэлбэрэлт":"an explosion","шаталт":"a combustion",
+"унтралт":"an extinguishing","гэрэлтэлт":"a glowing","анивчилт":"a flickering","бүдгэрэлт":"a fading",
+"хөдөлгөөн (ерөнхий)":"a motion","зогсолт":"a halt","эргэлт (эргэх)":"a rotation","хазайлт":"a tilting",
+"өргөлт":"a lifting","буулгалт":"a lowering","татах хүч":"a pulling force","түлхэх хүч":"a pushing force",
+"эсэргүүцэл (физик)":"a resistance","үрэлт":"a friction","гулсалт (физик)":"a sliding","эргэлдэлт":"a spinning",
+"савлагаа":"a swinging","найгалт":"a swaying","чичрэлт":"a shivering","доргио":"a jolt","нүргээн":"a rumbling",
+"шуугиан (үйл явц)":"a din","намжилт":"a subsiding","сэргэлт":"a revival","мөхөл":"an extinction",
+"төрөлт (үйл явц)":"a birth","өсөлт (амьд)":"a growing","боловсрол (ургацын)":"a ripening","хатамжилт":"a withering"
+}});

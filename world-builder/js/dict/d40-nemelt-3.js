@@ -1,0 +1,68 @@
+/* ═══ 40 · Нэмэлт үгс III — дүр, нийгэм, ажил ═══ */
+WB.dict.add({ id:"dur-2", label:"Дүрийн байдал, үүрэг II", icon:"🎭", w:{
+"дүрийн нэр":"the character's name","дүрийн нас":"the character's age","дүрийн мэргэжил":"the character's trade",
+"дүрийн гарал":"the character's origin","дүрийн өнгөрсөн":"the character's past","дүрийн нууц":"the character's secret",
+"дүрийн сул тал":"the character's weakness","дүрийн давуу тал":"the character's strength",
+"дүрийн айдас":"the character's fear","дүрийн итгэл":"the character's belief","дүрийн зорилго (өрнөл)":"the character's aim",
+"дүрийн эсрэг хүч":"the force opposing the character","дүрийн холбоотон":"the character's ally",
+"дүрийн дайсан":"the character's adversary","дүрийн зөвлөгч":"the character's guide",
+"дүрийн хайртай хүн":"the character's beloved","дүрийн гэр бүл":"the character's family",
+"дүрийн гэр орон":"the character's home","дүрийн эд зүйл":"the character's possession",
+"дүрийн онцлог хөдөлгөөн":"the character's signature gesture","дүрийн ярианы өнгө":"the character's manner of speech",
+"дүрийн алхаа":"the character's walk","дүрийн зуршил":"the character's habit","дүрийн хувцасны онцлог":"a distinctive item of dress",
+"дүрийн сорви":"a scar the character bears","дүрийн шивээс":"a tattoo the character bears",
+"дүрийн эхний гарц":"the character's first appearance","дүрийн сүүлчийн гарц":"the character's last appearance",
+"дүрийн өөрчлөлт":"the character's change","дүрийн сонголт":"the character's choice",
+"дүрийн золиослол":"the character's sacrifice","дүрийн ялалт":"the character's triumph",
+"дүрийн ялагдал":"the character's defeat","дүрийн уучлал":"the character's forgiveness",
+"дүрүүдийн харилцаа":"the relationship between characters","дүрүүдийн зөрчил":"the conflict between characters",
+"дүрүүдийн эв нэгдэл":"the bond between characters","хоёр дүрийн ялгаа":"the contrast between two characters",
+"туслах баг":"the supporting cast","олон түмний дүр":"a crowd of extras","чимээгүй дүр":"a silent role",
+"нэг үзэгдлийн дүр":"a one-scene role","дуу хоолойн дүр":"a voice role","хүүхдийн дүр":"a child role",
+"ахмадын дүр":"an elder role","удирдагчийн дүр":"a leader role","гаднын хүний дүр":"an outsider role",
+"тэнүүлчийн дүр":"a wanderer role","хамгаалагчийн дүр":"a protector role","хууртагчийн дүр":"a trickster role",
+"золиос болсны дүр":"a sacrificial role","эсрэг хүчний дүр":"an antagonist role","дүрийн жүжигчин":"the actor in the role"
+}});
+
+WB.dict.add({ id:"niigem-2", label:"Нийгэм, харилцаа III", icon:"🏛", w:{
+"нийгмийн байр суурь":"social standing","нэр хүндтэй хүн":"a person of standing","энгийн хүн":"an ordinary person",
+"олны танил":"a well-known figure","үл мэдэгдэх хүн":"an unknown figure","дундаж иргэн":"an average citizen",
+"нийгмийн хүлээлт":"social expectation","нийтийн санаа бодол":"public opinion","олны шүүмжлэл":"public criticism",
+"олны дэмжлэг":"public support","нийтээр хүлээн зөвшөөрөх":"general acceptance","нийтээр буруушаах":"public condemnation",
+"уламжлалт үнэлэмж":"traditional values","шинэ үзэл":"new thinking","үеийн зөрчил":"a generational rift",
+"хот хөдөөгийн ялгаа":"the divide between town and country","баян ядуугийн ялгаа":"the gap between rich and poor",
+"боловсролын түвшин":"a level of education","мэдээллийн хүртээмж":"access to information",
+"хэвлэлийн эрх чөлөө":"freedom of the press","үзэл бодлоо илэрхийлэх эрх":"the right to speak one's mind",
+"эмэгтэйчүүдийн эрх":"women's rights","хүүхдийн эрх":"children's rights","цөөнхийн эрх":"minority rights",
+"хөгжлийн бэрхшээлтэй иргэдийн эрх":"the rights of disabled people","хөдөлмөрлөх эрх":"the right to work",
+"эрүүл мэндийн тусламж авах эрх":"the right to medical care","орон байрны асуудал":"the housing question",
+"ажилгүйдлийн түвшин":"the unemployment rate","цалингийн зөрүү":"a wage gap","амьжиргааны түвшин":"the standard of living",
+"үнийн өсөлт (амьдрал)":"the rising cost of living","өрхийн орлого":"household income","өрхийн зарлага":"household spending",
+"нийгмийн даатгал":"social insurance","тэтгэвэрт гарах":"retiring","халамжийн үйлчилгээ":"welfare services",
+"сайн дурын ажил":"voluntary work","буяны үйлс":"charitable work","хандив":"a donation","хамтын дэмжлэг":"mutual aid",
+"олон нийтийн санаачилга":"a community initiative","нутгийн зөвлөл":"a local council","иргэдийн хурал":"a citizens' assembly",
+"олон нийтийн хэлэлцүүлэг":"a public debate","саналын хуудас":"a ballot paper","сонгуулийн үр дүн":"election results",
+"засаг солигдох":"a change of government","шинэчлэл (бодлого)":"a reform","бодлого":"a policy","шийдвэр гаргагч":"a decision maker",
+"хууль батлах":"passing a law","хууль хэрэгжүүлэх":"enforcing a law","хяналт тавих":"exercising oversight"
+}});
+
+WB.dict.add({ id:"ajil-2", label:"Ажил, боловсрол III", icon:"📋", w:{
+"ажлын байрны зар":"a job advertisement","анкет":"an application form","намтар":"a curriculum vitae",
+"зөвлөмж (ажлын)":"a reference","туршилтын хугацаа":"a probation period","гэрээт ажилтан":"a contract worker",
+"бүтэн цагийн ажил":"full-time work","хагас цагийн ажил":"part-time work","цагийн ажил":"casual work",
+"алсын ажил":"remote work","ажлын байрны нөхцөл":"working conditions","ажлын байрны аюулгүй байдал":"workplace safety",
+"хамт олны уур амьсгал":"the atmosphere in a team","удирдлагын хэв маяг":"a management style",
+"албан тушаал ахих":"a promotion","ажлаас халах":"a dismissal","ажлаа өгөх":"resigning","ажлын гүйцэтгэл":"job performance",
+"ажлын үнэлгээ":"a performance review","урамшууллын систем":"an incentive scheme","цалингийн нэмэгдэл":"a pay rise",
+"чөлөө авах":"taking leave","өвчний чөлөө":"sick leave","ээлжийн амралт":"annual leave","хүүхэд асрах чөлөө":"parental leave",
+"ажилдаа орох цаг":"the hour work begins","ажил тарах цаг":"the hour work ends","ажлын өдрийн урт":"the length of the working day",
+"хурлын хөтөлбөр":"a meeting agenda","хурлын тэмдэглэл":"meeting minutes","илтгэл":"a presentation",
+"төслийн танилцуулга":"a project brief","хугацааны график":"a timeline","үүргийн хуваарь":"an allocation of duties",
+"багийн ажил":"teamwork","багийн ахлагч":"a team leader","хамтрагч байгууллага":"a partner organisation",
+"үйлчлүүлэгчтэй уулзах":"meeting a client","гэрээ хэлэлцээр хийх":"negotiating a contract",
+"тайлан бэлтгэх":"preparing a report","дүн шинжилгээ хийх (ажил)":"carrying out an analysis",
+"сургалт зохион байгуулах":"organising training","мэргэжил дээшлүүлэх сургалт":"a professional development course",
+"дадлага":"an internship","дадлагажигч":"a trainee","зөвлөх":"a consultant","мэргэшсэн ажилтан":"a qualified worker",
+"мэргэжлийн ур чадвар":"professional skill","карьер":"a career","карьерын өсөлт":"career progression",
+"ажил амьдралын тэнцвэр":"work-life balance","ажлын шатлал":"a workplace hierarchy","ажлын соёл":"workplace culture"
+}});

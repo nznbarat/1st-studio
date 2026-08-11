@@ -1,0 +1,68 @@
+/* ═══ 27 · Амьтан II, ургамал II, хоол II ═══ */
+WB.dict.add({ id:"amitan-2", label:"Амьтдын байдал, хөдөлгөөн", icon:"🐾", w:{
+"сүрэг бэлчиж байна":"a herd is grazing","мал буцаж байна":"the livestock are heading back",
+"морь янцгаана":"a horse whinnies","морь газар тэмтрэнэ":"a horse paws the ground","морь толгой сэгсэрнэ":"a horse tosses its head",
+"дэл салхинд хийснэ":"the mane streams in the wind","туурай нүргэнэ":"hooves thunder","тоос босгон давхина":"galloping in a cloud of dust",
+"морь усанд орно":"a horse wades into the water","унага гүүгээ дагана":"a foal follows its mare",
+"тэмээ бөхөө ганхуулна":"a camel sways its humps","тэмээ удаан алхана":"a camel plods along",
+"хонь бөөгнөрнө":"the sheep bunch together","хурга инээлдэнэ":"lambs bleat","ямаа хад мацна":"a goat scrambles up a rock",
+"үхэр хэвтэж байна":"cattle are lying down","сарлаг манан дунд":"a yak in the mist","нохой хуцна":"a dog barks",
+"нохой сүүлээ шарвана":"a dog wags its tail","нохой сэрэмжтэй чагнана":"a dog listens warily",
+"муур сунана":"a cat stretches","муур чимээгүй алхана":"a cat pads silently","чоно улина":"a wolf howls",
+"чоно нуугдан ажиглана":"a wolf watches from cover","үнэг цасан дор мөшгинө":"a fox listens under the snow",
+"баавгай мод маажна":"a bear claws at a tree","ирвэс хад дээр зогсоно":"a snow leopard stands on the rocks",
+"буга эвэрээ өргөнө":"a stag raises its antlers","зээр гүйн одно":"gazelles bound away",
+"туулай үсэрнэ":"a hare bolts","тарвага исгэрнэ":"a marmot whistles","хэрэм мод өөд гүйнэ":"a squirrel darts up a tree",
+"могой мушгирна":"a snake coils","гүрвэл чулуун дээр":"a lizard on a stone","загас усанд үсэрнэ":"a fish leaps in the water",
+"бүргэд тэнгэрт эргэлдэнэ":"an eagle circles in the sky","шонхор доош шумбана":"a falcon stoops",
+"хэрээ хашгирна":"a crow caws","тогоруу бүжиглэнэ":"cranes dance","галуу цуваа болно":"geese form a line",
+"нугас усанд хөвнө":"ducks drift on the water","шувууд өндөрт нисэн одно":"birds fly off high",
+"эрвээхэй цэцэг дээр":"a butterfly on a flower","зөгий цэцгээс нисэн одно":"a bee lifts from a blossom",
+"царцаа өвсөн дунд":"a grasshopper in the grass","аалз тор нэхнэ":"a spider spins its web",
+"шоргоолж цуваа":"a column of ants","гэрэлт цох анивчина":"fireflies blink","шумуул дуугарна":"mosquitoes whine",
+"амьтан үнэр авна":"an animal catches a scent","амьтан чагнан зогсоно":"an animal freezes to listen",
+"амьтан үсрэн зугтана":"an animal bolts","мөр цасан дээр":"tracks in the snow","өд газар унана":"a feather drifts down"
+}});
+
+WB.dict.add({ id:"urgamal-2", label:"Ургамал, ой, талын дүрслэл", icon:"🌾", w:{
+"өвс салхинд давалгаална":"the grass ripples in the wind","өндөр өвс хөл боогдуулна":"tall grass catches at the legs",
+"хагд өвс шаржигнана":"dry grass crunches","шар өвс нарны доор":"yellow grass under the sun",
+"ногоон нахиа гарна":"green shoots come up","цэцэг дэлгэрнэ":"flowers open out","дэлбээ унана":"petals fall",
+"цэцгийн тоос агаарт":"pollen in the air","хээрийн цэцэг дүүрэн":"the steppe covered in flowers",
+"мод навчилна":"the trees come into leaf","навч шаржигнана":"leaves rustle","навч алтлаг болно":"leaves turn golden",
+"навч салхинд эргэлдэнэ":"leaves swirl in the wind","мөчир чичирнэ":"a branch quivers",
+"мод салхинд дуугарна":"the trees sing in the wind","нарс ганцаараа":"a lone pine","хусны цагаан их бие":"the white trunk of a birch",
+"бургас голын эрэгт":"willows along the riverbank","ойн хөвд":"moss on the forest floor",
+"унасан мод":"a fallen tree","хатсан мөчир":"a dead branch","модны сүүдэрт":"in the shade of a tree",
+"ойн жимс":"forest berries","мөөг ургана":"mushrooms come up","бутны цаана":"behind the bushes",
+"өргөстэй бут":"a thorny bush","зэгс найгана":"the reeds sway","зэгсэн дунд":"among the reeds",
+"хулс шуугина":"bamboo rustles","заг цөлд":"saxaul in the desert","цөлийн ургамал":"desert plants",
+"хатсан мод цөлд":"a dead tree in the desert","цасан доорх өвс":"grass beneath the snow",
+"хаврын анхны цэцэг":"the first flower of spring","намрын навчис":"autumn foliage","өвлийн нүцгэн мод":"bare winter trees",
+"зуны ногоон бүрхүүл":"the green cover of summer","ургац боловсрох":"the crop ripening",
+"талбай алтлаг болох":"the field turning golden","үр цацах":"scattering seed","ногоо тарих":"planting vegetables",
+"хадлан бэлтгэх":"making hay","өвс хадах":"mowing grass","боодол өвс":"a bale of hay","хадлангийн талбай":"a hayfield",
+"мод тарих":"planting trees","ой хамгаалах":"protecting the forest","мод бэлтгэх":"felling timber",
+"түлээ бэлтгэх":"laying in firewood","ойн зам":"a forest track","ойн захад":"at the forest edge"
+}});
+
+WB.dict.add({ id:"hool-2", label:"Хоол хийх, зоог, амт II", icon:"🍵", w:{
+"тогоо тавих":"putting the pot on","гал асаах (хоол)":"lighting the stove","ус буцалгах":"boiling water",
+"цай чанах":"brewing tea","сүү нэмэх":"adding milk","давс хийх":"adding salt","амт тааруулах":"adjusting the seasoning",
+"мах хэрчих":"cutting meat","гурил зуурах":"kneading dough","хуушуур хайрах":"frying khuushuur",
+"бууз жигнэх":"steaming buuz","шөл шүүх":"straining broth","аяга дүүргэх":"filling a bowl",
+"зоог барих":"taking a meal","ширээ тойрон суух":"sitting around the table","аяга барих":"holding out a bowl",
+"хоёр гараар барих":"receiving with both hands","цай өргөх":"offering tea","айраг хутгах":"stirring airag",
+"архи хийх":"pouring liquor","хундага өргөх":"raising a cup","ерөөл хэлэх (зооглох)":"speaking a blessing over the meal",
+"үнэртэй уур":"fragrant steam","халуун уур гарна":"steam rising","тогоо нөмрөх":"covering the pot",
+"галын дээрх тогоо":"a pot over the fire","хоолны үнэр тархана":"the smell of food spreads",
+"хоол болох":"the food being ready","халуун хоол":"a hot meal","хүйтэн хоол":"a cold dish","үлдэгдэл хоол":"leftovers",
+"хоол хуваах":"sharing out food","хоол өгөх":"serving food","хоолонд урих":"inviting to eat",
+"өлсгөлөн":"hunger","өлсгөлөнд нэрвэгдэх":"suffering famine","хүнсний нөөц":"a store of provisions",
+"мах хатаах (хадгалах)":"drying meat for keeping","өвөлжөөний нөөц":"winter stores","ааруул хатаах":"drying curd",
+"сүү бүлэх":"churning milk","өрөм авах":"skimming clotted cream","бяслаг дарах":"pressing cheese",
+"талх барих":"baking bread","боов хийх":"making pastries","чихэр амтлах":"tasting something sweet",
+"жимс түүх":"picking berries","самар цуглуулах":"gathering nuts","ус авах":"fetching water",
+"худгаас ус татах":"drawing water from a well","гол дээрээс ус авах":"taking water from the river",
+"савлаж хадгалах":"storing in containers","хөргөж хадгалах":"keeping cool","муудсан хоол":"spoiled food"
+}});

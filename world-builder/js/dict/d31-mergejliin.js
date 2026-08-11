@@ -1,0 +1,66 @@
+/* ═══ 31 · Мэргэжлийн нэр томьёо, тоо хэмжээ II ═══ */
+WB.dict.add({ id:"anagaah", label:"Анагаах, бие эрхтэн II", icon:"💊", w:{
+"эмнэлгийн тусламж":"medical assistance","яаралтай тусламж":"emergency care","үзлэг":"an examination",
+"оношилгоо":"diagnostics","шинжилгээ":"a laboratory test","цусны шинжилгээ":"a blood test","рентген":"an X-ray",
+"хэт авиан оношилгоо":"an ultrasound scan","эмчийн бичиг":"a prescription","эмийн тун":"a dose",
+"үрэвсэл":"inflammation","халдварт өвчин":"an infectious disease","ханиад томуу":"flu","уушгины үрэвсэл":"pneumonia",
+"зүрхний өвчин":"heart disease","цусны даралт":"blood pressure","чихрийн шижин":"diabetes","харшил":"an allergy",
+"хордлого":"poisoning","хоолны хордлого":"food poisoning","гэдэсний өвчин":"a stomach complaint",
+"толгойн өвчин":"a head ailment","нүдний өвчин":"an eye complaint","шүдний өвчин":"a dental problem",
+"ясны хугарал":"a bone fracture","булчин сунах":"a pulled muscle","үений өвдөлт":"joint pain","нурууны өвдөлт":"back pain",
+"толгой эргэх (өвчин)":"vertigo","ухаан алдалт":"a fainting spell","цочрол":"shock","цус багадалт":"anaemia",
+"эмчилгээний курс":"a course of treatment","мэс заслын өрөө":"an operating theatre","мэс засалчийн хутга":"a scalpel",
+"тариур":"a syringe","судсаар тарих":"an intravenous drip","боолт хийх":"applying a dressing","гипс":"a plaster cast",
+"сэхээн амьдруулах":"resuscitation","эмчийн зөвлөгөө":"a doctor's advice","эрүүл мэндийн үзлэг":"a health check",
+"дархлаа":"immunity","вакцин":"a vaccine","урьдчилан сэргийлэх":"prevention","эрүүл дадал":"healthy habits",
+"хоолны дэглэм":"a diet","дасгал хөдөлгөөн":"physical exercise","нойрны дэглэм":"a sleep routine",
+"сэтгэцийн эрүүл мэнд":"mental health","стресс":"stress","стрессээс ангижрах":"relieving stress",
+"сэтгэл гутрал":"depression","түгшүүрийн эмгэг":"an anxiety disorder","сэтгэл засал":"psychotherapy",
+"уламжлалт эмчилгээ":"traditional medicine","эмийн ургамал":"a medicinal plant","бумба эмчилгээ":"cupping therapy",
+"зүү эмчилгээ":"acupuncture","бариа засал":"manual therapy","рашаан сувилал":"a spa sanatorium",
+"нөхөн сэргээх":"rehabilitation","сувилахуй":"nursing care","өвчтөний ор":"a patient's bed","эргэлт (эмнэлэг)":"a ward round"
+}});
+
+WB.dict.add({ id:"too-2", label:"Тоо, огноо, хэмжигдэхүүн II", icon:"📏", w:{
+"огноо":"a date","он":"a year (of the calendar)","сар (хуанли)":"a calendar month","өдөр (хуанли)":"a calendar day",
+"гараг":"a day of the week","даваа":"Monday","мягмар":"Tuesday","лхагва":"Wednesday","пүрэв":"Thursday",
+"баасан":"Friday","бямба":"Saturday","ням":"Sunday","нэгдүгээр сар":"January","хоёрдугаар сар":"February",
+"гуравдугаар сар":"March","дөрөвдүгээр сар":"April","тавдугаар сар":"May","зургадугаар сар":"June",
+"долдугаар сар":"July","наймдугаар сар":"August","есдүгээр сар":"September","аравдугаар сар":"October",
+"арван нэгдүгээр сар":"November","арван хоёрдугаар сар":"December","хуанли":"a calendar","цаг товлох":"setting a time",
+"хэдэн цаг":"what hour","хагас цаг":"half an hour","дөрөвний нэг цаг":"a quarter of an hour",
+"арван минут":"ten minutes","хэдхэн секунд":"a few seconds","өдрийн эхний хагас":"the first half of the day",
+"жарны тоолол":"the sixty-year cycle","бар жил":"the year of the tiger","туулай жил":"the year of the hare",
+"луу жил":"the year of the dragon","могой жил":"the year of the snake","морь жил":"the year of the horse",
+"хонь жил":"the year of the sheep","бич жил":"the year of the monkey","тахиа жил":"the year of the rooster",
+"нохой жил":"the year of the dog","гахай жил":"the year of the pig","хулгана жил":"the year of the rat",
+"үхэр жил":"the year of the ox","зэрэг (хэмжээ)":"a degree","хувь хэмжээ":"a proportion","харьцаа":"a ratio",
+"дундаж":"an average","нийлбэр":"a sum","ялгавар":"a difference","үржвэр":"a product","ноогдвор":"a quotient",
+"тэгш тоо":"an even number","сондгой тоо":"an odd number","бүхэл тоо":"a whole number","бутархай":"a fraction",
+"хувь (процент)":"per cent","хэмжээс (нэгж)":"a unit of measure","градус":"a degree of temperature",
+"дулааны хэмжээ":"a temperature reading","хүйтний хэм":"degrees of frost","өндөрлөгийн өндөр":"altitude",
+"гүний хэмжээ":"depth measurement","талбайн хэмжээ":"area measurement","хурдны хэмжээ":"a speed reading",
+"жингийн хэмжээ":"a weight reading","эзлэхүүний хэмжээ":"a volume reading","тоо баримт":"figures",
+"статистик":"statistics","хувь заяаны тоо":"a lucky number","гурвалсан":"threefold","олон дахин":"many times over"
+}});
+
+WB.dict.add({ id:"hurl", label:"Хууль, цэрэг, аюулгүй байдал II", icon:"🛡", w:{
+"дүрэм журам зөрчих":"breaking the rules","журам сахих":"observing the rules","хууль сахиулагч":"a law enforcer",
+"эргүүл":"a patrol","хяналтын цэг":"a checkpoint","баримт бичиг шалгах":"checking documents",
+"үнэмлэх":"an identity card","гэрчилгээ (баримт)":"a certificate","зөвшөөрлийн бичиг":"a permit",
+"хориотой бүс":"a restricted zone","хамгаалалтын бүс":"a security perimeter","дохиолол":"an alarm",
+"дуут дохиолол":"a siren","аюулын дохио":"a danger signal","нүүлгэн шилжүүлэх":"evacuating",
+"хоргодох байр (аюул)":"a refuge","аврах ажиллагаа":"a rescue operation","аврах баг":"a rescue team",
+"эрэн хайх ажиллагаа":"a search operation","гэрч байцаах":"questioning a witness","мэдүүлэг":"a statement",
+"хэрэг бүртгэх":"opening a case","хэргийн газар":"the scene of the incident","ул мөр цуглуулах":"collecting traces",
+"хуруу мөр":"a fingerprint","мөрдөгчийн тэмдэглэл":"a detective's notes","сэжигтэн":"a suspect",
+"баривчлах":"arresting","хүлээлгэн өгөх":"handing over to the authorities","хоригдох":"being held in custody",
+"шүүх хуралдаан":"a court hearing","өмгөөлөгчийн үг":"the counsel's address","шүүгчийн шийдвэр":"the judge's ruling",
+"хэрэг хаах":"closing a case","цагаатгагдах":"being exonerated","ял эдлэх":"serving a sentence",
+"хорих анги":"a prison","чөлөөлөгдөх":"being released","хяналтад байх":"being under supervision",
+"цэргийн алба":"military service","цэргийн анги":"a military unit","командлагч":"a commander","тушаал өгөх":"issuing an order",
+"тушаал биелүүлэх":"carrying out an order","жагсаал (цэрэг)":"a formation","манаанд гарах":"going on guard duty",
+"хилийн харуул":"a border patrol","сэрэмжлүүлэг":"an alert","байлдааны бэлэн байдал":"combat readiness",
+"эвлэрлийн гэрээ":"a peace agreement","гал зогсоох":"a ceasefire","хүмүүнлэгийн тусламж":"humanitarian aid",
+"дүрвэгсдийн хуаран":"a refugee camp","эмнэлгийн анги":"a medical unit","хангамжийн зам":"a supply line"
+}});

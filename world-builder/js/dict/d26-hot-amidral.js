@@ -1,0 +1,68 @@
+/* ═══ 26 · Хотын амьдрал, үйлчилгээ, тоглоом ═══ */
+WB.dict.add({ id:"hot-amidral", label:"Хотын амьдрал, үйлчилгээ", icon:"🚦", w:{
+"хотын амьдрал":"city life","өглөөний түгжрэл":"morning traffic","хүн ихтэй гудамж":"a busy street",
+"явган хүн":"a pedestrian","хүлээлгийн эгнээ":"a queue","автобусны эгнээ":"a bus queue","олон нийтийн тээвэр":"public transport",
+"метро":"metro","метроны буудал":"metro station","газар доорх гарц":"underpass","гүүрэн гарц":"footbridge",
+"замын гэрэл":"traffic signal","зогсоолын талбай":"car park","дугуйн зам":"cycle lane","хурдны хязгаар":"speed limit",
+"замын цагдаа":"traffic officer","торгуулийн хуудас":"a parking fine","осол":"an accident","түгжрэлд гацах":"getting stuck in traffic",
+"дэлгүүрийн цонх":"a shop window","үнийн шошго":"a price tag","касс":"the till","карт уншуулах":"tapping a card",
+"хүлээлгийн танхим":"a waiting room","бүртгэл (үйлчилгээ)":"reception desk","дугаар авах":"taking a queue number",
+"үйлчилгээний цэг":"a service point","банкны салбар":"a bank branch","мөнгө авах машин":"a cash machine",
+"шуудангийн хайрцаг":"a postbox","илгээмж хүлээн авах":"collecting a parcel","хүргэлт":"a delivery",
+"цайны газрын ширээ":"a table in a tea house","захиалга өгөх":"placing an order","дансаа төлөх":"paying the bill",
+"хоолны цэс":"the menu","зөөгч дуудах":"calling the waiter","гал тогооны үүд":"the kitchen door",
+"баарны тавцан":"the bar counter","шөнийн клуб":"a nightclub","хөгжмийн тоглолт":"a live gig",
+"тасалбарын касс":"a ticket office","кино театрын танхим":"a cinema auditorium","дэлгэцийн гэрэл (танхим)":"the glow of the screen",
+"музейн үзмэр":"a museum exhibit","үзэсгэлэнгийн хана":"a gallery wall","номын дэлгүүр":"a bookshop",
+"сургуулийн хашаа":"a schoolyard","хичээлийн завсарлага":"a break between classes","хонх дуугарах":"the bell ringing",
+"эмнэлгийн коридор":"a hospital corridor","хүлээлгийн сандал":"a waiting-room chair","эмчийн өрөө":"a consulting room",
+"цагдаагийн байцаалт":"a police interview","шүүхийн танхим":"a courtroom","гэрчийн вандан":"the witness stand",
+"оффисын өрөө":"an office room","хурлын ширээ":"a boardroom table","компьютерийн дэлгэц":"a computer screen",
+"хэвлэгчийн чимээ":"the sound of a printer","цаасны боодол":"a stack of paper","цонхны гадуурх хот":"the city beyond the window",
+"дээвэр дээрх харагдац":"the view from a rooftop","шөнийн хотын гэрэл":"the lights of the night city",
+"дэлгүүрийн неон":"a shop's neon sign","замын гэрлийн тусгал":"the reflection of street lights",
+"бороотой асфальт":"rain-slick asphalt","цасан дундах хот":"a city under snow","үүрийн хотын чимээгүй":"the hush of the city at dawn"
+}});
+
+WB.dict.add({ id:"tehnik-2", label:"Техник, хэрэгсэл, харилцаа холбоо", icon:"📡", w:{
+"дуут дохио (утас)":"a ringtone","дуудлага хүлээн авах":"answering a call","дуудлага таслах":"hanging up",
+"дуу хураагуур":"a voice recorder","бичлэг":"a recording","дүрс бичлэг":"a video recording","гэрэл зураг авах":"taking a photograph",
+"зураг хадгалах":"saving an image","файл":"a file","хавтас":"a folder","хуулбар":"a copy","нөөцлөлт":"a backup",
+"устгах (файл)":"deleting","сэргээх (файл)":"restoring","хайлт":"a search","үр дүн (хайлтын)":"search results",
+"холбоос":"a link","хаяг (интернэт)":"a web address","нэвтрэх":"logging in","гарах (системээс)":"logging out",
+"бүртгүүлэх":"signing up","профайл":"a profile","мэдэгдэл":"a notification","мессежийн урсгал":"a message thread",
+"нийтлэл (сошиал)":"a post","сэтгэгдэл":"a comment","хуваалцах (сошиал)":"sharing","дагах (сошиал)":"following",
+"шууд дамжуулалт":"a live stream","видео дуудлага":"a video call","дэлгэц хуваалцах":"screen sharing",
+"чанга яригчийн дуу":"the sound from a speaker","чихэвч зүүх":"putting on headphones","дууны түвшин":"the volume level",
+"дуу намсгах":"turning the sound down","дуу чангаруулах":"turning the sound up","чимээгүй горим":"silent mode",
+"цэнэг дуусах":"the battery running out","цэнэглэх":"charging","залгуурт залгах":"plugging in",
+"утасгүй сүлжээ":"a wireless network","сүлжээ тасрах":"losing connection","дохио сул":"a weak signal",
+"дохио сайн":"a strong signal","дамжуулагч":"a transmitter","хүлээн авагч":"a receiver","радио долгион":"a radio wave",
+"нэвтрүүлэг":"a broadcast","мэдээний хөтөлбөр":"a news programme","сурвалжлага":"a report","ярилцлага (телевиз)":"an interview",
+"нэвтрүүлгийн студи":"a broadcast studio","камерын урд":"in front of the camera","гэрэлтүүлгийн төхөөрөмж":"lighting equipment",
+"микрофон барих":"holding a microphone","дуу бичлэгийн өрөө":"a recording booth","хяналтын дэлгэц":"a monitor screen",
+"удирдлагын самбар (студи)":"a control desk","кабелийн боодол":"a bundle of cables","тэжээлийн залгуур":"a power outlet",
+"генератор":"a generator","цахилгаан тасрах":"a power cut","нөөц тэжээл":"a backup power supply",
+"хиймэл гэрэлтүүлэг":"artificial illumination","дэлгэцийн тусгал":"screen reflection","гэрэл мэдрэгч":"a light sensor"
+}});
+
+WB.dict.add({ id:"amidralbaidal", label:"Амьдралын нөхцөл, үйл явдал", icon:"🪧", w:{
+"амьдрал (нөхцөл)":"living conditions","ахуй":"daily existence","орон байр":"housing","түрээс":"rent",
+"нүүх (байр)":"moving house","суурьших":"settling down","гэр бүл болох":"starting a family",
+"хүүхэдтэй болох":"having a child","хүүхэд өсгөх":"bringing up children","ажилд орох":"taking up a job",
+"ажлаас гарах":"leaving a job","сургуульд орох":"starting school","төгсөх":"graduating","цэрэгт явах":"going to the army",
+"буцаж ирэх":"coming back","хот руу нүүх":"moving to the city","хөдөө буцах":"returning to the countryside",
+"гадаадад явах":"going abroad","гэртээ харих":"going home","салах (гэр бүл)":"separating","дахин уулзах":"meeting again",
+"өвдөх (үйл явдал)":"falling ill","эдгэрч босох":"getting back on one's feet","насан эцэслэх":"passing away",
+"оршуулах":"burying","дурсах ёслол":"a memorial","төрсөн өдрийн баяр":"a birthday celebration",
+"хуримын үдэшлэг":"a wedding party","найз нөхөдтэй уулзалт":"a gathering of friends","гэр бүлийн зоог":"a family meal",
+"аялалд гарах":"setting out on a trip","замд гарах":"taking to the road","буудалд буух":"checking into an inn",
+"замын хүнс":"provisions for the journey","мөнгө хуримтлуулах":"saving money","өр төлөх":"paying off a debt",
+"зээл авах":"taking a loan","байр худалдаж авах":"buying a home","машин авах":"buying a car",
+"эд хөрөнгө хуваах":"dividing property","өв залгамжлах":"inheriting","ажил хайх":"looking for work",
+"мэргэжил сонгох":"choosing a profession","мэргэжил дээшлүүлэх":"upgrading one's qualifications",
+"шинэ эхлэл":"a new beginning","хүнд үе":"a hard period","аз таарах":"a stroke of luck","золгүй тохиолдол":"a mishap",
+"шийдвэр гаргах":"making a decision","эргэлзсэн үе":"a time of doubt","амжилтад хүрэх":"achieving success",
+"бүтэлгүйтэх":"coming to nothing","дахин оролдох":"trying again","бууж өгөхгүй байх":"refusing to give up",
+"тусламж хүсэх":"asking for help","хамтдаа даван туулах":"getting through it together","өөрчлөлт хийх":"making a change"
+}});

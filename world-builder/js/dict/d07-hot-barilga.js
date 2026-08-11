@@ -1,0 +1,67 @@
+/* ═══ 07 · Хот, барилга, тээвэр ═══ */
+WB.dict.add({ id:"hot", label:"Хот, суурин, гудамж", icon:"🏙", w:{
+"хот":"city","том хот":"metropolis","нийслэл":"capital city","дүүрэг":"district","хороо (засаг)":"subdistrict",
+"суурин":"settlement","тосгон":"village","сум":"county seat","аймгийн төв":"provincial centre","гэр хороолол":"ger district",
+"хороолол":"neighbourhood","хотхон":"residential complex","төв талбай":"central square","талбай (хотын)":"plaza",
+"гудамж":"street","гол гудамж":"main street","нарийн гудамж":"alley","замын уулзвар":"intersection",
+"явган хүний зам":"pavement","гарц":"crossing","гэрлэн дохио":"traffic light","замын тэмдэг":"road sign",
+"зогсоол":"parking area","автобусны буудал":"bus stop","галт тэрэгний буудал":"railway station",
+"нисэх буудал":"airport","боомт":"port","гүүр (хотын)":"city bridge","хонгил":"tunnel","шат (гадна)":"outdoor steps",
+"цэцэрлэгт хүрээлэн":"park","ногоон байгууламж":"green space","усан оргилуур":"fountain","хөшөө":"monument",
+"хөшөө дурсгал":"memorial","хонх (цамхгийн)":"tower bell","цагийн цамхаг":"clock tower","гэрэлт самбар":"illuminated sign",
+"сурталчилгааны самбар":"billboard","дэлгүүр":"shop","их дэлгүүр":"department store","зах":"market",
+"хүнсний зах":"food market","мал зах":"livestock market","ресторан":"restaurant","гуанз":"canteen",
+"цайны газар":"tea house","кафе":"cafe","баар":"bar","зочид буудал":"hotel","буудал (жижиг)":"inn",
+"эмнэлэг (барилга)":"hospital building","эмийн сан":"pharmacy","сургууль":"school","цэцэрлэг (хүүхдийн)":"kindergarten",
+"их сургууль":"university","номын сан":"library","музей":"museum","үзэсгэлэнгийн танхим":"gallery",
+"театр":"theatre","кино театр":"cinema","концертын танхим":"concert hall","цирк":"circus",
+"цэнгэлдэх хүрээлэн":"stadium","биеийн тамирын заал":"gymnasium","усан сан":"swimming pool",
+"банк":"bank","шуудан":"post office","цагдаагийн газар":"police station","шүүхийн байр":"courthouse",
+"засгийн газрын ордон":"government palace","хурлын байр":"assembly building","элчин сайдын яам":"embassy",
+"үйлдвэр":"factory","цех":"workshop","агуулах":"warehouse","цахилгаан станц":"power station","усан цахилгаан станц":"hydro plant",
+"барилгын талбай":"construction site","чиглэл заасан самбар":"direction board","хогийн цэг":"dump",
+"оршуулгын газар":"cemetery","сүм хийд":"temple monastery","бунхан":"mausoleum","хотын гэрэл":"city lights",
+"хотын дуу чимээ":"city noise","түгжрэл":"traffic jam","хүн ам":"population","хотжилт":"urbanisation"
+}});
+
+WB.dict.add({ id:"barilga", label:"Барилга, өрөө, эд анги", icon:"🏛", w:{
+"барилга":"building","байшин":"house","хоёр давхар байшин":"two-storey house","өндөр барилга":"high-rise",
+"орон сууц":"apartment","байр":"flat","байшингийн үүд":"house entrance","үүдний танхим":"entrance hall",
+"хашаа байшин":"walled compound","модон байшин":"wooden house","чулуун байшин":"stone house",
+"ордон":"palace","цайз":"fortress","хэрэм":"rampart wall","цамхаг":"tower","манааны цамхаг":"watchtower",
+"сүм":"temple","дуган":"prayer hall","хийд":"monastery","сүмийн дээвэр":"temple roof","суварга":"stupa",
+"балгас":"ruins","эвдэрхий байшин":"derelict house","орхигдсон барилга":"abandoned building",
+"хана":"wall","дотоод хана":"interior wall","тааз":"ceiling","шал":"floor","модон шал":"wooden floor",
+"чулуун шал":"stone floor","дээвэр":"roof","хавтгай дээвэр":"flat roof","дээврийн ирмэг":"eaves",
+"багана (барилгын)":"pillar","тулгуур":"support beam","дам нуруу":"crossbeam","суурь":"foundation",
+"шат":"stairs","шатны гишгүүр":"stair step","шатны хашлага":"banister","цонх":"window",
+"жижиг цонх":"small window","өргөн цонх":"wide window","цонхны тавцан":"window sill","цонхны хүрээ":"window frame",
+"хаалга":"door","гол хаалга":"main door","арын хаалга":"back door","хаалганы бариул":"door handle",
+"хаалганы завсар":"door gap","хана цоолсон":"pierced wall","хонгил (дотоод)":"passage","коридор":"corridor",
+"өрөө":"room","унтлагын өрөө":"bedroom","зочны өрөө":"living room","гал тогоо":"kitchen","угаалгын өрөө":"bathroom",
+"ажлын өрөө":"study","хадгалах өрөө":"storeroom","подвал":"basement","мансарда":"attic","тагт":"balcony",
+"терасс":"terrace","үүдний шат":"porch steps","хашаа":"fence","хаалт":"barrier","хашааны хаалга":"gate",
+"хаалганы босго":"doorstep","гадаа":"outdoors","дотор":"indoors","өрөөний булан":"corner of the room",
+"тавцан":"platform","тайз":"stage","хөшиг (тайзны)":"stage curtain","суудал":"seat","эгнээ (суудлын)":"row of seats",
+"дэнж":"ledge","хонгилын гэрэл":"corridor light","өрөөний гэрэл":"room light","цахилгаан шат":"lift",
+"хана дүүрэн тавиур":"wall of shelves","тааз дүүжлүүр":"ceiling hook","дулаалга":"insulation"
+}});
+
+WB.dict.add({ id:"teever", label:"Тээвэр, зам харилцаа", icon:"🚗", w:{
+"тээвэр":"transport","тээврийн хэрэгсэл":"vehicle","машин":"car","суудлын машин":"passenger car",
+"ачааны машин":"truck","автобус":"bus","троллейбус":"trolleybus","такси":"taxi","түргэн тусламжийн машин":"ambulance",
+"галын машин":"fire engine","цагдаагийн машин":"police car","мотоцикл":"motorcycle","дугуй":"bicycle",
+"цахилгаан машин":"electric car","жийп":"off-road vehicle","трактор":"tractor","комбайн":"combine harvester",
+"галт тэрэг":"train","вагон":"railway carriage","төмөр зам":"railway","зүтгүүр":"locomotive",
+"онгоц":"aeroplane","нисдэг тэрэг":"helicopter","сансрын хөлөг":"spacecraft","пуужин":"rocket",
+"хөлөг онгоц":"ship","завь":"boat","сал":"raft","дарвуулт онгоц":"sailing ship","дарвуул":"sail",
+"сэлүүр":"oar","зангуу":"anchor","эрэг рүү":"toward shore","гүүрэн онгоц":"ferry",
+"жолоо (машины)":"steering wheel","хурдны хайрцаг":"gearbox","хөдөлгүүр":"engine","дугуй (машины)":"wheel",
+"дугуйн мөр":"tyre track","гэрэл (машины)":"headlight","дуут дохио":"horn","түлш":"fuel","бензин":"petrol",
+"шатахуун түгээх станц":"petrol station","зам (хатуу хучилттай)":"paved road","хурдны зам":"highway",
+"тойрог зам":"ring road","муруй зам":"winding road","өгсүүр":"uphill stretch","уруу":"downhill stretch",
+"замын тоос":"road dust","замын нүх":"pothole","хурд":"speed","хурдлах":"accelerating","удаашрах":"slowing",
+"зогсох (тээврийн)":"pulling up","гүйцэх":"overtaking","эргэх (замд)":"turning","буцах":"turning back",
+"аялал":"journey","аяны зам":"travel route","зорчигч":"passenger","ачаа тээш":"luggage","тасалбар":"ticket",
+"хуваарь":"timetable","хоцрох":"being late","хүрэлцэн ирэх":"arriving","хөдлөх":"departing","зам гарах":"setting off"
+}});

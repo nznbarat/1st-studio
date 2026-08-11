@@ -1,0 +1,68 @@
+/* ═══ 21 · Байгалийн үзэгдэл II — ус, гал, шороо, салхи ═══ */
+WB.dict.add({ id:"us-gal", label:"Ус, гал, дөл, утаа", icon:"🔥", w:{
+"ус":"water","цэвэр ус":"clean water","булингартай ус":"murky water","гүн ус (нуур)":"deep water",
+"гүехэн ус":"shallow water","урсгал ус":"running water","зогсонги ус":"still water","хүйтэн ус (гол)":"cold river water",
+"халуун ус":"hot water","булгийн ус":"spring water","борооны ус":"rainwater","хайлсан цасны ус":"snowmelt",
+"ундны ус":"drinking water","давстай ус":"salt water","усны гадаргуу":"the water's surface","усны ёроол":"the riverbed",
+"усны цалгиа":"ripples on the water","долгион":"swell","хөөс":"foam","цацраг ус":"spray","дусал":"droplet",
+"дуслын чимээ":"the sound of dripping","үер":"flood","татам ус":"receding water","гандуу":"drought-stricken",
+"ган":"drought","чийг (хөрсний)":"soil moisture","намгийн ус":"marsh water","мөсөн бүрхүүл":"ice crust",
+"нимгэн мөс":"thin ice","мөс хагарах":"ice cracking","мөсөн бүрхүүл хайлах":"ice melting",
+"гал":"fire","дөл":"flame","улаан дөл":"red flame","хөх дөл":"blue flame","том гал":"a great fire",
+"жижиг гал":"a small fire","галын оч":"spark","оч":"sparks","үнс":"ash","нүүрсэн улаан":"glowing embers",
+"түймэр":"wildfire","галын дөл өргөх":"flames leaping up","гал асаах (түймэр)":"kindling a fire",
+"гал унтрах":"the fire dying down","галын дулаан":"the warmth of the fire","галын шаржигнаан":"the crackle of fire",
+"утаа (гал)":"smoke","өтгөн утаа":"thick smoke","нимгэн утаа":"thin wisp of smoke","утааны багана":"column of smoke",
+"утаа дээшлэх":"smoke rising","хөө":"soot","түлэгдсэн үнэр":"the smell of burning","галын гэрэлтэй сүүдэр":"firelit shadow",
+"шороо (хөрс)":"dust and soil","элсэн шуурга (нарийн)":"sandstorm","тоос босох":"dust rising",
+"тоосон бүрхүүл":"a haze of dust","хөрсний хагарал":"cracked earth","намаг шавар":"bog mud",
+"шаварлаг зам":"muddy road","хайрган зам":"gravel path","чулуурхаг газар":"stony ground",
+"салхи (сэвшээ)":"a light breeze","хүчтэй салхи (шуурга)":"a fierce wind","хойд салхи":"a north wind",
+"өмнөд салхи":"a south wind","салхины исгэрээ":"the whistle of the wind","салхи намжих":"the wind dying down",
+"салхи сэрэх":"the wind picking up","хуй":"dust devil","агаарын урсгал":"a current of air","хийсэх тоос":"drifting dust"
+}});
+
+WB.dict.add({ id:"baigal-uzegdel", label:"Байгалийн үзэгдэл, орчин", icon:"🌄", w:{
+"үзэгдэл (байгалийн)":"natural phenomenon","алсын харагдац":"a distant vista","байгалийн үзэсгэлэн":"natural beauty",
+"уулын харагдац":"a mountain view","талын харагдац":"a view over the steppe","хөндийн харагдац":"a view of the valley",
+"нарны туяа тархах":"sunlight spreading","гэрэл усанд тусах":"light reflecting on the water",
+"сүүдэр уулан дээр":"shadow across the mountain","манан хөндийг дүүргэх":"fog filling the valley",
+"үүл уулын оройг таглах":"cloud capping the peak","цас уулан дээр":"snow on the mountains",
+"цасан бүрхүүл гэрэлтэх":"snow cover gleaming","мөсөн гол хөдлөх":"a glacier creeping",
+"хад цоорсон салхи":"wind-carved rock","элсэн манхан хөдлөх":"dunes shifting","өвсний давалгаа":"waves through the grass",
+"өвс салхинд найгах":"grass swaying in the wind","мод найгах":"trees swaying","навч чичрэх":"leaves quivering",
+"мөчир хугарах":"a branch snapping","ойн чимээгүй байдал":"the silence of the forest",
+"шувууд нисэн одох":"birds taking flight","сүрэг бэлчиж яваа":"a herd grazing","морь ганцаараа зогсох":"a lone horse standing",
+"чоно улих":"a wolf howling","хэрээ дуугарах":"a crow cawing","царцаа жиргэх":"crickets chirping",
+"зөгий дуугарах":"bees humming","гол урсах чимээ":"the sound of a flowing river","давалгаа эрэг цохих":"waves striking the shore",
+"хүрхрээ буух":"a waterfall plunging","булаг оргилох":"a spring bubbling up","нуурын гадаргуу тайван":"the lake surface calm",
+"нуурын гадаргуу долгиотой":"the lake surface rippling","үүрийн манан":"dawn mist","үдшийн бүрэнхий":"evening gloom",
+"шөнийн харанхуй":"the dark of night","одон дүүрэн тэнгэр":"a star-filled sky","сар үүлний завсраас":"the moon between clouds",
+"нар үүлний завсраар":"the sun through the clouds","солонго татах":"a rainbow arching","аянга нижигнэх":"thunder rolling",
+"бороо шивэрч эхлэх":"rain beginning to patter","аадар бороо орох":"a downpour breaking","цас зөөлөн орох":"snow falling softly",
+"цасан шуурга дэгдэх":"a blizzard whipping up","хяруу цайх":"frost whitening the ground",
+"шүүдэр тогтох":"dew settling","манан тарах":"the fog lifting","тэнгэр цэлмэх":"the sky clearing",
+"хаврын анхны ногоо":"the first green of spring","намрын шар навч":"the yellow leaves of autumn",
+"өвлийн хүйтэн жавар":"the biting cold of winter","зуны халуун өдөр":"a hot summer day","улирлын өөрчлөлт":"the change of season"
+}});
+
+WB.dict.add({ id:"orgil", label:"Орон зай, хэмжээ, цар хүрээ", icon:"🗺", w:{
+"орон зай":"space","цар хүрээ":"scale","өргөн уудам байдал":"vastness","хязгааргүй тэнгэр":"boundless sky",
+"төгсгөлгүй зай":"endless distance","алсын зай":"far distance","ойрын зай":"near distance","дунд зай":"middle distance",
+"хэтийн харагдац":"perspective view","давхаргалсан алслал":"layered depth","гүн орон зай":"deep space in frame",
+"хавтгай орон зай":"flat space","нээлттэй орон зай":"open space","хаалттай орон зай":"enclosed space",
+"дээд орон зай":"the space above","доод орон зай":"the space below","хажуугийн зай":"lateral space",
+"төвийн цэг":"the central point","булан":"corner","ирмэг (хүрээний)":"the frame edge","хил зааг":"boundary line",
+"хязгаар (алсын)":"the far limit","тэнгэрийн хаяа":"the horizon","хаяа шугам":"horizon line",
+"тэнгэр газрын зааг":"where sky meets land","алсын уулын шугам":"the distant mountain line",
+"хотын дүрс":"the city skyline","дүрсийн тойм":"the outline of a shape","хүрээ (харах талбай)":"field of view",
+"өнцөг (харах)":"viewing angle","өндөр цэг":"a high vantage point","доод цэг":"a low vantage point",
+"дээрээс харах":"looking down from above","доороос харах":"looking up from below","ойроос харах":"seeing from close by",
+"алсаас харах":"seeing from afar","өргөн харагдац":"a broad view","нарийн харагдац":"a narrow view",
+"хэсэгчилсэн харагдац":"a partial view","бүтэн харагдац":"a full view","олон давхарга":"many layers",
+"нэг давхарга":"a single layer","гүнзгий":"profound in depth","өнгөц":"superficial","том хэмжээтэй":"of large scale",
+"жижиг хэмжээтэй":"of small scale","хүнтэй харьцуулахад":"in relation to a human figure",
+"аварга том биет":"a colossal object","өчүүхэн жижиг биет":"a minute object","хэмжээ харьцуулах":"comparing scale",
+"зайн мэдрэмж":"the sense of distance","цар хүрээний мэдрэмж":"the sense of scale","орон зайн гүн":"spatial depth",
+"хоосон зай (композиц)":"empty compositional space","дүүрсэн зай":"filled space","тэнцвэр":"balance"
+}});

@@ -1,0 +1,65 @@
+/* ═══ 32 · Хувцас II, өнгө нарийвчлал II, гоёл II ═══ */
+WB.dict.add({ id:"huvtsas-2", label:"Хувцасны нарийвчлал", icon:"🧵", w:{
+"шинэ дээл":"a new deel","хуучирсан дээл":"a worn deel","угаасан дээл":"a freshly washed deel",
+"нөхөөстэй дээл":"a patched deel","хатгамалтай дээл":"an embroidered deel","өнгө нь бүдгэрсэн дээл":"a sun-faded deel",
+"өвлийн зузаан дээл":"a thick winter deel","зуны нимгэн дээл":"a light summer deel","хүүхдийн дээл":"a child's deel",
+"эмэгтэйн дээл":"a woman's deel","эрэгтэйн дээл":"a man's deel","баярын дээл":"a festive deel",
+"өдөр тутмын хувцас":"everyday clothes","ажлын хувцас (хөдөө)":"working clothes","аяны хувцас":"travelling clothes",
+"дулаан ороолт":"a warm scarf","нимгэн ороолт":"a thin scarf","торгон ороолт":"a silk scarf",
+"алчуур толгойд":"a kerchief on the head","малгай гүн дарсан":"a hat pulled low","малгайн хөвч":"the hat's brim",
+"үслэг захтай":"with a fur collar","савхин ханцуйтай":"with suede sleeves","мөнгөн товчтой":"with silver buttons",
+"хээ угалзтай бүс":"a patterned sash","бүсэлсэн":"belted at the waist","бүсээ мушгин чангалсан":"with the sash cinched tight",
+"хормой шуусан":"with the hem tucked up","ханцуй хумисан":"with sleeves rolled back",
+"гутлын түрий доогуур":"below the boot shaft","гутал шаварласан":"mud-caked boots","гутал цоорсон":"boots worn through",
+"шинэ гутал":"new boots","оймс нөхөөстэй":"darned socks","бээлий хос":"a pair of gloves","бээлийгүй гар":"bare hands",
+"нөмрөг салхинд":"a cloak in the wind","нөмрөгөө нөмөрсөн":"wrapped in a cloak","хүрэм үдээгүй":"an unbuttoned jacket",
+"хүрэм товчлосон":"a buttoned-up jacket","цамц цайрсан":"a bleached shirt","цамц хөлсөнд норсон":"a sweat-soaked shirt",
+"өмд шороотой":"dusty trousers","банзал салхинд":"a skirt in the wind","даашинз урт":"a long dress",
+"хувцасны эмхлэл":"the fold of a garment","хувцасны хээ":"the garment's pattern","хувцасны өнгө":"the colour of the clothing",
+"хувцас өмсөх дараалал":"the layering of clothes","дотуур хувцас нимгэн":"thin underclothing",
+"дуулга гэрэлд":"a helmet catching the light","хуяг нүргэх":"armour clattering","бамбай өргөх":"raising a shield",
+"хуяг цоорхойтой":"pierced armour","цусанд будагдсан хувцас":"blood-stained clothing","урагдсан ханцуй":"a torn sleeve",
+"шороотой хормой":"a dust-hemmed robe","цаснаас норсон дээл":"a deel damp with snow","галын үнэртэй хувцас":"clothes smelling of smoke"
+}});
+
+WB.dict.add({ id:"ongo-2", label:"Өнгө, өнгөний нэрс II", icon:"🖌", w:{
+"хар хүрэн":"dark chestnut","хар хөх":"navy blue","хар ногоон (өтгөн)":"forest green","хар улаан":"oxblood red",
+"цайвар хөх":"powder blue","цайвар ягаан (сарнай)":"rose pink","цайвар шар":"straw yellow","цайвар хүрэн":"fawn",
+"тоосны өнгө":"dust-coloured","элсний өнгө":"sand-toned","чулууны өнгө":"stone-grey","модны өнгө":"wood-brown",
+"шороон өнгө":"earth-toned","цусны өнгө":"blood-coloured","галын өнгө (улаан шар)":"flame-orange",
+"үнсний өнгө":"ash-grey","утааны өнгө":"smoke-grey","мананы өнгө":"mist-white","цасны өнгө":"snow-white",
+"мөсний өнгө":"ice-blue","тэнгэрийн өнгө":"sky-toned","шөнийн өнгө":"night-dark","үүрийн өнгө":"dawn-tinted",
+"наран жаргах өнгө":"sunset-hued","алтан шар (нар)":"sun-gold","хув шар":"amber","зөгийн балын өнгө":"honey-coloured",
+"цайны өнгө":"tea-brown","сүүний өнгө":"milk-white","айрагны өнгө":"whey-white","өрөмний өнгө":"cream-coloured",
+"мөнгөн цайвар":"silver-pale","зэсэн улаан":"copper-red","хүрэл шаргал":"bronze-tan","гуулин шар":"brass-yellow",
+"төмрийн саарал":"iron-grey","зэвний өнгө":"rust-coloured","бэхний хар":"ink-black","шаварны хүрэн":"clay-brown",
+"хасын ногоон":"jade-green","номингийн хөх":"lapis-blue","шүрний улаан":"coral-red","сувдны цагаан":"pearl-white",
+"оюугийн цэнхэр":"turquoise-blue","болорын тунгалаг":"crystal-clear","өнгө нь холилдсон":"colours blending",
+"хоёр өнгө зэрэгцсэн":"two colours side by side","өнгө нь давхарласан":"layered in colour",
+"өнгө нь эрс тод":"starkly coloured","өнгө нь зөөлөн":"gently toned","өнгө нь дулаахан":"warm in hue",
+"өнгө нь хүйтэн сэрүүн":"cool in hue","өнгө нь бүдэг саарал":"washed-out grey","өнгө нь ханасан":"deeply saturated",
+"өнгө нь бага ханасан":"desaturated","гэрэлд өнгө хувирах":"colour shifting in the light",
+"сүүдэрт өнгө гүнзгийрэх":"colour deepening in shadow","өнгө нь анивчих":"colour flickering",
+"нэг өнгийн палет":"a single-hue palette","эсрэг өнгөний палет":"a complementary palette","хязгаарлагдмал палет":"a limited palette"
+}});
+
+WB.dict.add({ id:"goyol-2", label:"Гоёл, эд агуурс II", icon:"📿", w:{
+"мөнгөн зүүлт":"a silver pendant","эртний зүүлт":"an ancient amulet","чулуут бөгж":"a stone-set ring",
+"алтан бөгж":"a gold ring","хос ээмэг":"a pair of earrings","урт ээмэг":"long earrings",
+"хүзүүний мөнгөн товруу":"a silver neck plaque","бугуйн шүр":"a coral bracelet","сувдан зүүлт":"a pearl necklace",
+"мөнгөн гинж":"a silver chain","бэхэлгээт зүүлт":"a clasped pendant","үсний мөнгөн шүү":"a silver hairpin",
+"толгойн гоёл (эмэгтэй)":"a woman's headdress","гэзгэн гоёл":"a braid ornament","мөнгөн бүсний тоноглол":"silver belt mounts",
+"хэтэвч зүүсэн":"with a tobacco pouch hung at the belt","хөөрөг барих":"holding out a snuff bottle",
+"хөөрөг үнэрлэх":"taking snuff","гаанс тамхи":"a pipe of tobacco","гал хэтэн цохих":"striking flint and steel",
+"хутганы хуй мөнгөтэй":"a silver-mounted knife sheath","аягны бүрээс хатгамалтай":"an embroidered cup cover",
+"хадаг хөх":"a blue khadag","хадаг цагаан":"a white khadag","эрхи":"a rosary","эрхи эргүүлэх":"turning a rosary",
+"сахиусны хайрцаг":"an amulet case","бурханы хөрөг зүүх":"wearing a deity image","тарнийн бичиг":"a written charm",
+"туг намирах":"a banner rippling","хиймэл дагуулын дүрс":"an emblematic figure","сүлдний зураг":"an emblem design",
+"тамганы дардас":"the impression of a seal","гэрийн хана дээрх зураг":"a picture on the ger wall",
+"авдрын хээ":"the pattern on a chest","хивсний хээ":"a carpet motif","эсгий дэвсгэрийн хээ":"a felt-mat motif",
+"толины хүрээ":"a mirror frame","самны шүд":"the teeth of a comb","үнэртний шил":"a perfume vial",
+"будгийн сав":"a paint pot","бийрийн үзүүр":"the tip of a brush","бэхний сав":"an inkwell","цаасан хуйлмал":"a paper scroll",
+"хуйлмал судар":"a rolled sutra","модон хавтастай ном":"a wood-bound book","шүүгээний бариул":"a cupboard handle",
+"хайрцгийн таг":"the lid of a box","цоожны түлхүүр":"the key to a lock","цүнхний оосор":"the strap of a bag",
+"түрийвчний товч":"the clasp of a purse","цагны хэлбэрлэг":"the hands of a clock","цагны дуу":"the ticking of a clock"
+}});

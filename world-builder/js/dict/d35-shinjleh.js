@@ -1,0 +1,65 @@
+/* ═══ 35 · Байгалийн ухаан, сансар, орчны судлал ═══ */
+WB.dict.add({ id:"shinjleh-2", label:"Байгалийн ухаан", icon:"🔬", w:{
+"бодис (химийн)":"a chemical substance","элемент (химийн)":"a chemical element","атом":"an atom",
+"молекул":"a molecule","эс":"a cell","эд (биологийн)":"tissue","эрхтэн (биологийн)":"an organ",
+"ген":"a gene","удамшил":"heredity","хувьсал":"evolution","зүйл (биологийн)":"a species",
+"экосистем":"an ecosystem","хүрээлэн буй орчны тэнцвэр":"ecological balance","хоол тэжээлийн хэлхээ":"a food chain",
+"амьдрах орчин":"a habitat","биологийн олон янз байдал":"biodiversity","ховордсон зүйл":"an endangered species",
+"устаж үгүй болсон":"extinct","нөхөн сэргэлт (байгаль)":"natural regeneration","хөрсний элэгдэл":"soil erosion",
+"цөлжилтийн процесс":"the process of desertification","ойн хомсдол":"deforestation","усны хомсдол":"water scarcity",
+"агаарын бохирдол":"air pollution","хүлэмжийн хий":"greenhouse gas","дэлхийн дулаарал":"global warming",
+"уур амьсгалын өөрчлөлт":"climate change","мөсөн бүрхүүл хайлах":"the ice sheet melting","далайн түвшин":"sea level",
+"эрчим хүчний хэрэглээ":"energy consumption","сэргээгдэх эрчим хүч":"renewable energy","нүүрстөрөгчийн ул мөр":"a carbon footprint",
+"дахин боловсруулалт":"recycling","хаягдал":"waste","хог хаягдал зайлуулах":"waste disposal","цэвэршүүлэх":"purifying",
+"физик үзэгдэл":"a physical phenomenon","хүчний талбар":"a force field","соронзон":"magnetism","цахилгаан цэнэг":"an electric charge",
+"дулаан дамжуулалт":"heat conduction","гэрлийн хугарал":"refraction of light","гэрлийн ойлт":"reflection of light",
+"дуу авианы долгион":"a sound wave","давтамж":"frequency","долгионы урт":"wavelength","хурдатгал":"acceleration",
+"даралт":"pressure","нягтрал":"density","масс":"mass","эрчим хүчний хадгалалт":"conservation of energy",
+"химийн урвал":"a chemical reaction","уусмал":"a solution","талст":"a crystal","хайлах цэг":"a melting point",
+"буцлах цэг":"a boiling point","хүчил":"an acid","шүлт":"an alkali","исэлдэлт":"oxidation","зэврэлт":"corrosion",
+"эрдэс":"a mineral","хүдэр":"an ore","чулуулгийн давхарга":"a rock stratum","чулуужсан олдвор":"a fossil",
+"геологийн үе":"a geological era","тектоник хавтан":"a tectonic plate","галт уулын дэлбэрэлт":"a volcanic eruption",
+"газар хөдлөлтийн долгион":"a seismic wave","цаг уурын станц":"a weather station","урьдчилсан мэдээ":"a forecast"
+}});
+
+WB.dict.add({ id:"sansar", label:"Сансар, одон орон", icon:"🌌", w:{
+"орчлон ертөнц":"the cosmos","огторгуйн уудам":"the expanse of space","од эрхсийн ертөнц":"the world of the stars",
+"нарны аймаг":"the solar system","гараг эрхэс":"the planets","дэлхийн бөмбөрцөг":"the globe of the Earth",
+"дэлхийн эргэлт":"the Earth's rotation","тойрог зам":"an orbit","хиймэл дагуулын зам":"a satellite's orbit",
+"сарны хэлбэр":"the phase of the moon","шинэ сар":"a new moon","хиртэлт":"an eclipse","сарны хиртэлт":"a lunar eclipse",
+"нарны титэм":"the solar corona","нарны толбо":"a sunspot","нарны салхи":"the solar wind","туйлын туяа":"the polar lights",
+"од хоорондын зай":"interstellar distance","гэрлийн жил":"a light year","од төрөх":"a star being born",
+"од унтрах":"a star dying","хэт шинэ од":"a supernova","хар нүх":"a black hole","мананцар":"a nebula",
+"од хуран цугларсан":"a star cluster","сүүн замын гол":"the core of the Milky Way","галактикийн гар":"a galactic arm",
+"сүүлт одны сүүл":"a comet's tail","солирын бороо":"a meteor shower","астероид":"an asteroid",
+"сансрын тоос":"cosmic dust","сансрын цацраг":"cosmic radiation","хүндийн хүч":"gravitational pull",
+"жингүйдэл":"weightlessness","сансрын хөлгийн хөдөлгүүр":"a starship engine","хөөрөлт":"a launch",
+"буулт":"a landing","тойрог замд орох":"entering orbit","сансрын алхалт":"a spacewalk","сансрын хувцас":"a spacesuit",
+"дэлхийг харах":"seeing the Earth from above","алс гараг":"a distant planet","гаригийн гадаргуу":"a planetary surface",
+"улаан элсэн гараг":"a red sand planet","мөсөн гараг":"an ice planet","хийн аварга":"a gas giant",
+"хоёр нартай тэнгэр":"a sky with two suns","гурван сартай шөнө":"a night with three moons",
+"харь ертөнцийн ландшафт":"an alien landscape","амьдрал хайх":"searching for life","дохио илгээх":"sending a signal",
+"дохио хүлээн авах":"receiving a signal","сансрын нам гүм":"the silence of space","од ширтэх":"gazing at the stars",
+"тэнгэрийн газрын зураг":"a star chart","одон орны дуран":"an astronomical telescope","ажиглалтын газар":"an observatory",
+"од тоолох":"counting the stars","үүрийн цолмон":"the morning star","алтан гадас":"the pole star"
+}});
+
+WB.dict.add({ id:"orchin-uhaan", label:"Орчин, хэмжилт, ажиглалт", icon:"🧭", w:{
+"ажиглалт":"an observation","ажиглагч":"an observer","бүртгэл (судалгааны)":"a record","хэмжсэн үзүүлэлт":"a measured reading",
+"өгөгдөл цуглуулах":"gathering data","дүн шинжилгээ хийх":"analysing","харьцуулах":"making a comparison",
+"дүгнэлт хийх":"drawing a conclusion","таамаглал дэвшүүлэх":"advancing a hypothesis","батлах":"confirming",
+"үгүйсгэх":"refuting","давтан турших":"repeating an experiment","хяналтын бүлэг":"a control group",
+"алдааны хязгаар":"a margin of error","нарийвчлал":"precision","үнэн зөв байдал":"accuracy",
+"хэмжих хэрэгсэл":"a measuring instrument","термометр":"a thermometer","барометр":"a barometer",
+"луужин":"a compass","газрын зураг":"a map","солбицол":"coordinates","өргөрөг":"latitude","уртраг":"longitude",
+"өндрийн хэмжилт":"an altitude reading","зайн хэмжилт":"a distance measurement","масштаб":"a scale on a map",
+"тэмдэглэгээ (газрын зураг)":"a map symbol","чиг баримжаа":"a bearing","чиглэл тодорхойлох":"determining direction",
+"нар зүг заах":"taking direction from the sun","од зүг заах":"navigating by the stars","замын тэмдэг тавих":"marking the route",
+"хайгуул":"a survey","хайгуулын баг":"a survey party","хээрийн судалгаа":"fieldwork","дээж авах":"taking a sample",
+"дээж (шинжилгээний)":"a specimen","лабораторийн шинжилгээ":"a laboratory analysis","микроскопоор харах":"viewing under a microscope",
+"томруулж харах":"magnifying","бичиж тэмдэглэх":"noting down","зураглал хийх":"charting","график":"a graph",
+"хүснэгт":"a table of figures","диаграм":"a diagram","загвар зохиох":"building a model","симуляц хийх":"running a simulation",
+"тооцоолол хийх":"performing a calculation","үр дүнг харьцуулах":"comparing results","алдаа засах":"correcting an error",
+"нээлт хийх":"making a discovery","илтгэл тавих":"presenting findings","судалгааны тайлан":"a research report",
+"хамтарсан судалгаа":"a joint study","эх сурвалж иш татах":"citing a source","нотолгоо цуглуулах":"assembling evidence"
+}});

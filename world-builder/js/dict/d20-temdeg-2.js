@@ -1,0 +1,65 @@
+/* ═══ 20 · Тэмдэг нэр II — дүрслэх үгс ═══ */
+WB.dict.add({ id:"adj-view", label:"Тэмдэг нэр · харагдац", icon:"👁", w:{
+"тод харагдах":"clearly visible","бүдэг харагдах (шинж)":"faintly visible","үл ялиг":"barely perceptible",
+"нүдэнд өртөх":"conspicuous","нүднээс далд":"out of sight","ил харагдах":"exposed to view","халхлагдсан":"obscured",
+"тунгалаг (ус)":"crystal clear","булингартай":"turbid","гялалзсан гадаргуу":"shining surface",
+"толь мэт":"mirror-like","гөлгөр гялгар":"glossy and smooth","мөнгөлөг гялтганасан":"silvery shimmering",
+"алтлаг гэрэлтсэн":"golden glowing","галын өнгөтэй":"fire-coloured","цуст улаан":"blood red",
+"хар шиг харанхуй":"pitch dark","сүүн цагаан манан":"milk-white mist","саарал бүрхэг":"grey and overcast",
+"өнгө нь бүдгэрсэн (эд)":"colour-faded","өнгө нь тод (эд)":"richly coloured","эрээн алаг":"mottled and patchy",
+"судалтай хээтэй":"striped and patterned","цоохор толботой":"spotted","цэвэр нэг өнгийн":"of a single clean colour",
+"өтгөн сүүдэртэй":"deeply shadowed","хагас гэрэлтэй":"half-lit","гэрэл тусгасан":"catching the light",
+"тодрол сайтай":"sharply contrasted","бүрэлзсэн ирмэгтэй":"with blurred edges","хурц ирмэгтэй":"with hard edges",
+"тархай бутархай":"scattered about","эмх цэгцтэй өрөгдсөн":"neatly arranged","овоолсон":"heaped up",
+"тарсан хаягдал":"strewn debris","хоосон цэвэрхэн":"bare and clean","дүүрэн бөглөрсөн":"packed full",
+"нягт өрөгдсөн":"densely packed","сийрэг байрлалтай":"sparsely placed","дүүжлэгдсэн":"suspended",
+"хэвтээ байрлалтай":"lying horizontally","босоо байрлалтай":"standing vertically","налуу":"sloping",
+"эгц босоо":"sheer and vertical","хэвийсэн":"tilted","хазайсан":"leaning to one side","эргэлдсэн хэлбэртэй":"spiral-shaped",
+"хагас эвдэрсэн":"half-broken","бүрэн бүтэн":"wholly intact","элэгдэж муудсан":"worn and degraded",
+"шинээр будсан":"freshly painted","тоос дарагдсан":"dust-covered","цасанд дарагдсан":"snow-covered",
+"өвсөөр бүрхэгдсэн":"grass-covered","мөсөнд хүрээлэгдсэн":"ringed with ice","манангаар бүрхэгдсэн":"veiled in fog",
+"гэрлээр дүүрсэн":"flooded with light","сүүдэрт живсэн":"sunk in shadow","өнгө нь халуун":"warm in tone",
+"өнгө нь хүйтэн":"cool in tone","эрс тод":"starkly clear","намуухан өнгөтэй":"quietly toned"
+}});
+
+WB.dict.add({ id:"adj-feel", label:"Тэмдэг нэр · мэдрэмж, дүр төрх", icon:"🌡", w:{
+"дулаахан мэдрэмжтэй":"warm to the touch","хүйтэн мэдрэмжтэй":"cold to the touch","чийглэг мэдрэгдэх":"clammy",
+"хуурайшсан (арьс)":"parched","зөөлөвтөр":"softish","хатуувтар":"rather hard","уян хатан (эд)":"supple",
+"хэврэг (эвдэрмээр)":"fragile","бат бөх (эд)":"robust","хүнд жинтэй (эд)":"weighty","өдтэй хөнгөн":"feather-light",
+"нимгэн ил тод":"thin and translucent","зузаан бүдүүн":"thick and coarse","эрээвэр":"prickly",
+"өргөстэй (мэдрэмж)":"thorny","гөлгөр хүйтэн":"smooth and cold","барзгар хуурай":"rough and dry",
+"наалдамхай нойтон":"sticky and wet","тослог":"greasy","тоостой хуурай":"dusty and dry","цэвэрхэн сэрүүн":"clean and cool",
+"үнэртэй сайхан":"sweet-smelling","өмхий эвгүй":"foul and rank","шинэхэн үнэртэй":"fresh-scented",
+"хуучирсан үнэртэй":"musty","утаатай үнэртэй":"smoky-smelling","чихэрлэг үнэртэй":"sweetly scented",
+"эрч хүчтэй харагдах":"looking energetic","ядарсан харагдах":"looking worn out","өвчтэй харагдах":"looking unwell",
+"эрүүл саруул":"hale and healthy","залуу дүр төрхтэй":"youthful-looking","хөгширсөн":"aged in appearance",
+"цэвэрхэн хувцасласан":"neatly dressed","эмх замбараагүй харагдах":"dishevelled","гоёмсог":"finely dressed",
+"даруу төрхтэй":"modest in appearance","тансаг харагдах":"looking luxurious","ядуу төрхтэй":"looking impoverished",
+"бардам зогсоо":"standing proudly","цомхон нягт":"compact","өргөн задгай":"broad and open","нарийхан урт":"long and slim",
+"бөөрөнхий бүдүүн":"round and stout","өндөр туранхай":"tall and thin","намхан бүдүүн":"short and thickset",
+"хүчтэй харагдах":"looking powerful","эмзэг харагдах":"looking fragile","аюултай харагдах":"looking dangerous",
+"найрсаг харагдах":"looking friendly","хөндий харагдах":"looking distant","нууцлаг харагдах":"looking secretive",
+"ичимхий харагдах":"looking bashful","гайхсан харагдах":"looking startled","ядуу хувцастай":"poorly clothed",
+"дулаан хувцастай":"warmly clothed","нимгэн хувцастай":"thinly clothed","нойтон хувцастай":"soaked through",
+"шороо тоостой":"grimy with dust","цусанд будагдсан":"stained with blood","хөлсөнд норсон":"drenched in sweat"
+}});
+
+WB.dict.add({ id:"adj-time", label:"Тэмдэг нэр · цаг, хэмнэл", icon:"⏱", w:{
+"эртний (хуучин)":"of olden days","шинэхэн (сая болсон)":"newly happened","удаан үргэлжилсэн":"long-lasting",
+"түр зуурын (богино)":"fleeting","мөчийн":"momentary","хормын зуур":"lasting only an instant",
+"мөнхийн (үүрд)":"everlasting","байнгын":"perpetual","үе үе":"intermittent","тасалдалтай":"broken up",
+"тасралтгүй":"uninterrupted","жигд хэмнэлтэй":"evenly paced","хурдан хэмнэлтэй":"fast-paced",
+"удаан хэмнэлтэй":"slow-paced","аажим өрнөх":"unfolding gradually","гэнэт өрнөх":"erupting suddenly",
+"давтагдсан":"repeated","анхны":"initial","эцсийн":"final","дундаж хугацааны":"of middling duration",
+"өглөөний":"morning-time","үдийн":"midday","үдшийн":"evening-time","шөнийн":"nocturnal","өдрийн":"daytime",
+"улирлын":"seasonal","жилийн":"annual","сарын":"monthly","долоо хоногийн":"weekly","өдөр бүрийн":"everyday",
+"хуучин цагийн":"from a bygone age","орчин цагийн":"of the present day","ирээдүйн цагийн":"of a future time",
+"өнгөрсөн жилийн":"of last year","ирэх жилийн":"of next year","саяхны":"recent","алс хэтийн":"far-off",
+"он удаан жилийн":"of many long years","хэдэн зууны настай":"centuries old","мянган жилийн":"of a thousand years",
+"нэг өдрийн":"of a single day","хагас өдрийн":"half-day","бүтэн шөнийн":"all-night","үүрийн":"of the dawn",
+"бүрийн":"of the dusk","намрын сүүлч":"late autumn","өвлийн эхэн":"early winter","хаврын дунд":"mid-spring",
+"зуны төгсгөл":"the end of summer","улирал солигдох үе":"the turn of the season","шинэ жилийн":"new-year",
+"баярын үеийн":"festive","ажлын өдрийн":"of a working day","амралтын үеийн":"of a holiday period",
+"яаралтай":"urgent","яараагүй":"unhurried","хойшлуулсан":"postponed","цаг тухайд нь":"timely",
+"хожимдсон":"belated","эрт болсон":"premature","цагтаа":"right on time","хугацаа хэтэрсэн":"overdue"
+}});

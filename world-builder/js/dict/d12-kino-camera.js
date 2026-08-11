@@ -1,0 +1,88 @@
+/* ═══ 12 · Кино, камер, гэрэл, урлаг ═══ */
+WB.dict.add({ id:"kino", label:"Кино, зохиол, найруулга", icon:"🎬", w:{
+"кино":"film","уран сайхны кино":"feature film","богино хэмжээний кино":"short film","баримтат кино":"documentary",
+"хүүхэлдэйн кино":"animation","анимэ":"anime","манга":"manga","цуврал":"series","ангиуд":"episodes",
+"эпизод":"episode","улирал (цуврал)":"season","трейлер":"trailer","зурагт хуудас":"poster",
+"зохиол":"screenplay","зохиолын төсөл":"treatment","логлайн":"logline","өгүүлэмж":"narrative",
+"өрнөл":"plot","үйл явдал":"storyline","дэд өгүүлэмж":"subplot","эргэлт":"plot twist","оргил үе":"climax",
+"тайлал":"resolution","үзэгдэл":"scene","дүр зураг":"tableau","кадр":"shot","зураглал":"framing",
+"агшин":"beat","эхлэл (кино)":"opening","төгсгөл (кино)":"ending","титэм бичиг":"end credits",
+"дүр":"character","гол дүр (кино)":"protagonist","дүрийн зам":"character arc","дүрийн зорилго":"character goal",
+"хэлэлцээ":"dialogue","монолог":"monologue","өгүүлэгчийн дуу":"voice-over","дуу оруулалт":"dubbing",
+"хадмал орчуулга":"subtitles","найруулга":"direction","найруулагчийн үзэл":"directorial vision",
+"тайз чимэглэл":"set design","дүрийн хувцас":"costume design","грим":"make-up","бүтээлч баг":"crew",
+"дүрд сонгон шалгаруулалт":"casting","бэлтгэл":"pre-production","зураг авалт":"shooting",
+"зураг авалтын талбай":"film set","дубль":"take","хоёр дахь дубль":"second take","монтаж":"editing",
+"шилжилт":"transition","огтлолт":"cut","хурдан огтлолт":"quick cut","уусалт":"dissolve","бүдгэрэлт":"fade",
+"хар дэлгэц":"black screen","удаашруулсан":"slow motion","хурдасгасан":"time-lapse","хөлдөөсөн кадр":"freeze frame",
+"эффект":"visual effect","тусгай эффект":"special effect","компьютер график":"computer graphics",
+"ногоон дэлгэц":"green screen","дуу оруулга":"sound design","дууны эффект":"sound effect","хөгжмийн зохиомж":"score",
+"тайзны хөдөлгөөн":"blocking","үзэгчийн анхаарал":"viewer's attention","хэмнэл (кино)":"pacing",
+"уур амьсгал бүрдүүлэх":"setting the mood","үзүүлэн":"prop","хиймэл цас":"artificial snow","утаа машин":"smoke machine"
+}});
+
+WB.dict.add({ id:"camera", label:"Камер, өнцөг, хөдөлгөөн", icon:"📷", w:{
+"камер":"camera","линз":"lens","өргөн өнцгийн линз":"wide-angle lens","телескоп линз":"telephoto lens",
+"макро линз":"macro lens","анаморф линз":"anamorphic lens","диафрагм":"aperture","гэрэл мэдрэмж":"ISO sensitivity",
+"хаалтын хурд":"shutter speed","фокус":"focus","фокус солих":"rack focus","гүн фокус":"deep focus",
+"бүдэг дэвсгэр":"blurred background","талбайн гүн":"depth of field","гар камер":"handheld camera",
+"тогтвортой камер":"stabilised camera","гурван хөлт тулгуур":"tripod","кран":"camera crane","дрон":"drone",
+"тэрэгтэй камер":"dolly","рельс":"camera track","стедикам":"steadicam","өнцөг":"angle",
+"нүдний түвшин":"eye level","доод өнцөг":"low angle","дээд өнцөг":"high angle","шувууны харц":"bird's-eye view",
+"шоргоолжны харц":"worm's-eye view","ташуу өнцөг":"dutch angle","мөрөн дээгүүр":"over-the-shoulder shot",
+"нүүрэн талаас":"frontal shot","хажуугаас":"profile shot","ардаас":"shot from behind",
+"ойрын кадр":"close-up","маш ойрын кадр":"extreme close-up","нүүрний кадр":"face close-up",
+"дунд кадр":"medium shot","бүтэн бие":"full shot","өргөн кадр":"wide shot","маш өргөн кадр":"extreme wide shot",
+"тогтоох кадр":"establishing shot","хоёр хүний кадр":"two-shot","цэг харц":"point-of-view shot",
+"хөдөлгөөн (камерын)":"camera movement","ойртох":"pushing in","холдох":"pulling back","тойрох (камер)":"orbiting",
+"дагах (камер)":"tracking","хажуу тийш гулсах":"trucking","дээш өргөх":"craning up","доош буулгах":"craning down",
+"эргүүлэх (хэвтээ)":"panning","эргүүлэх (босоо)":"tilting","гар чичрэлт":"handheld shake","гулсалт":"glide",
+"нэг цул кадр":"one continuous take","удаан кадр":"long take","хурдан хөдөлгөөн":"whip pan",
+"композици":"composition","гурвалын дүрэм":"rule of thirds","төвлөрсөн композици":"centred composition",
+"тэгш хэмтэй кадр":"symmetrical frame","хүрээлэх":"framing within a frame","урд тал":"foreground",
+"дунд тал":"middle ground","дэвсгэр":"background","хоосон зай":"negative space","хэтийн хэтийн харагдац":"perspective",
+"шугам":"leading line","хэтийн цэг":"vanishing point","хүрээ дүүрэн":"filling the frame","зайтай":"loosely framed",
+"хөдөлгөөнт бүдгэрэл":"motion blur","мөр":"trail of movement","зураг авалтын өнцөг сонгох":"choosing an angle"
+}});
+
+WB.dict.add({ id:"gerel", label:"Гэрэл, сүүдэр, тусгал", icon:"💡", w:{
+"гэрэл":"light","гэрэлтүүлэг":"lighting","байгалийн гэрэл":"natural light","хиймэл гэрэл":"artificial light",
+"нарны гэрэл":"sunlight","сарны гэрэл (гэрэлтүүлэг)":"moonlight","галын гэрэл":"firelight","лааны гэрэл":"candlelight",
+"дэнлүүний гэрэл":"lantern light","гудамжны гэрэл":"streetlight","неон гэрэл":"neon light","гэрэлт хаяг":"neon sign",
+"үндсэн гэрэл":"key light","дүүргэх гэрэл":"fill light","арын гэрэл":"backlight","контур гэрэл":"rim light",
+"дээрээс гэрэл":"top light","доороос гэрэл":"under-lighting","хажуугийн гэрэл":"side light",
+"зөөлөн гэрэл":"soft light","хатуу гэрэл":"hard light","сарнисан гэрэл":"diffused light","чиглүүлсэн гэрэл":"directional light",
+"туяа":"ray of light","гэрлийн багц":"beam of light","гэрлийн зурвас":"shaft of light","эзэлхүүнт гэрэл":"volumetric light",
+"тоос дундах туяа":"light through dust","цонхны гэрэл":"window light","тоонооор орох гэрэл":"light through the roof ring",
+"тусгал":"reflection","эргэх тусгал":"bounce light","гялбаа":"glare","гэрлийн туяарал":"halation",
+"толбо (гэрлийн)":"light spot","гялалзах":"glinting","гэрэлтэх":"glowing","анивчих":"flickering",
+"дүрэлзэх":"blazing","дүлэгнэх":"smouldering","бадрах":"flaring up","бүдгэрэх":"dimming","унтрах":"going out",
+"сүүдэр":"shadow","урт сүүдэр":"long shadow","хурц сүүдэр":"sharp shadow","зөөлөн сүүдэр":"soft shadow",
+"хагас сүүдэр":"half-shadow","сүүдэрт":"in shadow","гэрэлд":"in the light","эсрэг гэрэл":"backlit",
+"тодрол":"contrast","өндөр тодрол":"high contrast","бага тодрол":"low contrast","гэрэл сүүдрийн тоглолт":"play of light and shadow",
+"харанхуй булан":"dark corner","гэрлийн эх үүсвэр":"light source","гэрэл унах":"light falling on",
+"гэрэл тархах":"light spreading","гэрэл шүүрэх":"light filtering through","сүүдэр татах":"casting a shadow",
+"дүрс сүүдэр":"silhouette","хар дүрс":"dark silhouette","гэрэлтэй дэвсгэр":"bright background",
+"өнгөт гэрэл":"coloured light","дулаан гэрэл":"warm light","хүйтэн гэрэл":"cool light","цэнхэр цаг":"blue-hour light"
+}});
+
+WB.dict.add({ id:"urlag", label:"Урлаг, хөгжим, дуу чимээ", icon:"🎵", w:{
+"урлаг":"art","уран зураг":"painting","зураг":"picture","хөрөг":"portrait","байгалийн зураг":"landscape painting",
+"натюрморт":"still life","ноорог":"sketch","эскиз":"study sketch","хээ угалзан чимэглэл":"ornamental design",
+"уран баримал":"sculpture","хөшөө (баримал)":"statue","сийлбэр":"carving","модон сийлбэр":"wood carving",
+"вааран урлал":"pottery","уран бичлэг":"calligraphy","бийр":"brush","бийрийн зураас":"brushstroke",
+"будаг":"paint","усан будаг":"watercolour","тосон будаг (урлаг)":"oil paint","зотон":"canvas","хүрээ (зургийн)":"frame",
+"үзэсгэлэн":"exhibition","цуглуулга":"collection","загвар":"design","хэв маяг":"style","чиглэл (урлагийн)":"movement",
+"хийсвэр":"abstract","бодит дүрслэл":"realism","хэт бодит":"hyperreal","гар зураг маягийн":"illustrative",
+"хөгжим":"music","аялгуу":"melody","хэмнэл":"rhythm","цохилт":"beat","эгшиг":"tone","хөгжмийн зэмсэг":"instrument",
+"морин хуур":"morin khuur (horsehead fiddle)","хуур":"fiddle","ятга":"zither","лимбэ":"flute","бишгүүр":"reed pipe",
+"бүрээ":"horn trumpet","цан":"cymbals","хэнгэрэг":"large drum","бөмбөр":"drum","хонх":"bell","дамар":"hand drum",
+"гитар":"guitar","төгөлдөр хуур":"piano","хийл":"violin","дуу":"song","урт дуу":"urtiin duu (Mongolian long song)",
+"богино дуу":"short song","ардын дуу":"folk song","дуулал":"anthem","магтаал (дуу)":"praise song",
+"хөөмий":"khoomii (throat singing)","бүжиг":"dance","бий биелгээ":"biyelgee (Mongolian body dance)",
+"чимээ":"sound","дуу чимээ":"noise","чимээгүй байдал":"silence","цуурай":"echo","дуугарах":"sounding",
+"шуугиан":"clamour","шивнэх чимээ":"whispering sound","шаржигнах":"crunching","шаагих":"roaring",
+"нүргээн":"rumble","дэлбэрэлт":"blast","хөлийн чимээ":"footsteps","туурайн чимээ":"hoofbeats",
+"салхины исгэрэх":"whistling of wind","усны чимээ":"sound of water","навчны чимээ":"rustle of leaves",
+"галын шаржигнах":"crackle of fire","хонхны дуу":"toll of a bell","хүний дуу":"human voice","амьсгалын чимээ":"sound of breathing"
+}});
