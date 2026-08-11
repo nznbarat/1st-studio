@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1st Studio — Camera Director</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ═══ Blender-style палитр ═══ */
+:root{
+  --win:#1d1d1d; --hdr:#181818; --edit:#303030; --panel:#282828; --sub:#232323;
+  --line:#3b3b3b; --line2:#4a4a4a;
+  --wid:#545454; --wid-h:#656565; --wid-in:#1f1f1f;
+  --txt:#e5e5e5; --dim:#9a9a9a; --dim2:#767676;
+  --acc:#4772b3; --acc-h:#5a86c9;
+  --sel:#ed9e5c; --act:#ffaf4d;
+  --key:#e8b12b; --key-sel:#ffe066; --key-dim:#8e8e8e;
+  --x:#e2696b; --y:#8fcf5b; --z:#5b8fd6;
+  --ok:#5bbf6a; --warn:#d9a441; --err:#d95b5b;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{
+  background:var(--win);color:var(--txt);
+  font-family:'Inter',system-ui,-apple-system,sans-serif;font-size:12px;line-height:1.45;
+  -webkit-font-smoothing:antialiased;user-select:none;
+}
+button,select,input,textarea{font-family:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:var(--sub)}
+::-webkit-scrollbar-thumb{background:#4a4a4a;border-radius:6px;border:2px solid var(--sub)}
+::-webkit-scrollbar-thumb:hover{background:#5c5c5c}
+:focus-visible{outline:1px solid var(--acc);outline-offset:1px}
+
+/* ═══ Widget суурь ═══ */
+.w{background:var(--wid);border:none;border-radius:4px;padding:5px 9px;font-size:11.5px;font-weight:500;transition:background .1s}
+.w:hover{background:var(--wid-h)}
+.w:active{background:var(--acc)}
+.w.on{background:var(--acc);color:#fff}
+.w.on:hover{background:var(--acc-h)}
+.w:disabled{opacity:.38;cursor:default;background:var(--wid)}
+select.w{padding:5px 7px;cursor:pointer;appearance:none;background-image:linear-gradient(45deg,transparent 50%,#cfcfcf 50%),linear-gradient(135deg,#cfcfcf 50%,transparent 50%);background-position:calc(100% - 13px) 52%,calc(100% - 9px) 52%;background-size:4px 4px;background-repeat:no-repeat;padding-right:22px}
+select.w option{background:var(--edit)}
+input.w,textarea.w{background:var(--wid-in);border:1px solid #131313;cursor:text}
+input.w:focus,textarea.w:focus{border-color:var(--acc);background:#141414}
+textarea.w{width:100%;resize:vertical;line-height:1.5;padding:8px 9px}
+input[type=range]{-webkit-appearance:none;appearance:none;height:18px;background:transparent;cursor:ew-resize}
+input[type=range]::-webkit-slider-runnable-track{height:18px;background:var(--wid-in);border-radius:4px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:18px;background:var(--acc);border-radius:3px;border:1px solid #1a1a1a}
+input[type=range]::-moz-range-track{height:18px;background:var(--wid-in);border-radius:4px}
+input[type=range]::-moz-range-thumb{width:10px;height:18px;background:var(--acc);border-radius:3px;border:1px solid #1a1a1a}
+input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:pointer}
+
+/* ═══ Байрлал ═══ */
+#root{display:flex;flex-direction:column;height:100%}
+#topbar{height:30px;flex:none;display:flex;align-items:center;gap:2px;padding:0 8px;background:var(--hdr);border-bottom:1px solid #0f0f0f}
+.logo{font-weight:700;font-size:12.5px;letter-spacing:.5px;margin-right:8px;white-space:nowrap}
+.logo b{color:var(--sel)}
+.mnu{padding:4px 9px;border-radius:3px;font-size:11.5px;color:#d2d2d2;position:relative}
+.mnu:hover{background:#2e2e2e}
+.mnu.open{background:var(--acc);color:#fff}
+.pop{position:absolute;top:100%;left:0;min-width:230px;background:var(--panel);border:1px solid #101010;border-radius:5px;box-shadow:0 10px 30px rgba(0,0,0,.6);padding:4px;z-index:400;display:none;text-align:left}
+.pop.show{display:block}
+.pop button{display:flex;width:100%;justify-content:space-between;gap:18px;align-items:center;padding:5px 9px;border-radius:3px;font-size:11.5px;color:#dcdcdc}
+.pop button:hover{background:var(--acc);color:#fff}
+.pop button i{font-style:normal;font-family:'JetBrains Mono';font-size:10px;color:var(--dim2)}
+.pop button:hover i{color:#dfe8f7}
+.pop hr{border:none;border-top:1px solid var(--line);margin:4px 6px}
+.pop .lbl{padding:5px 9px 2px;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim2)}
+.spacer{flex:1}
+.tabs{display:flex;gap:1px;background:#111;border-radius:5px;padding:2px}
+.tabs button{padding:4px 12px;border-radius:4px;font-size:11px;font-weight:500;color:var(--dim)}
+.tabs button:hover{background:#2e2e2e;color:var(--txt)}
+.tabs button.on{background:var(--acc);color:#fff}
+.cnt{display:flex;align-items:center;background:var(--wid-in);border-radius:4px;overflow:hidden;height:22px}
+.cnt button{width:22px;height:22px;background:var(--wid);font-size:14px;line-height:1;font-weight:600;color:#d5d5d5}
+.cnt button:hover{background:var(--wid-h)}
+.cnt button:disabled{opacity:.3}
+.cnt span{min-width:66px;text-align:center;font-size:11px;font-weight:600;font-family:'JetBrains Mono'}
+
+#main{flex:1;display:flex;min-height:0}
+#tools{width:38px;flex:none;background:var(--hdr);border-right:1px solid #0f0f0f;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0}
+#tools button{width:28px;height:28px;border-radius:5px;font-size:14px;color:#c4c4c4;display:flex;align-items:center;justify-content:center;background:var(--wid)}
+#tools button:hover{background:var(--wid-h)}
+#tools button.on{background:var(--acc);color:#fff}
+#tools .gap{height:8px}
+
+#stage{flex:1;position:relative;min-width:0;background:#1a1a1a}
+#vp{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:default}
+#ovl{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#vphdr{position:absolute;top:0;left:0;right:0;height:26px;display:flex;align-items:center;gap:4px;padding:0 6px;background:rgba(24,24,24,.86);backdrop-filter:blur(6px);border-bottom:1px solid #0f0f0f;z-index:5;overflow-x:auto;scrollbar-width:none}
+#vphdr::-webkit-scrollbar{display:none}
+#vphdr .vb{padding:3px 8px;border-radius:4px;font-size:10.5px;color:#cdcdcd;white-space:nowrap;background:var(--wid)}
+#vphdr .vb:hover{background:var(--wid-h)}
+#vphdr .vb.on{background:var(--acc);color:#fff}
+#vphdr .sep{width:1px;height:15px;background:var(--line);margin:0 3px;flex:none}
+#vphdr .grp{display:flex;gap:2px;background:#141414;padding:2px;border-radius:5px}
+#hud{position:absolute;top:32px;left:10px;font-family:'JetBrains Mono';font-size:10.5px;line-height:1.75;color:var(--dim);text-shadow:0 1px 3px #000;pointer-events:none;z-index:4}
+#hud b{color:#f0f0f0;font-weight:500}
+#hud .a{color:var(--sel)}
+#hud .g{color:var(--ok)}
+#npanel{position:absolute;top:32px;right:8px;width:190px;background:rgba(40,40,40,.94);backdrop-filter:blur(8px);border:1px solid #101010;border-radius:6px;padding:7px;z-index:6;font-size:10.5px;box-shadow:0 6px 20px rgba(0,0,0,.5)}
+#npanel h4{font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--dim2);margin:6px 0 4px;font-weight:600}
+#npanel h4:first-child{margin-top:0}
+.nrow{display:flex;align-items:center;gap:5px;margin-bottom:3px}
+.nrow label{width:16px;font-family:'JetBrains Mono';font-size:10px;font-weight:600;text-align:center;border-radius:3px}
+.nrow .lx{color:var(--x)}.nrow .ly{color:var(--y)}.nrow .lz{color:var(--z)}
+.nrow input{flex:1;background:var(--wid-in);border:1px solid #131313;border-radius:3px;padding:3px 5px;font-family:'JetBrains Mono';font-size:10px;min-width:0}
+.nrow span{flex:1;font-family:'JetBrains Mono';font-size:10px;color:#d0d0d0;text-align:right}
+#xhint{position:absolute;left:50%;top:34px;transform:translateX(-50%);background:rgba(237,158,92,.94);color:#1a1206;font-size:11px;font-weight:600;padding:4px 12px;border-radius:4px;z-index:8;display:none;box-shadow:0 4px 14px rgba(0,0,0,.5)}
+#pip{position:absolute;right:10px;bottom:34px;border:1px solid var(--acc);border-radius:4px;z-index:4;display:none;box-shadow:0 6px 22px rgba(0,0,0,.6);pointer-events:none}
+#pip span{position:absolute;top:-1px;left:-1px;background:var(--acc);color:#fff;font:600 8.5px 'JetBrains Mono';padding:2px 6px;border-radius:3px 0 4px 0;letter-spacing:.1em}
+#toast{position:absolute;left:50%;bottom:44px;transform:translateX(-50%);background:rgba(24,24,24,.95);border:1px solid var(--line2);border-radius:5px;padding:7px 15px;font-size:11.5px;z-index:20;opacity:0;transition:opacity .2s;pointer-events:none;box-shadow:0 6px 20px rgba(0,0,0,.6);max-width:80%;text-align:center}
+#toast.show{opacity:1}
+#toast.ok{border-color:var(--ok);color:#c9f0d0}
+#toast.err{border-color:var(--err);color:#f2cfcf}
+
+/* ═══ Баруун док ═══ */
+#dock{width:352px;flex:none;background:var(--edit);border-left:1px solid #0f0f0f;display:flex;flex-direction:column;min-height:0}
+#outl{height:172px;flex:none;display:flex;flex-direction:column;border-bottom:1px solid #0f0f0f;background:var(--sub)}
+.ehdr{height:24px;flex:none;display:flex;align-items:center;gap:6px;padding:0 8px;background:var(--hdr);font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--dim);font-weight:600}
+#otree{flex:1;overflow:auto;padding:3px 0;font-size:11.5px}
+.orow{display:flex;align-items:center;gap:5px;padding:2px 8px;cursor:pointer;white-space:nowrap}
+.orow:hover{background:#2c2c2c}
+.orow.sel{background:var(--acc);color:#fff}
+.orow.act{background:var(--sel);color:#231704;font-weight:600}
+.orow .ico{width:14px;text-align:center;font-size:10.5px;flex:none}
+.orow .nm{flex:1;overflow:hidden;text-overflow:ellipsis}
+.orow .eye{opacity:.5;font-size:10px;padding:0 2px}
+.orow .eye:hover{opacity:1}
+.orow.hid .nm{opacity:.4;text-decoration:line-through}
+.orow.d1{padding-left:20px}.orow.d2{padding-left:34px}
+
+#props{flex:1;display:flex;min-height:0}
+#ptabs{width:34px;flex:none;background:var(--sub);border-right:1px solid #0f0f0f;padding-top:5px;display:flex;flex-direction:column;align-items:center;gap:3px}
+#ptabs button{width:26px;height:26px;border-radius:5px;font-size:13px;display:flex;align-items:center;justify-content:center;color:#b8b8b8}
+#ptabs button:hover{background:#333}
+#ptabs button.on{background:var(--edit);color:var(--sel);box-shadow:inset 2px 0 0 var(--sel)}
+#pbody{flex:1;overflow-y:auto;padding:8px;min-width:0}
+.page{display:none;flex-direction:column;gap:8px}
+.page.on{display:flex}
+.box{background:var(--panel);border:1px solid #1b1b1b;border-radius:6px;overflow:hidden}
+.box>h3{display:flex;align-items:center;gap:6px;padding:6px 9px;background:#2f2f2f;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#c8c8c8;cursor:pointer}
+.box>h3::before{content:"▼";font-size:7px;color:var(--dim2);transition:transform .15s}
+.box.fold>h3::before{transform:rotate(-90deg)}
+.box.fold>.bd{display:none}
+.box .bd{padding:9px}
+.r{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.r:last-child{margin-bottom:0}
+.r>label{width:82px;flex:none;font-size:11px;color:var(--dim);text-align:right}
+.r>input[type=range]{flex:1;min-width:0}
+.r>select,.r>input.w{flex:1;min-width:0}
+.r .v{width:52px;flex:none;text-align:right;font-family:'JetBrains Mono';font-size:10.5px;color:#dadada}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.pbtn{background:var(--wid);border-radius:5px;padding:7px 8px;text-align:left;font-size:11.5px;font-weight:500;line-height:1.25}
+.pbtn:hover{background:var(--wid-h)}
+.pbtn small{display:block;font-family:'JetBrains Mono';font-size:8.5px;color:var(--dim2);font-weight:400;margin-top:2px;text-transform:lowercase}
+.pbtn:hover small{color:#b6b6b6}
+.hint{font-size:10.5px;color:var(--dim2);line-height:1.5;margin-top:7px}
+.hint b{color:var(--dim)}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{background:var(--wid-in);border:1px solid var(--line);border-radius:11px;padding:3px 9px;font-size:10.5px;color:#cfcfcf}
+.chip:hover{border-color:var(--acc);color:#fff}
+.chip.tag{border-color:#3a5a2f;background:rgba(91,191,106,.12);color:#a8dfae;cursor:default}
+.chip.tag:hover{border-color:#3a5a2f;color:#a8dfae}
+.kbox{background:var(--wid-in);border:1px solid #131313;border-radius:5px;padding:9px;font-family:'JetBrains Mono';font-size:11px;line-height:1.6;color:#cfd8e2;white-space:pre-wrap;word-break:break-word;min-height:70px;max-height:260px;overflow:auto;user-select:text;cursor:text}
+.sum{background:rgba(71,114,179,.09);border:1px solid #2c4468;border-left:2px solid var(--acc);border-radius:5px;padding:8px 10px;font-size:11.5px;line-height:1.55;margin-bottom:8px}
+.sum b{color:#9dbdec}
+.styles{display:flex;flex-wrap:wrap;gap:5px 12px;font-size:11px;color:#c4c4c4}
+.styles label{display:flex;align-items:center;gap:5px;cursor:pointer}
+.big{width:100%;padding:9px;border-radius:5px;background:var(--acc);color:#fff;font-weight:600;font-size:12px}
+.big:hover{background:var(--acc-h)}
+.big:disabled{background:var(--wid);color:var(--dim2);cursor:default}
+.big.gr{background:#4a7c4e}.big.gr:hover{background:#57905c}
+.big.ok{background:var(--ok)}
+.kfl{display:flex;flex-direction:column;gap:3px;max-height:180px;overflow:auto}
+.kfr{display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:4px;background:var(--wid-in);font-size:10.5px;cursor:pointer}
+.kfr:hover{background:#2a2a2a}
+.kfr.on{background:var(--acc);color:#fff}
+.kfr .n{width:16px;height:16px;flex:none;border-radius:3px;background:var(--key);color:#231704;font:700 9.5px/16px 'JetBrains Mono';text-align:center}
+.kfr .f{width:38px;flex:none;font-family:'JetBrains Mono';color:var(--dim)}
+.kfr.on .f{color:#d5e2f5}
+.kfr .d{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px}
+.kfr .rm{opacity:.5;padding:0 3px}
+.kfr .rm:hover{opacity:1;color:var(--err)}
+
+/* ═══ Цагийн шугам ═══ */
+#tl{height:104px;flex:none;background:var(--sub);border-top:1px solid #0f0f0f;display:flex;flex-direction:column;overflow:hidden}
+#tlbar{height:28px;flex:none;display:flex;align-items:center;gap:5px;padding:0 8px;background:var(--hdr);border-bottom:1px solid #0f0f0f;overflow-x:auto;scrollbar-width:none}
+#tlbar::-webkit-scrollbar{display:none}
+#tlbar .tb{width:26px;height:20px;border-radius:4px;background:var(--wid);font-size:11px;display:flex;align-items:center;justify-content:center;color:#d2d2d2;flex:none}
+#tlbar .tb:hover{background:var(--wid-h)}
+#tlbar .tb.on{background:var(--acc);color:#fff}
+#tlbar .fld{display:flex;align-items:center;gap:4px;flex:none}
+#tlbar .fld label{font-size:10px;color:var(--dim)}
+#tlbar .fld input{width:52px;background:var(--wid-in);border:1px solid #131313;border-radius:4px;padding:3px 5px;font-family:'JetBrains Mono';font-size:10.5px;text-align:center}
+#tlc{flex:1;min-height:0;display:block;width:100%;cursor:pointer;touch-action:none}
+#sbar{height:22px;flex:none;display:flex;align-items:center;gap:12px;padding:0 10px;background:var(--hdr);border-top:1px solid #0f0f0f;font-size:10px;color:var(--dim2);overflow:hidden;white-space:nowrap}
+#sbar b{color:#bfbfbf;font-weight:500}
+#sbar .k{font-family:'JetBrains Mono';background:#2c2c2c;border:1px solid var(--line);border-radius:3px;padding:0 4px;color:#cfcfcf}
+
+@media (max-width:1080px){#dock{width:300px}}
+@media (max-width:860px){
+  #main{flex-direction:column}
+  #dock{width:100%;flex:1;border-left:0;border-top:1px solid #0f0f0f}
+  #stage{flex:none;height:42vh}
+  #tools{width:100%;height:34px;flex-direction:row;justify-content:flex-start;padding:0 6px;border-right:0;border-bottom:1px solid #0f0f0f;overflow-x:auto}
+  #tools .gap{height:auto;width:8px}
+  #outl{height:120px}
+  #npanel{display:none!important}
+  #tl{height:92px}
+}
+</style>
+</head>
+<body>
+<div id="root">
+
+<!-- ═══════════ ДЭЭД ЦЭС ═══════════ -->
+<div id="topbar">
+  <div class="logo">1<b>st</b> STUDIO <span style="color:#767676;font-weight:400">· Camera Director</span></div>
+  <div style="position:relative"><button class="mnu" data-pop="popFile">Файл</button>
+    <div class="pop" id="popFile">
+      <button data-act="new">Шинэ төсөл<i>Ctrl N</i></button>
+      <button data-act="open">Нээх (.json)<i>Ctrl O</i></button>
+      <button data-act="save">Хадгалах (.json)<i>Ctrl S</i></button>
+      <hr>
+      <div class="lbl">Экспорт</div>
+      <button data-act="png">Одоогийн кадр → PNG<i>E</i></button>
+      <button data-act="board">Storyboard → PNG<i></i></button>
+      <button data-act="py">Blender скрипт → .py<i></i></button>
+      <button data-act="csv">Кадрын өгөгдөл → .csv<i></i></button>
+      <button data-act="txt">Промт → .txt<i></i></button>
+    </div>
+  </div>
+  <div style="position:relative"><button class="mnu" data-pop="popAdd">Нэмэх</button>
+    <div class="pop" id="popAdd">
+      <div class="lbl">Дүр</div>
+      <button data-act="addPerson">Хүн нэмэх<i>Shift A</i></button>
+      <button data-act="delPerson">Сүүлийн хүнийг хасах<i></i></button>
+      <hr>
+      <div class="lbl">Объект</div>
+      <button data-act="p:tree">Мод</button>
+      <button data-act="p:rock">Чулуу</button>
+      <button data-act="p:box">Шоо / хайрцаг</button>
+      <button data-act="p:ger">Гэр</button>
+      <button data-act="p:fire">Гал голомт</button>
+      <button data-act="p:pole">Багана</button>
+      <hr>
+      <div class="lbl">Байрлуулалт</div>
+      <button data-act="a:line">Эгнээ</button>
+      <button data-act="a:circle">Тойрог</button>
+      <button data-act="a:face">Нүүр тулан</button>
+      <button data-act="a:wedge">Шаантаг (V)</button>
+      <button data-act="a:rand">Санамсаргүй</button>
+    </div>
+  </div>
+  <div style="position:relative"><button class="mnu" data-pop="popCam">Камер</button>
+    <div class="pop" id="popCam">
+      <button data-act="key">Түлхүүр кадр нэмэх<i>I</i></button>
+      <button data-act="upd">Идэвхтэйг шинэчлэх<i>U</i></button>
+      <button data-act="delk">Идэвхтэйг устгах<i>Alt I</i></button>
+      <button data-act="clrk">Бүх кадрыг цэвэрлэх<i>Shift X</i></button>
+      <hr>
+      <button data-act="camview">Камерын харц<i>0</i></button>
+      <button data-act="frameall">Бүгдийг багтаах<i>Home</i></button>
+      <button data-act="framesel">Сонгосонд төвлөрөх<i>.</i></button>
+      <hr>
+      <button data-act="autodir">🎬 Авто найруулга</button>
+      <button data-act="reverse">Кадруудыг урвуулах</button>
+    </div>
+  </div>
+  <div style="position:relative"><button class="mnu" data-pop="popHelp">Тусламж</button>
+    <div class="pop" id="popHelp" style="min-width:300px">
+      <div class="lbl">Харагдац</div>
+      <button>Урд / Хажуу / Дээр<i>1 / 3 / 7</i></button>
+      <button>Ар / Зүүн / Доор<i>Ctrl 1 / 3 / 7</i></button>
+      <button>Камерын харц<i>0</i></button>
+      <hr><div class="lbl">Навигац</div>
+      <button>Тойрох<i>ЗТ чирэх</i></button>
+      <button>Зөөх (pan)<i>Shift + чирэх</i></button>
+      <button>Ойртох<i>Гүйлгэх</i></button>
+      <button>Линз (FOV)<i>Ctrl + гүйлгэх</i></button>
+      <hr><div class="lbl">Объект</div>
+      <button>Зөөх / Эргүүлэх / Хэмжээ<i>G / R / S</i></button>
+      <button>Тэнхлэг хязгаарлах<i>X / Y / Z</i></button>
+      <button>Устгах<i>X / Del</i></button>
+      <hr><div class="lbl">Анимаци</div>
+      <button>Тоглуулах / зогсоох<i>Space</i></button>
+      <button>Кадр урагш / хойш<i>← / →</i></button>
+      <button>Эхэнд / Төгсгөлд<i>Shift ← / →</i></button>
+      <button>Хажуугийн самбар<i>N</i></button>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <div class="cnt" title="Дүрийн тоо ( - / = )">
+    <button id="subMinus">−</button><span id="subCount">2 хүн</span><button id="subPlus">+</button>
+  </div>
+</div>
+
+<div id="main">
+  <!-- ═══ Багажны багана ═══ -->
+  <div id="tools">
+    <button data-tool="sel" class="on" title="Сонгох (Esc)">⬚</button>
+    <button data-tool="move" title="Зөөх (G)">✥</button>
+    <button data-tool="rot" title="Эргүүлэх (R)">⟳</button>
+    <button data-tool="scale" title="Хэмжээ (S)">⤢</button>
+    <div class="gap"></div>
+    <button data-act="addPerson" title="Хүн нэмэх (Shift+A)">🧍</button>
+    <button data-act="p:tree" title="Мод нэмэх">🌲</button>
+    <button data-act="p:rock" title="Чулуу нэмэх">🪨</button>
+    <div class="gap"></div>
+    <button data-act="key" title="Түлхүүр кадр (I)">◆</button>
+    <button data-act="camview" title="Камерын харц (0)">🎥</button>
+  </div>
+
+  <!-- ═══ Харагдац ═══ -->
+  <div id="stage">
+    <canvas id="vp"></canvas>
+    <canvas id="ovl"></canvas>
+    <div id="vphdr">
+      <div class="grp">
+        <button class="vb" data-view="1">Урд</button>
+        <button class="vb" data-view="3">Хажуу</button>
+        <button class="vb" data-view="7">Дээр</button>
+        <button class="vb" data-view="f">Багтаах</button>
+      </div>
+      <div class="sep"></div>
+      <button class="vb" id="btnCamView" data-act="camview">🎥 Камерын харц</button>
+      <div class="sep"></div>
+      <div class="grp">
+        <button class="vb sh on" data-shade="solid">Solid</button>
+        <button class="vb sh" data-shade="wire">Wire</button>
+        <button class="vb sh" data-shade="rend">Rendered</button>
+      </div>
+      <div class="sep"></div>
+      <button class="vb on" id="btnOverlay">Overlay</button>
+      <button class="vb on" id="btnGuides">Guides</button>
+      <button class="vb on" id="btnPip">PiP</button>
+      <div class="sep"></div>
+      <select class="w" id="aspect" style="height:20px;padding:1px 20px 1px 6px;font-size:10px">
+        <option value="16:9">16:9</option><option value="2.39:1">2.39:1</option>
+        <option value="21:9">21:9</option><option value="4:3">4:3</option>
+        <option value="1:1">1:1</option><option value="9:16">9:16 (босоо)</option>
+      </select>
+    </div>
+    <div id="hud"></div>
+    <div id="npanel">
+      <h4>Идэвхтэй объект</h4>
+      <div id="nObj" style="font-size:10.5px;color:var(--dim2);margin-bottom:5px">— сонгоогүй —</div>
+      <div class="nrow"><label class="lx">X</label><input class="mono" id="nx" value="0"></div>
+      <div class="nrow"><label class="ly">Y</label><input class="mono" id="ny" value="0"></div>
+      <div class="nrow"><label class="lz">Rot</label><input class="mono" id="nr" value="0"></div>
+      <h4>Камер</h4>
+      <div class="nrow"><label style="width:34px;color:var(--dim2)">Зай</label><span id="nDist">—</span></div>
+      <div class="nrow"><label style="width:34px;color:var(--dim2)">Линз</label><span id="nLens">—</span></div>
+      <div class="nrow"><label style="width:34px;color:var(--dim2)">Өнд</label><span id="nHgt">—</span></div>
+      <div class="nrow"><label style="width:34px;color:var(--dim2)">Roll</label><span id="nRoll">—</span></div>
+      <h4>Кадр</h4>
+      <div class="nrow"><label style="width:34px;color:var(--dim2)">Хэмж</label><span id="nSize">—</span></div>
+      <div class="nrow"><label style="width:34px;color:var(--dim2)">Өнцөг</label><span id="nAng">—</span></div>
+    </div>
+    <div id="xhint"></div>
+    <div id="pip"><span>SHOT</span></div>
+    <div id="toast"></div>
+  </div>
+
+  <!-- ═══ Баруун док ═══ -->
+  <div id="dock">
+    <div id="outl">
+      <div class="ehdr">⌗ Outliner <span class="spacer"></span><span id="oCount" class="mono" style="font-size:9.5px"></span></div>
+      <div id="otree"></div>
+    </div>
+    <div id="props">
+      <div id="ptabs">
+        <button data-page="pgCam" class="on" title="Камер ба хөдөлгөөн">🎥</button>
+        <button data-page="pgScene" title="Тайз ба дүрүүд">🧍</button>
+        <button data-page="pgPrompt" title="Промт (AI)">✨</button>
+        <button data-page="pgOut" title="Экспорт">📦</button>
+      </div>
+      <div id="pbody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ ЦАГИЙН ШУГАМ ═══════════ -->
+<div id="tl">
+  <div id="tlbar">
+    <button class="tb" data-tr="start" title="Эхэнд (Shift+←)">⏮</button>
+    <button class="tb" data-tr="prevk" title="Өмнөх кадр (↑)">◂◆</button>
+    <button class="tb" data-tr="prev" title="1 фрейм хойш (←)">◀</button>
+    <button class="tb" id="btnPlay" data-tr="play" title="Тоглуулах (Space)">▶</button>
+    <button class="tb" data-tr="next" title="1 фрейм урагш (→)">▶</button>
+    <button class="tb" data-tr="nextk" title="Дараагийн кадр (↓)">◆▸</button>
+    <button class="tb" data-tr="end" title="Төгсгөлд (Shift+→)">⏭</button>
+    <button class="tb" id="btnLoop" data-tr="loop" title="Давтах">🔁</button>
+    <div class="sep" style="width:1px;height:15px;background:var(--line);margin:0 4px;flex:none"></div>
+    <div class="fld"><label>Фрейм</label><input class="mono" id="fCur" value="1"></div>
+    <div class="fld"><label>Эхэл</label><input class="mono" id="fStart" value="1"></div>
+    <div class="fld"><label>Төгс</label><input class="mono" id="fEnd" value="120"></div>
+    <div class="fld"><label>FPS</label>
+      <select class="w" id="fps" style="height:20px;padding:1px 18px 1px 5px;font-size:10px">
+        <option>12</option><option>24</option><option>25</option><option>30</option><option>50</option><option>60</option>
+      </select>
+    </div>
+    <div class="fld"><label>Интерп</label>
+      <select class="w" id="interp" style="height:20px;padding:1px 18px 1px 5px;font-size:10px">
+        <option value="smooth">Зөөлөн</option><option value="in">Зөөлөн эхлэл</option>
+        <option value="out">Зөөлөн төгсгөл</option><option value="linear">Жигд</option><option value="const">Шаталсан</option>
+      </select>
+    </div>
+    <div class="spacer"></div>
+    <span class="mono" id="tlInfo" style="font-size:10px;color:var(--dim2);flex:none"></span>
+  </div>
+  <canvas id="tlc"></canvas>
+</div>
+
+<div id="sbar">
+  <span><b id="sbObj">—</b></span>
+  <span>Кадр: <b id="sbKeys">0</b></span>
+  <span>Урт: <b id="sbDur">—</b></span>
+  <span class="spacer" style="flex:1"></span>
+  <span><span class="k">G</span> зөөх · <span class="k">R</span> эргүүлэх · <span class="k">I</span> кадр · <span class="k">0</span> камер · <span class="k">Space</span> тоглуулах</span>
+</div>
+</div>
+
+<input type="file" id="fileIn" accept=".json,application/json" hidden>
+<!-- three.js r128 (MIT) — репо дотор суулгасан тул интернэтгүй ч ажиллана -->
+<script src="three.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
