@@ -1,0 +1,46 @@
+/* ═══ 45 · Эцсийн нөхөлт IV — өдөр тутам, орчин, дүрслэл ═══ */
+WB.dict.add({ id:"nohholt-4", label:"Эцсийн нөхөлт IV", icon:"📔", w:{
+"өглөө эрт босох":"rising early in the morning","нар мандахыг харах":"watching the sun come up",
+"үүр цайхыг хүлээх":"waiting for daybreak","өдөржин ажиллах":"working the whole day",
+"үдийн амралт":"a rest at midday","үдээс хойших ажил":"the afternoon's work","орой гэртээ харих":"coming home in the evening",
+"шөнө сэрэх":"waking in the night","дахин нойрсох":"drifting back to sleep","өглөө бүр давтагдах":"repeating every morning",
+"өдөр бүрийн зам":"the daily road","байнгын зочин":"a regular visitor","хааяа ирэгч":"an occasional caller",
+"хөрш зэргэлдээ":"living next door","хол амьдардаг ах":"a brother who lives far away",
+"ойрын хүн":"someone close","алс холын хамаатан":"a distant relation","олон жилийн найз":"a friend of many years",
+"шинэ танил":"a new acquaintance","хуучин танил":"an old acquaintance","дахин таарсан хүн":"someone met again",
+"үл таних царай":"an unfamiliar face","танил царай":"a familiar face","мартагдсан царай":"a face gone from memory",
+"нэрээ хэлэх":"giving one's name","нэрийг нь санах":"recalling their name","нэрийг нь мартах":"forgetting their name",
+"хаягаа өгөх":"giving one's address","дуудлагын дугаар":"a telephone number","захидлын хаяг":"a postal address",
+"уулзах цаг товлох":"fixing a time to meet","уулзалт хойшлуулах":"putting off a meeting",
+"уулзалтад хоцрох":"being late for a meeting","эрт ирж хүлээх":"arriving early and waiting",
+"замдаа гарах":"heading off","замдаа зогсох":"stopping on the way","замдаа хүн авах":"picking someone up on the way",
+"хамт явах":"going along together","тусдаа явах":"going separately","эргэж уулзахаар тохирох":"agreeing to meet again",
+"баяртай гэж хэлэх":"saying goodbye","хаалга хаагдах чимээ":"the sound of a door closing",
+"гишгүүр дээрх алхаа":"a step on the stair","гадаа гарах":"stepping outside","дотогш орох":"stepping inside",
+"гэрлээ асаах (гэрт)":"putting on the light at home","хөшгөө татах":"drawing the curtains",
+"цонхоо нээх":"opening a window","агаар оруулах":"letting in fresh air","гэрээ цэгцлэх":"putting the house in order",
+"хоолоо халаах":"warming up food","цайгаа аягалах":"pouring out tea","ном нээх":"opening a book",
+"тэмдэглэл хийх":"jotting something down","гэрэл унтраан хэвтэх":"lying down with the light out"
+}});
+
+WB.dict.add({ id:"nohholt-5", label:"Эцсийн нөхөлт V", icon:"📒", w:{
+"нэг л өдөр":"one day","тэр өдөр":"that day","дараагийн өглөө":"the following morning",
+"өмнөх шөнө":"the night before","хэдэн жилийн өмнө":"some years earlier","хэдэн сарын дараа":"some months later",
+"тэр зун":"that summer","тэр өвөл":"that winter","тэр намар":"that autumn","тэр хавар":"that spring",
+"тэр үеэс хойш":"ever since then","түүнээс өмнө":"before that","тэр цагаас":"from that hour",
+"одоо болтол":"up to now","одоогоос эхлэн":"from now on","удахгүй болно":"it will be soon",
+"хожим болно":"it will come later","хэзээ нэгэн өдөр":"some day","хэзээ ч болохгүй":"it will never be",
+"ямар ч тохиолдолд":"in any event","ямар нэг байдлаар":"in some fashion","ямар нэг шалтгаанаар":"for some reason",
+"үл мэдэгдэх шалтгаанаар":"for an unknown reason","тодорхой шалтгаанаар":"for a definite reason",
+"аргагүйн эрхэнд":"of necessity","хүсэл зоригийн эсрэг":"against one's will","сайн дурын үндсэн дээр":"on a voluntary basis",
+"нэг талаас":"on the one hand","нөгөө талаас (харьцуулах)":"on the other hand","хоёр талаас нь":"from both sides",
+"аль ч талаас":"from either side","бүх талаас":"from every side","дотоод талаас":"from within",
+"гадаад талаас":"from without","дээд талаас":"from the upper side","доод талаас":"from the lower side",
+"эхнээс дуустал":"from beginning to end","дээрээс доош":"from top to bottom","зүүнээс баруун":"from left to right",
+"ойроос хол руу":"from near to far","хуучнаас шинэ рүү":"from old to new","бага зэргээс их рүү":"from little to much",
+"нэгээс олон руу":"from one to many","эхлээд дараа нь":"first and then","эцэст нь бүгд":"in the end all of it",
+"үргэлжлүүлэн":"going on","дахин давтан":"over and over","удаа дараалан":"one after the other",
+"нэг мөр":"in a single line","нэг дор":"all in one place","тус бүрдээ":"each in itself",
+"бүхэлдээ авч үзвэл":"taken as a whole","хэсэгчлэн авч үзвэл":"taken in parts","ерөнхийд нь":"broadly speaking",
+"нарийвчилж үзвэл":"looked at closely","гүнзгийрүүлж үзвэл":"considered in depth","товчоор хэлбэл":"put briefly"
+}});

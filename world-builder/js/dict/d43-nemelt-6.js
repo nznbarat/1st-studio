@@ -1,0 +1,68 @@
+/* ═══ 43 · Нэмэлт үгс VI — кино үйлдвэрлэл, эцсийн нөхөлт ═══ */
+WB.dict.add({ id:"kino-2", label:"Кино үйлдвэрлэл II", icon:"🎟", w:{
+"зохиолын анхны хувилбар":"a first draft of the script","зохиол засварлах":"revising the script",
+"зохиолын уншлага":"a script read-through","дүрд тохирох жүжигчин":"an actor right for the role",
+"туршилтын зураг авалт":"a screen test","дүрийн бэлтгэл":"preparing for a role","бэлтгэл хийх (жүжигчин)":"rehearsing",
+"тайзны бэлтгэл":"a stage rehearsal","зураг авалтын хуваарь":"a shooting schedule","зураг авалтын өдөр":"a shooting day",
+"зураг авалтын байршил":"a filming location","байршил хайх":"scouting locations","зөвшөөрөл авах (зураг авалт)":"securing a permit",
+"тайз барих":"building a set","тайз буулгах":"striking a set","үзүүлэн бэлтгэх":"preparing props",
+"хувцас бэлтгэх":"preparing costumes","гримний өрөө":"a make-up room","гримчин ажиллах":"the make-up artist working",
+"үс засалт":"hair styling","гэрэлтүүлэг тохируулах":"setting up the lighting","гэрлийн тавцан":"a lighting rig",
+"тусгал самбар":"a reflector board","сарниулагч":"a diffuser","хар хөшиг (гэрэл таслах)":"a black flag",
+"камер байрлуулах":"positioning the camera","рельс тавих":"laying camera track","кран угсрах":"rigging a crane",
+"дуу бичих":"recording sound","микрофон бариул":"a boom pole","дуу тусгаарлах":"isolating the sound",
+"хөндлөнгийн чимээ":"unwanted background noise","дахин авах":"going again","дубль амжилттай":"a good take",
+"зураг авалт дуусах":"wrapping the shoot","өдрийн материал":"the day's rushes","материал шалгах":"reviewing footage",
+"монтажийн өрөө":"an editing suite","эхний монтаж":"a rough cut","эцсийн монтаж":"a final cut",
+"дуу оруулах (монтаж)":"laying in the sound","хөгжим тааруулах":"fitting the music","өнгө засварлах (кино)":"grading the film",
+"эффект нэмэх":"adding effects","хадмал оруулах":"adding subtitles","титэм бичиг бэлтгэх":"preparing the credits",
+"туршилтын үзүүлбэр":"a test screening","үзэгчийн санал":"audience feedback","эцсийн хувилбар":"the final version",
+"нээлтийн үзүүлбэр":"a premiere","кино наадам":"a film festival","шүүмж бичих":"writing a review",
+"олон нийтэд гарах":"going on general release","онлайн түгээлт":"online distribution","эрхийн гэрээ":"a rights agreement",
+"төсөв (кино)":"a film budget","санхүүжилт":"financing","ивээн тэтгэгч":"a sponsor","бүтээгчдийн баг":"the production team"
+}});
+
+WB.dict.add({ id:"nemelt-toli", label:"Нэмэлт үг, ерөнхий сан", icon:"📗", w:{
+"зүйл (юм)":"a thing","юмс үзэгдэл":"things and phenomena","бүхэн (бүх зүйл)":"everything there is",
+"хэсэг бүлэг":"a portion","бүрдэл":"a make-up of parts","цуглуулга (эд)":"a collection","олонлог":"a set",
+"хос (хоёр)":"a pair","гурвал":"a trio","дөрвөл":"a quartet","олон нийлбэр":"an aggregate",
+"эхлэл (зүйлийн)":"the start of a thing","төгсгөл (зүйлийн)":"the end of a thing","дунд хэсэг":"the middle part",
+"дээд хэсэг":"the upper part","доод хэсэг":"the lower part","гадна хэсэг":"the outer part","дотор хэсэг":"the inner part",
+"урд хэсэг":"the front part","хойд хэсэг":"the rear part","зүүн хэсэг":"the left part","баруун хэсэг":"the right part",
+"үлдсэн хэсэг":"the remaining part","дутуу хэсэг":"the missing part","илүү хэсэг":"the surplus part",
+"хамгийн сайн хэсэг":"the best part","хамгийн муу хэсэг":"the worst part","гол хэсэг":"the main part",
+"туслах хэсэг":"the auxiliary part","чухал хэсэг":"the essential part","хэрэггүй хэсэг":"the needless part",
+"мэдэгдэх зүйл":"a noticeable thing","мэдэгдэхгүй зүйл":"an imperceptible thing","чухал зүйл":"an important matter",
+"өчүүхэн зүйл":"a trifling matter","хачирхалтай зүйл":"a curious thing","энгийн зүйл":"an ordinary thing",
+"шинэ зүйл":"something new","хуучин зүйл":"something old","олдсон зүйл":"something found",
+"алдагдсан зүйл":"something lost","нуугдсан зүйл":"something hidden","илэрсэн зүйл":"something uncovered",
+"хүлээгдэж буй зүйл":"something awaited","гэнэтийн зүйл":"something unexpected","мартагдсан зүйл":"something forgotten",
+"санагдсан зүйл":"something recalled","хийх ёстой зүйл":"something that must be done",
+"хийж болохгүй зүйл":"something that must not be done","хэлэх ёстой зүйл":"something that must be said",
+"хэлэхгүй байх зүйл":"something to be left unsaid","мэдэх ёстой зүйл":"something one ought to know",
+"мэдэхгүй байх зүйл":"something one is better off not knowing","үлдээх зүйл":"something to be left behind",
+"авч явах зүйл":"something to take along","өгөх зүйл":"something to give","авах зүйл":"something to receive",
+"хүлээх зүйл":"something to wait for","өөрчлөх зүйл":"something to change","хадгалах зүйл":"something to keep"
+}});
+
+WB.dict.add({ id:"nemelt-uils", label:"Нэмэлт үйлс, төлөв IV", icon:"📘", w:{
+"хийж эхлэх":"setting about doing","хийж дуусгах":"getting it done","хийж чадах":"being able to do",
+"хийж чадахгүй":"being unable to do","хийхийг хүсэх":"wanting to do","хийхээс татгалзах":"declining to do",
+"хийхээ мартах":"forgetting to do","хийхээ хойшлуулах":"putting off doing","хийхээр шийдэх":"resolving to do",
+"хийж үзэх":"giving it a try","дахин хийж үзэх":"trying once more","хийж дадах":"getting used to doing",
+"хийж сурах":"learning to do","хийж заах":"showing how to do","хамтдаа хийх":"doing it together",
+"ганцаараа хийх":"doing it alone","хурдан хийх":"doing it quickly","удаан хийх":"doing it slowly",
+"сайн хийх":"doing it well","муу хийх":"doing it badly","болгоомжтой хийх":"doing it carefully",
+"хайхрамжгүй хийх":"doing it carelessly","дуртайяа хийх":"doing it gladly","дурамжхан хийх":"doing it reluctantly",
+"дахин давтах":"going over it again","эхнээс нь эхлэх":"starting from the beginning","дундаас нь үргэлжлүүлэх":"picking up from the middle",
+"эцэст нь хүргэх":"seeing it through","хагас дутуу орхих":"leaving it half done","бүрэн орхих":"abandoning it entirely",
+"өөрчилж хийх":"doing it differently","хуучнаар нь хийх":"doing it the old way","шинээр хийх":"doing it anew",
+"зөв хийх":"doing it right","буруу хийх":"doing it wrong","дахин засах":"putting it right",
+"хянаж үзэх":"looking it over","дүгнэж үзэх":"weighing it up","эргэж харах (ажил)":"going back over it",
+"хүлээлгэн өгөх (ажил)":"turning it in","хүлээж авах (ажил)":"taking it on","хариуцан авах":"assuming charge of it",
+"өөр хүнд даалгах":"handing it to someone else","хамтад нь хуваах":"splitting it between them",
+"хэсэгчлэн хийх":"doing it in stages","нэг дор хийх":"doing it all at once","дараалуулан хийх":"doing them in order",
+"зэрэг хийх":"doing them at the same time","ээлжлэн хийх":"taking it in turns","бэлтгэлтэй хийх":"doing it prepared",
+"бэлтгэлгүй хийх":"doing it unprepared","тооцоотой хийх":"doing it by calculation","мэдрэмжээр хийх":"doing it by feel",
+"туршлагаар хийх":"doing it from experience","заавраар хийх":"doing it by the instructions"
+}});

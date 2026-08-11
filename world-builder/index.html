@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0d141c">
+<title>Ертөнц Бүтээгч v3 — Монгол AI кино промт өрөө</title>
+<meta name="description" content="Монголоор бичээд англи AI промт автоматаар гаргадаг кино бүтээх өрөө. 10 мянган үгтэй ангилсан толь, Claude автоматжуулалт.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎬%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<div id="top">
+  <h1>Ертөнц <span>Бүтээгч</span><em>v3</em></h1>
+  <input id="projTitle" placeholder="Төслийн нэр…" value="Нэргүй төсөл" aria-label="Төслийн нэр">
+  <div class="spacer"></div>
+  <span id="savedAt" class="tiny"></span>
+  <span id="usage" class="tiny"></span>
+  <div class="pair"><b>МОНГОЛ</b> → <i>ENGLISH</i></div>
+  <button id="undoBtn" class="icon" title="Буцаах (Ctrl+Z)">↶</button>
+  <button id="redoBtn" class="icon" title="Дахин хийх (Ctrl+Shift+Z)">↷</button>
+  <button id="status" title="Дарж горимыг солино"><span class="dot"></span><span id="statusTxt">Шалгаж байна…</span></button>
+  <button id="gear" title="Claude холболтын тохиргоо">⚙</button>
+</div>
+
+<div id="progress"><div id="progressFill"></div><span id="progressLabel"></span></div>
+
+<div id="app">
+  <nav id="rail">
+    <button class="step on" data-p="auto"><span class="n">0</span><span><b>Авто</b><small>Санаанаас бүтэн ертөнц</small></span></button>
+    <button class="step" data-p="story"><span class="n">1</span><span><b>Түүх</b><small>Логлайн, үзэгдэл, кадр</small></span></button>
+    <button class="step" data-p="cast"><span class="n">2</span><span><b>Дүрүүд</b><small>Царай, хувцас, зан</small></span></button>
+    <button class="step" data-p="loc"><span class="n">3</span><span><b>Байршил</b><small>Орчин, цаг, уур амьсгал</small></span></button>
+    <button class="step" data-p="out"><span class="n">4</span><span><b>Промт</b><small>Бэлэн англи промт</small></span></button>
+    <button class="step" data-p="dict"><span class="n">5</span><span><b>Толь</b><small>Ангилсан үгсийн сан</small></span></button>
+    <div class="railsec">
+      <button class="rbtn" id="demoBtn">✦ Жишээ ачаалах</button>
+      <button class="rbtn" id="newBtn">✚ Шинэ төсөл</button>
+      <button class="rbtn" id="saveBtn">💾 Хадгалах</button>
+      <button class="rbtn" id="openBtn">📂 Файлаас нээх</button>
+      <button class="rbtn" id="libBtn">🗂 Төслийн сан</button>
+      <input type="file" id="fileIn" accept=".json,application/json" hidden>
+    </div>
+  </nav>
+
+  <main id="main">
+
+    <!-- ══════════ 0 · АВТО ══════════ -->
+    <section class="panel on" id="p-auto">
+      <div class="pane-head">
+        <span class="eyebrow">Алхам 0 · Автомат горим</span>
+        <h2>Нэг санаанаас бүтэн ертөнц</h2>
+        <p>Товч санаагаа монголоор бичээд <b>Ертөнц бүтээх</b> дарна уу. Claude түүх, дүр, байршлыг зохиож, англи промт руу орчуулж, кадарт хувааж, сонгосон хэрэгсэлд тааруулж өнгөлнө. Бүх үр дүнг гараар засаж болно.</p>
+      </div>
+
+      <div class="card big">
+        <label class="flabel" for="autoIdea">Таны санаа (монголоор)</label>
+        <textarea id="autoIdea" class="bigin" rows="3" spellcheck="false" placeholder="Жишээ: Говьд ганцаараа амьдардаг хөгшин анчин мөхөж буй ирвэсийг аврахаар сүүлчийн аяндаа гарна."></textarea>
+
+        <div class="genrewrap">
+          <span class="flabel inline">Жанр:</span>
+          <button class="genrechip" data-g="уянгын драм">Уянгын драм</button>
+          <button class="genrechip" data-g="эпик түүхэн">Эпик түүхэн</button>
+          <button class="genrechip" data-g="шидэт үлгэр">Шидэт үлгэр</button>
+          <button class="genrechip" data-g="шинжлэх ухаант фантастик">Sci-fi</button>
+          <button class="genrechip" data-g="нууцлаг триллер">Триллер</button>
+          <button class="genrechip" data-g="баримтат маягийн">Баримтат</button>
+          <input id="autoGenre" class="genrein" placeholder="эсвэл өөрөө бич…">
+        </div>
+
+        <div class="sliders">
+          <label>Үзэгдэл <input type="range" id="autoScenes" min="1" max="16" value="6"><b id="autoScenesVal">6</b></label>
+          <label>Дүр <input type="range" id="autoCast" min="0" max="8" value="3"><b id="autoCastVal">3</b></label>
+          <label>Байршил <input type="range" id="autoLocs" min="0" max="8" value="3"><b id="autoLocsVal">3</b></label>
+          <label>Кадр/үзэгдэл <input type="range" id="shotCount" min="2" max="8" value="4"><b id="shotCountVal">4</b></label>
+        </div>
+
+        <div class="opt">
+          <label><input type="checkbox" id="autoShots" checked> Кадрын жагсаалт гаргах</label>
+          <label><input type="checkbox" id="autoPolish" checked> Промтуудыг өнгөлөх</label>
+          <label><input type="checkbox" id="autoKeep"> Одоо байгаа агуулгыг хадгалах</label>
+        </div>
+
+        <div class="toolrow">
+          <button class="tbtn2 acc big" id="autoRun">⚡ Ертөнц бүтээх</button>
+          <button class="tbtn2 stop" id="autoStop">■ Зогсоох</button>
+        </div>
+        <div id="autoLog" class="autolog"></div>
+      </div>
+
+      <div class="hintgrid">
+        <div class="hint"><b>Юу автоматжсан бэ?</b>Түүх зохиох, дүр дэлгэрүүлэх, орчуулга (олон талбарыг нэг дуудлагаар), дүр–байршлын холбоо, кадрын задаргаа, промт өнгөлөлт, тольны автомат бөглөлт, автомат хадгалалт.</div>
+        <div class="hint"><b>Интернэтгүй бол?</b>Апп <span id="dictBrag">…</span> үгтэй ангилсан офлайн толиор орчуулсаар байна. AI холбогдонгуут чанар нь өөрөө өснө.</div>
+        <div class="hint"><b>Товчлол</b>Ctrl+Enter — бүгдийг орчуулах · Ctrl+S — хадгалах · Ctrl+Z — буцаах</div>
+      </div>
+    </section>
+
+    <!-- ══════════ 1 · ТҮҮХ ══════════ -->
+    <section class="panel" id="p-story">
+      <div class="pane-head">
+        <span class="eyebrow">Алхам 1 · Түүх</span>
+        <h2>Үзэгдлээ монголоор бич</h2>
+        <p>Зүүн талд монголоор бич — баруун талд англи промт зэрэгцээд бичигдэнэ. Бичихээ болиод хэсэг хүлээхэд өөрөө орчуулагдана, эсвэл дунд талын <b>→</b> товчийг дар.</p>
+      </div>
+      <div class="toolrow">
+        <button class="tbtn2 acc" id="trAllStory">⇄ Бүгдийг орчуулах</button>
+        <button class="aibtn" id="aiScenes">✨ Логлайнаас үзэгдэл гаргах</button>
+        <button class="aibtn" id="extractBtn">🔍 Дүр, байршлыг илрүүлэх</button>
+        <button class="aibtn" id="shotsAll">🎬 Бүх үзэгдлийг кадарт хуваах</button>
+        <button class="tbtn2" id="linkBtn">🔗 Автомат холбох</button>
+      </div>
+      <div id="loglineBox"></div>
+      <div id="sceneList"></div>
+      <button class="addbtn" id="addScene">＋ Үзэгдэл нэмэх</button>
+    </section>
+
+    <!-- ══════════ 2 · ДҮРҮҮД ══════════ -->
+    <section class="panel" id="p-cast">
+      <div class="pane-head">
+        <span class="eyebrow">Алхам 2 · Дүрүүд</span>
+        <h2>Жүжигчдийнхээ хуудсыг үүсгэ</h2>
+        <p>Дүр бүрийн царай, хувцас, зан чанарыг монголоор дүрсэл. Англи тал нь зураг үүсгэгчид шууд өгөх промт болно. Үзэгдэлд холбогдсон дүрийн дүрслэл нь тухайн үзэгдлийн промтод автоматаар шингэнэ.</p>
+      </div>
+      <div class="toolrow">
+        <button class="tbtn2 acc" id="trAllCast">⇄ Бүгдийг орчуулах</button>
+        <button class="aibtn" id="expandAll">✨ Хоосон талбарыг бүгдийг дүүргэх</button>
+      </div>
+      <div id="castList"></div>
+      <button class="addbtn" id="addCast">＋ Дүр нэмэх</button>
+    </section>
+
+    <!-- ══════════ 3 · БАЙРШИЛ ══════════ -->
+    <section class="panel" id="p-loc">
+      <div class="pane-head">
+        <span class="eyebrow">Алхам 3 · Байршил</span>
+        <h2>Түүхийн орчноо байгуул</h2>
+        <p>Газар бүрийн харагдац, цаг үе, цаг агаар, уур амьсгалыг бич. Байршлын промт нь дүрийн промттой хослоод тогтвортой ертөнц үүсгэнэ.</p>
+      </div>
+      <div class="toolrow"><button class="tbtn2 acc" id="trAllLoc">⇄ Бүгдийг орчуулах</button></div>
+      <div id="locList"></div>
+      <button class="addbtn" id="addLoc">＋ Байршил нэмэх</button>
+    </section>
+
+    <!-- ══════════ 4 · ПРОМТ ══════════ -->
+    <section class="panel" id="p-out">
+      <div class="pane-head">
+        <span class="eyebrow">Алхам 4 · Промт</span>
+        <h2>Бэлэн англи промтууд</h2>
+        <p>Бүх хэсгээ нэгтгэсэн, хуулж хэрэглэхэд бэлэн промтууд. Хэв маягийн сонголт бүх промтод нэгэн зэрэг нэмэгдэнэ.</p>
+      </div>
+
+      <div class="dstats">
+        <div class="dstat"><b id="statScenes">0</b><span>Үзэгдэл</span></div>
+        <div class="dstat"><b id="statCast">0</b><span>Дүр</span></div>
+        <div class="dstat"><b id="statLocs">0</b><span>Байршил</span></div>
+        <div class="dstat"><b id="statPrompts">0</b><span>Промт</span></div>
+      </div>
+      <div id="pendBadge" class="pendbadge"></div>
+
+      <div class="card">
+        <div class="row2">
+          <label class="fld"><span class="flabel">Хэрэгсэл</span>
+            <select id="targetSel">
+              <option value="image">Зураг — Midjourney / Nano Banana / Seedream</option>
+              <option value="video">Видео — Kling / Runway / Veo / Seedance</option>
+              <option value="higgs">Higgsfield — камерын хөдөлгөөнтэй</option>
+              <option value="sora">Sora — урт өгүүлэмжтэй</option>
+            </select>
+          </label>
+          <label class="fld"><span class="flabel">Дэлгэцийн харьцаа</span>
+            <select id="arSel">
+              <option>16:9</option><option>9:16</option><option>21:9</option>
+              <option>4:3</option><option>1:1</option><option>2.39:1</option>
+            </select>
+          </label>
+        </div>
+        <div class="opt" id="styleOpts">
+          <label><input type="checkbox" class="stl" value="anime"> Аниме</label>
+          <label><input type="checkbox" class="stl" value="cine"> Кино гэрэлтүүлэг</label>
+          <label><input type="checkbox" class="stl" value="photo"> Бодит дүрслэл</label>
+          <label><input type="checkbox" class="stl" value="mn"> Монгол өнгө аяс</label>
+          <label><input type="checkbox" class="stl" value="ink"> Уран зураг</label>
+          <label><input type="checkbox" class="stl" value="noir"> Ноар</label>
+          <label><input type="checkbox" class="stl" value="epic"> Эпик</label>
+          <label><input type="checkbox" class="stl" value="retro"> Ретро кино</label>
+        </div>
+        <label class="fld"><span class="flabel">Нэмэлт сөрөг промт (negative)</span>
+          <input id="negIn" class="lineIn" placeholder="жишээ: modern clothing, cars, plastic">
+        </label>
+        <div class="opt">
+          <label><input type="checkbox" id="contChk" checked> Тууштай байдал — үзэгдлийн промтод дүр, байршлыг шингээх</label>
+          <label><input type="checkbox" id="autoTrChk" checked> Бичиж байхад автоматаар орчуулах</label>
+        </div>
+      </div>
+
+      <div class="aisec">
+        <h3>✨ Автомат сайжруулалт</h3>
+        <div class="toolrow">
+          <button class="aibtn" id="polishBtn">Бүх промтыг өнгөлөх</button>
+          <button class="tbtn2" id="unpolishBtn">Өнгөлөлтийг цуцлах</button>
+          <button class="aibtn" id="checkBtn">🔎 Тууштай байдлыг шалгах</button>
+          <button class="tbtn2" id="trEverything">⇄ Орчуулаагүйг орчуулах</button>
+          <button class="tbtn2" id="retrAll">↻ Бүгдийг дахин орчуулах</button>
+        </div>
+        <p class="note">Өнгөлөлт нь промт бүрийг сонгосон хэрэгсэлд тааруулан дахин бичнэ. Эх орчуулга хэвээр үлдэх тул хүссэн үедээ цуцалж болно.</p>
+        <div id="checkOut" class="checkout"></div>
+      </div>
+
+      <div class="toolrow">
+        <button class="tbtn2 acc" id="copyAll">📋 Бүгдийг хуулах</button>
+        <button class="tbtn2" id="expMd">⬇ Markdown</button>
+        <button class="tbtn2" id="expCsv">⬇ CSV</button>
+        <button class="tbtn2" id="expTxt">⬇ TXT</button>
+      </div>
+
+      <div id="outList"></div>
+    </section>
+
+    <!-- ══════════ 5 · ТОЛЬ ══════════ -->
+    <section class="panel" id="p-dict">
+      <div class="pane-head">
+        <span class="eyebrow">Алхам 5 · Толь</span>
+        <h2>Ангилсан үгсийн сан</h2>
+        <p>Офлайн горимд ажилладаг суурь толь. Ангилал бүрээр шүүж хайж болно. Таниагүй үгс доор цугларах бөгөөд Claude‑аар нэг товчоор бүгдийг нь бөглүүлж болно — нэмсэн үг төсөлтэй хамт хадгалагдана.</p>
+      </div>
+
+      <div class="dstats">
+        <div class="dstat"><b id="dcBuilt">0</b><span>Суурь үг</span></div>
+        <div class="dstat"><b id="dcCats">0</b><span>Ангилал</span></div>
+        <div class="dstat"><b id="dcCustom">0</b><span>Миний нэмсэн</span></div>
+        <div class="dstat"><b id="dcUnk">0</b><span>Таниагүй</span></div>
+      </div>
+
+      <div id="catGrid" class="catgrid"></div>
+
+      <input id="dictSearch" placeholder="Монгол эсвэл англи үгээр хайх…">
+      <div class="hits" id="dictHits"></div>
+
+      <h3 class="sech">Таниагүй үгс <span class="cbadge" id="unkCount">0</span></h3>
+      <div class="toolrow">
+        <button class="aibtn" id="fillUnknown">✨ Бүгдийг Claude‑аар бөглүүлэх</button>
+        <button class="tbtn2" id="exportDict">⬇ Миний толийг гаргах</button>
+        <button class="tbtn2" id="importDict">⬆ Толь оруулах</button>
+        <input type="file" id="dictFile" accept=".json,application/json" hidden>
+      </div>
+      <div id="unkList"></div>
+
+      <h3 class="sech">Гараар нэмсэн үгс</h3>
+      <div id="customList"></div>
+      <button class="addbtn" id="addWord">＋ Мөр нэмэх</button>
+
+      <p class="note">Санамж: AI орчуулга идэвхтэй үед толь ашиглагддаггүй — Claude бүтэн өгүүлбэрийг утгачлан орчуулна. Толь бол интернэтгүй, түлхүүргүй үеийн найдвартай нөөц юм.</p>
+    </section>
+
+  </main>
+</div>
+
+<!-- ══════════ Тохиргооны цонх ══════════ -->
+<div class="modal" id="modal">
+  <div class="mbox">
+    <h2>Claude <span>холболт</span></h2>
+    <p class="lead">Холбогдвол орчуулга нь толь биш, бүтэн утгаар хийгдэж, дээрээс нь Claude ертөнц зохиох, дүр дэлгэрүүлэх, промт өнгөлөх боломжтой болно.</p>
+
+    <label for="apiKey">API түлхүүр</label>
+    <input id="apiKey" type="password" placeholder="sk-ant-… (console.anthropic.com-оос авна)" autocomplete="off">
+    <label class="chk"><input type="checkbox" id="rememberKey"> Энэ хөтөч дээр түлхүүрийг сана</label>
+
+    <label for="modelIn">Загвар</label>
+    <select id="modelIn"></select>
+
+    <div class="mrow">
+      <button class="acc" id="testBtn">Холболт шалгах</button>
+      <button id="closeModal">Хаах</button>
+    </div>
+    <div id="testOut"></div>
+
+    <div class="warnbox">
+      <b>Аюулгүй байдал:</b> түлхүүр төслийн JSON файлд <b>орохгүй</b>. «Сана» гэснийг сонгоогүй бол зөвхөн санах ойд түр хадгалагдана. Түлхүүр алдагдсан гэж бодвол console.anthropic.com дээрээс устгаад шинийг үүсгээрэй.
+    </div>
+    <p class="note">Хэрэв энэ аппыг Vercel дээр <code>ANTHROPIC_API_KEY</code> орчны хувьсагчтай байршуулсан бол түлхүүр огт хэрэггүй — сервер өөрөө холбогдоно.</p>
+  </div>
+</div>
+
+<!-- ══════════ Төслийн сан ══════════ -->
+<div class="modal" id="libModal">
+  <div class="mbox">
+    <h2>Төслийн <span>сан</span></h2>
+    <p class="lead">Энэ хөтөч дотор хадгалагдсан төслүүд. Компьютер солих бол JSON болгож татаж авна уу.</p>
+    <div id="libList" class="liblist"></div>
+    <div class="mrow">
+      <button class="acc" id="saveLib">Одоогийн төслийг хадгалах</button>
+      <button id="closeLib">Хаах</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/00-core.js"></script>
+<script src="js/10-grammar.js"></script>
+<script src="js/20-dict.js"></script>
+<script src="js/dict/d01-hun.js"></script>
+<script src="js/dict/d02-bie.js"></script>
+<script src="js/dict/d03-huvtsas.js"></script>
+<script src="js/dict/d04-ger-ahui.js"></script>
+<script src="js/dict/d05-baigal.js"></script>
+<script src="js/dict/d06-amitan.js"></script>
+<script src="js/dict/d07-hot-barilga.js"></script>
+<script src="js/dict/d08-ongo-helber.js"></script>
+<script src="js/dict/d09-setgel.js"></script>
+<script src="js/dict/d10-uil-ug.js"></script>
+<script src="js/dict/d11-temdeg-ner.js"></script>
+<script src="js/dict/d12-kino-camera.js"></script>
+<script src="js/dict/d13-soyol-domog.js"></script>
+<script src="js/dict/d14-niigem-tehnik.js"></script>
+<script src="js/dict/d15-hellet.js"></script>
+<script src="js/dict/d16-shid-fantaz.js"></script>
+<script src="js/dict/d17-promt-hellet.js"></script>
+<script src="js/dict/d18-udur-tutam.js"></script>
+<script src="js/dict/d19-uil-ug-2.js"></script>
+<script src="js/dict/d20-temdeg-2.js"></script>
+<script src="js/dict/d21-baigal-2.js"></script>
+<script src="js/dict/d22-ner-ug-2.js"></script>
+<script src="js/dict/d23-gazar-ner.js"></script>
+<script src="js/dict/d24-uil-ug-3.js"></script>
+<script src="js/dict/d25-temdeg-3.js"></script>
+<script src="js/dict/d26-hot-amidral.js"></script>
+<script src="js/dict/d27-amitan-2.js"></script>
+<script src="js/dict/d28-setgel-2.js"></script>
+<script src="js/dict/d29-promt-2.js"></script>
+<script src="js/dict/d30-huduu-aj.js"></script>
+<script src="js/dict/d31-mergejliin.js"></script>
+<script src="js/dict/d32-huvtsas-2.js"></script>
+<script src="js/dict/d33-hellet-2.js"></script>
+<script src="js/dict/d34-duu-chimee.js"></script>
+<script src="js/dict/d35-shinjleh.js"></script>
+<script src="js/dict/d36-uil-ug-4.js"></script>
+<script src="js/dict/d37-promt-3.js"></script>
+<script src="js/dict/d38-nemelt-1.js"></script>
+<script src="js/dict/d39-nemelt-2.js"></script>
+<script src="js/dict/d40-nemelt-3.js"></script>
+<script src="js/dict/d41-nemelt-4.js"></script>
+<script src="js/dict/d42-nemelt-5.js"></script>
+<script src="js/dict/d43-nemelt-6.js"></script>
+<script src="js/dict/d44-daavar.js"></script>
+<script src="js/dict/d45-nohholt.js"></script>
+<script src="js/dict/d46-nohholt-2.js"></script>
+<script src="js/30-api.js"></script>
+<script src="js/40-translate.js"></script>
+<script src="js/50-state.js"></script>
+<script src="js/55-prompt.js"></script>
+<script src="js/60-ui.js"></script>
+<script src="js/70-auto.js"></script>
+<script src="js/75-demo.js"></script>
+<script src="js/80-main.js"></script>
+</body>
+</html>

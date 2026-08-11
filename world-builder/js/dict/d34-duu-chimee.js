@@ -1,0 +1,65 @@
+/* ═══ 34 · Дуу чимээ II, хөгжим II, гэрэл зураг ═══ */
+WB.dict.add({ id:"chimee-2", label:"Чимээ, дуу авиа II", icon:"🔊", w:{
+"чимээ гарах":"a sound arising","чимээ намжих":"a sound dying away","чимээ ойртох":"a sound drawing nearer",
+"чимээ холдох":"a sound receding","чимээ давтагдах":"a sound repeating","чимээ тасрах":"a sound breaking off",
+"чимээгүй агшин":"a beat of silence","гүн чимээгүй байдал":"a profound hush","чихэнд хүрэх чимээ":"a sound reaching the ear",
+"алсын нүргээн":"a distant rumble","газар доорх нүргээн":"a subterranean rumble","аянга нижигнэх (чимээ)":"the roll of thunder",
+"салхи улих":"the wind moaning","салхи исгэрэх":"the wind whistling","мод шуугих":"trees soughing",
+"навч шуугих":"leaves whispering","өвс шаржигнах":"grass rustling","цас шаржигнах":"snow crunching underfoot",
+"мөс хагарах чимээ":"ice cracking","ус дуслах":"water dripping","ус чалчих":"water lapping",
+"гол шуугих":"a river rushing","хүрхрээ нүргэлэх":"a waterfall roaring","давалгаа цохилох":"waves pounding",
+"гал шаржигнах":"fire crackling","мод шатах чимээ":"wood burning","уур исгэрэх":"steam hissing",
+"хаалга шажигнах":"a door creaking","шал хавчигнах":"floorboards creaking","цонх чичрэх":"a window rattling",
+"хана нүргэх":"a wall booming","гинж чангарах":"a chain drawing taut","төмөр цохилох":"metal clanging",
+"хонх дуугарах":"a bell tolling","бөмбөр цохих":"a drum beating","морин хуур эгшиглэх":"a morin khuur sounding",
+"лимбэ эгшиглэх":"a flute sounding","хөөмий сонсогдох":"throat singing carrying","дуу эгшиглэх":"a song ringing out",
+"хамтдаа дуулах":"singing in unison","аялгуу дуурсах":"a melody drifting","хөгжим намжих":"music fading out",
+"алга ташилтын чимээ":"applause","хөл чимээ":"the shuffle of feet","морины туурай":"the beat of hooves",
+"тэрэгний дугуй":"cart wheels turning","машины хөдөлгүүр":"an engine running","дуут дохио дуугарах":"a horn sounding",
+"хүний шивнээ":"people whispering","хүүхдийн инээд":"children laughing","эмэгтэйн дуу":"a woman's voice",
+"эрэгтэйн гүн хоолой":"a man's deep voice","өвгөний хоолой":"an old man's voice","хашгирах дуу":"a cry going up",
+"уйлах чимээ":"the sound of weeping","амьсгалын чимээ (чанга)":"heavy breathing","зүрхний цохилт сонсогдох":"a heartbeat becoming audible",
+"чихэнд шуугих":"a ringing in the ears","цуурай хариулах":"an echo returning","бүх чимээ замхрах":"every sound falling away"
+}});
+
+WB.dict.add({ id:"hugjim-2", label:"Хөгжим, дуу, тоглолт II", icon:"🎼", w:{
+"хөгжмийн урсгал":"a musical current","хөгжмийн сэдэв":"a musical theme","гол аялгуу":"the main melody",
+"дэд аялгуу":"a counter-melody","эгшиглүүр":"a chord","хөвөрсөн эгшиг":"a sustained tone","намуухан хөгжим":"quiet music",
+"хүчтэй хөгжим":"powerful music","хурдан хэмнэл":"a fast rhythm","удаан хэмнэл":"a slow rhythm",
+"тогтмол цохилт":"a steady pulse","хэмнэл өөрчлөгдөх":"the rhythm shifting","хөгжим өсөх":"the music building",
+"хөгжим намдах":"the music subsiding","хөгжим зогсох":"the music stopping","чимээгүйгээс эхлэх":"beginning from silence",
+"чавхдас":"a string of an instrument","чавхдас татах":"drawing the bow across the strings","нум (хуурын)":"a bow",
+"хуурын дуу":"the voice of the fiddle","хуур тохируулах":"tuning the fiddle","хөгжмийн зэмсэг тохируулах":"tuning an instrument",
+"дуучин дуулж эхлэх":"a singer beginning","хоолойгоо тавих":"letting the voice out","дуу дуусах":"a song ending",
+"урт дууны эгшиг":"the long-song's held note","богино дууны хэмнэл":"the beat of a short song",
+"ардын аялгуу":"a folk melody","бүжгийн хөгжим":"dance music","ёслолын хөгжим":"ceremonial music",
+"гашуудлын аялгуу":"a lament","баярын аялгуу":"a festive tune","өлгийн дуу":"a lullaby","хүүхдийн дуу":"a children's song",
+"тайзан дээр гарах":"stepping onto the stage","үзэгчдийн өмнө":"before an audience","гэрэл тайзан дээр":"lights on the stage",
+"хөшиг нээгдэх":"the curtain rising","хөшиг хаагдах":"the curtain falling","тоглолт эхлэх":"the performance beginning",
+"тоглолт өндөрлөх":"the performance ending","алга ташилт өрнөх":"applause breaking out","дахин тоглох":"an encore",
+"бүжигчид тайзан дээр":"dancers on the stage","бүжгийн хөдөлгөөн":"a dance movement","бүжгийн эргэлт":"a turn in the dance",
+"бүжгийн эгнээ":"a line of dancers","хамтын бүжиг":"a group dance","гоцлол бүжиг":"a solo dance",
+"хөгжимчид эгнэн суух":"musicians seated in a row","найрал хөгжим":"an orchestra","хамтлаг тоглох":"a band playing",
+"хөгжмийн зохиол":"a composition","дууны үг":"song lyrics","аялгуу зохиох":"composing a melody","бичлэг хийх":"making a recording"
+}});
+
+WB.dict.add({ id:"gerel-zurag", label:"Гэрэл зураг, дүрслэх урлаг II", icon:"🖼", w:{
+"гэрэл зураг":"a photograph","хар цагаан зураг":"a black-and-white photograph","өнгөт зураг":"a colour photograph",
+"хуучин зураг":"an old photograph","зургийн цомог":"a photo album","хөрөг зураг":"a portrait photograph",
+"бүлгийн зураг":"a group photograph","байгалийн гэрэл зураг":"a landscape photograph","баримтат гэрэл зураг":"documentary photography",
+"гудамжны гэрэл зураг":"street photography","зураг авах агшин":"the decisive moment","хүрээ сонгох":"choosing the frame",
+"гэрэл хэмжих":"metering the light","хаалт дарах":"pressing the shutter","цаг тавих (зураг)":"setting the exposure",
+"хэт гэрэлтсэн":"overexposed","хэт бараан":"underexposed","фокус алдсан":"out of focus","хурц фокустай":"sharply focused",
+"нэгжийн ширхэг":"grain","дижитал шуугиан":"digital noise","өнгө засварлах":"colour correcting","зураг боловсруулах":"retouching",
+"хэвлэсэн зураг":"a print","хүрээлсэн зураг":"a framed print","ханан дээрх зураг":"a picture on the wall",
+"уран зургийн зотон":"a painter's canvas","бийрийн ул мөр":"visible brushwork","өтгөн будаг":"thick paint",
+"нимгэн будгийн давхарга":"a thin wash of paint","ноорог зурах":"sketching out","хар зураас":"a dark line",
+"хөнгөн зураас":"a light stroke","сүүдэрлэл":"shading","гэрэлтэй хэсэг":"a highlight","гүн сүүдэр":"a deep shadow",
+"өнгөний зэрэгцүүлэл":"a colour juxtaposition","композицийн тэнцвэр":"compositional balance","гол дүрслэл":"the focal subject",
+"туслах элемент":"a supporting element","дэвсгэрийн нарийвчлал":"background detail","урд талын нарийвчлал":"foreground detail",
+"хэтийн шугам":"perspective lines","алслалын мэдрэмж":"a sense of recession","хавтгай дүрслэл":"a flat rendering",
+"эзэлхүүнтэй дүрслэл":"a volumetric rendering","реалист дүрслэл":"a realistic rendering","хийсвэр дүрслэл":"an abstract rendering",
+"загварчилсан дүрслэл":"a stylised rendering","шугаман зураг":"line art","цэгэн зураг":"stippled drawing",
+"сийлбэрийн хэв":"an engraving style","модон бар":"a woodblock print","уран бичлэгийн зураас":"a calligraphic stroke",
+"туг зураг":"a banner painting","ханын том зураг":"a mural","чимэглэлийн хээ":"a decorative motif"
+}});

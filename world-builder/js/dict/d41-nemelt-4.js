@@ -1,0 +1,66 @@
+/* ═══ 41 · Нэмэлт үгс IV — байгаль, аялал, тээвэр ═══ */
+WB.dict.add({ id:"ayalal", label:"Аялал, зам, чиглэл", icon:"🧳", w:{
+"аяны бэлтгэл":"preparations for a journey","замын нөөц":"supplies for the road","ачаа боох (аялал)":"packing for a trip",
+"замын зураглал":"a route map","чиглэл сонгох":"choosing a route","товч зогсоол":"a brief stop",
+"хоноглох газар":"a place to spend the night","замын дундах буудал":"a waystation","өртөө солих":"changing horses at a relay",
+"замын хүнс бэлтгэх":"putting up food for the road","ус нөөцлөх":"stocking up on water",
+"замд гарах цаг":"the hour of departure","эргэж ирэх өдөр":"the day of return","аяллын урт":"the length of the journey",
+"аяны нөхөр":"a travelling companion","хөтөч":"a guide","хөтөчлөх":"guiding the way","замчлах":"leading along the road",
+"зам асуух":"asking the way","зам заах":"pointing out the way","төөрөх":"getting lost","эргэж олох":"finding one's way back",
+"тэмдэг тавих (зам)":"leaving a marker","мөрөө дагах":"following one's own tracks","товчлох (зам)":"taking a short cut",
+"тойрох (зам)":"going the long way round","саадтай зам":"a blocked road","тасарсан гүүр":"a broken bridge",
+"үерт автсан зам":"a flooded road","цасанд боогдсон зам":"a snowbound road","шаварт суух":"getting bogged down",
+"түлш дуусах":"running out of fuel","морь ядрах":"the horses tiring","амарч тайвших":"stopping to rest",
+"гал түлэх (зам)":"making a fire on the road","хоол хийх (зам)":"cooking on the road","майхан барих":"pitching a tent",
+"майхан":"a tent","унтлагын уут":"a sleeping bag","аяны цүнх":"a travelling pack","ус хийх сав":"a water flask",
+"луужингаар чиглэх":"navigating by compass","одоор чиглэх":"steering by the stars","нарны байрлалаар":"by the position of the sun",
+"уулын дагуу":"along the mountains","голын дагуу":"along the river","замын хажуугаар":"beside the road",
+"хилээр гарах":"crossing the border","гааль дамжих":"passing through customs","виз":"a visa","паспорт":"a passport",
+"тийз":"a travel ticket","онгоцны буудал руу":"to the airport","нислэгийн хуваарь":"a flight schedule",
+"нислэг хойшлох":"a delayed flight","онгоц хөөрөх":"a plane taking off","онгоц буух":"a plane landing",
+"галт тэрэг хөдлөх":"a train pulling out","буудал дээр угтах":"meeting someone at the station",
+"аяллын дурсамж":"memories of a journey","аялалын зураг":"travel photographs","гэрийн санагдал":"a longing for home"
+}});
+
+WB.dict.add({ id:"baigal-4", label:"Байгалийн байдал IV", icon:"🏕", w:{
+"үүрийн чимээгүй":"the stillness of dawn","өглөөний сэрүүн":"the chill of morning","өдрийн халуун":"the heat of the day",
+"үдшийн зөөлөн гэрэл":"the soft light of evening","шөнийн хүйтэн":"the cold of night",
+"салхигүй өдөр":"a windless day","салхитай өглөө":"a windy morning","бүрхэг өдөр (уур амьсгал)":"a grey overcast day",
+"нартай сэрүүн өдөр":"a bright cool day","халуун салхитай":"with a hot wind","хүйтэн салхитай":"with a cold wind",
+"чийглэг үдэш":"a damp evening","хуурай халуун":"a dry heat","шүүдэртэй өвс":"dew-wet grass",
+"хярууны цагаан өвс":"grass whitened with frost","цасан дээрх нарны туяа":"sunlight on snow",
+"мөстсөн гол":"a frozen river","хайлж буй цас":"melting snow","шавартай хавар":"a muddy spring",
+"тоостой зун":"a dusty summer","шаргалтсан намар":"a golden autumn","хүйтэн цагаан өвөл":"a cold white winter",
+"зэрэглээ":"a heat shimmer","элсний давалгаа":"waves of sand","манхны нуруу":"the crest of a dune",
+"хадны нүх":"a hollow in the rock","хадан хана":"a rock wall","хадан дээрх бичээс":"an inscription on the rock",
+"хад цоолсон ус":"water-carved rock","эрэг цоорсон":"an undercut bank","элсэрхэг ёроол":"a sandy bottom",
+"чулуут ёроол":"a stony bed","гүн цөөрөм":"a deep pool","намхан эрэг":"a low bank","өндөр эрэг":"a high bank",
+"голын салаа":"a river branch","голын гүүр":"a river crossing","гарам":"a ford","гатлах":"fording",
+"нуурын арал":"an island in a lake","нуурын мөс":"lake ice","намгийн хөвд":"marsh moss",
+"зэгсэн шугуй":"a reed thicket","шувууны нуга":"a bird meadow","цэцэгт нуга":"a flowering meadow",
+"хадлангийн үнэр":"the smell of cut hay","өвсний үнэр (шинэ)":"the scent of fresh grass",
+"нарсан ойн үнэр":"the scent of pine woods","борооны дараах үнэр":"the smell after rain",
+"уулын цэвэр агаар":"clean mountain air","цөлийн хуурай агаар":"the dry air of the desert",
+"тэнгэрийн хаяа улайх":"the horizon reddening","тэнгэр цэнхэрлэх":"the sky turning blue","үүл өнгө солих":"clouds changing colour"
+}});
+
+WB.dict.add({ id:"teever-2", label:"Тээвэр, техник III", icon:"🛞", w:{
+"жолооны ард":"behind the wheel","хурдны заалт":"the speedometer reading","түлшний заалт":"the fuel gauge",
+"хөдөлгүүр асаах":"starting the engine","хөдөлгүүр унтраах":"cutting the engine","хурд авах":"picking up speed",
+"тоормослох":"braking","гэнэт тоормослох":"braking hard","эргэлт хийх":"taking a turn","эргүүлж буцах":"turning around",
+"араагаар явах":"reversing","замын хажуу тал":"the roadside","замын гүүрэн доогуур":"under a road bridge",
+"тоннель дундуур":"through a tunnel","замын хяналт":"a road inspection","замын түгжрэлээс гарах":"getting clear of traffic",
+"машины цонх нээх":"lowering a car window","машины гэрэл асаах":"switching on the headlights",
+"машины салхины шил":"a windscreen","арчигч ажиллах":"the wipers working","машины суудал":"a car seat",
+"ачааны тэвш":"a load bed","дугуй солих":"changing a wheel","хөдөлгүүрийн дуу":"the sound of an engine",
+"хөдөлгүүр зогсох":"an engine stalling","машин эвдрэх":"a vehicle breaking down","чирэгч":"a tow truck",
+"засварын газар":"a repair shop","тос солих":"an oil change","угаалгын газар":"a car wash",
+"галт тэрэгний тасалгаа":"a train compartment","галт тэрэгний цонх":"a train window","төмөр замын гарам":"a level crossing",
+"төмөр замын шпал":"a railway sleeper","галт тэрэг ирэх":"a train arriving","галт тэрэг хөдлөх (үйл)":"a train departing",
+"онгоцны сандал":"an aircraft seat","онгоцны цонх":"an aircraft window","үүлэн дээгүүр нисэх":"flying above the clouds",
+"буух зурвас":"a runway","нисэх зурвас дээр":"on the runway","онгоцны далавч":"an aircraft wing",
+"нисдэг тэрэгний сэнс":"a helicopter rotor","завины сэлүүр":"a boat oar","завь хөвүүлэх":"launching a boat",
+"дарвуул татах":"hoisting a sail","зангуу буулгах":"dropping anchor","эрэгт ойртох":"coming in to shore",
+"усан онгоцны тавцан":"a ship's deck","далайн аялал":"a sea voyage","давалгаанд ганхах":"pitching in the swell",
+"тэмээн жин":"a camel caravan","морин тэрэг":"a horse cart","чарганы мөр":"sledge tracks","ачаа тээшний тэвш":"a luggage rack"
+}});
