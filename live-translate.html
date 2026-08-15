@@ -241,6 +241,17 @@ footer{display:flex;align-items:center;gap:16px;padding:10px 20px;background:#0d
           Гаралтын формат: PCM боломжтой бол PCM, үгүй бол MP3 руу өөрөө шилжинэ.</div>
       </div>
       <div class="fld">
+        <label for="trModel">Орчуулгын загвар</label>
+        <select id="trModel">
+          <option value="claude-opus-5">Claude Opus 5 — хамгийн сайн орчуулга</option>
+          <option value="claude-sonnet-5">Claude Sonnet 5 — тэнцвэртэй</option>
+          <option value="claude-haiku-4-5">Claude Haiku 4.5 — хамгийн хурдан, хамгийн хямд</option>
+        </select>
+        <div class="hint">Богино өгүүлбэр орчуулахад Haiku ойролцоогоор <b>5 дахин хямд</b> бөгөөд саатал багатай.
+          Урлаг, хэлц үг элбэг яриа бол Opus давуу.</div>
+      </div>
+
+      <div class="fld">
         <label for="anthKey">Anthropic түлхүүр (орчуулгад)</label>
         <input type="password" id="anthKey" placeholder="sk-ant-…" autocomplete="off" spellcheck="false">
         <div class="hint">ElevenLabs орчуулга хийдэггүй тул дунд шатанд Claude ажиллана.
@@ -315,7 +326,7 @@ const cfg = {
   /* TTS-ийг HTTP-ээр дуудна (WebSocket биш) тул eleven_v3 ажиллана.
      Монгол хэл албан ёсны жагсаалтад байхгүй ч v3 сайн уншдаг. */
   sttModel: "scribe_v2_realtime", ttsModel: "eleven_v3", pcmOk: undefined,
-  voice: "21m00Tcm4TlvDq8ikWAM", trModel: "claude-sonnet-4-6"
+  voice: "21m00Tcm4TlvDq8ikWAM", trModel: "claude-opus-5"
 };
 let ws = null, micCtx = null, node = null, stream = null;
 let playCtx = null, gain = null, playHead = 0, playing = new Set();
@@ -1149,6 +1160,7 @@ function fillSheet(){
   $("anthKey").value = cfg.anthKey;
   $("voice").value = cfg.voice;
   $("ttsModel").value = cfg.ttsModel;
+  $("trModel").value = cfg.trModel;
   $("source").value = cfg.source;
   syncSheet();
   $("subs").checked = cfg.subs;
@@ -1168,6 +1180,7 @@ function applySheet(){
   cfg.anthKey = $("anthKey").value.trim();
   cfg.voice = $("voice").value.trim() || cfg.voice;
   cfg.ttsModel = $("ttsModel").value.trim() || cfg.ttsModel;
+  cfg.trModel = $("trModel").value;
   cfg.source = $("source").value;
   cfg.subs = $("subs").checked;
   cfg.echo = $("echo").checked;
