@@ -107,11 +107,12 @@ footer{display:flex;align-items:center;gap:14px;padding:10px 20px;background:#0d
 <main>
   <div class="rows" id="rows">
     <div class="empty" id="empty">
-      <b>YouTube видеоны хадмалыг монголоор.</b><br><br>
-      Видео доор <kbd>…</kbd> → <kbd>Show transcript</kbd> дарж бичвэрийг хуулаад,<br>
-      <kbd>✚ БИЧВЭР ОРУУЛАХ</kbd> дотор буулгана.<br><br>
-      Дуу хоолой, микрофон, бодит цагийн холболт — юу ч хэрэггүй.<br>
-      Зөвхөн Anthropic түлхүүр.
+      <b>Видео, бичлэг, хадмалыг монголоор.</b><br><br>
+      <kbd>✚ БИЧВЭР ОРУУЛАХ</kbd> дотроос гурван зам:<br>
+      YouTube-ийн <kbd>Show transcript</kbd>-ыг хуулах ·
+      <kbd>.srt</kbd> файл чирэх ·
+      <kbd>🎧 дуу/видео файл</kbd> өгөх<br><br>
+      Микрофон, бодит цагийн холболт — хэрэггүй.
     </div>
   </div>
 </main>
@@ -128,7 +129,7 @@ footer{display:flex;align-items:center;gap:14px;padding:10px 20px;background:#0d
 <div class="sheet" id="inSheet">
   <div class="box">
     <h2>Бичвэр оруулах</h2>
-    <p class="sub">YouTube-ийн хадмал, .srt файл, эсвэл энгийн бичвэр — бүгд болно.</p>
+    <p class="sub">YouTube-ийн хадмал, .srt файл, энгийн бичвэр — эсвэл <b>дуу/видео бичлэг</b>. Бүгд болно.</p>
 
     <div class="steps">
       <b>YouTube-ээс хадмал авах:</b><br>
@@ -145,6 +146,18 @@ footer{display:flex;align-items:center;gap:14px;padding:10px 20px;background:#0d
         <button type="button" class="mini" id="pickBtn" style="padding:4px 10px;margin-top:6px">📁 ФАЙЛ СОНГОХ</button>
         <input type="file" id="file" accept=".srt,.vtt,.txt,.sbv,text/plain" hidden>
       </div>
+    </div>
+
+    <div class="or">ЭСВЭЛ</div>
+
+    <div class="fld">
+      <label>Бичлэгээс бичвэр гаргах</label>
+      <button type="button" class="mini" id="mediaBtn" style="padding:10px 16px">🎧 ДУУ / ВИДЕО ФАЙЛ СОНГОХ</button>
+      <input type="file" id="media" accept="audio/*,video/*,.mp3,.mp4,.m4a,.wav,.webm,.mkv,.ogg,.flac" hidden>
+      <div class="hint">Татаж авсан бичлэгээ өгвөл <b>ElevenLabs Scribe</b> бичвэр болгоод,
+        цагийн тэмдэгтэйгээр дээрх талбарт бөглөнө. Дараа нь ОРЧУУЛАХ дар.<br>
+        <b>Зөвлөмж:</b> видеоны оронд зөвхөн дууг нь өгвөл олон дахин хурдан —
+        <code>yt-dlp -x --audio-format mp3 "ХОЛБООС"</code></div>
     </div>
 
     <div class="or">ЭСВЭЛ</div>
@@ -177,6 +190,14 @@ footer{display:flex;align-items:center;gap:14px;padding:10px 20px;background:#0d
       <input type="password" id="key" placeholder="sk-ant-…" autocomplete="off" spellcheck="false">
       <div class="hint"><b>platform.claude.com → Settings → API Keys</b>.
         <code>npm run serve</code> + <code>ANTHROPIC_API_KEY</code>-ээр ажиллуулбал энэ талбар хоосон байж болно.</div>
+    </div>
+
+    <div class="fld">
+      <label for="elKey">ElevenLabs түлхүүр — бичлэгээс бичвэр гаргахад</label>
+      <input type="password" id="elKey" placeholder="sk_…" autocomplete="off" spellcheck="false">
+      <div class="hint">Зөвхөн дуу/видео файлыг бичвэр болгоход хэрэгтэй.
+        Бэлэн хадмал буулгах бол <b>хоосон байж болно</b>.
+        Түлхүүрт <b>Speech to Text</b> эрх нээлттэй байх ёстой.</div>
     </div>
 
     <div class="fld">
@@ -233,7 +254,8 @@ const STYLES = {
   formal:  "Use a formal, documentary register suitable for educational or professional narration."
 };
 
-const cfg = { key: "", model: "claude-opus-5", target: "mn", style: "natural", remember: true, proxy: false };
+const cfg = { key: "", elKey: "", sttModel: "scribe_v2", model: "claude-opus-5",
+              target: "mn", style: "natural", remember: true, proxy: false };
 let rows = [], busy = false;
 
 const $ = (id) => document.getElementById(id);
@@ -459,6 +481,106 @@ function exportTxt(){
   download("hadmal-" + cfg.target + ".txt", head + body);
 }
 
+/* ══ Бичлэгээс бичвэр — ElevenLabs Scribe ══════════════
+   POST /v1/speech-to-text — файл байршуулаад үг бүрийн цагтай
+   бичвэр буцаана. Бодит цагийн WebSocket-той огт хамаагүй, ганц
+   HTTP дуудлага. */
+
+/* Үгсийг хадмалын мөр болгон бүлэглэнэ: цэг таслал, завсарлага,
+   эсвэл урт хэтэрсэн газар таслана. */
+function wordsToLines(words){
+  const out = [];
+  let cur = null;
+
+  for (const w of words) {
+    if (w.type && w.type !== "word" && w.type !== "spacing") continue;   // audio_event алгасна
+    const text = (w.text || "").trim();
+    if (!text) continue;
+
+    if (!cur) cur = { t: Math.floor(w.start || 0), parts: [], end: w.end };
+
+    /* Өмнөх үгнээс 0.8 сек-ээс их завсарласан бол шинэ мөр */
+    if (cur.parts.length && (w.start - cur.end) > 0.8) {
+      out.push(cur);
+      cur = { t: Math.floor(w.start || 0), parts: [], end: w.end };
+    }
+
+    cur.parts.push(text);
+    cur.end = w.end != null ? w.end : cur.end;
+
+    const joined = cur.parts.join(" ");
+    if (/[.!?…]$/.test(text) || joined.length > 90) { out.push(cur); cur = null; }
+  }
+  if (cur && cur.parts.length) out.push(cur);
+
+  return out.map((l) => ({ t: l.t, text: l.parts.join(" ").replace(/\s+([,.!?…])/g, "$1") }));
+}
+
+function transcribeMedia(file){
+  return new Promise((resolve, reject) => {
+    const form = new FormData();
+    form.append("file", file, file.name);
+    form.append("model_id", cfg.sttModel);
+    form.append("timestamps_granularity", "word");
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "https://api.elevenlabs.io/v1/speech-to-text");
+    xhr.setRequestHeader("xi-api-key", cfg.elKey);
+
+    xhr.upload.onprogress = (e) => {
+      if (!e.lengthComputable) return;
+      progress(e.loaded, e.total);
+      stat("Байршуулж байна… " + Math.round((e.loaded / e.total) * 100) + "%");
+    };
+    xhr.onload = () => {
+      let j = null;
+      try { j = JSON.parse(xhr.responseText); } catch (e) {}
+      if (xhr.status >= 200 && xhr.status < 300 && j) return resolve(j);
+      const d = j && j.detail;
+      reject(new Error((d && (d.message || d.status)) || (j && j.message) ||
+                       ("HTTP " + xhr.status + " " + xhr.responseText.slice(0, 160))));
+    };
+    xhr.onerror = () => reject(new Error("Сүлжээний алдаа — байршуулж чадсангүй."));
+    xhr.send(form);
+  });
+}
+
+async function fromMedia(file){
+  if (!file) return;
+  if (!cfg.elKey) { $("inSheet").classList.remove("on"); $("setBtn").click();
+    return banner("Бичлэгээс бичвэр гаргахад ElevenLabs түлхүүр хэрэгтэй (⚙).", "err"); }
+
+  const mb = file.size / 1048576;
+  if (mb > 400) return banner("Файл " + Math.round(mb) + " МБ — хэт том. Зөвхөн дууг нь ялгаж авна уу: " +
+                              "yt-dlp -x --audio-format mp3", "err");
+  if (mb > 120) banner("Файл " + Math.round(mb) + " МБ — байршуулахад хэсэг хугацаа орно. " +
+                       "Дараагийн удаа зөвхөн дууг нь өгвөл олон дахин хурдан.", "");
+
+  $("mediaBtn").disabled = true;
+  stat("Байршуулж байна…");
+  try {
+    const j = await transcribeMedia(file);
+    stat("Бичвэр болгож байна…");
+
+    const lines = (j.words && j.words.length) ? wordsToLines(j.words)
+      : (j.text || "").split(/(?<=[.!?…])\s+/).map((t) => ({ t: null, text: t.trim() })).filter((l) => l.text);
+
+    if (!lines.length) throw new Error("Бичвэр гарсангүй — бичлэгт яриа байгаа эсэхийг шалгана уу.");
+
+    $("raw").value = lines.map((l) => (l.t != null ? label(l.t) + "\n" : "") + l.text).join("\n");
+    progress(0, 0);
+    banner("«" + file.name + "» → " + lines.length + " мөр (" + (j.language_code || "?") + "). " +
+           "Одоо ОРЧУУЛАХ дар.", "ok");
+    stat(lines.length + " мөр бэлэн");
+  } catch (e) {
+    progress(0, 0);
+    banner("Бичвэр болгож чадсангүй: " + e.message, "err");
+    stat("Бэлэн");
+  } finally {
+    $("mediaBtn").disabled = false;
+  }
+}
+
 /* ══ YouTube холбоосоор татах (зөвхөн локал сервертэй) ══ */
 let ytId = "";
 function videoId(u){
@@ -488,7 +610,7 @@ async function fetchTranscript(){
 function loadCfg(){ try { Object.assign(cfg, JSON.parse(localStorage.getItem(LS) || "{}")); } catch (e) {} }
 function saveCfg(){
   const c = Object.assign({}, cfg);
-  if (!cfg.remember) c.key = "";
+  if (!cfg.remember) { c.key = ""; c.elKey = ""; }
   try { localStorage.setItem(LS, JSON.stringify(c)); } catch (e) {}
 }
 async function checkProxy(){
@@ -502,13 +624,14 @@ async function checkProxy(){
 $("openBtn").onclick = () => { $("inSheet").classList.add("on"); $("raw").focus(); };
 $("closeIn").onclick = () => $("inSheet").classList.remove("on");
 $("setBtn").onclick = () => {
-  $("key").value = cfg.key; $("model").value = cfg.model;
+  $("key").value = cfg.key; $("elKey").value = cfg.elKey; $("model").value = cfg.model;
   $("style").value = cfg.style; $("remember").checked = cfg.remember;
   $("setSheet").classList.add("on");
 };
 $("closeSet").onclick = () => $("setSheet").classList.remove("on");
 $("saveSet").onclick = () => {
   cfg.key = $("key").value.trim();
+  cfg.elKey = $("elKey").value.trim();
   cfg.model = $("model").value;
   cfg.style = $("style").value;
   cfg.remember = $("remember").checked;
@@ -530,6 +653,8 @@ async function loadFile(file){
   } catch (e) { banner("Файл уншиж чадсангүй: " + e.message, "err"); }
 }
 $("pickBtn").onclick = () => $("file").click();
+$("mediaBtn").onclick = () => $("media").click();
+$("media").onchange = (e) => { fromMedia(e.target.files[0]); e.target.value = ""; };
 $("file").onchange = (e) => loadFile(e.target.files[0]);
 
 const drop = $("raw");
