@@ -1094,6 +1094,20 @@ async function claudePush(text){
 async function startClaude(){
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) throw new Error("Энэ хөтөч яриа таних чадваргүй байна. Chrome эсвэл Edge ашиглана уу.");
+  /* getUserMedia нь file:// дээр ажилладаг ч Web Speech API-д микрофоны
+     зөвшөөрөл олгогддоггүй — заавал localhost/https байх ёстой. */
+  if (location.protocol === "file:")
+    throw new Error("Яриа таних нь file:// дээр ажиллахгүй. «npm run serve» ажиллуулаад " +
+                    "http://localhost:8080/live-translate.html хаягаар нээнэ үү.");
+
+  /* Микрофон байгаа эсэхийг урьдчилж шалгана — байхгүй бол алдаа нь
+     audio-capture гэж давтагдан гардаг тул шалтгаан нь бүрхэг байдаг. */
+  try {
+    const devs = await navigator.mediaDevices.enumerateDevices();
+    if (!devs.some((d) => d.kind === "audioinput"))
+      throw new Error("Микрофон олдсонгүй. Энэ хөдөлгүүр зөвхөн микрофоноор ажиллана — " +
+                      "таб/видео орчуулах бол ElevenLabs хөдөлгүүрийг сонго.");
+  } catch (e) { if (/Микрофон олдсонгүй/.test(e.message)) throw e; }
   if (cfg.trProvider === "gemini") {
     if (!cfg.key) { openSheet(); throw new Error("Gemini-гээр орчуулахад Gemini түлхүүр хэрэгтэй."); }
   } else if (!cfg.proxy && !cfg.anthKey) {
@@ -1120,10 +1134,20 @@ async function startClaude(){
     }
     if (interim) setLive("in", interim);
   };
+  let captureFails = 0;
   recog.onerror = (ev) => {
     if (ev.error === "no-speech" || ev.error === "aborted") return;   // хэвийн, өөрөө сэргэнэ
     logEv("яриа таних алдаа: " + ev.error);
-    if (ev.error === "not-allowed") stop("Микрофоны зөвшөөрөл өгөөгүй байна.");
+
+    if (ev.error === "audio-capture" && ++captureFails >= 3) {
+      return stop("Микрофоноос дуу авч чадсангүй. Микрофон залгаастай эсэх, " +
+                  "өөр програм эзэмшиж байгаа эсэх, Windows-ийн Privacy → Microphone " +
+                  "тохиргоог шалгана уу.");
+    }
+    if (ev.error === "not-allowed") {
+      stop("Микрофоны зөвшөөрөл өгөөгүй байна. Хаягийн мөрний 🔒 дүрсээр зөвшөөрнө үү.");
+    }
+    if (ev.error === "network") stop("Яриа таних сүлжээний алдаа — интернэт холболтоо шалгана уу.");
   };
   /* Chrome чимээгүй байхад сессийг өөрөө хаадаг — шууд дахин эхлүүлнэ */
   recog.onend = () => {
@@ -1215,6 +1239,13 @@ async function diagnose(){
     logEv((SR ? "✓" : "✗") + " хөтчийн яриа таних (Web Speech API)");
     if (!SR) return banner("Энэ хөтөч яриа таних чадваргүй. Chrome эсвэл Edge ашиглана уу.", "err");
     logEv("сонсох хэл: " + (BCP[sourceLang()] || sourceLang()));
+    if (location.protocol === "file:")
+      logEv("✗ file:// эх — яриа таних ажиллахгүй. «npm run serve» ашиглана уу");
+    try {
+      const devs = await navigator.mediaDevices.enumerateDevices();
+      const mics = devs.filter((d) => d.kind === "audioinput");
+      logEv((mics.length ? "✓ " : "✗ ") + "микрофон: " + (mics.length ? mics.length + " ширхэг" : "ОЛДСОНГҮЙ"));
+    } catch (e) { logEv("⚠ төхөөрөмж жагсаах боломжгүй: " + e.message); }
 
     const voices = (window.speechSynthesis && speechSynthesis.getVoices()) || [];
     const mine = voices.filter((v) => v.lang.split(/[-_]/)[0] === cfg.target);
@@ -1448,6 +1479,9 @@ $("engine").onchange = () => {
   saveCfg();
   syncSheet();
   logEv("хөдөлгүүр: " + cfg.engine);
+  if (cfg.engine === "claude" && cfg.source === "screen")
+    banner("Claude хөдөлгүүр зөвхөн микрофон сонсдог. YouTube, хурал зэрэг таб дуу орчуулах бол " +
+           "ElevenLabs эсвэл Gemini хөдөлгүүрийг сонгоно уу.", "");
   if (running) restart();
 };
 $("bannerDiag").onclick = diagnose;
