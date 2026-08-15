@@ -450,6 +450,56 @@ class PcmRec extends AudioWorkletProcessor {
 registerProcessor('pcm-rec', PcmRec);
 `;
 
+/* Нэг тасалбар бэлэн болмогц — VU шинэчилж, Google руу илгээнэ.
+   Оргилыг тасалбараас нь өөрөөс нь тооцно: блокийн хил дээр 0 болж
+   анивчихаас сэргийлнэ. */
+function sendFrame(pcm){
+  let peak = 0;
+  for (let i = 0; i < pcm.length; i += 8) { const a = pcm[i] < 0 ? -pcm[i] : pcm[i]; if (a > peak) peak = a; }
+  $("vu").style.width = Math.min(100, (peak / 32768) * 140) + "%";
+  if (muted || !ws || ws.readyState !== 1) return;
+  ws.send(JSON.stringify({
+    realtimeInput: { audio: { data: b64(new Uint8Array(pcm.buffer, pcm.byteOffset, pcm.byteLength)), mimeType: "audio/pcm;rate=" + IN_RATE } }
+  }));
+}
+
+/* AudioWorklet боломжгүй үеийн нөөц зам — үндсэн урсгал дээр ижил
+   шугаман интерполяциар 16 kHz болгож бууруулна. */
+function scriptFallback(ctx, src){
+  const sp = ctx.createScriptProcessor(4096, 1, 1);
+  const ratio = ctx.sampleRate / IN_RATE;
+  const frame = new Int16Array(FRAME);
+  let carry = new Float32Array(0), pos = 0, fi = 0;
+
+  sp.onaudioprocess = (ev) => {
+    const ch = ev.inputBuffer.getChannelData(0);
+    const buf = new Float32Array(carry.length + ch.length);
+    buf.set(carry, 0); buf.set(ch, carry.length);
+
+    let idx = pos;
+    while (idx < buf.length - 1) {
+      const i0 = idx | 0, t = idx - i0;
+      let v = buf[i0] * (1 - t) + buf[i0 + 1] * t;
+      if (v > 1) v = 1; else if (v < -1) v = -1;
+      frame[fi++] = v < 0 ? v * 0x8000 : v * 0x7fff;
+      if (fi === frame.length) { sendFrame(frame); fi = 0; }
+      idx += ratio;
+    }
+    let used = idx | 0;
+    if (used > buf.length - 1) used = buf.length - 1;
+    carry = buf.slice(used);
+    pos = idx - used;
+  };
+
+  // ScriptProcessor нь гаралт руу холбогдсон үед л ажилладаг — чимээгүй холбоно
+  const silent = ctx.createGain();
+  silent.gain.value = 0;
+  src.connect(sp);
+  sp.connect(silent);
+  silent.connect(ctx.destination);
+  return sp;
+}
+
 async function openMic(){
   if (cfg.source === "screen") {
     stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
@@ -468,29 +518,35 @@ async function openMic(){
 
   micCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: IN_RATE });
   if (micCtx.state === "suspended") await micCtx.resume();
-  const url = URL.createObjectURL(new Blob([WORKLET], { type: "application/javascript" }));
-  await micCtx.audioWorklet.addModule(url);
-  URL.revokeObjectURL(url);
+  const src = micCtx.createMediaStreamSource(stream);
 
-  node = new AudioWorkletNode(micCtx, "pcm-rec", {
-    numberOfInputs: 1, numberOfOutputs: 0, channelCount: 1,
-    processorOptions: { outRate: IN_RATE, frame: FRAME }
-  });
-  node.port.onmessage = (ev) => {
-    $("vu").style.width = Math.min(100, ev.data.peak * 140) + "%";
-    if (muted || !ws || ws.readyState !== 1) return;
-    ws.send(JSON.stringify({
-      realtimeInput: { audio: { data: b64(new Uint8Array(ev.data.pcm)), mimeType: "audio/pcm;rate=" + IN_RATE } }
-    }));
-  };
-  micCtx.createMediaStreamSource(stream).connect(node);
-  logEv("оролт " + micCtx.sampleRate + " Hz → 16000 Hz");
+  /* AudioWorklet нь илүү тогтвортой ч file:// дээр Chrome blob модулийг
+     ачаалахыг хориглодог. Тэр үед ScriptProcessor руу ухарна. */
+  let worklet = false;
+  try {
+    const url = URL.createObjectURL(new Blob([WORKLET], { type: "application/javascript" }));
+    await micCtx.audioWorklet.addModule(url);
+    URL.revokeObjectURL(url);
+    node = new AudioWorkletNode(micCtx, "pcm-rec", {
+      numberOfInputs: 1, numberOfOutputs: 0, channelCount: 1,
+      processorOptions: { outRate: IN_RATE, frame: FRAME }
+    });
+    node.port.onmessage = (ev) => sendFrame(new Int16Array(ev.data.pcm));
+    src.connect(node);
+    worklet = true;
+  } catch (e) {
+    logEv("⚠ AudioWorklet ачаалагдсангүй (" + e.message + ") — ScriptProcessor руу шилжлээ");
+    node = scriptFallback(micCtx, src);
+  }
+  logEv("оролт " + micCtx.sampleRate + " Hz → " + IN_RATE + " Hz · " + (worklet ? "AudioWorklet" : "ScriptProcessor"));
 
   // Хэрэглэгч хуваалцахаа больбол цэвэрхэн зогсооно
   stream.getAudioTracks()[0].addEventListener("ended", () => { if (running) stop("Дууны эх сурвалж таслагдлаа."); });
 }
 function closeMic(){
-  try { node && (node.port.onmessage = null, node.disconnect()); } catch (e) {}
+  try { if (node && node.port) node.port.onmessage = null; } catch (e) {}
+  try { if (node && "onaudioprocess" in node) node.onaudioprocess = null; } catch (e) {}
+  try { node && node.disconnect(); } catch (e) {}
   try { micCtx && micCtx.close(); } catch (e) {}
   try { stream && stream.getTracks().forEach((t) => t.stop()); } catch (e) {}
   node = micCtx = stream = null;
@@ -673,6 +729,17 @@ async function diagnose(){
     const tag = v.ver + " · →" + v.place + " · хадмал:" + (v.subs ? "тий" : "үгүй") + " · " + v.model;
     const r = await trySetup(v, 8000);
     logEv((r.ok ? "✓ " : "✗ ") + tag + (r.ok ? "" : " — " + r.why));
+
+    /* Төлбөр/квотын алдаа = тохиргоо ЗӨВ, зөвхөн дансны асуудал.
+       Үлдсэн хослолыг турших нь утгагүй — шууд хэлнэ. */
+    if (!r.ok && /prepayment|credit|billing|quota|exceeded|RESOURCE_EXHAUSTED/i.test(r.why || "")) {
+      cfg.ver = v.ver; cfg.place = v.place; cfg.model = v.model;
+      saveCfg();
+      logEv("──── ТОХИРГОО ЗӨВ · ДАНСНЫ АСУУДАЛ ────");
+      logEv("сонгосон хувилбар: " + tag);
+      return banner("Тохиргоо зөв байна — саад нь Google-ийн данс: “" + r.why +
+                    "”. AI Studio → Billing дээр үлдэгдлээ нэмээд дахин оролдоно уу.", "err");
+    }
     if (r.ok) {
       cfg.ver = v.ver; cfg.place = v.place; cfg.model = v.model; cfg.subs = v.subs;
       saveCfg();
