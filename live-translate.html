@@ -132,6 +132,7 @@ footer{display:flex;align-items:center;gap:16px;padding:10px 20px;background:#0d
   <select id="engine" class="engsel" title="Аль үйлчилгээгээр орчуулах">
     <option value="gemini">Gemini Live</option>
     <option value="eleven">ElevenLabs</option>
+    <option value="claude">Claude (хөтчийн хоолой)</option>
   </select>
 
   <div class="dirbox">
@@ -240,7 +241,7 @@ footer{display:flex;align-items:center;gap:16px;padding:10px 20px;background:#0d
           байхгүй ч уншдаг. <code>eleven_flash_v2_5</code> — хурдан ч чанар нь буурна.
           Гаралтын формат: PCM боломжтой бол PCM, үгүй бол MP3 руу өөрөө шилжинэ.</div>
       </div>
-      <div class="fld">
+      <div class="fld" id="trProviderFld">
         <label for="trProvider">Орчуулгыг хэн хийх вэ</label>
         <select id="trProvider">
           <option value="claude">Claude (Anthropic данс шаардана)</option>
@@ -269,7 +270,7 @@ footer{display:flex;align-items:center;gap:16px;padding:10px 20px;background:#0d
       </div>
     </div>
 
-    <div class="fld">
+    <div class="fld" id="sourceFld">
       <label for="source">Дууны эх сурвалж</label>
       <select id="source">
         <option value="mic">🎙 Микрофон — нүүр тулсан яриа</option>
@@ -337,7 +338,7 @@ const cfg = {
      Монгол хэл албан ёсны жагсаалтад байхгүй ч v3 сайн уншдаг. */
   sttModel: "scribe_v2_realtime", ttsModel: "eleven_v3", pcmOk: undefined,
   voice: "21m00Tcm4TlvDq8ikWAM", trModel: "claude-opus-5",
-  trProvider: "claude", trGemModel: ""
+  trProvider: "claude", trGemModel: "", srcLang: ""
 };
 let ws = null, micCtx = null, node = null, stream = null;
 let playCtx = null, gain = null, playHead = 0, playing = new Set();
@@ -1013,6 +1014,137 @@ async function diagnoseEleven(){
   banner("ElevenLabs бэлэн. ЭХЛҮҮЛЭХ дар.", "ok");
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   ХӨДӨЛГҮҮР 3 — Claude ганцаараа
+   Claude яриа сонсдоггүй, ярьдаггүй. Тиймээс хөтчийн дотоод чадварыг
+   хоёр талд нь тавина — нэмэлт түлхүүр, нэмэлт данс шаардахгүй:
+
+     Web Speech API (яриа→текст)  →  Claude (орчуулга)  →  speechSynthesis (текст→яриа)
+
+   Бүх дуу боловсруулалт хөтчид хийгдэх тул PCM урсгал, WebSocket,
+   токен — юу ч хэрэггүй. Хамгийн цөөн эвдрэх цэгтэй зам.
+   ══════════════════════════════════════════════════════════════════ */
+const BCP = {
+  mn: "mn-MN", en: "en-US", ru: "ru-RU", zh: "zh-CN", ja: "ja-JP", ko: "ko-KR",
+  de: "de-DE", fr: "fr-FR", es: "es-ES", tr: "tr-TR", ar: "ar-SA", hi: "hi-IN"
+};
+let recog = null, recogWanted = false, warnedVoice = false;
+
+/* Эх хэл: сонгосон зорилтот хэлээс эсрэгийг нь таамаглана.
+   Англи→Монгол бол сонсох нь англи, эсрэгээрээ. */
+function sourceLang(){
+  if (cfg.srcLang) return cfg.srcLang;
+  return cfg.target === "en" ? (cfg.back || "mn") : "en";
+}
+
+function speakBrowser(text){
+  return new Promise((done) => {
+    if (!window.speechSynthesis) return done();
+    const want = BCP[cfg.target] || cfg.target;
+    const voices = speechSynthesis.getVoices();
+    const voice = voices.find((v) => v.lang === want) ||
+                  voices.find((v) => v.lang.split(/[-_]/)[0] === cfg.target);
+
+    if (!voice) {
+      if (!warnedVoice) {
+        warnedVoice = true;
+        logEv("⚠ хөтөчид «" + langName(cfg.target) + "» хэлний хоолой алга — орчуулга зөвхөн бичвэрээр");
+        banner("Хөтөчид «" + langName(cfg.target) + "» хэлний дуу хоолой суугаагүй тул орчуулга бичвэрээр гарна.", "");
+      }
+      return done();
+    }
+
+    const u = new SpeechSynthesisUtterance(text);
+    u.voice = voice;
+    u.lang = voice.lang;
+    u.rate = 1.05;
+    u.onend = u.onerror = () => done();
+    if (!gotAudio) { gotAudio = true; logEv("✓ анхны орчуулсан дуу ирлээ (" + voice.name + ")"); }
+    speechSynthesis.speak(u);
+  });
+}
+
+const clQueue = [];
+let clBusy = false;
+async function claudePush(text){
+  if (!text.trim()) return;
+  setLive("in", text);
+  seal();
+  clQueue.push(text);
+  if (clBusy) return;
+
+  clBusy = true;
+  try {
+    while (clQueue.length && running) {
+      const src = clQueue.shift();
+      try {
+        const tr = await translate(src);
+        if (!tr) continue;
+        setLive("out", tr);
+        seal();
+        await speakBrowser(tr);
+      } catch (e) {
+        logEv("✗ " + e.message);
+        banner(e.message, "err");
+      }
+    }
+  } finally { clBusy = false; }
+}
+
+async function startClaude(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) throw new Error("Энэ хөтөч яриа таних чадваргүй байна. Chrome эсвэл Edge ашиглана уу.");
+  if (cfg.trProvider === "gemini") {
+    if (!cfg.key) { openSheet(); throw new Error("Gemini-гээр орчуулахад Gemini түлхүүр хэрэгтэй."); }
+  } else if (!cfg.proxy && !cfg.anthKey) {
+    openSheet(); throw new Error("Anthropic түлхүүрээ ⚙ дотор оруулна уу.");
+  }
+
+  /* Хоолойн жагсаалт нь заримдаа хойшилж ачаалагддаг — түрүүлж дуудна */
+  if (window.speechSynthesis) speechSynthesis.getVoices();
+
+  const src = sourceLang();
+  recog = new SR();
+  recog.lang = BCP[src] || src;
+  recog.continuous = true;
+  recog.interimResults = true;
+  recogWanted = true;
+  warnedVoice = false;
+
+  recog.onresult = (ev) => {
+    let interim = "";
+    for (let i = ev.resultIndex; i < ev.results.length; i++) {
+      const r = ev.results[i];
+      if (r.isFinal) claudePush(r[0].transcript);
+      else interim += r[0].transcript;
+    }
+    if (interim) setLive("in", interim);
+  };
+  recog.onerror = (ev) => {
+    if (ev.error === "no-speech" || ev.error === "aborted") return;   // хэвийн, өөрөө сэргэнэ
+    logEv("яриа таних алдаа: " + ev.error);
+    if (ev.error === "not-allowed") stop("Микрофоны зөвшөөрөл өгөөгүй байна.");
+  };
+  /* Chrome чимээгүй байхад сессийг өөрөө хаадаг — шууд дахин эхлүүлнэ */
+  recog.onend = () => {
+    if (!recogWanted || !running) return;
+    try { recog.start(); } catch (e) {}
+  };
+
+  recog.start();
+  logEv("яриа таних эхэллээ · сонсох хэл: " + recog.lang + " · орчуулах чиглэл: " + langName(cfg.target));
+  setState("live", "Ажиллаж байна");
+  banner("");
+}
+
+function stopClaude(){
+  recogWanted = false;
+  clQueue.length = 0;
+  try { if (recog) { recog.onend = null; recog.abort(); } } catch (e) {}
+  recog = null;
+  try { window.speechSynthesis && speechSynthesis.cancel(); } catch (e) {}
+}
+
 /* ══ Оношлогоо ═══════════════════════════════════════
    Preview API-ийн хэлбэр өөрчлөгддөг тул таамаглахын оронд
    боломжит хувилбаруудыг дараалан туршиж, ажиллаж байгааг нь сонгоно. */
@@ -1078,6 +1210,28 @@ async function diagnose(){
   logEv("──── ОНОШЛОГОО ЭХЭЛЛЭЭ · хөдөлгүүр: " + cfg.engine + " ────");
   banner("Оношилж байна… хэдэн секунд хүлээнэ үү.", "");
 
+  if (cfg.engine === "claude") {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    logEv((SR ? "✓" : "✗") + " хөтчийн яриа таних (Web Speech API)");
+    if (!SR) return banner("Энэ хөтөч яриа таних чадваргүй. Chrome эсвэл Edge ашиглана уу.", "err");
+    logEv("сонсох хэл: " + (BCP[sourceLang()] || sourceLang()));
+
+    const voices = (window.speechSynthesis && speechSynthesis.getVoices()) || [];
+    const mine = voices.filter((v) => v.lang.split(/[-_]/)[0] === cfg.target);
+    logEv((mine.length ? "✓ " : "✗ ") + "«" + langName(cfg.target) + "» хэлний хоолой: " +
+          (mine.length ? mine.map((v) => v.name).join(", ") : "СУУГААГҮЙ — орчуулга бичвэрээр гарна"));
+    if (!mine.length) logEv("суусан хэлүүд: " + [...new Set(voices.map((v) => v.lang))].sort().join(", "));
+
+    try {
+      const probe = await translate("Hello, this is a test.");
+      logEv("✓ орчуулга ажиллаж байна → " + probe.slice(0, 80));
+      return banner("Бэлэн. ЭХЛҮҮЛЭХ дар." + (mine.length ? "" : " (дуу хоолойгүй — зөвхөн хадмал)"), "ok");
+    } catch (e) {
+      logEv("✗ орчуулга: " + e.message);
+      return banner("Орчуулга ажиллахгүй байна: " + e.message, "err");
+    }
+  }
+
   if (cfg.engine === "eleven") {
     try {
       await diagnoseEleven();
@@ -1141,19 +1295,25 @@ async function diagnose(){
 
 /* ══ Эхлэх / зогсоох ═════════════════════════════════ */
 async function start(){
-  if (!cfg.key) { openSheet(); return say("Эхлээд Gemini API түлхүүрээ оруулна уу.", "err"); }
+  if (cfg.engine === "gemini" && !cfg.key) { openSheet(); return say("Эхлээд Gemini API түлхүүрээ оруулна уу.", "err"); }
   if (!window.isSecureContext) return say("HTTPS эсвэл localhost дээр ажиллуулна уу (микрофон нээгдэхгүй).", "err");
 
   running = true; retries = 0; gotAudio = false;
   $("goBtn").disabled = true;
   banner("");
-  logEv("── эхлүүлж байна · эх сурвалж: " + cfg.source + " · зорилтот хэл: " + cfg.target);
+  logEv("── эхлүүлж байна · хөдөлгүүр: " + cfg.engine + " · эх сурвалж: " +
+        (cfg.engine === "claude" ? "микрофон (Web Speech)" : cfg.source) + " · зорилтот хэл: " + cfg.target);
   try {
-    ensurePlayer();
-    await playCtx.resume();          // хэрэглэгчийн товшилт дотор — autoplay бодлого
-    await openMic();
-    if (cfg.engine === "eleven") await startEleven();
-    else await connect(false);
+    if (cfg.engine === "claude") {
+      /* Web Speech API микрофоноо өөрөө барьдаг тул PCM урсгал хэрэггүй */
+      await startClaude();
+    } else {
+      ensurePlayer();
+      await playCtx.resume();        // хэрэглэгчийн товшилт дотор — autoplay бодлого
+      await openMic();
+      if (cfg.engine === "eleven") await startEleven();
+      else await connect(false);
+    }
     startedAt = Date.now();
     clock();
     tick = setInterval(clock, 1000);
@@ -1185,6 +1345,7 @@ function stop(reason){
   const st = sttWs; sttWs = null;
   try { st && st.close(); } catch (e) {}
   elQueue.length = 0;
+  stopClaude();
   seal();
   $("goBtn").textContent = "ЭХЛҮҮЛЭХ";
   $("goBtn").classList.remove("live");
@@ -1211,15 +1372,21 @@ function saveCfg(){
 }
 /* Тохиргооны хуудсанд зөвхөн идэвхтэй хөдөлгүүрт хамаарах талбарыг үзүүлнэ */
 function syncSheet(){
-  const el = $("engine").value === "eleven";
-  $("elBlock").style.display = el ? "" : "none";
-  /* ElevenLabs хөдөлгүүр Gemini-гээр орчуулж болно — тэр үед Gemini
-     түлхүүр хэрэгтэй хэвээр тул талбарыг нь харуулна. */
-  const needGmKey = !el || $("trProvider").value === "gemini";
-  $("gmBlock").style.display = needGmKey ? "" : "none";
-  const claudeTr = el && $("trProvider").value === "claude";
+  const eng = $("engine").value;
+  const gemini = $("trProvider").value === "gemini";
+
+  /* ElevenLabs түлхүүр/хоолой зөвхөн ElevenLabs хөдөлгүүрт хэрэгтэй */
+  $("elBlock").style.display = eng === "eleven" ? "" : "none";
+  /* Gemini түлхүүр: Gemini хөдөлгүүрт, эсвэл орчуулгыг Gemini хийх үед */
+  $("gmBlock").style.display = (eng === "gemini" || gemini) ? "" : "none";
+  /* Орчуулгын нийлүүлэгчийг сонгох нь зөвхөн гинжин хөдөлгүүрүүдэд утгатай */
+  $("trProviderFld").style.display = eng === "gemini" ? "none" : "";
+  /* Anthropic түлхүүр ба Claude загвар: орчуулгыг Claude хийх үед */
+  const claudeTr = eng !== "gemini" && !gemini;
   $("trModelFld").style.display = claudeTr ? "" : "none";
   $("anthKeyFld").style.display = claudeTr ? "" : "none";
+  /* Дууны эх сурвалж: Web Speech API микрофоноо өөрөө барьдаг */
+  $("sourceFld").style.display = eng === "claude" ? "none" : "";
 }
 function fillSheet(){
   $("engine").value = cfg.engine;
