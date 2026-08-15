@@ -148,9 +148,10 @@ footer{display:flex;align-items:center;gap:14px;padding:10px 20px;background:#0d
     <div class="fld">
       <label for="url">YouTube холбоос</label>
       <input type="text" id="url" placeholder="https://www.youtube.com/watch?v=…" spellcheck="false">
-      <div class="hint">Энэ нь зөвхөн <b><code>npm run serve</code></b> ажиллаж байх үед боломжтой —
-        хөтөч YouTube руу шууд хандаж чадахгүй тул локал сервер дамжуулна.
-        YouTube бүтцээ өөрчлөх үед ажиллахгүй байж болно; тэр үед хуулж буулгах арга найдвартай.</div>
+      <div class="hint"><b>Хуулж буулгах үед ч холбоосоо энд үлдээгээрэй</b> — цагийн тэмдэг
+        дээр дарахад видеоны яг тэр мөч нээгдэнэ.<br>
+        <b>HOLBOOSOOR ТАТАХ</b> товч нь зөвхөн <code>npm run serve</code> ажиллаж байх үед
+        боломжтой: хөтөч YouTube руу шууд хандаж чадахгүй тул локал сервер дамжуулна.</div>
     </div>
 
     <div class="boxbtns">
@@ -511,9 +512,21 @@ $("saveSet").onclick = () => {
   $("setSheet").classList.remove("on");
 };
 $("bannerX").onclick = () => banner("");
-$("fetchBtn").onclick = fetchTranscript;
+$("fetchBtn").onclick = () => {
+  if (location.protocol === "file:")
+    return banner("Холбоосоор татах нь «npm run serve» ажиллаж байхыг шаардана. " +
+                  "Одоо файлаас шууд нээсэн байна — YouTube дээрээс Show transcript-ыг " +
+                  "хуулж дээрх талбарт буулгана уу. Холбоосыг үлдээвэл цагийн тэмдэг " +
+                  "видеон дээрх мөч рүү холбогдоно.", "");
+  fetchTranscript();
+};
 
 $("goBtn").onclick = () => {
+  /* Холбоос бөглөсөн бол хуулж буулгасан үед ч цагийн тэмдгийг
+     видеон дээрх мөч рүү холбоно — татах шаардлагагүй. */
+  const id = videoId($("url").value.trim());
+  if (id) ytId = id;
+
   const parsed = parseTranscript($("raw").value);
   if (!parsed.length) return banner("Бичвэр танигдсангүй — дахин буулгаад үзнэ үү.", "err");
   if (!cfg.key && !cfg.proxy) { $("inSheet").classList.remove("on"); $("setBtn").click();
