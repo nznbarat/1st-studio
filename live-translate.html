@@ -865,9 +865,22 @@ async function startEleven(){
 }
 
 async function diagnoseEleven(){
-  const j = await elFetch("/models");
-  const models = Array.isArray(j) ? j : (j.models || []);
-  logEv("✓ ElevenLabs түлхүүр зөв · " + models.length + " загвар");
+  /* Загварын жагсаалт нь зөвхөн мэдээлэл — түлхүүрт «Models» эрх өгөөгүй ч
+     STT/TTS ажиллаж болно. Тиймээс энэ шат унавал зогсохгүй үргэлжилнэ. */
+  let models = [];
+  try {
+    const j = await elFetch("/models");
+    models = Array.isArray(j) ? j : (j.models || []);
+    logEv("✓ ElevenLabs түлхүүр зөв · " + models.length + " загвар");
+  } catch (e) {
+    logEv("⚠ загварын жагсаалт авч чадсангүй (" + e.message + ")");
+    logEv("  → түлхүүрт «Models» эрх дутуу байж болно. STT/TTS-ийг цааш шалгана.");
+  }
+  if (!models.length) {
+    await elToken();
+    logEv("✓ токен авах эрх бий — Speech to Text эрх ажиллаж байна");
+    return banner("Түлхүүр ажиллаж байна. Хэлний дэмжлэгийг шалгаж чадсангүй — ЭХЛҮҮЛЭХ дарж туршина уу.", "ok");
+  }
 
   const tts = models.find((m) => m.model_id === cfg.ttsModel);
   if (!tts) {
