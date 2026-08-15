@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Хадмал Орчуулга — 1st Studio</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E💬%3C/text%3E%3C/svg%3E">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --red:#E24B4A; --bg:#0a0a0a; --panel:#111; --card:#151515; --line:#242424;
+  --txt:#f2f2f2; --dim:#8a8a8a; --faint:#555; --ok:#3fb950; --warn:#d29922;
+  --sans:'Inter',-apple-system,'Segoe UI',Arial,sans-serif;
+  --mono:'JetBrains Mono','SF Mono',Consolas,monospace;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--txt);font-family:var(--sans);display:flex;flex-direction:column;overflow:hidden}
+button,select,input,textarea{font-family:inherit;color:inherit}
+button{cursor:pointer;background:none;border:none}
+::selection{background:rgba(226,75,74,.35)}
+
+header{display:flex;align-items:center;gap:14px;padding:12px 20px;background:#0d0d0d;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.logo{display:flex;align-items:baseline;gap:6px}
+.logo .n{font-size:22px;font-weight:700}
+.logo .s{font-size:10px;color:var(--red)}
+.logo .w{font-size:11px;letter-spacing:4px;color:#bbb}
+h1{font-size:13px;letter-spacing:3px;font-weight:600;color:var(--dim);text-transform:uppercase;border-left:1px solid var(--line);padding-left:14px}
+.spacer{flex:1}
+
+.sel{background:var(--card);border:1px solid var(--line);padding:9px 10px;font-size:12px;border-radius:2px;outline:none}
+.sel:focus{border-color:var(--red)}
+.mainbtn{background:var(--red);color:#fff;font-size:12px;letter-spacing:3px;padding:12px 24px;font-weight:600;border-radius:2px}
+.mainbtn:hover{background:#c93b3a}
+.mainbtn:disabled{opacity:.45;cursor:not-allowed}
+.iconbtn{border:1px solid var(--line);width:36px;height:36px;border-radius:2px;color:var(--dim);font-size:15px}
+.iconbtn:hover{color:#fff;border-color:#444}
+.mini{border:1px solid var(--line);padding:8px 14px;font-size:11px;letter-spacing:1px;color:var(--dim);border-radius:2px}
+.mini:hover{color:#fff;border-color:#444}
+.mini:disabled{opacity:.4;cursor:not-allowed}
+
+.banner{display:none;align-items:center;gap:14px;padding:12px 20px;background:#1c1212;border-bottom:1px solid #3a2020;font-size:13px;line-height:1.6;color:#f0c9c8}
+.banner.on{display:flex}
+.banner.ok{background:#111c13;border-bottom-color:#1f3a24;color:#b6e6bf}
+.banner span{flex:1;word-break:break-word}
+
+#bar{height:3px;background:#1a1a1a;position:relative;overflow:hidden}
+#bar i{display:block;height:100%;width:0;background:var(--red);transition:width .3s}
+
+main{flex:1;overflow-y:auto;min-height:0}
+.rows{max-width:1100px;margin:0 auto;padding:24px 20px 60px}
+.row{display:grid;grid-template-columns:70px 1fr 1fr;gap:18px;padding:12px 0;border-bottom:1px solid #161616;align-items:start}
+.row:hover{background:#0e0e0e}
+.row time{font-family:var(--mono);font-size:11px;color:var(--faint);padding-top:3px;cursor:pointer}
+.row time:hover{color:var(--red)}
+.row .src{font-size:14px;line-height:1.65;color:#999}
+.row .dst{font-size:15px;line-height:1.65;color:#fff}
+.row .dst.wait{color:#333}
+.rowhead{display:grid;grid-template-columns:70px 1fr 1fr;gap:18px;padding:0 0 10px;border-bottom:1px solid var(--line);
+  font-size:10px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;position:sticky;top:0;background:var(--bg);z-index:2}
+.empty{max-width:620px;margin:80px auto;text-align:center;color:var(--faint);font-size:14px;line-height:2}
+.empty b{color:var(--dim)}
+.empty kbd{font-family:var(--mono);font-size:12px;border:1px solid var(--line);padding:2px 8px;border-radius:3px;color:var(--dim)}
+
+footer{display:flex;align-items:center;gap:14px;padding:10px 20px;background:#0d0d0d;border-top:1px solid var(--line);font-size:12px;color:var(--dim);flex-wrap:wrap}
+
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;padding:24px;z-index:50;backdrop-filter:blur(3px)}
+.sheet.on{display:flex}
+.box{background:var(--panel);border:1px solid var(--line);max-width:720px;width:100%;max-height:90vh;overflow-y:auto;padding:28px;border-radius:3px}
+.box h2{font-size:20px;margin-bottom:6px}
+.box .sub{font-size:13px;color:var(--dim);line-height:1.7;margin-bottom:20px}
+.fld{margin-bottom:18px}
+.fld label{display:block;font-size:11px;letter-spacing:2px;color:var(--dim);text-transform:uppercase;margin-bottom:7px}
+.fld input,.fld select,.fld textarea{width:100%;background:#0b0b0b;border:1px solid var(--line);padding:11px 12px;font-size:13px;border-radius:2px;outline:none}
+.fld textarea{min-height:240px;resize:vertical;font-family:var(--mono);font-size:12px;line-height:1.6}
+.fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--red)}
+.fld .hint{font-size:11px;color:var(--faint);margin-top:6px;line-height:1.7}
+.fld .hint b{color:var(--dim)}
+.boxbtns{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+.steps{background:#0d0d0d;border:1px solid var(--line);border-radius:2px;padding:16px 18px;margin-bottom:20px;font-size:12px;line-height:1.9;color:#bbb}
+.steps b{color:var(--red)}
+.or{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--faint);font-size:11px;letter-spacing:2px}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+
+@media(max-width:820px){
+  .row,.rowhead{grid-template-columns:56px 1fr;gap:10px}
+  .row .src{grid-column:2}
+  .row .dst{grid-column:2}
+  h1{display:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><span class="n">1</span><span class="s">st</span><span class="w">STUDIO</span></div>
+  <h1>Хадмал орчуулга</h1>
+  <div class="spacer"></div>
+  <select class="sel" id="target" title="Ямар хэл рүү орчуулах"></select>
+  <button class="iconbtn" id="setBtn" title="Тохиргоо">⚙</button>
+  <button class="mainbtn" id="openBtn">✚ БИЧВЭР ОРУУЛАХ</button>
+</header>
+
+<div class="banner" id="banner"><span id="bannerTxt"></span><button class="mini" id="bannerX">✕</button></div>
+<div id="bar"><i id="barFill"></i></div>
+
+<main>
+  <div class="rows" id="rows">
+    <div class="empty" id="empty">
+      <b>YouTube видеоны хадмалыг монголоор.</b><br><br>
+      Видео доор <kbd>…</kbd> → <kbd>Show transcript</kbd> дарж бичвэрийг хуулаад,<br>
+      <kbd>✚ БИЧВЭР ОРУУЛАХ</kbd> дотор буулгана.<br><br>
+      Дуу хоолой, микрофон, бодит цагийн холболт — юу ч хэрэггүй.<br>
+      Зөвхөн Anthropic түлхүүр.
+    </div>
+  </div>
+</main>
+
+<footer>
+  <span id="stat">Бэлэн</span>
+  <div class="spacer"></div>
+  <button class="mini" id="srtBtn" disabled>↓ .SRT</button>
+  <button class="mini" id="txtBtn" disabled>↓ .TXT</button>
+  <button class="mini" id="clearBtn" disabled>ЦЭВЭРЛЭХ</button>
+</footer>
+
+<!-- ── БИЧВЭР ОРУУЛАХ ────────────────────────────────── -->
+<div class="sheet" id="inSheet">
+  <div class="box">
+    <h2>Бичвэр оруулах</h2>
+    <p class="sub">YouTube-ийн хадмал, .srt файл, эсвэл энгийн бичвэр — бүгд болно.</p>
+
+    <div class="steps">
+      <b>YouTube-ээс хадмал авах:</b><br>
+      1. Видеоны тайлбар доор <b>…more</b> → <b>Show transcript</b><br>
+      2. Гарч ирсэн хэсгийг бүтнээр нь тэмдэглээд хуулна (Ctrl+A ажиллахгүй — чирж тэмдэглэ)<br>
+      3. Доорх талбарт буулгана
+    </div>
+
+    <div class="fld">
+      <label for="raw">Хадмал бичвэр</label>
+      <textarea id="raw" spellcheck="false" placeholder="0:00&#10;Most people think Suno Studio is just a timeline&#10;0:04&#10;where you drag in your AI songs…"></textarea>
+      <div class="hint">Цагийн тэмдэг байвал хадгална. Байхгүй бол мөр мөрөөр нь дугаарлана.</div>
+    </div>
+
+    <div class="or">ЭСВЭЛ</div>
+
+    <div class="fld">
+      <label for="url">YouTube холбоос</label>
+      <input type="text" id="url" placeholder="https://www.youtube.com/watch?v=…" spellcheck="false">
+      <div class="hint">Энэ нь зөвхөн <b><code>npm run serve</code></b> ажиллаж байх үед боломжтой —
+        хөтөч YouTube руу шууд хандаж чадахгүй тул локал сервер дамжуулна.
+        YouTube бүтцээ өөрчлөх үед ажиллахгүй байж болно; тэр үед хуулж буулгах арга найдвартай.</div>
+    </div>
+
+    <div class="boxbtns">
+      <button class="mainbtn" id="goBtn">ОРЧУУЛАХ</button>
+      <button class="mini" id="fetchBtn">HOLBOOSOOR ТАТАХ</button>
+      <button class="mini" id="closeIn">БОЛИХ</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── ТОХИРГОО ──────────────────────────────────────── -->
+<div class="sheet" id="setSheet">
+  <div class="box">
+    <h2>Тохиргоо</h2>
+    <p class="sub">Түлхүүр зөвхөн энэ хөтөч дотор хадгалагдана.</p>
+
+    <div class="fld">
+      <label for="key">Anthropic API түлхүүр</label>
+      <input type="password" id="key" placeholder="sk-ant-…" autocomplete="off" spellcheck="false">
+      <div class="hint"><b>platform.claude.com → Settings → API Keys</b>.
+        <code>npm run serve</code> + <code>ANTHROPIC_API_KEY</code>-ээр ажиллуулбал энэ талбар хоосон байж болно.</div>
+    </div>
+
+    <div class="fld">
+      <label for="model">Загвар</label>
+      <select id="model">
+        <option value="claude-opus-5">Claude Opus 5 — хамгийн сайн орчуулга</option>
+        <option value="claude-sonnet-5">Claude Sonnet 5 — тэнцвэртэй</option>
+        <option value="claude-haiku-4-5">Claude Haiku 4.5 — хамгийн хямд, хурдан</option>
+      </select>
+      <div class="hint">Нэг цагийн видео ойролцоогоор: Opus <b>$0.35</b>, Sonnet <b>$0.20</b>, Haiku <b>$0.07</b>.
+        Хадмал орчуулахад Haiku ихэвчлэн хангалттай.</div>
+    </div>
+
+    <div class="fld">
+      <label for="style">Орчуулгын өнгө</label>
+      <select id="style">
+        <option value="natural">Байгалийн ярианы хэл — уншихад хялбар</option>
+        <option value="literal">Үгчилсэн — эх бичвэрт ойр</option>
+        <option value="formal">Албан ёсны — баримтат, хичээл</option>
+      </select>
+    </div>
+
+    <label style="display:flex;gap:10px;font-size:13px;color:#ccc;cursor:pointer;margin-bottom:12px">
+      <input type="checkbox" id="remember" checked style="accent-color:var(--red)">
+      <span>Түлхүүрийг энэ хөтөчид санах</span>
+    </label>
+
+    <div class="boxbtns">
+      <button class="mainbtn" id="saveSet">ХАДГАЛААД ХААХ</button>
+      <button class="mini" id="closeSet">БОЛИХ</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ══════════════════════════════════════════════════════════════════
+   Хадмал орчуулга — YouTube бичвэр → Claude → монгол хадмал
+
+   Аудио огт хөндөхгүй: микрофон, WebSocket, дуу хоолой, токен байхгүй.
+   Тиймээс эвдрэх цэг нь ганцхан — Anthropic руу хийх текст дуудлага.
+   ══════════════════════════════════════════════════════════════════ */
+
+const LS = "1st-subtitles";
+const CHUNK = 25;          // нэг дуудлагад орох мөрийн тоо
+const LANGS = [
+  ["mn","Монгол"], ["en","English"], ["ru","Русский"], ["zh","中文"],
+  ["ja","日本語"],  ["ko","한국어"],  ["de","Deutsch"], ["fr","Français"],
+  ["es","Español"], ["tr","Türkçe"]
+];
+const STYLES = {
+  natural: "Use natural, fluent spoken register — the way a person would actually say it. Prefer clarity over word-for-word fidelity.",
+  literal: "Stay close to the source wording and structure. Preserve technical terms exactly.",
+  formal:  "Use a formal, documentary register suitable for educational or professional narration."
+};
+
+const cfg = { key: "", model: "claude-opus-5", target: "mn", style: "natural", remember: true, proxy: false };
+let rows = [], busy = false;
+
+const $ = (id) => document.getElementById(id);
+const langName = (c) => (LANGS.find((l) => l[0] === c) || [c, c.toUpperCase()])[1];
+
+function banner(text, kind){
+  $("banner").className = "banner" + (text ? " on" : "") + (kind ? " " + kind : "");
+  $("bannerTxt").textContent = text || "";
+}
+function stat(t){ $("stat").textContent = t; }
+function progress(done, total){
+  $("barFill").style.width = total ? Math.round((done / total) * 100) + "%" : "0";
+}
+
+/* ══ Бичвэр задлах ═══════════════════════════════════
+   YouTube-ийн хуулсан хадмал, .srt, .vtt, энгийн бичвэр — бүгдийг нэг
+   хэлбэрт оруулна: [{ t: секунд эсвэл null, label: "0:15", src: "…" }] */
+function toSeconds(str){
+  const p = str.split(":").map(Number);
+  if (p.some(isNaN)) return null;
+  return p.length === 3 ? p[0] * 3600 + p[1] * 60 + p[2]
+       : p.length === 2 ? p[0] * 60 + p[1]
+       : p[0];
+}
+function label(sec){
+  if (sec == null) return "";
+  const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = Math.floor(sec % 60);
+  return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(s).padStart(2, "0");
+}
+
+function parseTranscript(raw){
+  const text = raw.replace(/\r/g, "").trim();
+  if (!text) return [];
+  const out = [];
+
+  /* .srt / .vtt — «00:00:01,000 --> 00:00:04,000» */
+  if (/-->/.test(text)) {
+    for (const block of text.split(/\n\s*\n/)) {
+      const lines = block.split("\n").filter((l) => l.trim() && !/^\d+$/.test(l.trim()));
+      const arrow = lines.findIndex((l) => l.includes("-->"));
+      if (arrow < 0) continue;
+      const start = lines[arrow].split("-->")[0].trim().replace(",", ".");
+      const body = lines.slice(arrow + 1).join(" ").trim();
+      if (body) out.push({ t: toSeconds(start.split(".")[0]), src: body });
+    }
+    if (out.length) return out.map((r) => Object.assign(r, { label: label(r.t) }));
+  }
+
+  /* YouTube — цаг тусдаа мөрөнд, эсвэл мөрийн эхэнд */
+  const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
+  let pending = null;
+  for (const line of lines) {
+    const alone = /^(\d{1,2}:)?\d{1,2}:\d{2}$/.exec(line);
+    if (alone) { pending = toSeconds(line); continue; }
+
+    const inline = /^((?:\d{1,2}:)?\d{1,2}:\d{2})\s+(.+)$/.exec(line);
+    if (inline) { out.push({ t: toSeconds(inline[1]), src: inline[2].trim() }); pending = null; continue; }
+
+    if (pending != null) { out.push({ t: pending, src: line }); pending = null; }
+    else if (out.length && !/[.!?…]$/.test(out[out.length - 1].src) && out[out.length - 1].t == null) {
+      out[out.length - 1].src += " " + line;      // цаггүй бичвэрийн үргэлжлэл
+    } else {
+      out.push({ t: null, src: line });
+    }
+  }
+  return out.map((r) => Object.assign(r, { label: label(r.t) }));
+}
+
+/* ══ Орчуулга ════════════════════════════════════════ */
+async function askClaude(system, user){
+  const body = { model: cfg.model, max_tokens: 8000, system: system, messages: [{ role: "user", content: user }] };
+  let r;
+  if (cfg.proxy) {
+    r = await fetch("/api/claude", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  } else {
+    if (!cfg.key) throw new Error("Anthropic түлхүүр оруулаагүй байна (⚙).");
+    r = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": cfg.key,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify(body)
+    });
+  }
+  const j = await r.json();
+  if (!r.ok) throw new Error((j.error && j.error.message) || ("HTTP " + r.status));
+  return (j.content || []).map((c) => c.text || "").join("").trim();
+}
+
+/* Хэсэг бүрийг дугаарлаж илгээгээд дугаараар нь буцааж хооронд нь тааруулна.
+   Дугаар алдагдвал мөрөөр нь салгах нөөц зам ажиллана. */
+async function translateChunk(chunk){
+  const numbered = chunk.map((r, i) => "[" + (i + 1) + "] " + r.src).join("\n");
+  const system =
+    "You translate video subtitles into " + langName(cfg.target) + ". " + STYLES[cfg.style] + "\n" +
+    "Rules:\n" +
+    "- The input is numbered subtitle lines. Return EXACTLY the same number of lines, " +
+    "each prefixed with its original [n] marker, in the same order.\n" +
+    "- Translate each line on its own, but use the surrounding lines for context — " +
+    "subtitle lines often split a sentence mid-way.\n" +
+    "- Never merge, split, reorder, or drop lines. Never add commentary.\n" +
+    "- Keep proper nouns, product names, and code identifiers unchanged.";
+
+  /* Дугаар олдвол ҮРГЭЛЖ дугаараар нь тааруулна. Нэг дугаар дутсан ч
+     мөрөөр салгах руу шилжвэл бүх мөр нэг нэгээрээ гулсдаг — тиймээс
+     мөрөөр салгах нь зөвхөн дугаар огт олдоогүй үед л ажиллана. */
+  function mapBack(reply){
+    const map = new Map();
+    for (const m of reply.matchAll(/\[(\d+)\]\s*([\s\S]*?)(?=\n\[\d+\]|$)/g))
+      map.set(Number(m[1]), m[2].trim());
+    if (map.size) return chunk.map((r, i) => map.get(i + 1) || "");
+    const plain = reply.split("\n").map((l) => l.trim()).filter(Boolean);
+    return chunk.map((r, i) => plain[i] || "");
+  }
+
+  let out = mapBack(await askClaude(system, numbered));
+  const missing = out.filter((x) => !x).length;
+
+  /* Цөөн мөр гээгдвэл зөвхөн тэднийг нь дахин асууна */
+  if (missing && missing <= chunk.length / 2) {
+    const gaps = [];
+    out.forEach((x, i) => { if (!x) gaps.push(i); });
+    try {
+      const retryText = gaps.map((i) => "[" + (i + 1) + "] " + chunk[i].src).join("\n");
+      const again = mapBack(await askClaude(system, retryText));
+      gaps.forEach((i) => { if (again[i]) out[i] = again[i]; });
+    } catch (e) { /* дахин оролдлого бүтэхгүй бол эх бичвэр үлдэнэ */ }
+  }
+  return out;
+}
+
+async function run(){
+  if (busy || !rows.length) return;
+  busy = true;
+  $("goBtn").disabled = true;
+  banner("");
+
+  const chunks = [];
+  for (let i = 0; i < rows.length; i += CHUNK) chunks.push(rows.slice(i, i + CHUNK));
+
+  let done = 0;
+  try {
+    for (const chunk of chunks) {
+      const out = await translateChunk(chunk);
+      chunk.forEach((r, i) => { r.dst = out[i]; });
+      done += chunk.length;
+      progress(done, rows.length);
+      stat(done + " / " + rows.length + " мөр орчуулагдлаа");
+      render();
+    }
+    stat(rows.length + " мөр бэлэн");
+    banner("Орчуулга дууслаа — " + rows.length + " мөр.", "ok");
+    $("srtBtn").disabled = $("txtBtn").disabled = false;
+  } catch (e) {
+    banner("Орчуулга тасарлаа: " + e.message + " (орчуулагдсан хэсэг хадгалагдсан)", "err");
+  } finally {
+    busy = false;
+    $("goBtn").disabled = false;
+  }
+}
+
+/* ══ Дэлгэц ══════════════════════════════════════════ */
+function render(){
+  const host = $("rows");
+  host.innerHTML = "";
+  if (!rows.length) { host.innerHTML = $("empty") ? "" : ""; return; }
+
+  const head = document.createElement("div");
+  head.className = "rowhead";
+  head.innerHTML = "<span>Цаг</span><span>Эх бичвэр</span><span>" + langName(cfg.target) + "</span>";
+  host.appendChild(head);
+
+  for (const r of rows) {
+    const el = document.createElement("div");
+    el.className = "row";
+
+    const t = document.createElement("time");
+    t.textContent = r.label || "—";
+    if (r.t != null && ytId) {
+      t.title = "YouTube дээр энэ хэсгээс үзэх";
+      t.onclick = () => window.open("https://www.youtube.com/watch?v=" + ytId + "&t=" + Math.floor(r.t) + "s", "_blank");
+    }
+    const s = document.createElement("div");
+    s.className = "src";
+    s.textContent = r.src;
+
+    const d = document.createElement("div");
+    d.className = "dst" + (r.dst ? "" : " wait");
+    d.textContent = r.dst || "…";
+
+    el.append(t, s, d);
+    host.appendChild(el);
+  }
+}
+
+/* ══ Экспорт ═════════════════════════════════════════ */
+function srtTime(sec){
+  const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = Math.floor(sec % 60);
+  return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0") + ",000";
+}
+function download(name, text){
+  const url = URL.createObjectURL(new Blob([text], { type: "text/plain;charset=utf-8" }));
+  const a = document.createElement("a");
+  a.href = url; a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function exportSrt(){
+  const timed = rows.filter((r) => r.t != null);
+  if (!timed.length) return banner("Цагийн тэмдэггүй тул .srt үүсгэх боломжгүй — .txt ашиглана уу.", "err");
+  const body = timed.map((r, i) => {
+    const end = timed[i + 1] ? timed[i + 1].t : r.t + 4;
+    return (i + 1) + "\n" + srtTime(r.t) + " --> " + srtTime(end) + "\n" + (r.dst || r.src) + "\n";
+  }).join("\n");
+  download("hadmal-" + cfg.target + ".srt", body);
+}
+function exportTxt(){
+  const head = "1st Studio · Хадмал орчуулга\n" + new Date().toLocaleString("mn-MN") +
+               "\nХэл: " + langName(cfg.target) + " · Загвар: " + cfg.model + "\n" + "-".repeat(52) + "\n\n";
+  const body = rows.map((r) => (r.label ? "[" + r.label + "] " : "") + (r.dst || r.src)).join("\n");
+  download("hadmal-" + cfg.target + ".txt", head + body);
+}
+
+/* ══ YouTube холбоосоор татах (зөвхөн локал сервертэй) ══ */
+let ytId = "";
+function videoId(u){
+  const m = /(?:v=|youtu\.be\/|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/.exec(u || "");
+  return m ? m[1] : "";
+}
+async function fetchTranscript(){
+  const id = videoId($("url").value.trim());
+  if (!id) return banner("YouTube холбоос танигдсангүй.", "err");
+  stat("YouTube-ээс татаж байна…");
+  try {
+    const r = await fetch("/api/youtube?v=" + encodeURIComponent(id));
+    const j = await r.json();
+    if (!r.ok) throw new Error((j.error && j.error.message) || ("HTTP " + r.status));
+    if (!j.lines || !j.lines.length) throw new Error("Энэ видеонд хадмал алга.");
+    ytId = id;
+    $("raw").value = j.lines.map((l) => label(l.t) + "\n" + l.text).join("\n");
+    banner("«" + (j.title || id) + "» — " + j.lines.length + " мөр татлаа (" + (j.lang || "?") + "). Одоо ОРЧУУЛАХ дар.", "ok");
+    stat("Бэлэн");
+  } catch (e) {
+    banner("Татаж чадсангүй: " + e.message + " — Show transcript-оос хуулж буулгана уу.", "err");
+    stat("Бэлэн");
+  }
+}
+
+/* ══ Тохиргоо ════════════════════════════════════════ */
+function loadCfg(){ try { Object.assign(cfg, JSON.parse(localStorage.getItem(LS) || "{}")); } catch (e) {} }
+function saveCfg(){
+  const c = Object.assign({}, cfg);
+  if (!cfg.remember) c.key = "";
+  try { localStorage.setItem(LS, JSON.stringify(c)); } catch (e) {}
+}
+async function checkProxy(){
+  try {
+    const r = await fetch("/api/claude", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ping: true }) });
+    cfg.proxy = r.ok;
+  } catch (e) { cfg.proxy = false; }
+}
+
+/* ══ Товчлуурууд ═════════════════════════════════════ */
+$("openBtn").onclick = () => { $("inSheet").classList.add("on"); $("raw").focus(); };
+$("closeIn").onclick = () => $("inSheet").classList.remove("on");
+$("setBtn").onclick = () => {
+  $("key").value = cfg.key; $("model").value = cfg.model;
+  $("style").value = cfg.style; $("remember").checked = cfg.remember;
+  $("setSheet").classList.add("on");
+};
+$("closeSet").onclick = () => $("setSheet").classList.remove("on");
+$("saveSet").onclick = () => {
+  cfg.key = $("key").value.trim();
+  cfg.model = $("model").value;
+  cfg.style = $("style").value;
+  cfg.remember = $("remember").checked;
+  saveCfg();
+  $("setSheet").classList.remove("on");
+};
+$("bannerX").onclick = () => banner("");
+$("fetchBtn").onclick = fetchTranscript;
+
+$("goBtn").onclick = () => {
+  const parsed = parseTranscript($("raw").value);
+  if (!parsed.length) return banner("Бичвэр танигдсангүй — дахин буулгаад үзнэ үү.", "err");
+  if (!cfg.key && !cfg.proxy) { $("inSheet").classList.remove("on"); $("setBtn").click();
+    return banner("Эхлээд Anthropic түлхүүрээ оруулна уу.", "err"); }
+
+  rows = parsed;
+  const empty = $("empty"); if (empty) empty.remove();
+  $("clearBtn").disabled = false;
+  $("inSheet").classList.remove("on");
+  render();
+  stat(rows.length + " мөр · орчуулж байна…");
+  run();
+};
+
+$("srtBtn").onclick = exportSrt;
+$("txtBtn").onclick = exportTxt;
+$("clearBtn").onclick = () => {
+  rows = []; ytId = ""; progress(0, 0);
+  $("rows").innerHTML = "";
+  $("srtBtn").disabled = $("txtBtn").disabled = $("clearBtn").disabled = true;
+  stat("Бэлэн"); banner("");
+};
+$("target").onchange = () => { cfg.target = $("target").value; saveCfg(); render(); };
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") { $("inSheet").classList.remove("on"); $("setSheet").classList.remove("on"); }
+});
+
+/* ══ Эхлэл ═══════════════════════════════════════════ */
+loadCfg();
+for (const [code, name] of LANGS) $("target").add(new Option(name, code));
+$("target").value = cfg.target;
+checkProxy().then(() => { if (cfg.proxy) stat("Бэлэн · /api/claude прокси идэвхтэй"); });
+if (!cfg.key) setTimeout(() => $("setBtn").click(), 400);
+</script>
+</body>
+</html>

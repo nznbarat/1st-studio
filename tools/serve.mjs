@@ -32,6 +32,13 @@ try {
   console.warn("api/claude.js ачаалагдсангүй:", e.message);
 }
 
+let ytHandler = null;
+try {
+  ytHandler = (await import(pathToFileURL(join(root, "api", "youtube.js")).href)).default;
+} catch (e) {
+  console.warn("api/youtube.js ачаалагдсангүй:", e.message);
+}
+
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://localhost");
   let pathname = decodeURIComponent(url.pathname);
@@ -42,6 +49,16 @@ const server = http.createServer(async (req, res) => {
     res.send = (t) => res.end(t);
     try {
       await claudeHandler(req, res);
+    } catch (e) {
+      res.statusCode = 500;
+      res.end(JSON.stringify({ error: { message: e.message } }));
+    }
+    return;
+  }
+
+  if (pathname === "/api/youtube" && ytHandler) {
+    try {
+      await ytHandler(req, res);
     } catch (e) {
       res.statusCode = 500;
       res.end(JSON.stringify({ error: { message: e.message } }));
