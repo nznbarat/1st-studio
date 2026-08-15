@@ -139,8 +139,12 @@ footer{display:flex;align-items:center;gap:14px;padding:10px 20px;background:#0d
 
     <div class="fld">
       <label for="raw">Хадмал бичвэр</label>
-      <textarea id="raw" spellcheck="false" placeholder="0:00&#10;Most people think Suno Studio is just a timeline&#10;0:04&#10;where you drag in your AI songs…"></textarea>
-      <div class="hint">Цагийн тэмдэг байвал хадгална. Байхгүй бол мөр мөрөөр нь дугаарлана.</div>
+      <textarea id="raw" spellcheck="false" placeholder="0:00&#10;Most people think Suno Studio is just a timeline&#10;0:04&#10;where you drag in your AI songs…&#10;&#10;— эсвэл .srt / .vtt файлаа энэ талбар руу чирж оруул —"></textarea>
+      <div class="hint">Цагийн тэмдэг байвал хадгална. Байхгүй бол мөр мөрөөр нь дугаарлана.<br>
+        <b>.srt, .vtt, .txt</b> файлыг энэ талбар руу <b>чирж оруулж</b> болно —
+        <button type="button" class="mini" id="pickBtn" style="padding:4px 10px;margin-top:6px">📁 ФАЙЛ СОНГОХ</button>
+        <input type="file" id="file" accept=".srt,.vtt,.txt,.sbv,text/plain" hidden>
+      </div>
     </div>
 
     <div class="or">ЭСВЭЛ</div>
@@ -512,6 +516,35 @@ $("saveSet").onclick = () => {
   $("setSheet").classList.remove("on");
 };
 $("bannerX").onclick = () => banner("");
+
+/* ── Хадмалын файл унших: чирж оруулах ба сонгох ── */
+async function loadFile(file){
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) return banner("Файл хэт том байна (5 МБ-аас дээш).", "err");
+  try {
+    const text = await file.text();
+    const n = parseTranscript(text).length;
+    if (!n) return banner("«" + file.name + "» дотроос хадмал танигдсангүй.", "err");
+    $("raw").value = text;
+    banner("«" + file.name + "» уншлаа — " + n + " мөр. Одоо ОРЧУУЛАХ дар.", "ok");
+  } catch (e) { banner("Файл уншиж чадсангүй: " + e.message, "err"); }
+}
+$("pickBtn").onclick = () => $("file").click();
+$("file").onchange = (e) => loadFile(e.target.files[0]);
+
+const drop = $("raw");
+["dragenter", "dragover"].forEach((n) => drop.addEventListener(n, (e) => {
+  e.preventDefault();
+  drop.style.borderColor = "var(--red)";
+}));
+["dragleave", "drop"].forEach((n) => drop.addEventListener(n, (e) => {
+  e.preventDefault();
+  drop.style.borderColor = "";
+}));
+drop.addEventListener("drop", (e) => {
+  const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  if (f) loadFile(f);
+});
 $("fetchBtn").onclick = () => {
   if (location.protocol === "file:")
     return banner("Холбоосоор татах нь «npm run serve» ажиллаж байхыг шаардана. " +
