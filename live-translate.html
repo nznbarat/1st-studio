@@ -236,7 +236,8 @@ footer{display:flex;align-items:center;gap:16px;padding:10px 20px;background:#0d
       <div class="fld">
         <label for="ttsModel">TTS загвар</label>
         <input type="text" id="ttsModel" spellcheck="false">
-        <div class="hint"><code>eleven_v3</code> (74 хэл) эсвэл <code>eleven_flash_v2_5</code> (хамгийн хурдан, цөөн хэл).
+        <div class="hint"><b><code>eleven_v3</code>-ыг бүү тавь</b> — тэр загвар бодит цагийн WebSocket дэмждэггүй.
+          Урсгалд <code>eleven_flash_v2_5</code> (хамгийн хурдан) эсвэл <code>eleven_multilingual_v2</code> тохирно.
           Сонгосон хэлээ дэмжиж байгаа эсэхийг 🩺 шалгана.</div>
       </div>
       <div class="fld">
@@ -311,7 +312,9 @@ const cfg = {
   ver: "v1beta", place: "gen",
   /* ElevenLabs хөдөлгүүр */
   engine: "gemini", elKey: "", anthKey: "", proxy: false,
-  sttModel: "scribe_v2_realtime", ttsModel: "eleven_v3",
+  /* eleven_v3 нь /stream-input WebSocket дээр АЖИЛЛАХГҮЙ — бодит цагийн
+     урсгалд flash v2.5 хэрэглэнэ. */
+  sttModel: "scribe_v2_realtime", ttsModel: "eleven_flash_v2_5",
   voice: "21m00Tcm4TlvDq8ikWAM", trModel: "claude-sonnet-4-6"
 };
 let ws = null, micCtx = null, node = null, stream = null;
@@ -882,6 +885,9 @@ async function diagnoseEleven(){
     return banner("Түлхүүр ажиллаж байна. Хэлний дэмжлэгийг шалгаж чадсангүй — ЭХЛҮҮЛЭХ дарж туршина уу.", "ok");
   }
 
+  if (/^eleven_v3/.test(cfg.ttsModel))
+    logEv("✗ eleven_v3 нь /stream-input WebSocket дэмждэггүй — flash v2.5 хэрэглэнэ");
+
   const tts = models.find((m) => m.model_id === cfg.ttsModel);
   if (!tts) {
     logEv("⚠ «" + cfg.ttsModel + "» олдсонгүй. Боломжтой: " + models.map((m) => m.model_id).join(", "));
@@ -1087,6 +1093,7 @@ async function restart(){
 function loadCfg(){
   try { Object.assign(cfg, JSON.parse(localStorage.getItem(LS) || "{}")); } catch (e) {}
   if (!cfg.model) cfg.model = DEFAULT_MODEL;
+  if (/^eleven_v3/.test(cfg.ttsModel)) cfg.ttsModel = "eleven_flash_v2_5";   // v3 нь WS дэмжихгүй
 }
 function saveCfg(){
   const copy = Object.assign({}, cfg);
