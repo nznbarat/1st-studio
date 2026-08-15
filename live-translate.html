@@ -33,6 +33,8 @@ h1{font-size:13px;letter-spacing:3px;font-weight:600;color:var(--dim);text-trans
 .dirbox select{background:#0d0d0d;border:1px solid var(--line);padding:6px 8px;font-size:13px;border-radius:2px;outline:none}
 .dirbox .arrow{color:var(--red);font-size:14px}
 .dirbox .auto{font-size:10px;letter-spacing:2px;color:var(--dim);border:1px dashed #2c2c2c;padding:7px 10px;border-radius:2px;white-space:nowrap}
+.engsel{background:var(--card);border:1px solid var(--line);padding:9px 10px;font-size:12px;letter-spacing:1px;border-radius:2px;outline:none}
+.engsel:focus{border-color:var(--red)}
 .swap{border:1px solid var(--line);padding:6px 9px;font-size:13px;color:var(--dim);border-radius:2px}
 .swap:hover{color:#fff;border-color:var(--red)}
 
@@ -127,8 +129,13 @@ footer{display:flex;align-items:center;gap:16px;padding:10px 20px;background:#0d
   <div class="logo"><span class="n">1</span><span class="s">st</span><span class="w">STUDIO</span></div>
   <h1>Амьд орчуулга</h1>
 
+  <select id="engine" class="engsel" title="Аль үйлчилгээгээр орчуулах">
+    <option value="gemini">Gemini Live</option>
+    <option value="eleven">ElevenLabs</option>
+  </select>
+
   <div class="dirbox">
-    <span class="auto" title="Live Translate загвар эх хэлийг өөрөө таньдаг">АВТОМАТ ТАНИХ</span>
+    <span class="auto" title="Хоёр хөдөлгүүр хоёулаа эх хэлийг өөрөө таньдаг">АВТОМАТ ТАНИХ</span>
     <span class="arrow">→</span>
     <select id="target" title="Ямар хэл рүү орчуулах"></select>
     <button class="swap" id="swapBtn" title="Чиглэл солих">⇄</button>
@@ -201,6 +208,7 @@ footer{display:flex;align-items:center;gap:16px;padding:10px 20px;background:#0d
       хөтчийн код дотор ил гарна. Зөвхөн өөрийн компьютер дээрээ ажиллуул.
     </div>
 
+    <div id="gmBlock">
     <div class="fld">
       <label for="key">Gemini API түлхүүр</label>
       <input type="password" id="key" placeholder="AIza…" autocomplete="off" spellcheck="false">
@@ -211,6 +219,32 @@ footer{display:flex;align-items:center;gap:16px;padding:10px 20px;background:#0d
       <label for="model">Загвар</label>
       <input type="text" id="model" spellcheck="false">
       <div class="hint">Анхдагч: <code>gemini-3.5-live-translate-preview</code>. Preview нэр өөрчлөгдвөл энд шинэчилнэ.</div>
+    </div>
+    </div>
+
+    <div id="elBlock">
+      <div class="fld">
+        <label for="elKey">ElevenLabs API түлхүүр</label>
+        <input type="password" id="elKey" placeholder="sk_…" autocomplete="off" spellcheck="false">
+        <div class="hint">elevenlabs.io → Profile → API Keys. Scribe (яриа→текст) ба TTS (текст→яриа) хоёуланд нь хэрэглэнэ.</div>
+      </div>
+      <div class="fld">
+        <label for="voice">Дуу хоолойн ID</label>
+        <input type="text" id="voice" spellcheck="false">
+        <div class="hint">ElevenLabs → Voices → сонгосон хоолойн <b>Voice ID</b>. Өөрийн хувилсан хоолойг ч тавьж болно.</div>
+      </div>
+      <div class="fld">
+        <label for="ttsModel">TTS загвар</label>
+        <input type="text" id="ttsModel" spellcheck="false">
+        <div class="hint"><code>eleven_v3</code> (74 хэл) эсвэл <code>eleven_flash_v2_5</code> (хамгийн хурдан, цөөн хэл).
+          Сонгосон хэлээ дэмжиж байгаа эсэхийг 🩺 шалгана.</div>
+      </div>
+      <div class="fld">
+        <label for="anthKey">Anthropic түлхүүр (орчуулгад)</label>
+        <input type="password" id="anthKey" placeholder="sk-ant-…" autocomplete="off" spellcheck="false">
+        <div class="hint">ElevenLabs орчуулга хийдэггүй тул дунд шатанд Claude ажиллана.
+          <b><code>npm run serve</code></b>-ээр ажиллуулж <code>ANTHROPIC_API_KEY</code> тохируулсан бол энэ талбар хоосон байж болно.</div>
+      </div>
     </div>
 
     <div class="fld">
@@ -274,7 +308,11 @@ const cfg = {
   source: "mic", subs: true, echo: false, remember: true, autoRe: true,
   /* Preview API-ийн хэлбэр өөрчлөгддөг тул ажилласан хувилбарыг сануулна.
      Оношлогоо (🩺) эдгээрийг автоматаар олж тохируулна. */
-  ver: "v1beta", place: "gen"
+  ver: "v1beta", place: "gen",
+  /* ElevenLabs хөдөлгүүр */
+  engine: "gemini", elKey: "", anthKey: "", proxy: false,
+  sttModel: "scribe_v2_realtime", ttsModel: "eleven_v3",
+  voice: "21m00Tcm4TlvDq8ikWAM", trModel: "claude-sonnet-4-6"
 };
 let ws = null, micCtx = null, node = null, stream = null;
 let playCtx = null, gain = null, playHead = 0, playing = new Set();
@@ -355,6 +393,14 @@ function push(side, text){
   row._body.textContent += text;
   const near = host.scrollHeight - host.scrollTop - host.clientHeight < 160;
   if (near) host.scrollTop = host.scrollHeight;
+}
+/* Gemini хэсэгчилсэн текстийг нэмж бичдэг бол ElevenLabs бүтэн өгүүлбэрийг
+   дахин дахин илгээдэг — тиймээс нэмэхгүй, СОЛИНО. */
+function setLive(side, text){
+  const row = side === "out" ? rowOut : rowIn;
+  if (row) row._body.textContent = "";
+  else push(side, "");
+  (side === "out" ? rowOut : rowIn)._body.textContent = text;
 }
 function seal(){
   for (const row of [rowIn, rowOut]) {
@@ -457,10 +503,16 @@ function sendFrame(pcm){
   let peak = 0;
   for (let i = 0; i < pcm.length; i += 8) { const a = pcm[i] < 0 ? -pcm[i] : pcm[i]; if (a > peak) peak = a; }
   $("vu").style.width = Math.min(100, (peak / 32768) * 140) + "%";
-  if (muted || !ws || ws.readyState !== 1) return;
-  ws.send(JSON.stringify({
-    realtimeInput: { audio: { data: b64(new Uint8Array(pcm.buffer, pcm.byteOffset, pcm.byteLength)), mimeType: "audio/pcm;rate=" + IN_RATE } }
-  }));
+  if (muted) return;
+
+  const data = b64(new Uint8Array(pcm.buffer, pcm.byteOffset, pcm.byteLength));
+  if (cfg.engine === "eleven") {
+    if (sttWs && sttWs.readyState === 1)
+      sttWs.send(JSON.stringify({ message_type: "input_audio_chunk", audio_base_64: data }));
+    return;
+  }
+  if (ws && ws.readyState === 1)
+    ws.send(JSON.stringify({ realtimeInput: { audio: { data: data, mimeType: "audio/pcm;rate=" + IN_RATE } } }));
 }
 
 /* AudioWorklet боломжгүй үеийн нөөц зам — үндсэн урсгал дээр ижил
@@ -654,6 +706,188 @@ function handle(m, ready){
   }
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   ХӨДӨЛГҮҮР 2 — ElevenLabs
+   ElevenLabs орчуулга хийдэггүй тул гурван шат холбоно:
+     Scribe v2 Realtime (яриа→текст)  →  Claude (орчуулга)  →  TTS (текст→яриа)
+   ══════════════════════════════════════════════════════════════════ */
+const EL = "https://api.elevenlabs.io/v1";
+const EL_STT = "wss://api.elevenlabs.io/v1/speech-to-text/realtime";
+const EL_TTS = "wss://api.elevenlabs.io/v1/text-to-speech/";
+let sttWs = null, ttsWs = null, elBusy = false;
+
+async function elFetch(path, opts){
+  const r = await fetch(EL + path, Object.assign({ headers: { "xi-api-key": cfg.elKey } }, opts || {}));
+  const text = await r.text();
+  let j = null; try { j = JSON.parse(text); } catch (e) {}
+  if (!r.ok) {
+    const d = j && j.detail;
+    throw new Error((d && (d.message || d.status)) || (j && j.message) || ("HTTP " + r.status + " " + text.slice(0, 160)));
+  }
+  return j;
+}
+
+/* Хөтчөөс WebSocket-д header тавих боломжгүй тул нэг удаагийн токен авна */
+async function elToken(){
+  const j = await elFetch("/single-use-token/realtime_scribe", { method: "POST" });
+  const t = j && (j.token || j.single_use_token || j.value);
+  if (!t) throw new Error("Токен буцаж ирсэнгүй: " + JSON.stringify(j).slice(0, 160));
+  return t;
+}
+
+/* ── Орчуулга: эхлээд локал /api/claude прокси, үгүй бол шууд Anthropic ── */
+async function translate(text){
+  const sys = "You are a live interpreter. Translate the user's text into " + langName(cfg.target) +
+              ". Output ONLY the translation — no notes, no quotes, no explanations. " +
+              "Keep the speaker's register and tone. If the text is already in that language, repeat it unchanged.";
+  const body = { model: cfg.trModel, max_tokens: 1000, system: sys, messages: [{ role: "user", content: text }] };
+
+  let r;
+  if (cfg.proxy) {
+    r = await fetch("/api/claude", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  } else {
+    r = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": cfg.anthKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify(body)
+    });
+  }
+  const j = await r.json();
+  if (!r.ok) throw new Error((j.error && j.error.message) || ("орчуулга HTTP " + r.status));
+  return (j.content || []).map((c) => c.text || "").join("").trim();
+}
+
+/* ── Текст → яриа: хэлэх бүрдээ шинэ WebSocket, PCM 24 kHz буцаана ── */
+function speak(text){
+  return new Promise((done) => {
+    const url = EL_TTS + encodeURIComponent(cfg.voice) + "/stream-input" +
+                "?model_id=" + encodeURIComponent(cfg.ttsModel) + "&output_format=pcm_24000";
+    let sock;
+    try { sock = new WebSocket(url); } catch (e) { logEv("✗ TTS: " + e.message); return done(); }
+    ttsWs = sock;
+
+    sock.onopen = () => {
+      sock.send(JSON.stringify({
+        text: " ",
+        voice_settings: { stability: 0.4, similarity_boost: 0.8, speed: 1.0 },
+        xi_api_key: cfg.elKey
+      }));
+      sock.send(JSON.stringify({ text: text + " ", try_trigger_generation: true }));
+      sock.send(JSON.stringify({ text: "" }));            // хэлэх зүйл дууслаа
+    };
+    sock.onmessage = (ev) => {
+      let m; try { m = JSON.parse(ev.data); } catch (e) { return; }
+      if (m.audio) {
+        if (!gotAudio) { gotAudio = true; logEv("✓ анхны орчуулсан дуу ирлээ (ElevenLabs)"); }
+        play(unb64(m.audio), 24000);
+      }
+      if (m.error || m.message) logEv("TTS: " + (m.error || m.message));
+      if (m.isFinal) { try { sock.close(); } catch (e) {} }
+    };
+    sock.onerror = () => logEv("✗ TTS холболтын алдаа");
+    sock.onclose = () => { if (ttsWs === sock) ttsWs = null; done(); };
+  });
+}
+
+/* ── Бүтэн гинж: сонссон өгүүлбэр → орчуулга → дуу ──
+   Ярианы урсгал орчуулгаас хурдан байдаг тул дараалалд хийнэ —
+   өмнөхийг нь боловсруулж байх зуур ирсэн өгүүлбэр алдагдахгүй. */
+const elQueue = [];
+async function elPush(text){
+  if (!text.trim()) return;
+  setLive("in", text);
+  seal();
+  elQueue.push(text);
+  if (elBusy) return;
+
+  elBusy = true;
+  try {
+    while (elQueue.length && running) {
+      const src = elQueue.shift();
+      try {
+        const tr = await translate(src);
+        if (!tr) continue;
+        setLive("out", tr);
+        seal();
+        await speak(tr);
+      } catch (e) {
+        logEv("✗ " + e.message);
+        banner(e.message, "err");
+      }
+    }
+  } finally { elBusy = false; }
+}
+
+async function startEleven(){
+  if (!cfg.elKey) { openSheet(); throw new Error("ElevenLabs түлхүүрээ оруулна уу."); }
+  if (!cfg.proxy && !cfg.anthKey) { openSheet(); throw new Error("Орчуулгад Anthropic түлхүүр эсвэл /api/claude прокси хэрэгтэй."); }
+
+  setState("busy", "Токен авч байна…");
+  const token = await elToken();
+  logEv("✓ нэг удаагийн токен авлаа");
+
+  await new Promise((ok, fail) => {
+    const url = EL_STT + "?token=" + encodeURIComponent(token) +
+                "&model_id=" + encodeURIComponent(cfg.sttModel) +
+                "&audio_format=pcm_16000";
+    const sock = new WebSocket(url);
+    sttWs = sock;
+    let opened = false;
+
+    sock.onopen = () => { opened = true; logEv("STT сокет нээгдлээ"); ok(); };
+    sock.onmessage = (ev) => {
+      let m; try { m = JSON.parse(ev.data); } catch (e) { return; }
+      const type = m.message_type || m.type || "";
+      const text = m.text || m.transcript || (m.transcription && m.transcription.text) || "";
+
+      if (/session_started/i.test(type)) { setState("live", "Ажиллаж байна"); banner(""); logEv("session_started"); return; }
+      if (/partial/i.test(type)) { if (text) setLive("in", text); return; }
+      if (/committed|final/i.test(type)) {
+        if (text) elPush(text);
+        return;
+      }
+      if (m.error || /error/i.test(type)) logEv("STT: " + JSON.stringify(m).slice(0, 200));
+    };
+    sock.onerror = () => { if (!opened) fail(new Error("STT холбогдож чадсангүй.")); };
+    sock.onclose = (ev) => {
+      if (sttWs !== sock) return;
+      sttWs = null;
+      logEv("STT хаагдлаа · код " + ev.code + (ev.reason ? " · " + ev.reason : ""));
+      if (!opened) return fail(new Error("STT татгалзлаа" + (ev.reason ? ": " + ev.reason : " (код " + ev.code + ")")));
+      if (running) stop("STT холболт тасарлаа" + (ev.reason ? ": " + ev.reason : ""));
+    };
+  });
+}
+
+async function diagnoseEleven(){
+  const j = await elFetch("/models");
+  const models = Array.isArray(j) ? j : (j.models || []);
+  logEv("✓ ElevenLabs түлхүүр зөв · " + models.length + " загвар");
+
+  const tts = models.find((m) => m.model_id === cfg.ttsModel);
+  if (!tts) {
+    logEv("⚠ «" + cfg.ttsModel + "» олдсонгүй. Боломжтой: " + models.map((m) => m.model_id).join(", "));
+  } else {
+    const langs = (tts.languages || []).map((l) => l.language_id);
+    const has = langs.includes(cfg.target);
+    logEv((has ? "✓ " : "✗ ") + cfg.ttsModel + " → «" + langName(cfg.target) + "» " + (has ? "дэмждэг" : "ДЭМЖДЭГГҮЙ"));
+    if (!has) {
+      const able = models.filter((m) => (m.languages || []).some((l) => l.language_id === cfg.target));
+      logEv(able.length ? "энэ хэлийг дэмжих загвар: " + able.map((m) => m.model_id).join(", ")
+                        : "энэ хэлийг дэмжих TTS загвар алга — орчуулга зөвхөн бичвэрээр гарна");
+      return banner("«" + langName(cfg.target) + "» хэлийг " + cfg.ttsModel + " дэмжихгүй байна. Дэлгэрэнгүйг логоос үз.", "err");
+    }
+  }
+  await elToken();
+  logEv("✓ токен авах эрх бий");
+  banner("ElevenLabs бэлэн. ЭХЛҮҮЛЭХ дар.", "ok");
+}
+
 /* ══ Оношлогоо ═══════════════════════════════════════
    Preview API-ийн хэлбэр өөрчлөгддөг тул таамаглахын оронд
    боломжит хувилбаруудыг дараалан туршиж, ажиллаж байгааг нь сонгоно. */
@@ -672,6 +906,18 @@ async function checkKey(){
   } catch (e) {
     return { ok: false, why: "Сүлжээ: " + e.message };
   }
+}
+
+/* Локал /api/claude прокси ажиллаж байгаа эсэх — байвал Anthropic
+   түлхүүрийг хөтөчид хадгалах шаардлагагүй болно. */
+async function checkProxy(){
+  try {
+    const r = await fetch("/api/claude", {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ping: true })
+    });
+    cfg.proxy = r.ok;
+  } catch (e) { cfg.proxy = false; }
+  return cfg.proxy;
 }
 
 function trySetup(v, ms){
@@ -704,8 +950,21 @@ function trySetup(v, ms){
 async function diagnose(){
   if (running) stop();
   openLog();
-  logEv("──── ОНОШЛОГОО ЭХЭЛЛЭЭ ────");
+  logEv("──── ОНОШЛОГОО ЭХЭЛЛЭЭ · хөдөлгүүр: " + cfg.engine + " ────");
   banner("Оношилж байна… хэдэн секунд хүлээнэ үү.", "");
+
+  if (cfg.engine === "eleven") {
+    try {
+      await diagnoseEleven();
+      await checkProxy();
+      logEv(cfg.proxy ? "✓ /api/claude прокси ажиллаж байна — Anthropic түлхүүр шаардлагагүй"
+                      : "орчуулга: шууд Anthropic (" + (cfg.anthKey ? "түлхүүр бий" : "ТҮЛХҮҮР АЛГА") + ")");
+    } catch (e) {
+      logEv("✗ " + e.message);
+      banner("ElevenLabs: " + e.message, "err");
+    }
+    return;
+  }
 
   const k = await checkKey();
   if (!k.ok) {
@@ -763,7 +1022,8 @@ async function start(){
     ensurePlayer();
     await playCtx.resume();          // хэрэглэгчийн товшилт дотор — autoplay бодлого
     await openMic();
-    await connect(false);
+    if (cfg.engine === "eleven") await startEleven();
+    else await connect(false);
     startedAt = Date.now();
     clock();
     tick = setInterval(clock, 1000);
@@ -792,6 +1052,10 @@ function stop(reason){
   stopPlayback();
   const sock = ws; ws = null;
   try { sock && sock.close(); } catch (e) {}
+  const st = sttWs; sttWs = null;
+  try { st && st.close(); } catch (e) {}
+  try { ttsWs && ttsWs.close(); } catch (e) {}
+  ttsWs = null;
   seal();
   $("goBtn").textContent = "ЭХЛҮҮЛЭХ";
   $("goBtn").classList.remove("live");
@@ -813,13 +1077,25 @@ function loadCfg(){
 }
 function saveCfg(){
   const copy = Object.assign({}, cfg);
-  if (!cfg.remember) copy.key = "";
+  if (!cfg.remember) { copy.key = ""; copy.elKey = ""; copy.anthKey = ""; }
   try { localStorage.setItem(LS, JSON.stringify(copy)); } catch (e) {}
 }
+/* Тохиргооны хуудсанд зөвхөн идэвхтэй хөдөлгүүрт хамаарах талбарыг үзүүлнэ */
+function syncSheet(){
+  const el = $("engine").value === "eleven";
+  $("elBlock").style.display = el ? "" : "none";
+  $("gmBlock").style.display = el ? "none" : "";
+}
 function fillSheet(){
+  $("engine").value = cfg.engine;
   $("key").value = cfg.key;
   $("model").value = cfg.model;
+  $("elKey").value = cfg.elKey;
+  $("anthKey").value = cfg.anthKey;
+  $("voice").value = cfg.voice;
+  $("ttsModel").value = cfg.ttsModel;
   $("source").value = cfg.source;
+  syncSheet();
   $("subs").checked = cfg.subs;
   $("echo").checked = cfg.echo;
   $("remember").checked = cfg.remember;
@@ -829,9 +1105,14 @@ function openSheet(){ fillSheet(); $("sheet").classList.add("on"); $("key").focu
 function closeSheet(){ $("sheet").classList.remove("on"); }
 
 function applySheet(){
-  const before = { model: cfg.model, source: cfg.source, subs: cfg.subs, echo: cfg.echo };
+  const before = { model: cfg.model, source: cfg.source, subs: cfg.subs, echo: cfg.echo, engine: cfg.engine };
+  cfg.engine = $("engine").value;
   cfg.key = $("key").value.trim();
   cfg.model = $("model").value.trim() || DEFAULT_MODEL;
+  cfg.elKey = $("elKey").value.trim();
+  cfg.anthKey = $("anthKey").value.trim();
+  cfg.voice = $("voice").value.trim() || cfg.voice;
+  cfg.ttsModel = $("ttsModel").value.trim() || cfg.ttsModel;
   cfg.source = $("source").value;
   cfg.subs = $("subs").checked;
   cfg.echo = $("echo").checked;
@@ -840,7 +1121,8 @@ function applySheet(){
   saveCfg();
   closeSheet();
   if (running && (before.model !== cfg.model || before.source !== cfg.source ||
-                  before.subs !== cfg.subs || before.echo !== cfg.echo)) restart();
+                  before.subs !== cfg.subs || before.echo !== cfg.echo ||
+                  before.engine !== cfg.engine)) restart();
 }
 
 /* ══ Хэлний сонголт ══════════════════════════════════ */
@@ -855,6 +1137,13 @@ function buildLangs(){
 $("goBtn").onclick = () => (running ? stop() : start());
 $("setBtn").onclick = openSheet;
 $("diagBtn").onclick = diagnose;
+$("engine").onchange = () => {
+  cfg.engine = $("engine").value;
+  saveCfg();
+  syncSheet();
+  logEv("хөдөлгүүр: " + cfg.engine);
+  if (running) restart();
+};
 $("bannerDiag").onclick = diagnose;
 $("bannerX").onclick = () => banner("");
 $("logBtn").onclick = () => {
@@ -925,7 +1214,9 @@ window.addEventListener("beforeunload", (e) => { if (running) { e.preventDefault
 /* ══ Эхлэл ═══════════════════════════════════════════ */
 loadCfg();
 buildLangs();
-if (!cfg.key) setTimeout(openSheet, 300);
+$("engine").value = cfg.engine;
+checkProxy().then((p) => p && logEv("✓ /api/claude прокси олдлоо"));
+if (!(cfg.engine === "eleven" ? cfg.elKey : cfg.key)) setTimeout(openSheet, 300);
 </script>
 </body>
 </html>
