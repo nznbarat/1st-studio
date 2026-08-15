@@ -241,7 +241,17 @@ footer{display:flex;align-items:center;gap:16px;padding:10px 20px;background:#0d
           Гаралтын формат: PCM боломжтой бол PCM, үгүй бол MP3 руу өөрөө шилжинэ.</div>
       </div>
       <div class="fld">
-        <label for="trModel">Орчуулгын загвар</label>
+        <label for="trProvider">Орчуулгыг хэн хийх вэ</label>
+        <select id="trProvider">
+          <option value="claude">Claude (Anthropic данс шаардана)</option>
+          <option value="gemini">Gemini (дээрх Gemini түлхүүрийг ашиглана)</option>
+        </select>
+        <div class="hint">Gemini сонговол нэмэлт түлхүүр хэрэггүй — ⚙ дээд талын Gemini түлхүүрийг
+          дахин ашиглана. Загварыг нь жагсаалтаас автоматаар сонгоно.</div>
+      </div>
+
+      <div class="fld" id="trModelFld">
+        <label for="trModel">Claude загвар</label>
         <select id="trModel">
           <option value="claude-opus-5">Claude Opus 5 — хамгийн сайн орчуулга</option>
           <option value="claude-sonnet-5">Claude Sonnet 5 — тэнцвэртэй</option>
@@ -251,7 +261,7 @@ footer{display:flex;align-items:center;gap:16px;padding:10px 20px;background:#0d
           Урлаг, хэлц үг элбэг яриа бол Opus давуу.</div>
       </div>
 
-      <div class="fld">
+      <div class="fld" id="anthKeyFld">
         <label for="anthKey">Anthropic түлхүүр (орчуулгад)</label>
         <input type="password" id="anthKey" placeholder="sk-ant-…" autocomplete="off" spellcheck="false">
         <div class="hint">ElevenLabs орчуулга хийдэггүй тул дунд шатанд Claude ажиллана.
@@ -326,7 +336,8 @@ const cfg = {
   /* TTS-ийг HTTP-ээр дуудна (WebSocket биш) тул eleven_v3 ажиллана.
      Монгол хэл албан ёсны жагсаалтад байхгүй ч v3 сайн уншдаг. */
   sttModel: "scribe_v2_realtime", ttsModel: "eleven_v3", pcmOk: undefined,
-  voice: "21m00Tcm4TlvDq8ikWAM", trModel: "claude-opus-5"
+  voice: "21m00Tcm4TlvDq8ikWAM", trModel: "claude-opus-5",
+  trProvider: "claude", trGemModel: ""
 };
 let ws = null, micCtx = null, node = null, stream = null;
 let playCtx = null, gain = null, playHead = 0, playing = new Set();
@@ -754,11 +765,54 @@ async function elToken(){
   return t;
 }
 
-/* ── Орчуулга: эхлээд локал /api/claude прокси, үгүй бол шууд Anthropic ── */
+/* ── Орчуулга ───────────────────────────────────────────────────────
+   Хоёр нийлүүлэгч: Claude (Anthropic) эсвэл Gemini-ийн текст загвар.
+   Аль нэг данс нь боломжгүй байвал нөгөөгөөр нь үргэлжлүүлж болно. */
+const SYS_PROMPT = () =>
+  "You are a live interpreter. Translate the user's text into " + langName(cfg.target) +
+  ". Output ONLY the translation — no notes, no quotes, no explanations. " +
+  "Keep the speaker's register and tone. If the text is already in that language, repeat it unchanged.";
+
+/* Gemini-ийн текст загварын нэр байнга өөрчлөгддөг тул жагсаалтаас
+   өөрөө сонгоно: generateContent дэмждэг хамгийн шинэ flash. */
+let gemPick = null;
+async function pickGeminiModel(){
+  if (cfg.trGemModel) return cfg.trGemModel;
+  if (gemPick) return gemPick;
+  const r = await fetch(REST + encodeURIComponent(cfg.key) + "&pageSize=200");
+  const j = await r.json();
+  if (!r.ok) throw new Error((j.error && j.error.message) || ("загвар татаж чадсангүй (HTTP " + r.status + ")"));
+  const usable = (j.models || []).filter(
+    (m) => (m.supportedGenerationMethods || []).includes("generateContent") && !/embed|image|video|tts|live/i.test(m.name)
+  ).map((m) => String(m.name).replace("models/", ""));
+  gemPick = usable.filter((n) => /flash/i.test(n)).sort().pop() || usable.sort().pop();
+  if (!gemPick) throw new Error("Тохирох Gemini текст загвар олдсонгүй.");
+  logEv("орчуулгын загвар: " + gemPick);
+  return gemPick;
+}
+
+async function translateGemini(text){
+  const model = await pickGeminiModel();
+  const r = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" +
+                        encodeURIComponent(model) + ":generateContent?key=" + encodeURIComponent(cfg.key), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: SYS_PROMPT() }] },
+      contents: [{ role: "user", parts: [{ text: text }] }],
+      generationConfig: { maxOutputTokens: 1000 }
+    })
+  });
+  const j = await r.json();
+  if (!r.ok) throw new Error((j.error && j.error.message) || ("орчуулга HTTP " + r.status));
+  const parts = (((j.candidates || [])[0] || {}).content || {}).parts || [];
+  return parts.map((p) => p.text || "").join("").trim();
+}
+
 async function translate(text){
-  const sys = "You are a live interpreter. Translate the user's text into " + langName(cfg.target) +
-              ". Output ONLY the translation — no notes, no quotes, no explanations. " +
-              "Keep the speaker's register and tone. If the text is already in that language, repeat it unchanged.";
+  if (cfg.trProvider === "gemini") return translateGemini(text);
+
+  const sys = SYS_PROMPT();
   const body = { model: cfg.trModel, max_tokens: 1000, system: sys, messages: [{ role: "user", content: text }] };
 
   let r;
@@ -877,7 +931,11 @@ async function elPush(text){
 
 async function startEleven(){
   if (!cfg.elKey) { openSheet(); throw new Error("ElevenLabs түлхүүрээ оруулна уу."); }
-  if (!cfg.proxy && !cfg.anthKey) { openSheet(); throw new Error("Орчуулгад Anthropic түлхүүр эсвэл /api/claude прокси хэрэгтэй."); }
+  if (cfg.trProvider === "gemini") {
+    if (!cfg.key) { openSheet(); throw new Error("Gemini-гээр орчуулахад Gemini түлхүүр хэрэгтэй."); }
+  } else if (!cfg.proxy && !cfg.anthKey) {
+    openSheet(); throw new Error("Орчуулгад Anthropic түлхүүр эсвэл /api/claude прокси хэрэгтэй.");
+  }
 
   setState("busy", "Токен авч байна…");
   const token = await elToken();
@@ -1024,8 +1082,13 @@ async function diagnose(){
     try {
       await diagnoseEleven();
       await checkProxy();
-      logEv(cfg.proxy ? "✓ /api/claude прокси ажиллаж байна — Anthropic түлхүүр шаардлагагүй"
-                      : "орчуулга: шууд Anthropic (" + (cfg.anthKey ? "түлхүүр бий" : "ТҮЛХҮҮР АЛГА") + ")");
+      if (cfg.trProvider === "gemini") {
+        logEv("орчуулга: Gemini · " + (cfg.key ? "түлхүүр бий" : "ТҮЛХҮҮР АЛГА"));
+        if (cfg.key) logEv("сонгосон текст загвар: " + (await pickGeminiModel()));
+      } else {
+        logEv(cfg.proxy ? "✓ /api/claude прокси ажиллаж байна — Anthropic түлхүүр шаардлагагүй"
+                        : "орчуулга: шууд Anthropic (" + (cfg.anthKey ? "түлхүүр бий" : "ТҮЛХҮҮР АЛГА") + ")");
+      }
     } catch (e) {
       logEv("✗ " + e.message);
       banner("ElevenLabs: " + e.message, "err");
@@ -1150,7 +1213,13 @@ function saveCfg(){
 function syncSheet(){
   const el = $("engine").value === "eleven";
   $("elBlock").style.display = el ? "" : "none";
-  $("gmBlock").style.display = el ? "none" : "";
+  /* ElevenLabs хөдөлгүүр Gemini-гээр орчуулж болно — тэр үед Gemini
+     түлхүүр хэрэгтэй хэвээр тул талбарыг нь харуулна. */
+  const needGmKey = !el || $("trProvider").value === "gemini";
+  $("gmBlock").style.display = needGmKey ? "" : "none";
+  const claudeTr = el && $("trProvider").value === "claude";
+  $("trModelFld").style.display = claudeTr ? "" : "none";
+  $("anthKeyFld").style.display = claudeTr ? "" : "none";
 }
 function fillSheet(){
   $("engine").value = cfg.engine;
@@ -1161,6 +1230,7 @@ function fillSheet(){
   $("voice").value = cfg.voice;
   $("ttsModel").value = cfg.ttsModel;
   $("trModel").value = cfg.trModel;
+  $("trProvider").value = cfg.trProvider;
   $("source").value = cfg.source;
   syncSheet();
   $("subs").checked = cfg.subs;
@@ -1181,6 +1251,7 @@ function applySheet(){
   cfg.voice = $("voice").value.trim() || cfg.voice;
   cfg.ttsModel = $("ttsModel").value.trim() || cfg.ttsModel;
   cfg.trModel = $("trModel").value;
+  cfg.trProvider = $("trProvider").value;
   cfg.source = $("source").value;
   cfg.subs = $("subs").checked;
   cfg.echo = $("echo").checked;
@@ -1223,6 +1294,7 @@ $("logCopy").onclick = () => {
   const text = [...$("logBox").childNodes].map((n) => n.textContent).join("\n");
   navigator.clipboard.writeText(text).then(() => say("Лог хуулагдлаа.", "ok"), () => say("Хуулж чадсангүй.", "err"));
 };
+$("trProvider").onchange = syncSheet;
 $("saveSet").onclick = applySheet;
 $("closeSet").onclick = closeSheet;
 $("sheet").onclick = (e) => { if (e.target === $("sheet")) closeSheet(); };
