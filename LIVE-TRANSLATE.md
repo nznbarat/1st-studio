@@ -62,10 +62,9 @@ ElevenLabs **орчуулга хийдэггүй** — зөвхөн яриа↔�
 
 1. **ElevenLabs түлхүүр** — Scribe ба TTS хоёуланд.
 2. **Дуу хоолойн ID** — Voices цэснээс. Өөрийн хувилсан хоолойг ч тавьж болно.
-   **TTS загвар:** `eleven_flash_v2_5` (анхдагч, бодит цагт зориулсан).
-   ⚠ **`eleven_v3` ажиллахгүй** — тэр загвар `/stream-input` WebSocket дэмждэггүй,
-   зөвхөн багцаар (эсвэл Text to Dialogue-оор) ажилладаг. Вэб тоглуулагч дээр
-   сонгогдсон байсан ч API-д өөр загвар хэрэгтэй.
+   **TTS загвар:** `eleven_v3` (анхдагч, хамгийн сайн чанар).
+   Монгол хэл албан ёсны жагсаалтад байхгүй ч v3 сайн уншдаг — 🩺 үүнийг
+   хориг болгохгүй, зөвхөн мэдэгдэнэ.
 3. **Орчуулгын шат** — хоёр сонголт:
    - `npm run serve` + `ANTHROPIC_API_KEY` орчны хувьсагч → репод байгаа `/api/claude` прокси ажиллаж,
      хөтөчид түлхүүр хадгалахгүй *(зөвлөж байна)*;
@@ -78,8 +77,9 @@ ElevenLabs **орчуулга хийдэггүй** — зөвхөн яриа↔�
 | Токен | Хөтчөөс WebSocket-д header тавих боломжгүй тул `POST /v1/single-use-token/realtime_scribe` |
 | STT | `wss://api.elevenlabs.io/v1/speech-to-text/realtime?token=…&model_id=scribe_v2_realtime&audio_format=pcm_16000` |
 | Оролт | `{ "message_type": "input_audio_chunk", "audio_base_64": "…" }` |
-| TTS | `wss://api.elevenlabs.io/v1/text-to-speech/{voice}/stream-input?model_id=…&output_format=pcm_24000` |
-| TTS нэвтрэлт | Эхний мессежинд `xi_api_key` — header шаардахгүй |
+| TTS | `POST /v1/text-to-speech/{voice}/stream` — **HTTP**, WebSocket биш |
+| Яагаад HTTP | `/stream-input` WebSocket нь `eleven_v3` дэмждэггүй. Гинж ямар ч байсан өгүүлбэрээр явдаг тул алдах зүйлгүй |
+| Гаралт | Эхлээд `pcm_24000` оролдоно; багц зөвшөөрөхгүй бол `mp3_44100_128` руу нэг удаа шилжээд санана |
 | Дараалал | Ярианы урсгал орчуулгаас хурдан тул өгүүлбэрүүд ээлжинд ордог, алдагддаггүй |
 
 **Саатал:** Gemini Live-аас удаан. Gemini нь ярьж байх зуур урсгалаар орчуулдаг бол

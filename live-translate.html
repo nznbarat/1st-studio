@@ -236,9 +236,9 @@ footer{display:flex;align-items:center;gap:16px;padding:10px 20px;background:#0d
       <div class="fld">
         <label for="ttsModel">TTS загвар</label>
         <input type="text" id="ttsModel" spellcheck="false">
-        <div class="hint"><b><code>eleven_v3</code>-ыг бүү тавь</b> — тэр загвар бодит цагийн WebSocket дэмждэггүй.
-          Урсгалд <code>eleven_flash_v2_5</code> (хамгийн хурдан) эсвэл <code>eleven_multilingual_v2</code> тохирно.
-          Сонгосон хэлээ дэмжиж байгаа эсэхийг 🩺 шалгана.</div>
+        <div class="hint"><code>eleven_v3</code> — хамгийн сайн чанар, монголыг жагсаалтад
+          байхгүй ч уншдаг. <code>eleven_flash_v2_5</code> — хурдан ч чанар нь буурна.
+          Гаралтын формат: PCM боломжтой бол PCM, үгүй бол MP3 руу өөрөө шилжинэ.</div>
       </div>
       <div class="fld">
         <label for="anthKey">Anthropic түлхүүр (орчуулгад)</label>
@@ -312,9 +312,9 @@ const cfg = {
   ver: "v1beta", place: "gen",
   /* ElevenLabs хөдөлгүүр */
   engine: "gemini", elKey: "", anthKey: "", proxy: false,
-  /* eleven_v3 нь /stream-input WebSocket дээр АЖИЛЛАХГҮЙ — бодит цагийн
-     урсгалд flash v2.5 хэрэглэнэ. */
-  sttModel: "scribe_v2_realtime", ttsModel: "eleven_flash_v2_5",
+  /* TTS-ийг HTTP-ээр дуудна (WebSocket биш) тул eleven_v3 ажиллана.
+     Монгол хэл албан ёсны жагсаалтад байхгүй ч v3 сайн уншдаг. */
+  sttModel: "scribe_v2_realtime", ttsModel: "eleven_v3", pcmOk: undefined,
   voice: "21m00Tcm4TlvDq8ikWAM", trModel: "claude-sonnet-4-6"
 };
 let ws = null, micCtx = null, node = null, stream = null;
@@ -436,6 +436,12 @@ function play(bytes, rate){
 
   const buf = playCtx.createBuffer(1, f32.length, rate || OUT_RATE);
   buf.copyToChannel(f32, 0);
+  playDecoded(buf);
+}
+
+/* Бэлэн AudioBuffer-ийг дараалалд тавьж тоглуулна */
+function playDecoded(buf){
+  ensurePlayer();
   const src = playCtx.createBufferSource();
   src.buffer = buf;
   src.connect(gain);
@@ -716,8 +722,7 @@ function handle(m, ready){
    ══════════════════════════════════════════════════════════════════ */
 const EL = "https://api.elevenlabs.io/v1";
 const EL_STT = "wss://api.elevenlabs.io/v1/speech-to-text/realtime";
-const EL_TTS = "wss://api.elevenlabs.io/v1/text-to-speech/";
-let sttWs = null, ttsWs = null, elBusy = false;
+let sttWs = null, elBusy = false;
 
 async function elFetch(path, opts){
   const r = await fetch(EL + path, Object.assign({ headers: { "xi-api-key": cfg.elKey } }, opts || {}));
@@ -765,36 +770,69 @@ async function translate(text){
   return (j.content || []).map((c) => c.text || "").join("").trim();
 }
 
-/* ── Текст → яриа: хэлэх бүрдээ шинэ WebSocket, PCM 24 kHz буцаана ── */
-function speak(text){
-  return new Promise((done) => {
-    const url = EL_TTS + encodeURIComponent(cfg.voice) + "/stream-input" +
-                "?model_id=" + encodeURIComponent(cfg.ttsModel) + "&output_format=pcm_24000";
-    let sock;
-    try { sock = new WebSocket(url); } catch (e) { logEv("✗ TTS: " + e.message); return done(); }
-    ttsWs = sock;
+/* ── Текст → яриа ──────────────────────────────────────────────────
+   WebSocket (/stream-input) биш, HTTP (/stream) ашиглана. Шалтгаан:
+   eleven_v3 нь WebSocket дэмждэггүй, HTTP дээр л ажиллана. Бидний гинж
+   ямар ч байсан өгүүлбэр тус бүрээр явдаг тул HTTP-д алдах зүйлгүй.
 
-    sock.onopen = () => {
-      sock.send(JSON.stringify({
-        text: " ",
-        voice_settings: { stability: 0.4, similarity_boost: 0.8, speed: 1.0 },
-        xi_api_key: cfg.elKey
-      }));
-      sock.send(JSON.stringify({ text: text + " ", try_trigger_generation: true }));
-      sock.send(JSON.stringify({ text: "" }));            // хэлэх зүйл дууслаа
-    };
-    sock.onmessage = (ev) => {
-      let m; try { m = JSON.parse(ev.data); } catch (e) { return; }
-      if (m.audio) {
-        if (!gotAudio) { gotAudio = true; logEv("✓ анхны орчуулсан дуу ирлээ (ElevenLabs)"); }
-        play(unb64(m.audio), 24000);
-      }
-      if (m.error || m.message) logEv("TTS: " + (m.error || m.message));
-      if (m.isFinal) { try { sock.close(); } catch (e) {} }
-    };
-    sock.onerror = () => logEv("✗ TTS холболтын алдаа");
-    sock.onclose = () => { if (ttsWs === sock) ttsWs = null; done(); };
+   PCM 24 kHz урсгалыг эхэлж оролдоно (хамгийн бага саатал); багц нь
+   PCM гаралт зөвшөөрөхгүй бол MP3 руу нэг удаа шилжээд тэрийгээ санана. */
+async function speak(text){
+  const base = EL + "/text-to-speech/" + encodeURIComponent(cfg.voice) + "/stream";
+  const headers = { "xi-api-key": cfg.elKey, "Content-Type": "application/json" };
+  const body = JSON.stringify({
+    text: text,
+    model_id: cfg.ttsModel,
+    voice_settings: { stability: 0.5, similarity_boost: 0.8 }
   });
+
+  if (cfg.pcmOk !== false) {
+    const r = await fetch(base + "?output_format=pcm_24000", { method: "POST", headers: headers, body: body });
+    if (r.ok) {
+      cfg.pcmOk = true;
+      await streamPcm(r);
+      return waitForPlayback();
+    }
+    const why = (await r.text()).slice(0, 160);
+    logEv("⚠ PCM гаралт боломжгүй (" + r.status + ") — MP3 руу шилжлээ · " + why);
+    cfg.pcmOk = false;
+    saveCfg();
+  }
+
+  const r2 = await fetch(base + "?output_format=mp3_44100_128", { method: "POST", headers: headers, body: body });
+  if (!r2.ok) throw new Error("TTS " + r2.status + ": " + (await r2.text()).slice(0, 200));
+  const raw = await r2.arrayBuffer();
+  const audio = await playCtx.decodeAudioData(raw);
+  if (!gotAudio) { gotAudio = true; logEv("✓ анхны орчуулсан дуу ирлээ (MP3)"); }
+  playDecoded(audio);
+  return waitForPlayback();
+}
+
+/* PCM хэсгүүд дуусахаас өмнө тоглуулж эхэлнэ. Хэсгийн зааг дээр
+   16-бит дээж хоёр хуваагдаж болзошгүй тул сондгой байтыг зөөнө. */
+async function streamPcm(res){
+  const reader = res.body.getReader();
+  let odd = null;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    let bytes = value;
+    if (odd) {
+      const merged = new Uint8Array(odd.length + bytes.length);
+      merged.set(odd, 0); merged.set(bytes, odd.length);
+      bytes = merged; odd = null;
+    }
+    if (bytes.length % 2) { odd = bytes.slice(bytes.length - 1); bytes = bytes.slice(0, bytes.length - 1); }
+    if (!bytes.length) continue;
+    if (!gotAudio) { gotAudio = true; logEv("✓ анхны орчуулсан дуу ирлээ (PCM 24 kHz)"); }
+    play(bytes, 24000);
+  }
+}
+
+/* Дараагийн өгүүлбэрийг одоогийнх дуусахаас өмнө хэлэхгүйн тулд хүлээнэ */
+function waitForPlayback(){
+  const left = playCtx ? playHead - playCtx.currentTime : 0;
+  return left > 0 ? new Promise((r) => setTimeout(r, left * 1000)) : Promise.resolve();
 }
 
 /* ── Бүтэн гинж: сонссон өгүүлбэр → орчуулга → дуу ──
@@ -885,21 +923,20 @@ async function diagnoseEleven(){
     return banner("Түлхүүр ажиллаж байна. Хэлний дэмжлэгийг шалгаж чадсангүй — ЭХЛҮҮЛЭХ дарж туршина уу.", "ok");
   }
 
-  if (/^eleven_v3/.test(cfg.ttsModel))
-    logEv("✗ eleven_v3 нь /stream-input WebSocket дэмждэггүй — flash v2.5 хэрэглэнэ");
-
   const tts = models.find((m) => m.model_id === cfg.ttsModel);
   if (!tts) {
     logEv("⚠ «" + cfg.ttsModel + "» олдсонгүй. Боломжтой: " + models.map((m) => m.model_id).join(", "));
   } else {
     const langs = (tts.languages || []).map((l) => l.language_id);
     const has = langs.includes(cfg.target);
-    logEv((has ? "✓ " : "✗ ") + cfg.ttsModel + " → «" + langName(cfg.target) + "» " + (has ? "дэмждэг" : "ДЭМЖДЭГГҮЙ"));
+    logEv((has ? "✓ " : "⚠ ") + cfg.ttsModel + " → «" + langName(cfg.target) + "» " +
+          (has ? "албан ёсоор дэмждэг" : "албан ёсны жагсаалтад АЛГА"));
     if (!has) {
+      /* Жагсаалт бол баталгаа, хориг биш: v3 нь жагсаагдаагүй хэлийг ч
+         сайн уншдаг. Тиймээс зогсоохгүй — сонсоод өөрөө шийднэ. */
       const able = models.filter((m) => (m.languages || []).some((l) => l.language_id === cfg.target));
-      logEv(able.length ? "энэ хэлийг дэмжих загвар: " + able.map((m) => m.model_id).join(", ")
-                        : "энэ хэлийг дэмжих TTS загвар алга — орчуулга зөвхөн бичвэрээр гарна");
-      return banner("«" + langName(cfg.target) + "» хэлийг " + cfg.ttsModel + " дэмжихгүй байна. Дэлгэрэнгүйг логоос үз.", "err");
+      if (able.length) logEv("албан ёсоор дэмждэг загвар: " + able.map((m) => m.model_id).join(", "));
+      logEv("→ жагсаалт албан ёсны баталгаа л юм. Сонсоод чанар нь таалагдвал үргэлжлүүл.");
     }
   }
   await elToken();
@@ -1073,8 +1110,7 @@ function stop(reason){
   try { sock && sock.close(); } catch (e) {}
   const st = sttWs; sttWs = null;
   try { st && st.close(); } catch (e) {}
-  try { ttsWs && ttsWs.close(); } catch (e) {}
-  ttsWs = null;
+  elQueue.length = 0;
   seal();
   $("goBtn").textContent = "ЭХЛҮҮЛЭХ";
   $("goBtn").classList.remove("live");
@@ -1093,7 +1129,6 @@ async function restart(){
 function loadCfg(){
   try { Object.assign(cfg, JSON.parse(localStorage.getItem(LS) || "{}")); } catch (e) {}
   if (!cfg.model) cfg.model = DEFAULT_MODEL;
-  if (/^eleven_v3/.test(cfg.ttsModel)) cfg.ttsModel = "eleven_flash_v2_5";   // v3 нь WS дэмжихгүй
 }
 function saveCfg(){
   const copy = Object.assign({}, cfg);
