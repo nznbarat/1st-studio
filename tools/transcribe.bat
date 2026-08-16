@@ -10,6 +10,7 @@
 ::
 ::  Байрлуулах газар: faster-whisper-xxl.exe болон yt-dlp.exe-тэй ИЖИЛ хавтас.
 ::  Ашиглах: давхар товш, эсвэл файл/шошгыг энэ дээр чирж тавь.
+::  Бэлэн .srt чирвэл татах, хөрвүүлэх алхмыг алгасаад зөвхөн орчуулна.
 ::
 ::  Нэмэлт файл ХЭРЭГГҮЙ — орчуулагч энэ файлын доод хэсэгт шингээстэй.
 ::  Түлхүүрийг эхний ажиллуулалтад асууж, anthropic-key.txt-д хадгална.
@@ -78,6 +79,12 @@ set "URL="
 if not "%~1"=="" (
   :: Чирж тавьсан зүйл — локал файл бол шууд хөрвүүлнэ
   if exist "%~1" (
+    :: Бэлэн .srt чирсэн бол алхам 1-2-ыг алгасаад шууд орчуулна
+    if /i "%~x1"==".srt" (
+      set "SRTFILE=%~f1"
+      echo   Хадмал:  %~nx1
+      goto :translate
+    )
     set "AUDIO=%~1"
     echo   Файл:  %~nx1
     goto :transcribe
@@ -163,10 +170,11 @@ if errorlevel 1 (
 )
 
 :: ── 3. Монгол болгох ────────────────────────────────────────────────────────
-if not "%TRANSLATE%"=="1" goto :finish
-
 :: faster-whisper гаралтыг оролтын нэрээр нэрлэдэг
 for %%A in ("!AUDIO!") do set "SRTFILE=%OUTDIR%\%%~nA.srt"
+
+:translate
+if not "%TRANSLATE%"=="1" goto :finish
 
 if not exist "!SRTFILE!" (
   echo.
@@ -315,14 +323,18 @@ function Invoke-Claude([string]$UserText) {
   # PS 5.1 нь мөрийг ISO-8859-1-ээр илгээдэг тул UTF-8 байт болгож өгнө
   $bytes = [System.Text.Encoding]::UTF8.GetBytes($payload)
 
-  $resp = Invoke-RestMethod -Uri "https://api.anthropic.com/v1/messages" -Method Post `
+  # Invoke-RestMethod нь хариуны charset заагаагүй үед ISO-8859-1 гэж уншдаг тул
+  # монгол үсэг эвдэрдэг. Тиймээс түүхий байтыг нь аваад өөрсдөө UTF-8 болгоно.
+  $r = Invoke-WebRequest -Uri "https://api.anthropic.com/v1/messages" -Method Post `
     -Headers @{
       "x-api-key"         = $Key
       "anthropic-version" = "2023-06-01"
     } `
     -ContentType "application/json; charset=utf-8" `
-    -Body $bytes
+    -Body $bytes -UseBasicParsing
 
+  $json = [System.Text.Encoding]::UTF8.GetString($r.RawContentStream.ToArray())
+  $resp = $json | ConvertFrom-Json
   return (($resp.content | ForEach-Object { $_.text }) -join "")
 }
 

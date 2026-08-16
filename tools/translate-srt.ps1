@@ -100,14 +100,18 @@ function Invoke-Claude([string]$UserText) {
   # PS 5.1 нь мөрийг ISO-8859-1-ээр илгээдэг тул UTF-8 байт болгож өгнө
   $bytes = [System.Text.Encoding]::UTF8.GetBytes($payload)
 
-  $resp = Invoke-RestMethod -Uri "https://api.anthropic.com/v1/messages" -Method Post `
+  # Invoke-RestMethod нь хариуны charset заагаагүй үед ISO-8859-1 гэж уншдаг тул
+  # монгол үсэг эвдэрдэг. Тиймээс түүхий байтыг нь аваад өөрсдөө UTF-8 болгоно.
+  $r = Invoke-WebRequest -Uri "https://api.anthropic.com/v1/messages" -Method Post `
     -Headers @{
       "x-api-key"         = $Key
       "anthropic-version" = "2023-06-01"
     } `
     -ContentType "application/json; charset=utf-8" `
-    -Body $bytes
+    -Body $bytes -UseBasicParsing
 
+  $json = [System.Text.Encoding]::UTF8.GetString($r.RawContentStream.ToArray())
+  $resp = $json | ConvertFrom-Json
   return (($resp.content | ForEach-Object { $_.text }) -join "")
 }
 
