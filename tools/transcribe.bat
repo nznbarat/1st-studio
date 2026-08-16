@@ -1,10 +1,12 @@
 @echo off
 :: ============================================================================
 ::  1st Studio — Transcribe
-::  YouTube холбоос эсвэл дуу/видео файлыг англи бичвэр болгоно.
+::  YouTube холбоос эсвэл дуу/видео файлыг авч, англи бичвэр гаргаад,
+::  Claude-аар монгол болгоно — нэг товшилтоор, эхнээс нь дуустал.
 ::
-::  Гаралт:  transcripts\<нэр>.srt   ба   transcripts\<нэр>.txt
-::  Дараа нь тэр .srt-г subtitles.html руу чирж оруулаад монгол болгоно.
+::  Гаралт:  transcripts\<нэр>.srt      англи
+::           transcripts\<нэр>.mn.srt   монгол
+::           transcripts\<нэр>.mn.txt   монгол, цагийн тэмдэгтэй
 ::
 ::  Байрлуулах газар: faster-whisper-xxl.exe болон yt-dlp.exe-тэй ИЖИЛ хавтас.
 ::  Ашиглах: давхар товш, эсвэл файл/шошгыг энэ дээр чирж тавь.
@@ -22,6 +24,12 @@ set "OUTDIR=%DP%transcripts"
 set "MODEL=medium"
 set "LANG=English"
 set "KEEP_AUDIO=1"
+
+:: Бичвэр гарсны дараа Claude-аар шууд орчуулах уу (1 = тийм)
+:: Түлхүүрээ энэ хавтсанд anthropic-key.txt файлд бич.
+set "TRANSLATE=1"
+set "TR_LANG=Mongolian"
+set "TR_MODEL=claude-opus-5"
 
 :: Хөгжмийн нэр томьёо — Whisper-т урьдчилан сануулж, буруу сонсохоос сэргийлнэ
 set "IPROMPT=This is a video about music production and AI music tools. Terms that appear: Suno, Udio, ElevenLabs, DAW, stem, stems, BPM, tempo, key, mixdown, mastering, EQ, compressor, limiter, reverb, delay, sidechain, LUFS, headroom, MIDI, VST, plugin, arrangement, intro, verse, chorus, bridge, hook, riff, sample, loop, quantize, transient, waveform, timeline, track, automation, gain staging, dry, wet, prompt, seed, extend, remix, cover, persona, workspace, render, export."
@@ -76,7 +84,7 @@ if not exist "%DP%yt-dlp.exe" (
 )
 
 echo.
-echo   [1/2] Аудио татаж байна...
+echo   [1/3] Аудио татаж байна...
 echo.
 
 :: Цэвэр түр хавтас руу татна — ингэснээр татсан файлыг нэрийг нь мэдэхгүйгээр
@@ -114,7 +122,7 @@ echo   [OK] !AUDIO!
 :transcribe
 :: ── 2. Бичвэр болгох ────────────────────────────────────────────────────────
 echo.
-echo   [2/2] Бичвэр болгож байна  ^(загвар: %MODEL%, хэл: %LANG%^)
+echo   [2/3] Бичвэр болгож байна  ^(загвар: %MODEL%, хэл: %LANG%^)
 echo         Эхний удаа загвар татагдана — хэдэн минут орно.
 echo.
 
@@ -132,6 +140,37 @@ if errorlevel 1 (
   goto :fail
 )
 
+:: ── 3. Монгол болгох ────────────────────────────────────────────────────────
+if not "%TRANSLATE%"=="1" goto :finish
+if not exist "%DP%translate-srt.ps1" (
+  echo.
+  echo   [!] translate-srt.ps1 олдсонгүй — зөвхөн англи бичвэр бэлэн боллоо.
+  goto :finish
+)
+
+:: faster-whisper гаралтыг оролтын нэрээр нэрлэдэг
+for %%A in ("!AUDIO!") do set "SRTFILE=%OUTDIR%\%%~nA.srt"
+
+if not exist "!SRTFILE!" (
+  echo.
+  echo   [!] .srt олдсонгүй: !SRTFILE!
+  echo       Орчуулгыг алгаслаа.
+  goto :finish
+)
+
+echo.
+echo   [3/3] Claude-аар %TR_LANG% болгож байна...
+
+powershell -NoProfile -ExecutionPolicy Bypass -File "%DP%translate-srt.ps1" ^
+  -Srt "!SRTFILE!" -Lang "%TR_LANG%" -Model "%TR_MODEL%"
+
+if errorlevel 1 (
+  echo.
+  echo   [!] Орчуулга бүтсэнгүй — англи бичвэр бэлэн хэвээр байна.
+  echo       Түлхүүрээ шалгана уу: %DP%anthropic-key.txt
+)
+
+:finish
 :: ── Дуусав ──────────────────────────────────────────────────────────────────
 if "%KEEP_AUDIO%"=="0" if defined URL (
   if exist "%OUTDIR%\_audio" rd /s /q "%OUTDIR%\_audio"
@@ -144,11 +183,15 @@ echo   ============================================
 echo.
 echo   Гаралт:  %OUTDIR%
 echo.
-echo   Дараагийн алхам:
-echo     1. subtitles.html-ыг хөтчөөр нээ
-echo     2. ^+ БИЧВЭР ОРУУЛАХ дар
-echo     3. .srt файлыг бичвэрийн талбар руу чирж тавь
-echo     4. ОРЧУУЛАХ
+if "%TRANSLATE%"=="1" (
+  echo     ^<нэр^>.srt        — англи
+  echo     ^<нэр^>.mn.srt     — монгол  ^(видеонд шууд ачаална^)
+  echo     ^<нэр^>.mn.txt     — монгол, цагийн тэмдэгтэй
+) else (
+  echo     ^<нэр^>.srt        — англи
+  echo.
+  echo   Монгол болгох: .srt-г subtitles.html руу чирж оруул.
+)
 echo.
 
 start "" "%OUTDIR%"
