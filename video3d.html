@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1st Studio — Видео → 3D render</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ═══ Blender маягийн палитр (camera.html-тэй нэгдсэн) ═══ */
+:root{
+  --win:#1d1d1d; --hdr:#181818; --edit:#303030; --panel:#282828; --sub:#232323;
+  --line:#3b3b3b; --line2:#4a4a4a;
+  --wid:#545454; --wid-h:#656565; --wid-in:#1f1f1f;
+  --txt:#e5e5e5; --dim:#9a9a9a; --dim2:#767676;
+  --acc:#4772b3; --acc-h:#5a86c9;
+  --sel:#ed9e5c; --act:#ffaf4d;
+  --ok:#5bbf6a; --warn:#d9a441; --err:#d95b5b;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{
+  background:var(--win);color:var(--txt);
+  font-family:'Inter',system-ui,-apple-system,sans-serif;font-size:12px;line-height:1.45;
+  -webkit-font-smoothing:antialiased;user-select:none;
+}
+button,select,input,textarea{font-family:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:var(--sub)}
+::-webkit-scrollbar-thumb{background:#4a4a4a;border-radius:6px;border:2px solid var(--sub)}
+::-webkit-scrollbar-thumb:hover{background:#5c5c5c}
+:focus-visible{outline:1px solid var(--acc);outline-offset:1px}
+
+/* ═══ Widget суурь ═══ */
+.w{background:var(--wid);border:none;border-radius:4px;padding:5px 9px;font-size:11.5px;font-weight:500;transition:background .1s}
+.w:hover{background:var(--wid-h)}
+.w:active{background:var(--acc)}
+.w.on{background:var(--acc);color:#fff}
+.w.on:hover{background:var(--acc-h)}
+.w:disabled{opacity:.38;cursor:default;background:var(--wid)}
+select.w{padding:5px 7px;cursor:pointer;appearance:none;background-image:linear-gradient(45deg,transparent 50%,#cfcfcf 50%),linear-gradient(135deg,#cfcfcf 50%,transparent 50%);background-position:calc(100% - 13px) 52%,calc(100% - 9px) 52%;background-size:4px 4px;background-repeat:no-repeat;padding-right:22px}
+select.w option{background:var(--edit)}
+input.w,textarea.w{background:var(--wid-in);border:1px solid #131313;cursor:text}
+input.w:focus,textarea.w:focus{border-color:var(--acc);background:#141414}
+textarea.w{width:100%;resize:vertical;line-height:1.5;padding:8px 9px;user-select:text}
+input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:pointer}
+.w.pri{background:var(--acc);color:#fff}
+.w.pri:hover{background:var(--acc-h)}
+.w.pri:disabled{background:#3a4d6b;opacity:.4}
+
+/* ═══ Байрлал ═══ */
+#root{display:flex;flex-direction:column;height:100%}
+#topbar{height:34px;flex:none;display:flex;align-items:center;gap:8px;padding:0 10px;background:var(--hdr);border-bottom:1px solid #0f0f0f}
+.logo{font-weight:700;font-size:12.5px;letter-spacing:.4px;white-space:nowrap}
+.logo b{color:var(--sel)}
+.tabs{display:flex;gap:1px;background:#111;border-radius:5px;padding:2px}
+.tabs button{padding:4px 12px;border-radius:4px;font-size:11px;font-weight:500;color:var(--dim)}
+.tabs button:hover{background:#2e2e2e;color:var(--txt)}
+.tabs button.on{background:var(--acc);color:#fff}
+.spacer{flex:1}
+.stat{display:flex;align-items:baseline;gap:5px;padding:0 9px;border-left:1px solid var(--line)}
+.stat span:first-child{font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim2)}
+.stat span:last-child{font-family:'JetBrains Mono';font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
+
+#main{flex:1;display:flex;min-height:0}
+
+/* ═══ Хажуугийн самбар ═══ */
+#side{width:296px;flex:none;background:var(--panel);border-right:1px solid #101010;overflow-y:auto;padding-bottom:24px}
+.grp{border-bottom:1px solid var(--line)}
+.grp>h3{font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--dim2);padding:11px 12px 7px;font-weight:600}
+.grp>div{padding:0 12px 13px;display:flex;flex-direction:column;gap:7px}
+.row{display:flex;align-items:center;gap:7px}
+.row>label{flex:none;width:82px;font-size:11px;color:var(--dim)}
+.row>.w,.row>input,.row>select{flex:1;min-width:0}
+.row.tight>label{width:auto}
+.hint{font-size:10.5px;color:var(--dim2);line-height:1.5}
+.hint code{font-family:'JetBrains Mono';font-size:10px;color:var(--sel)}
+.btnrow{display:flex;gap:6px}
+.btnrow>.w{flex:1}
+
+/* Workflow цэгүүд */
+#targets{display:flex;flex-direction:column;gap:2px;background:var(--wid-in);border-radius:4px;padding:7px 8px;max-height:190px;overflow-y:auto}
+.trow{display:flex;justify-content:space-between;gap:8px;font-size:10.5px;font-family:'JetBrains Mono'}
+.tname{color:var(--dim)}
+.tval.ok{color:var(--ok)}
+.tval.miss{color:var(--dim2)}
+.dim2{color:var(--dim2);font-size:10.5px}
+
+/* ═══ Ажлын талбар ═══ */
+#work{flex:1;display:flex;flex-direction:column;min-width:0}
+#drop{flex:1;display:flex;flex-direction:column;min-height:0;position:relative;margin:10px 10px 0;border:1px dashed var(--line2);border-radius:6px;background:var(--sub);overflow:hidden}
+#drop.over{border-color:var(--acc);background:#1e2530}
+#toolbar{flex:none;display:flex;align-items:center;gap:6px;padding:8px 10px;border-bottom:1px solid var(--line);background:var(--panel)}
+#tablewrap{flex:1;overflow:auto;min-height:0}
+table{width:100%;border-collapse:collapse;font-size:11.5px}
+thead th{position:sticky;top:0;background:var(--sub);text-align:left;padding:7px 10px;font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim2);font-weight:600;border-bottom:1px solid var(--line);z-index:2}
+tbody td{padding:6px 10px;border-bottom:1px solid #2a2a2a;vertical-align:middle}
+tbody tr:hover{background:#262626}
+td.nm{max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;user-select:text}
+td.num{font-family:'JetBrains Mono';font-variant-numeric:tabular-nums;color:var(--dim);white-space:nowrap;width:78px}
+td.note{color:var(--dim2);font-size:10.5px;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;user-select:text}
+td.act{width:30px;text-align:right}
+td.act .x{color:var(--dim2);font-size:11px;padding:2px 5px;border-radius:3px}
+td.act .x:hover{background:var(--err);color:#fff}
+
+.pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10.5px;font-weight:500;white-space:nowrap;background:#3a3a3a;color:var(--dim)}
+.pill.busy{background:#2c4468;color:#a8c6f0}
+.pill.done{background:#28452c;color:#8fdc9b}
+.pill.err{background:#4a2727;color:#f0a0a0}
+.pill.warn{background:#4a3d20;color:#e8c97a}
+.pill.skip{background:#333;color:var(--dim2)}
+
+#empty{position:absolute;inset:34px 0 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;pointer-events:none;color:var(--dim2)}
+#empty .big{font-size:32px;opacity:.35}
+#empty .t{font-size:13px;color:var(--dim)}
+
+#longwarn,#namewarn{display:none;flex:none;margin:8px 10px 0;padding:8px 11px;border-radius:5px;background:#3a3018;border:1px solid #5a4a22;color:#e8c97a;font-size:11px;line-height:1.5}
+#namewarn b{color:#ffd98a}
+
+/* ═══ Лог ═══ */
+#logwrap{flex:none;height:158px;display:flex;flex-direction:column;margin:10px;border:1px solid var(--line);border-radius:6px;background:#141414;overflow:hidden}
+#logwrap h4{flex:none;padding:6px 10px;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim2);background:var(--sub);border-bottom:1px solid var(--line);font-weight:600}
+#log{flex:1;overflow-y:auto;padding:6px 10px 8px;font-family:'JetBrains Mono';font-size:10.5px;line-height:1.65;user-select:text}
+.logline{color:var(--dim);white-space:pre-wrap;word-break:break-word}
+.logline.ok{color:#8fdc9b}
+.logline.warn{color:#e8c97a}
+.logline.err{color:#f0a0a0}
+.logt{color:var(--dim2);opacity:.7}
+
+@media(max-width:860px){
+  #side{width:250px}
+  td.note{display:none}
+}
+</style>
+</head>
+<body>
+<div id="root">
+
+  <div id="topbar">
+    <div class="logo">1st <b>Studio</b> · Видео → 3D</div>
+    <div class="tabs">
+      <button id="tab-comfy">Локал ComfyUI</button>
+      <button id="tab-fal">fal.ai</button>
+    </div>
+    <div class="spacer"></div>
+    <div class="stat"><span>Файл</span><span id="cnt">0/0</span></div>
+    <div class="stat"><span>Нийт урт</span><span id="dur">—</span></div>
+    <div class="stat"><span>Өртөг</span><span id="cost">—</span></div>
+    <button id="start" class="w pri">▶ Эхлүүлэх</button>
+    <button id="stop" class="w">■ Зогсоох</button>
+  </div>
+
+  <div id="main">
+
+    <!-- ═══ Хажуугийн самбар ═══ -->
+    <div id="side">
+
+      <div class="grp" id="panel-comfy">
+        <h3>Локал ComfyUI — төлбөргүй</h3>
+        <div>
+          <div class="row"><label>Сервер</label><input id="comfyUrl" class="w mono" spellcheck="false"></div>
+          <div class="btnrow">
+            <button id="ping" class="w">Холболт шалгах</button>
+            <button id="wfBtn" class="w">Workflow ачаалах</button>
+          </div>
+          <div class="row tight"><label>Workflow:</label><span id="wfname" class="dim2 mono">—</span></div>
+          <div id="targets"></div>
+          <button id="checkwf" class="w">Workflow-г сервертэй тулгах</button>
+          <div class="row"><label>FPS</label><input id="fps" class="w mono" type="number" min="6" max="60"></div>
+          <div class="row"><label>Кадрын дээд</label><input id="maxFrames" class="w mono" type="number" min="17" max="481" step="4"></div>
+          <div class="row"><label>Strength</label><input id="strength" class="w mono" placeholder="workflow-гийнх" spellcheck="false"></div>
+          <p class="hint">ComfyUI-г <code>--enable-cors-header</code> тугтай асаана.
+            Workflow нь <b>API формат</b> байх ёстой: Settings → Dev Mode → Workflow → Export (API).</p>
+        </div>
+      </div>
+
+      <div class="grp" id="panel-fal">
+        <h3>fal.ai — Seedance 2.5</h3>
+        <div>
+          <div class="row"><label>Түлхүүр</label><input id="falKey" class="w mono" type="password" placeholder="xxxx:yyyy" spellcheck="false"></div>
+          <div class="row"><label>Endpoint</label><input id="falEndpoint" class="w mono" spellcheck="false"></div>
+          <button id="pingFal" class="w">Түлхүүр шалгах</button>
+          <p class="hint">Түлхүүр зөвхөн энэ хөтөч дээр хадгалагдана. Хуудсаа
+            <b>олон нийтэд бүү тавь</b> — түлхүүр ил болно.
+            Урт клипийг хэрчихгүй тул 30 секундээс богино байх нь зүйтэй.</p>
+        </div>
+      </div>
+
+      <div class="grp">
+        <h3>Загвар</h3>
+        <div>
+          <select id="style" class="w"></select>
+          <p class="hint" id="styledesc"></p>
+          <textarea id="preview" class="w mono" rows="4" readonly></textarea>
+          <div class="row tight"><label>Өөрийн промт (сонголт)</label></div>
+          <textarea id="custom" class="w" rows="3" placeholder="Бичвэл дээрх загварыг орлоно. @Video1 гэж бичихгүй бол автоматаар нэмэгдэнэ."></textarea>
+        </div>
+      </div>
+
+      <div class="grp">
+        <h3>Гаралт</h3>
+        <div>
+          <div class="row"><label>Нягтрал</label>
+            <select id="resolution" class="w">
+              <option value="480p">480p</option><option value="720p">720p</option><option value="1080p">1080p</option>
+            </select>
+          </div>
+          <div class="row"><label>Харьцаа</label>
+            <select id="aspect" class="w">
+              <option value="auto">эхийнхээр</option>
+              <option value="16:9">16:9</option><option value="9:16">9:16</option><option value="1:1">1:1</option>
+              <option value="4:3">4:3</option><option value="3:4">3:4</option><option value="21:9">21:9</option>
+            </select>
+          </div>
+          <div class="row"><label>Урт</label>
+            <select id="duration" class="w">
+              <option value="auto">эх клипийн урттай</option>
+              <option value="fixed">тогтмол</option>
+            </select>
+          </div>
+          <div class="row" id="fixedwrap"><label>Секунд</label><input id="fixedSeconds" class="w mono" type="number" min="1" max="30"></div>
+          <div class="row"><label>Seed</label><input id="seed" class="w mono" placeholder="санамсаргүй" spellcheck="false"></div>
+          <div class="row tight"><input id="audio" type="checkbox"><label style="width:auto">Дуу үүсгэх (fal)</label></div>
+          <div class="btnrow">
+            <button id="pickOut" class="w">Гаралтын хавтас</button>
+          </div>
+          <div class="row tight"><label>Хавтас:</label><span id="outname" class="dim2 mono">татах горим</span></div>
+          <p class="hint">Хавтас сонгохгүй бол файл бүр тусад нь татагдана.
+            Хавтас руу шууд бичих боломж Chrome / Edge дээр бий.</p>
+        </div>
+      </div>
+
+      <div class="grp">
+        <h3>Ажиллагаа</h3>
+        <div>
+          <div class="row"><label>Зэрэг</label><input id="concurrency" class="w mono" type="number" min="1" max="4"></div>
+          <div class="row"><label>Дахин оролдох</label><input id="retries" class="w mono" type="number" min="0" max="5"></div>
+          <div class="row tight"><input id="overwrite" type="checkbox"><label style="width:auto">Байгаа файлыг дарж бичих</label></div>
+          <button id="report" class="w">Тайлан (JSON) татах</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ═══ Ажлын талбар ═══ -->
+    <div id="work">
+      <div id="longwarn"></div>
+      <div id="namewarn"></div>
+
+      <div id="drop">
+        <div id="toolbar">
+          <button id="pickDir" class="w">📁 Хавтас сонгох</button>
+          <button id="pickFiles" class="w">Файл нэмэх</button>
+          <div class="spacer"></div>
+          <button id="clear" class="w">Жагсаалт цэвэрлэх</button>
+        </div>
+
+        <div id="tablewrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Файл</th><th>Урт</th><th>Хэмжээ</th><th>Төлөв</th><th>Тэмдэглэл</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+
+        <div id="empty">
+          <div class="big">🎬</div>
+          <div class="t">Клипүүдээ энд чирж оруулна уу</div>
+          <div>бүтэн хавтас чирж болно · mp4 · mov · mkv · webm</div>
+        </div>
+      </div>
+
+      <div id="logwrap">
+        <h4>Бүртгэл</h4>
+        <div id="log"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<input id="fileInput" type="file" accept="video/*" multiple hidden>
+<input id="dirInput" type="file" webkitdirectory directory multiple hidden>
+<input id="wfInput" type="file" accept=".json,application/json" hidden>
+
+<script src="video3d-styles.js"></script>
+<script src="video3d.js"></script>
+</body>
+</html>
