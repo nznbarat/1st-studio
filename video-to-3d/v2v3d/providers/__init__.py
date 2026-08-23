@@ -76,4 +76,8 @@ def get_provider(name: str, endpoint: str, extra: dict | None = None) -> Provide
         from .replicate import ReplicateProvider
 
         return ReplicateProvider(endpoint, extra)
-    raise KeyError(f"provider '{name}' танигдахгүй (fal | replicate)")
+    if name == "comfy":
+        from .comfy import ComfyProvider
+
+        return ComfyProvider(endpoint, extra)
+    raise KeyError(f"provider '{name}' танигдахгүй (fal | replicate | comfy)")

@@ -64,8 +64,9 @@ def segment_duration_arg(seg: Segment, settings: Settings) -> str:
     """
     if settings.duration != "auto":
         return settings.duration
+    limits = settings.limits
     secs = int(round(seg.duration))
-    secs = max(cfg.MIN_OUTPUT_SECONDS, min(cfg.MAX_OUTPUT_SECONDS, secs))
+    secs = max(limits.min_output_seconds, min(limits.max_output_seconds, secs))
     return str(secs)
 
 
@@ -104,8 +105,8 @@ def plan_file(src: Path, settings: Settings, probe=None) -> FilePlan:
             duration,
             settings.chunk_seconds,
             settings.long_video,
-            cfg.MAX_REF_VIDEO_SECONDS,
-            cfg.MIN_OUTPUT_SECONDS,
+            settings.limits.max_reference_seconds,
+            settings.limits.min_output_seconds,
         )
     except media.MediaError as exc:
         return FilePlan(src, dest, duration, [], skipped=str(exc))
@@ -113,12 +114,20 @@ def plan_file(src: Path, settings: Settings, probe=None) -> FilePlan:
     if not segments:
         return FilePlan(
             src, dest, duration, [],
-            skipped=f"{duration:.1f}с — лавлагааны {cfg.MAX_REF_VIDEO_SECONDS}с хязгаараас урт",
+            skipped=(
+                f"{duration:.1f}с — лавлагааны "
+                f"{settings.limits.max_reference_seconds}с хязгаараас урт"
+            ),
         )
 
     plan = FilePlan(src, dest, duration, segments)
     plan.cost = sum(
-        estimate_cost(seg.duration, float(segment_duration_arg(seg, settings)), settings.resolution)
+        estimate_cost(
+            seg.duration,
+            float(segment_duration_arg(seg, settings)),
+            settings.resolution,
+            settings.provider,
+        )
         for seg in segments
     )
     return plan

@@ -1,0 +1,96 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": { "unet_name": "wan2.1_vace_14B_fp16.safetensors", "weight_dtype": "default" },
+    "_meta": { "title": "Wan VACE загвар" }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": { "clip_name": "umt5_xxl_fp8_e4m3fn_scaled.safetensors", "type": "wan" },
+    "_meta": { "title": "Текст кодлогч" }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": { "vae_name": "wan_2.1_vae.safetensors" },
+    "_meta": { "title": "VAE" }
+  },
+  "4": {
+    "class_type": "CLIPTextEncode",
+    "inputs": { "text": "3D render style", "clip": ["2", 0] },
+    "_meta": { "title": "Positive — v2v3d энд промтыг суулгана" }
+  },
+  "5": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "blurry, low quality, distorted faces, flickering, watermark, text",
+      "clip": ["2", 0]
+    },
+    "_meta": { "title": "Negative" }
+  },
+  "6": {
+    "class_type": "LoadVideo",
+    "inputs": { "file": "input.mp4" },
+    "_meta": { "title": "Эх видео — v2v3d энд файлыг суулгана" }
+  },
+  "7": {
+    "class_type": "GetVideoComponents",
+    "inputs": { "video": ["6", 0] },
+    "_meta": { "title": "Видео → кадрууд" }
+  },
+  "8": {
+    "class_type": "WanVaceToVideo",
+    "inputs": {
+      "positive": ["4", 0],
+      "negative": ["5", 0],
+      "vae": ["3", 0],
+      "width": 832,
+      "height": 480,
+      "length": 81,
+      "batch_size": 1,
+      "strength": 1.0,
+      "control_video": ["7", 0]
+    },
+    "_meta": { "title": "VACE — хөдөлгөөний лавлагаа" }
+  },
+  "9": {
+    "class_type": "ModelSamplingSD3",
+    "inputs": { "model": ["1", 0], "shift": 8.0 },
+    "_meta": { "title": "Sampling shift" }
+  },
+  "10": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["9", 0],
+      "positive": ["8", 0],
+      "negative": ["8", 1],
+      "latent_image": ["8", 2],
+      "seed": 0,
+      "steps": 20,
+      "cfg": 6.0,
+      "sampler_name": "uni_pc",
+      "scheduler": "simple",
+      "denoise": 1.0
+    },
+    "_meta": { "title": "KSampler" }
+  },
+  "11": {
+    "class_type": "TrimVideoLatent",
+    "inputs": { "samples": ["10", 0], "trim_amount": ["8", 3] },
+    "_meta": { "title": "Латентыг тайрах" }
+  },
+  "12": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["11", 0], "vae": ["3", 0] },
+    "_meta": { "title": "VAE декод" }
+  },
+  "13": {
+    "class_type": "CreateVideo",
+    "inputs": { "images": ["12", 0], "fps": 16 },
+    "_meta": { "title": "Кадрууд → видео" }
+  },
+  "14": {
+    "class_type": "SaveVideo",
+    "inputs": { "video": ["13", 0], "filename_prefix": "v2v3d/render", "format": "mp4", "codec": "h264" },
+    "_meta": { "title": "Хадгалах" }
+  }
+}

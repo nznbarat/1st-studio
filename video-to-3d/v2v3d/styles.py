@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -47,6 +48,20 @@ def ensure_video_reference(prompt: str) -> str:
     if "@video1" in lowered or "[video1]" in lowered:
         return text
     return f"{VIDEO_TOKEN} — {text}"
+
+
+_LEADING_REF = re.compile(r"^[@\[]Video1\]?\s*[—–\-:]?\s*", re.IGNORECASE)
+_INLINE_REF = re.compile(r"[@\[]Video1\]?", re.IGNORECASE)
+
+
+def strip_video_reference(prompt: str) -> str:
+    """Seedance‑ийн @Video1 тэмдэглэгээг энгийн үг болгоно.
+
+    Локал загварууд (Wan, LTX) ийм лавлагааг ойлгодоггүй — видеог тусдаа
+    оролтоор авдаг тул промтод нь ердийн өгүүлбэр байх нь дээр.
+    """
+    text = _LEADING_REF.sub("", prompt.strip())
+    return _INLINE_REF.sub("the source video", text).strip()
 
 
 def build_prompt(

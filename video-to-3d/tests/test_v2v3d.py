@@ -6,16 +6,22 @@
 
 from __future__ import annotations
 
+import json
 import shutil
 import subprocess
 import sys
 import tempfile
+import threading
 import unittest
+import urllib.parse
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from v2v3d import comfy_workflow as wf  # noqa: E402
 from v2v3d import config as cfg  # noqa: E402
+from v2v3d import doctor as doc  # noqa: E402
 from v2v3d import media, pipeline  # noqa: E402
 from v2v3d.cli import main as cli_main  # noqa: E402
 from v2v3d.cli import parse_set  # noqa: E402
@@ -24,7 +30,15 @@ from v2v3d.manifest import Manifest  # noqa: E402
 from v2v3d.providers import GenRequest, GenResult, Provider  # noqa: E402
 from v2v3d.providers.fal import FalProvider, extract_video_url  # noqa: E402
 from v2v3d.providers.replicate import ReplicateProvider  # noqa: E402
-from v2v3d.styles import build_prompt, ensure_video_reference, load_styles  # noqa: E402
+from v2v3d.providers.comfy import ComfyProvider, _size_for  # noqa: E402
+from v2v3d.styles import (  # noqa: E402
+    build_prompt,
+    ensure_video_reference,
+    load_styles,
+    strip_video_reference,
+)
+
+WORKFLOW_PATH = Path(__file__).resolve().parents[1] / "workflows" / "wan-vace-v2v.api.json"
 
 
 def make_settings(tmp: Path, **kw) -> Settings:
@@ -52,6 +66,135 @@ class TestStyles(unittest.TestCase):
     def test_unknown_style_raises(self):
         with self.assertRaises(KeyError):
             build_prompt("no-such-style")
+
+
+class TestComfyWorkflow(unittest.TestCase):
+    """Workflow дотор утга суулгах логик — сервер шаардахгүй."""
+
+    def setUp(self):
+        self.workflow = wf.load_workflow(WORKFLOW_PATH)
+
+    def test_template_resolves_every_target(self):
+        targets = wf.resolve_targets(self.workflow)
+        for name in ("video", "prompt", "negative", "seed", "frames", "width", "height", "fps"):
+            self.assertIn(name, targets, name)
+        self.assertEqual(str(targets["video"]), "6.file (LoadVideo)")
+        self.assertEqual(targets["prompt"].node_id, "4")
+        self.assertEqual(targets["negative"].node_id, "5")
+
+    def test_values_land_in_the_right_nodes(self):
+        applied = wf.apply_values(
+            self.workflow,
+            {"video": "v2v3d/a.mp4", "prompt": "P", "negative": "N", "seed": 42, "frames": 81},
+        )
+        self.assertEqual(applied["6"]["inputs"]["file"], "v2v3d/a.mp4")
+        self.assertEqual(applied["4"]["inputs"]["text"], "P")
+        self.assertEqual(applied["5"]["inputs"]["text"], "N")
+        self.assertEqual(applied["10"]["inputs"]["seed"], 42)
+        self.assertEqual(applied["8"]["inputs"]["length"], 81)
+
+    def test_original_workflow_is_not_mutated(self):
+        wf.apply_values(self.workflow, {"video": "x.mp4", "prompt": "P"})
+        self.assertEqual(self.workflow["6"]["inputs"]["file"], "input.mp4")
+
+    def test_manual_map_overrides_autodetection(self):
+        mapping = wf.parse_mapping(["prompt=5.text"])
+        applied = wf.apply_values(self.workflow, {"prompt": "P"}, mapping)
+        self.assertEqual(applied["5"]["inputs"]["text"], "P")
+        self.assertEqual(applied["4"]["inputs"]["text"], "3D render style")
+
+    def test_set_overrides_any_node_input(self):
+        applied = wf.apply_values(
+            self.workflow, {"video": "x.mp4", "prompt": "P"}, overrides={"10.steps": 8}
+        )
+        self.assertEqual(applied["10"]["inputs"]["steps"], 8)
+
+    def test_bad_map_is_rejected(self):
+        for bad in ["prompt", "prompt=6", "nope=6.text"]:
+            with self.assertRaises(wf.WorkflowError):
+                wf.parse_mapping([bad])
+
+    def test_missing_video_node_is_reported(self):
+        with self.assertRaises(wf.WorkflowError):
+            wf.apply_values({"1": {"class_type": "X", "inputs": {}}}, {"prompt": "P"})
+
+    def test_ui_format_export_is_rejected(self):
+        tmp = Path(tempfile.mkdtemp()) / "ui.json"
+        tmp.write_text('{"nodes": [], "links": []}', encoding="utf-8")
+        with self.assertRaises(wf.WorkflowError) as ctx:
+            wf.load_workflow(tmp)
+        self.assertIn("API", str(ctx.exception))
+        shutil.rmtree(tmp.parent, ignore_errors=True)
+
+    def test_frame_count_is_four_n_plus_one(self):
+        for seconds, fps in ((5, 16), (3.3, 16), (10, 24), (1, 16)):
+            frames = wf.frames_for(seconds, fps)
+            self.assertEqual((frames - 1) % 4, 0)
+            self.assertGreaterEqual(frames, 5)
+
+
+class TestDoctor(unittest.TestCase):
+    OBJECT_INFO = {
+        "KSampler": {"input": {"required": {"seed": ["INT", {}], "model": ["MODEL"], "steps": ["INT", {}]}}},
+        "UNETLoader": {"input": {"required": {"unet_name": [["real.safetensors"], {}]}}},
+    }
+
+    def test_clean_workflow_has_no_issues(self):
+        workflow = {
+            "1": {"class_type": "UNETLoader", "inputs": {"unet_name": "real.safetensors"}},
+            "2": {"class_type": "KSampler", "inputs": {"seed": 1, "steps": 20, "model": ["1", 0]}},
+        }
+        self.assertEqual(doc.check_workflow(workflow, self.OBJECT_INFO), [])
+
+    def test_missing_node_class_is_an_error(self):
+        issues = doc.check_workflow({"1": {"class_type": "Nope", "inputs": {}}}, self.OBJECT_INFO)
+        self.assertEqual(doc.summarize(issues), (1, 0))
+
+    def test_missing_model_file_is_an_error(self):
+        workflow = {"1": {"class_type": "UNETLoader", "inputs": {"unet_name": "absent.safetensors"}}}
+        issues = doc.check_workflow(workflow, self.OBJECT_INFO)
+        self.assertEqual(doc.summarize(issues), (1, 0))
+        self.assertIn("real.safetensors", issues[0][1])
+
+    def test_unknown_input_is_only_a_warning(self):
+        workflow = {"1": {"class_type": "KSampler", "inputs": {"seed": 1, "mystery": 3}}}
+        self.assertEqual(doc.summarize(doc.check_workflow(workflow, self.OBJECT_INFO)), (0, 1))
+
+
+class TestComfyProvider(unittest.TestCase):
+    def test_prompt_loses_the_seedance_token(self):
+        self.assertEqual(strip_video_reference("@Video1 — make it clay"), "make it clay")
+        self.assertIn("the source video", strip_video_reference(build_prompt("blockout")))
+
+    def test_payload_carries_prompt_video_and_frames(self):
+        provider = ComfyProvider("http://x:8188", {"workflow": str(WORKFLOW_PATH), "fps": 16})
+        payload = provider.build_payload(
+            GenRequest(prompt="@Video1 — clay", video_urls=["v2v3d/a.mp4"], duration="5", seed=9)
+        )
+        graph = payload["prompt"]
+        self.assertEqual(graph["6"]["inputs"]["file"], "v2v3d/a.mp4")
+        self.assertEqual(graph["4"]["inputs"]["text"], "clay")
+        self.assertEqual(graph["10"]["inputs"]["seed"], 9)
+        self.assertEqual(graph["8"]["inputs"]["length"], 81)
+        self.assertIn("client_id", payload)
+
+    def test_missing_workflow_is_reported_clearly(self):
+        with self.assertRaises(RuntimeError) as ctx:
+            ComfyProvider("http://x:8188", {}).build_payload(GenRequest(prompt="p"))
+        self.assertIn("--workflow", str(ctx.exception))
+
+    def test_resolution_maps_to_pixel_size(self):
+        self.assertEqual(_size_for("720p", "16:9"), (1280, 720))
+        self.assertEqual(_size_for("480p", "9:16"), (480, 848))
+        for width, height in (_size_for(r, a) for r in ("480p", "720p") for a in ("16:9", "1:1")):
+            self.assertEqual(width % 16, 0)
+            self.assertEqual(height % 16, 0)
+
+    def test_local_provider_is_free(self):
+        settings = Settings(input_dir=Path("a"), output_dir=Path("b"), provider="comfy")
+        self.assertTrue(settings.is_local)
+        self.assertEqual(estimate_cost(10, 10, "720p", "comfy"), 0.0)
+        self.assertEqual(settings.limits.default_chunk_seconds, 5)
 
 
 class TestSegments(unittest.TestCase):
@@ -384,6 +527,152 @@ class TestCli(unittest.TestCase):
                 ["plan", "-i", str(self.tmp / "in"), "-o", str(self.tmp / "out"), "--chunk-seconds", "99"]
             )
         self.assertEqual(code, 2)
+
+
+class FakeComfyHandler(BaseHTTPRequestHandler):
+    """ComfyUI‑ийн HTTP гэрээг дуурайна: upload → prompt → history → view."""
+
+    input_dir: Path = Path(".")
+    graphs: dict[str, dict] = {}
+    videos: dict[str, str] = {}
+
+    def _json(self, payload: dict, code: int = 200):
+        body = json.dumps(payload).encode("utf-8")
+        self.send_response(code)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def do_GET(self):  # noqa: N802
+        parsed = urllib.parse.urlparse(self.path)
+        if parsed.path == "/system_stats":
+            return self._json({"system": {"comfyui_version": "test"}})
+        if parsed.path.startswith("/history/"):
+            prompt_id = parsed.path.rsplit("/", 1)[1]
+            name = FakeComfyHandler.videos.get(prompt_id)
+            if not name:
+                return self._json({})
+            return self._json(
+                {
+                    prompt_id: {
+                        "status": {"status_str": "success", "completed": True},
+                        "outputs": {
+                            "14": {"videos": [{"filename": name, "subfolder": "v2v3d", "type": "input"}]}
+                        },
+                    }
+                }
+            )
+        if parsed.path == "/view":
+            query = urllib.parse.parse_qs(parsed.query)
+            path = FakeComfyHandler.input_dir / query["subfolder"][0] / query["filename"][0]
+            data = path.read_bytes()
+            self.send_response(200)
+            self.send_header("Content-Type", "video/mp4")
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+            return
+        return self._json({}, 404)
+
+    def do_POST(self):  # noqa: N802
+        length = int(self.headers.get("Content-Length", 0))
+        body = self.rfile.read(length)
+        if self.path == "/upload/image":
+            name, payload = _parse_multipart(body, self.headers.get("Content-Type", ""))
+            target = FakeComfyHandler.input_dir / "v2v3d" / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(payload)
+            return self._json({"name": name, "subfolder": "v2v3d", "type": "input"})
+        if self.path == "/prompt":
+            graph = json.loads(body)["prompt"]
+            prompt_id = f"p{len(FakeComfyHandler.graphs) + 1}"
+            FakeComfyHandler.graphs[prompt_id] = graph
+            stored = graph["6"]["inputs"]["file"]
+            FakeComfyHandler.videos[prompt_id] = stored.split("/")[-1]
+            return self._json({"prompt_id": prompt_id})
+        return self._json({}, 404)
+
+    def log_message(self, *_args):
+        return
+
+
+def _parse_multipart(body: bytes, content_type: str) -> tuple[str, bytes]:
+    boundary = content_type.split("boundary=")[1].encode()
+    for part in body.split(b"--" + boundary):
+        if b'filename="' not in part:
+            continue
+        head, _, payload = part.partition(b"\r\n\r\n")
+        name = head.split(b'filename="')[1].split(b'"')[0].decode("utf-8")
+        return name, payload.rstrip(b"\r\n")
+    raise AssertionError("multipart дотор файл алга")
+
+
+@unittest.skipUnless(media.has_ffmpeg(), "ffmpeg суулгаагүй")
+class TestComfyEndToEnd(unittest.TestCase):
+    """Хуурамч ComfyUI сервер дээр бүтэн багцыг гүйлгэнэ."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        (self.tmp / "in").mkdir(parents=True)
+        subprocess.run(
+            [
+                media.FFMPEG, "-y", "-v", "error",
+                "-f", "lavfi", "-i", "testsrc=size=320x240:rate=24:duration=12",
+                "-pix_fmt", "yuv420p", str(self.tmp / "in" / "clip.mp4"),
+            ],
+            check=True,
+        )
+        FakeComfyHandler.input_dir = self.tmp / "comfy-input"
+        FakeComfyHandler.graphs = {}
+        FakeComfyHandler.videos = {}
+        self.server = ThreadingHTTPServer(("127.0.0.1", 0), FakeComfyHandler)
+        threading.Thread(target=self.server.serve_forever, daemon=True).start()
+        self.url = f"http://127.0.0.1:{self.server.server_address[1]}"
+        self._log = pipeline.log
+        pipeline.log = lambda *_a, **_k: None
+
+    def tearDown(self):
+        pipeline.log = self._log
+        self.server.shutdown()
+        self.server.server_close()
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def test_full_batch_over_the_comfy_api(self):
+        settings = make_settings(
+            self.tmp,
+            provider="comfy",
+            endpoint=self.url,
+            chunk_seconds=5,
+            concurrency=2,
+            extra={
+                "workflow": str(WORKFLOW_PATH),
+                "fps": 16,
+                "poll_seconds": 0.01,
+                "mapping": {},
+                "overrides": {"10.steps": 6},
+            },
+        )
+        counts = pipeline.run_batch(settings, build_prompt("blockout"))
+
+        self.assertEqual(counts.get("done"), 1)
+        self.assertTrue((self.tmp / "out" / "clip.mp4").exists())
+        self.assertAlmostEqual(media.probe_duration(self.tmp / "out" / "clip.mp4"), 12, delta=1.5)
+
+        # 12 секунд → 5 + 5 + 2.  Локал загварт 4 секундын доод хязгаар байхгүй.
+        self.assertEqual(len(FakeComfyHandler.graphs), 3)
+        for graph in FakeComfyHandler.graphs.values():
+            self.assertNotIn("@Video1", graph["4"]["inputs"]["text"])
+            self.assertIn("blockout", graph["4"]["inputs"]["text"])
+            self.assertEqual(graph["10"]["inputs"]["steps"], 6)
+            self.assertEqual((graph["8"]["inputs"]["length"] - 1) % 4, 0)
+            self.assertTrue(graph["6"]["inputs"]["file"].endswith(".mp4"))
+
+    def test_unreachable_server_gives_a_clear_error(self):
+        provider = ComfyProvider("http://127.0.0.1:1", {"workflow": str(WORKFLOW_PATH)})
+        with self.assertRaises(RuntimeError) as ctx:
+            provider.check_credentials()
+        self.assertIn("ComfyUI", str(ctx.exception))
 
 
 if __name__ == "__main__":
