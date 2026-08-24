@@ -1,6 +1,7 @@
 /**
  * Хөгжүүлэлтийн энгийн статик сервер.
  *   node tools/serve.mjs            → http://localhost:8080/world-builder/
+ *                                     http://localhost:8080/resolve-mn/
  *   PORT=3000 node tools/serve.mjs
  *
  * /api/claude руу ирсэн хүсэлтийг api/claude.js рүү дамжуулна, ингэснээр
@@ -60,6 +61,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(port, () => {
-  console.log(`→ http://localhost:${port}/world-builder/`);
+  console.log(`→ http://localhost:${port}/world-builder/   Ертөнц Бүтээгч`);
+  console.log(`→ http://localhost:${port}/resolve-mn/      Resolve монгол хөтөч`);
   console.log(process.env.ANTHROPIC_API_KEY ? "  прокси идэвхтэй (ANTHROPIC_API_KEY олдлоо)" : "  прокси идэвхгүй — түлхүүр эсвэл офлайн толь");
 });

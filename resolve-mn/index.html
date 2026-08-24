@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0d141c">
+<title>DaVinci Resolve — Монгол хөтөч</title>
+<meta name="description" content="DaVinci Resolve-ийн бүх цэс, самбар, товчлуурын монгол тайлбар. 650 гаруй нэр томьёо, ажлын урсгалын заавар.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎞%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<div id="top">
+  <h1>Resolve <span>Монголоор</span><em>v1</em></h1>
+  <div class="spacer"></div>
+  <div class="pair"><b>ENGLISH</b> → <i>МОНГОЛ</i></div>
+  <a class="backlink" href="../world-builder/" title="Ертөнц Бүтээгч рүү"><span class="bl-ico">🎬</span><span class="bl-txt">Ертөнц Бүтээгч</span></a>
+</div>
+
+<div id="app">
+  <nav id="rail"></nav>
+
+  <main id="main">
+
+    <!-- ══════════ ХАЙЛТ ══════════ -->
+    <section class="panel on" id="p-hailt">
+      <div class="pane-head">
+        <span class="eyebrow">Хайлт</span>
+        <h2>Нэр томьёо хайх</h2>
+        <p>Англи нэрээр нь, монголоор нь, эсвэл тайлбар доторх үгээр хайж болно.
+           Жишээ нь <code>ripple</code>, <code>долгиолон</code>, <code>ногоон дэлгэц</code>, <code>Alt+S</code>.</p>
+      </div>
+
+      <div class="searchbar">
+        <span class="sicon">◎</span>
+        <input id="q" type="search" autocomplete="off" spellcheck="false"
+               placeholder="Юу хайж байна вэ?  (/ дарж шууд энд ирнэ)" aria-label="Хайлт">
+        <button id="qclear" title="Цэвэрлэх">✕</button>
+      </div>
+
+      <div class="filters">
+        <div class="frow" id="pageFilter"></div>
+        <div class="frow sub" id="catFilter"></div>
+      </div>
+
+      <div class="resultbar"><span id="resultMeta"></span></div>
+      <div id="results" class="grid"></div>
+    </section>
+
+    <!-- ══════════ ХУУДСААР ══════════ -->
+    <section class="panel" id="p-huudas">
+      <div class="pane-head">
+        <span class="eyebrow">Бүтэц</span>
+        <h2>Resolve-ийн долоон хуудас</h2>
+        <p>Программын доод талын долоон таб бол ажлын урсгалын долоон үе шат.
+           Ангилал дээр товшвол тухайн хэсгийн бүх нэр томьёо нээгдэнэ.</p>
+      </div>
+      <div id="pagesBox"></div>
+    </section>
+
+    <!-- ══════════ ТОВЧЛУУР ══════════ -->
+    <section class="panel" id="p-tovch">
+      <div class="pane-head">
+        <span class="eyebrow">Гарын товчлуур</span>
+        <h2>Товчлуурын лавлах</h2>
+        <p><b id="keyCount">—</b> товчлуур. Товчлуур дээр товшвол хуулагдана.</p>
+      </div>
+      <div class="warn">
+        <b>Анхаар.</b> Эдгээр нь DaVinci Resolve-ийн <b>үндсэн (default)</b> товчлуурын багц, Windows дээрх утга.
+        Хэрэглэгч өөрчилсөн, эсвэл Premiere / Final Cut загварын багц сонгосон бол өөр байна.
+        Шалгах газар: <code>DaVinci Resolve → Keyboard Customization</code>.
+      </div>
+      <div id="keysBox"></div>
+    </section>
+
+    <!-- ══════════ ХӨТӨЧ ══════════ -->
+    <section class="panel" id="p-hutuch">
+      <div class="pane-head">
+        <span class="eyebrow">Ажлын урсгал</span>
+        <h2>Алхам алхмаар</h2>
+        <p>Хамгийн олон асуудаг ажлуудыг эхнээс нь дуустал. Гарчиг дээр товшиж дэлгэнэ.</p>
+      </div>
+      <div id="guidesBox"></div>
+    </section>
+
+    <!-- ══════════ ТУХАЙ ══════════ -->
+    <section class="panel" id="p-tuhai">
+      <div class="pane-head">
+        <span class="eyebrow">Тухай</span>
+        <h2>Энэ юу вэ, юу биш вэ</h2>
+      </div>
+
+      <div class="card">
+        <h3>Юу вэ</h3>
+        <p>DaVinci Resolve-ийн интерфейсийн монгол хэл дээрх лавлах, хөтөч.
+           Программын цэс, самбар, товчлуур, тохиргоо бүрийн монгол нэр, тайлбар, хаана байдгийг цуглуулсан.
+           Англи интерфейстэйгээ зэрэгцүүлж хажууд нь нээж ажиллахад зориулагдсан.</p>
+      </div>
+
+      <div class="card">
+        <h3>Юу биш вэ</h3>
+        <p>Энэ бол <b>DaVinci Resolve-ийн монгол хувилбар биш</b>, программын хэлийг өөрчилдөг хэрэгсэл ч биш.</p>
+        <p>Resolve бол Blackmagic Design компанийн хаалттай эх кодтой арилжааны программ.
+           Түүний интерфейсийн хэлийг гаднаас солих албан ёсны боломж байхгүй —
+           <code>Preferences → UI Settings → Language</code> дотор монгол хэл байдаггүй,
+           хэрэглэгчийн засах боломжтой хэлний файл ч гаргадаггүй.</p>
+        <p>Тиймээс энэ хөтөч өөр замыг сонгосон: программыг өөрчлөхийн оронд
+           <b>программыг ойлгуулах</b>. Интерфейс англиараа хэвээр, харин утга нь монголоор ойлгогдоно.</p>
+      </div>
+
+      <div class="card">
+        <h3>Хэрхэн ашиглах вэ</h3>
+        <ul class="bullets">
+          <li>Resolve дээр ойлгомжгүй товч, цэс тааралдвал англи нэрийг нь энд хайна.</li>
+          <li>Монголоор юу гэдгийг нь мэдэж байгаа ч англиар нь мэдэхгүй бол монголоор хайна.</li>
+          <li><b>/</b> товч дарвал хаанаас ч хайлтын мөр рүү шууд шилжинэ.</li>
+          <li>Товчлуур дээр товшвол санах ойд хуулагдана.</li>
+          <li>Шинэ ажил эхлэхийн өмнө <b>Хөтөч</b> хэсгээс тухайн урсгалыг уншаарай.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Нэр томьёоны талаар</h3>
+        <p>Монгол нэрсийг сонгохдоо гурван зарчим баримталсан:
+           утгыг нь оносон байх, богино байх, аль хэдийн хэрэглэгддэг үг байвал түүнийг нь хүндэтгэх.</p>
+        <p>Зарим үгийг зориудаар орчуулаагүй үлдээсэн — <i>timeline</i>, <i>клип</i>, <i>нод</i>, <i>рендер</i> гэх мэт.
+           Эдгээр нь монгол мэргэжлийн ярианд аль хэдийн бат суусан бөгөөд албан ёсны орчуулга нь ойлгоход нь саад болдог.</p>
+        <p>Санал, засвар байвал төслийн репод нэмээрэй — толь өргөжих тусмаа хэрэгтэй болно.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="js/00-core.js"></script>
+<script src="js/10-dict.js"></script>
+<script src="js/dict/r01-erunhii.js"></script>
+<script src="js/dict/r02-media.js"></script>
+<script src="js/dict/r03-cut.js"></script>
+<script src="js/dict/r04-edit.js"></script>
+<script src="js/dict/r05-edit2.js"></script>
+<script src="js/dict/r06-fusion.js"></script>
+<script src="js/dict/r07-fusion2.js"></script>
+<script src="js/dict/r08-color.js"></script>
+<script src="js/dict/r09-color2.js"></script>
+<script src="js/dict/r10-color3.js"></script>
+<script src="js/dict/r11-fairlight.js"></script>
+<script src="js/dict/r12-fairlight2.js"></script>
+<script src="js/dict/r13-deliver.js"></script>
+<script src="js/dict/r14-tehnik.js"></script>
+<script src="js/dict/r15-tovchluur.js"></script>
+<script src="js/dict/r16-asuudal.js"></script>
+<script src="js/dict/r17-nemelt.js"></script>
+<script src="js/20-guide.js"></script>
+<script src="js/30-ui.js"></script>
+<script src="js/90-main.js"></script>
+</body>
+</html>

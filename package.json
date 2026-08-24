@@ -2,10 +2,11 @@
   "name": "1st-studio",
   "private": true,
   "version": "1.0.0",
-  "description": "1st Studio — вэб сайт ба Ертөнц Бүтээгч (монгол AI кино промт өрөө)",
+  "description": "1st Studio — вэб сайт, Ертөнц Бүтээгч (монгол AI кино промт өрөө) ба DaVinci Resolve монгол хөтөч",
   "scripts": {
     "check-dict": "node tools/check-dict.mjs",
     "build": "node tools/build-single.mjs",
-    "serve": "node tools/serve.mjs"
+    "serve": "node tools/serve.mjs",
+    "check-resolve": "node tools/check-resolve-mn.mjs"
   }
 }
