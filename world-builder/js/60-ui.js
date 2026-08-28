@@ -454,15 +454,18 @@
 
     /* ангиллын хавтангууд */
     const cats = el("catGrid");
+    const customCount = Object.keys(S.P.custom).length;
+    const total = WB.dict.total(S.P.custom);
     if (cats && !cats.dataset.built) {
       cats.dataset.built = "1";
       const mk = (id, label, icon, count) => {
         const b = document.createElement("button");
         b.className = "catcard" + (id === dictCat ? " on" : "");
         b.dataset.cat = id;
-        b.innerHTML =
-          '<span class="ci">' + icon + '</span><span class="cl"></span><span class="cc">' + count + "</span>";
+        b.innerHTML = '<span class="ci"></span><span class="cl"></span><span class="cc"></span>';
+        b.querySelector(".ci").textContent = icon;
         b.querySelector(".cl").textContent = label;
+        b.querySelector(".cc").textContent = Number(count).toLocaleString("en-US");
         b.onclick = () => {
           dictCat = id;
           U.qsa(".catcard").forEach((c) => c.classList.toggle("on", c.dataset.cat === id));
@@ -470,9 +473,17 @@
         };
         return b;
       };
-      cats.appendChild(mk("all", "Бүгд", "📚", WB.dict.size()));
+      cats.appendChild(mk("all", "Бүгд", "📚", total));
+      cats.appendChild(mk("custom", "Миний нэмсэн", "✎", customCount));
       WB.dict.cats.forEach((c) => cats.appendChild(mk(c.id, c.label, c.icon, c.count)));
     }
+    /* Өөрчлөгддөг тоолуурыг дүрслэл бүрд шинэчилнэ. */
+    const setCat = (id, n) => {
+      const node = U.qs('.catcard[data-cat="' + id + '"] .cc');
+      if (node) node.textContent = Number(n).toLocaleString("en-US");
+    };
+    setCat("all", total);
+    setCat("custom", customCount);
 
     /* таниагүй үгс */
     const ul = el("unkList");
@@ -503,6 +514,7 @@
           T.unknown.delete(w);
           S.touch();
           UI.renderDict();
+          U.toast("«" + w + "» нэмэгдлээ · толь " + WB.dict.total(S.P.custom).toLocaleString("en-US") + " үг", "good");
         });
         en.onkeydown = (e) => {
           if (e.key === "Enter") ok.onclick();
@@ -585,10 +597,16 @@
       const n = el(id);
       if (n) n.textContent = v;
     };
+    /* НИЙТ = суурь толь + миний нэмсэн. Үг нэмэх бүрд 10036 → 10037 → … */
+    const total = WB.dict.total(S.P.custom);
+    set("dcTotal", total.toLocaleString("en-US"));
     set("dcBuilt", WB.dict.size().toLocaleString("en-US"));
     set("dcCats", WB.dict.cats.length);
     set("dcCustom", Object.keys(S.P.custom).length);
     set("dcUnk", [...T.unknown].filter((w) => !S.P.custom[w]).length);
+    set("dictBrag", total.toLocaleString("en-US"));
+    if (lastTotal !== null && total !== lastTotal) UI.bumpTotal(total - lastTotal);
+    lastTotal = total;
 
     const blocks = PR.blocks();
     set("statScenes", S.P.scenes.length);
@@ -601,6 +619,23 @@
     if (badge) {
       badge.textContent = pend ? pend + " орчуулга хүлээгдэж байна" : "";
       badge.classList.toggle("on", pend > 0);
+    }
+  };
+
+  /** Нийт тоо өөрчлөгдсөнийг товч анивчилтаар мэдэгдэнэ. */
+  let lastTotal = null;
+  UI.bumpTotal = function (delta) {
+    const n = el("dcTotal");
+    if (!n) return;
+    n.classList.remove("bump");
+    void n.offsetWidth; /* анимацийг дахин эхлүүлэх */
+    n.classList.add("bump");
+    const tag = el("dcDelta");
+    if (tag && delta > 0) {
+      tag.textContent = "+" + delta;
+      tag.classList.add("on");
+      clearTimeout(UI.bumpTotal._t);
+      UI.bumpTotal._t = setTimeout(() => tag.classList.remove("on"), 2600);
     }
   };
 

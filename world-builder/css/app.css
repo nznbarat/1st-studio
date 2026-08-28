@@ -278,3 +278,12 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
   .drow{grid-template-columns:1fr 22px 1fr 30px}
   .outwrap.sub{margin-left:8px}
 }
+
+/* ── толины «Нийт үг» тоолуур — үг нэмэх бүрд өснө ── */
+.dstat.wide{border-color:rgba(245,168,60,.45);background:linear-gradient(180deg,rgba(245,168,60,.09),transparent)}
+.dstat.wide b{font-size:27px}
+.dstat span i{font-style:normal;color:var(--ok);font-family:'JetBrains Mono';font-size:10px;
+  opacity:0;transition:opacity .25s;margin-left:4px}
+.dstat span i.on{opacity:1}
+@keyframes bump{0%{transform:scale(1)}35%{transform:scale(1.18);color:var(--ok)}100%{transform:scale(1)}}
+.dstat b.bump{display:inline-block;animation:bump .5s ease-out}

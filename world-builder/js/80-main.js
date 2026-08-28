@@ -358,6 +358,7 @@
         S.P.custom[m] = e;
         S.touch();
         UI.renderDict();
+        U.toast("«" + m + "» нэмэгдлээ · толь " + WB.dict.total(S.P.custom).toLocaleString("en-US") + " үг", "good");
       }
     };
     en.onkeydown = (ev) => {
@@ -387,7 +388,10 @@
       }
       S.touch();
       UI.renderDict();
-      U.toast(n + " үг тольд нэмэгдлээ ✓", "good");
+      U.toast(
+        n + " үг тольд нэмэгдлээ · нийт " + WB.dict.total(S.P.custom).toLocaleString("en-US") + " үг ✓",
+        "good"
+      );
     });
     bar.done();
   };
@@ -411,7 +415,10 @@
         }
         S.touch();
         UI.renderDict();
-        U.toast(n + " үг оруулж ирлээ", "good");
+        U.toast(
+          n + " үг оруулж ирлээ · нийт " + WB.dict.total(S.P.custom).toLocaleString("en-US") + " үг",
+          "good"
+        );
       } catch (err) {
         U.toast("Энэ файлыг уншиж чадсангүй", "bad");
       }
@@ -558,7 +565,7 @@
   /* ── эхлүүлэлт ──────────────────────────────────────────── */
   function boot() {
     const brag = el("dictBrag");
-    if (brag) brag.textContent = WB.dict.size().toLocaleString("en-US");
+    if (brag) brag.textContent = WB.dict.total(S.P.custom).toLocaleString("en-US");
     const restored = S.restore();
     WB.tr.customRef = S.P.custom;
     UI.renderAll();
@@ -574,7 +581,7 @@
     WB.api.probe().then((mode) => {
       UI.setStatus();
       if (mode === "off") {
-        U.toast("AI холбогдоогүй — " + WB.dict.size().toLocaleString("en-US") + " үгтэй офлайн толиор ажиллана", "info", 5000);
+        U.toast("AI холбогдоогүй — " + WB.dict.total(S.P.custom).toLocaleString("en-US") + " үгтэй офлайн толиор ажиллана", "info", 5000);
       }
     });
   }

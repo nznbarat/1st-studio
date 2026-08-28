@@ -40,6 +40,17 @@
     return Object.keys(D.map).length;
   };
 
+  /**
+   * Хэрэглэгчийн нэмсэн үгийг оруулсан НИЙТ тоо.
+   * Толинд шинэ үг нэмэгдэх бүрд 10036 → 10037 → … гэж өснө.
+   * Суурь толинд аль хэдийн байгаа үгийг давхар тоолохгүй.
+   */
+  D.total = function (custom) {
+    let n = D.size();
+    for (const w in custom || {}) if (!D.map[w]) n++;
+    return n;
+  };
+
   /** Дагавар үгсийг тусад нь (эдгээр нь англид өмнө нь тавигдана). */
   D.postp = function (word) {
     return WB.gram.POSTP[word] || null;

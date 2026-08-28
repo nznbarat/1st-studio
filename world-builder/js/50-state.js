@@ -53,6 +53,7 @@
       cast: [],
       locs: [],
       custom: {},
+      unknown: [],
       opts: {
         styles: ["anime"],
         target: "image",
@@ -76,6 +77,7 @@
     p.title = d.title || p.title;
     p.logline = fixField(d.logline);
     p.custom = d.custom && typeof d.custom === "object" ? d.custom : {};
+    p.unknown = Array.isArray(d.unknown) ? d.unknown.filter((w) => typeof w === "string") : [];
     p.scenes = (Array.isArray(d.scenes) ? d.scenes : []).map((s) => ({
       id: s.id || U.uid(),
       name: s.name || "",
@@ -158,6 +160,9 @@
   /* ── автомат хадгалалт ──────────────────────────────────── */
   const AUTOSAVE_KEY = "autosave";
   S.touch = function () {
+    /* Таниагүй үгс төсөлтэй хамт хадгалагдана — хуудас хаагаад
+       нээхэд бөглөх ажил үргэлжилнэ. */
+    S.P.unknown = [...WB.tr.unknown].filter((w) => !S.P.custom[w]);
     S.P.updated = Date.now();
     S.autosave();
     WB.emit("state:changed", S.P);
@@ -167,11 +172,21 @@
     WB.emit("state:saved", S.P.updated);
   }, 700);
 
+  /** Төслийн таниагүй үгсийг орчуулгын хөдөлгүүрт буцааж ачаална. */
+  function syncUnknown() {
+    WB.tr.unknown.clear();
+    (S.P.unknown || []).forEach((w) => {
+      if (!S.P.custom[w]) WB.tr.unknown.add(w);
+    });
+  }
+  S.syncUnknown = syncUnknown;
+
   S.restore = function () {
     const d = WB.store.get(AUTOSAVE_KEY, null);
     if (!d) return false;
     S.P = S.normalize(d);
     WB.tr.customRef = S.P.custom;
+    syncUnknown();
     return true;
   };
 
@@ -179,6 +194,7 @@
     S.pushHistory();
     S.P = S.normalize(data);
     WB.tr.customRef = S.P.custom;
+    syncUnknown();
     S.touch();
     WB.emit("state:replaced", S.P);
   };
@@ -204,6 +220,7 @@
     future.push(JSON.stringify(S.P));
     S.P = S.normalize(JSON.parse(past.pop()));
     WB.tr.customRef = S.P.custom;
+    syncUnknown();
     S.touch();
     WB.emit("state:replaced", S.P);
     WB.emit("history", { undo: past.length, redo: future.length });
@@ -214,6 +231,7 @@
     past.push(JSON.stringify(S.P));
     S.P = S.normalize(JSON.parse(future.pop()));
     WB.tr.customRef = S.P.custom;
+    syncUnknown();
     S.touch();
     WB.emit("state:replaced", S.P);
     WB.emit("history", { undo: past.length, redo: future.length });

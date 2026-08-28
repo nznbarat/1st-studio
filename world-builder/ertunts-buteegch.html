@@ -293,6 +293,15 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
   .outwrap.sub{margin-left:8px}
 }
 
+/* ── толины «Нийт үг» тоолуур — үг нэмэх бүрд өснө ── */
+.dstat.wide{border-color:rgba(245,168,60,.45);background:linear-gradient(180deg,rgba(245,168,60,.09),transparent)}
+.dstat.wide b{font-size:27px}
+.dstat span i{font-style:normal;color:var(--ok);font-family:'JetBrains Mono';font-size:10px;
+  opacity:0;transition:opacity .25s;margin-left:4px}
+.dstat span i.on{opacity:1}
+@keyframes bump{0%{transform:scale(1)}35%{transform:scale(1.18);color:var(--ok)}100%{transform:scale(1)}}
+.dstat b.bump{display:inline-block;animation:bump .5s ease-out}
+
 </style>
 </head>
 <body>
@@ -508,10 +517,11 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
       <div class="pane-head">
         <span class="eyebrow">Алхам 5 · Толь</span>
         <h2>Ангилсан үгсийн сан</h2>
-        <p>Офлайн горимд ажилладаг суурь толь. Ангилал бүрээр шүүж хайж болно. Таниагүй үгс доор цугларах бөгөөд Claude‑аар нэг товчоор бүгдийг нь бөглүүлж болно — нэмсэн үг төсөлтэй хамт хадгалагдана.</p>
+        <p>Офлайн горимд ажилладаг суурь толь. Ангилал бүрээр шүүж хайж болно. Таниагүй үгс доор цугларах бөгөөд Claude‑аар нэг товчоор бүгдийг нь бөглүүлж болно. Үг нэмэх бүрд <b>Нийт үг</b> тоолуур өснө (10,036 → 10,037 → …), нэмсэн үг тань төсөлтэй хамт хадгалагдана.</p>
       </div>
 
       <div class="dstats">
+        <div class="dstat wide"><b id="dcTotal">0</b><span>Нийт үг <i id="dcDelta"></i></span></div>
         <div class="dstat"><b id="dcBuilt">0</b><span>Суурь үг</span></div>
         <div class="dstat"><b id="dcCats">0</b><span>Ангилал</span></div>
         <div class="dstat"><b id="dcCustom">0</b><span>Миний нэмсэн</span></div>
@@ -1050,6 +1060,17 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
   /** Суурь толины нийт үгийн тоо. */
   D.size = function () {
     return Object.keys(D.map).length;
+  };
+
+  /**
+   * Хэрэглэгчийн нэмсэн үгийг оруулсан НИЙТ тоо.
+   * Толинд шинэ үг нэмэгдэх бүрд 10036 → 10037 → … гэж өснө.
+   * Суурь толинд аль хэдийн байгаа үгийг давхар тоолохгүй.
+   */
+  D.total = function (custom) {
+    let n = D.size();
+    for (const w in custom || {}) if (!D.map[w]) n++;
+    return n;
   };
 
   /** Дагавар үгсийг тусад нь (эдгээр нь англид өмнө нь тавигдана). */
@@ -5248,6 +5269,7 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
       cast: [],
       locs: [],
       custom: {},
+      unknown: [],
       opts: {
         styles: ["anime"],
         target: "image",
@@ -5271,6 +5293,7 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     p.title = d.title || p.title;
     p.logline = fixField(d.logline);
     p.custom = d.custom && typeof d.custom === "object" ? d.custom : {};
+    p.unknown = Array.isArray(d.unknown) ? d.unknown.filter((w) => typeof w === "string") : [];
     p.scenes = (Array.isArray(d.scenes) ? d.scenes : []).map((s) => ({
       id: s.id || U.uid(),
       name: s.name || "",
@@ -5353,6 +5376,9 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
   /* ── автомат хадгалалт ──────────────────────────────────── */
   const AUTOSAVE_KEY = "autosave";
   S.touch = function () {
+    /* Таниагүй үгс төсөлтэй хамт хадгалагдана — хуудас хаагаад
+       нээхэд бөглөх ажил үргэлжилнэ. */
+    S.P.unknown = [...WB.tr.unknown].filter((w) => !S.P.custom[w]);
     S.P.updated = Date.now();
     S.autosave();
     WB.emit("state:changed", S.P);
@@ -5362,11 +5388,21 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     WB.emit("state:saved", S.P.updated);
   }, 700);
 
+  /** Төслийн таниагүй үгсийг орчуулгын хөдөлгүүрт буцааж ачаална. */
+  function syncUnknown() {
+    WB.tr.unknown.clear();
+    (S.P.unknown || []).forEach((w) => {
+      if (!S.P.custom[w]) WB.tr.unknown.add(w);
+    });
+  }
+  S.syncUnknown = syncUnknown;
+
   S.restore = function () {
     const d = WB.store.get(AUTOSAVE_KEY, null);
     if (!d) return false;
     S.P = S.normalize(d);
     WB.tr.customRef = S.P.custom;
+    syncUnknown();
     return true;
   };
 
@@ -5374,6 +5410,7 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     S.pushHistory();
     S.P = S.normalize(data);
     WB.tr.customRef = S.P.custom;
+    syncUnknown();
     S.touch();
     WB.emit("state:replaced", S.P);
   };
@@ -5399,6 +5436,7 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     future.push(JSON.stringify(S.P));
     S.P = S.normalize(JSON.parse(past.pop()));
     WB.tr.customRef = S.P.custom;
+    syncUnknown();
     S.touch();
     WB.emit("state:replaced", S.P);
     WB.emit("history", { undo: past.length, redo: future.length });
@@ -5409,6 +5447,7 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     past.push(JSON.stringify(S.P));
     S.P = S.normalize(JSON.parse(future.pop()));
     WB.tr.customRef = S.P.custom;
+    syncUnknown();
     S.touch();
     WB.emit("state:replaced", S.P);
     WB.emit("history", { undo: past.length, redo: future.length });
@@ -6166,15 +6205,18 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
 
     /* ангиллын хавтангууд */
     const cats = el("catGrid");
+    const customCount = Object.keys(S.P.custom).length;
+    const total = WB.dict.total(S.P.custom);
     if (cats && !cats.dataset.built) {
       cats.dataset.built = "1";
       const mk = (id, label, icon, count) => {
         const b = document.createElement("button");
         b.className = "catcard" + (id === dictCat ? " on" : "");
         b.dataset.cat = id;
-        b.innerHTML =
-          '<span class="ci">' + icon + '</span><span class="cl"></span><span class="cc">' + count + "</span>";
+        b.innerHTML = '<span class="ci"></span><span class="cl"></span><span class="cc"></span>';
+        b.querySelector(".ci").textContent = icon;
         b.querySelector(".cl").textContent = label;
+        b.querySelector(".cc").textContent = Number(count).toLocaleString("en-US");
         b.onclick = () => {
           dictCat = id;
           U.qsa(".catcard").forEach((c) => c.classList.toggle("on", c.dataset.cat === id));
@@ -6182,9 +6224,17 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
         };
         return b;
       };
-      cats.appendChild(mk("all", "Бүгд", "📚", WB.dict.size()));
+      cats.appendChild(mk("all", "Бүгд", "📚", total));
+      cats.appendChild(mk("custom", "Миний нэмсэн", "✎", customCount));
       WB.dict.cats.forEach((c) => cats.appendChild(mk(c.id, c.label, c.icon, c.count)));
     }
+    /* Өөрчлөгддөг тоолуурыг дүрслэл бүрд шинэчилнэ. */
+    const setCat = (id, n) => {
+      const node = U.qs('.catcard[data-cat="' + id + '"] .cc');
+      if (node) node.textContent = Number(n).toLocaleString("en-US");
+    };
+    setCat("all", total);
+    setCat("custom", customCount);
 
     /* таниагүй үгс */
     const ul = el("unkList");
@@ -6215,6 +6265,7 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
           T.unknown.delete(w);
           S.touch();
           UI.renderDict();
+          U.toast("«" + w + "» нэмэгдлээ · толь " + WB.dict.total(S.P.custom).toLocaleString("en-US") + " үг", "good");
         });
         en.onkeydown = (e) => {
           if (e.key === "Enter") ok.onclick();
@@ -6297,10 +6348,16 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
       const n = el(id);
       if (n) n.textContent = v;
     };
+    /* НИЙТ = суурь толь + миний нэмсэн. Үг нэмэх бүрд 10036 → 10037 → … */
+    const total = WB.dict.total(S.P.custom);
+    set("dcTotal", total.toLocaleString("en-US"));
     set("dcBuilt", WB.dict.size().toLocaleString("en-US"));
     set("dcCats", WB.dict.cats.length);
     set("dcCustom", Object.keys(S.P.custom).length);
     set("dcUnk", [...T.unknown].filter((w) => !S.P.custom[w]).length);
+    set("dictBrag", total.toLocaleString("en-US"));
+    if (lastTotal !== null && total !== lastTotal) UI.bumpTotal(total - lastTotal);
+    lastTotal = total;
 
     const blocks = PR.blocks();
     set("statScenes", S.P.scenes.length);
@@ -6313,6 +6370,23 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     if (badge) {
       badge.textContent = pend ? pend + " орчуулга хүлээгдэж байна" : "";
       badge.classList.toggle("on", pend > 0);
+    }
+  };
+
+  /** Нийт тоо өөрчлөгдсөнийг товч анивчилтаар мэдэгдэнэ. */
+  let lastTotal = null;
+  UI.bumpTotal = function (delta) {
+    const n = el("dcTotal");
+    if (!n) return;
+    n.classList.remove("bump");
+    void n.offsetWidth; /* анимацийг дахин эхлүүлэх */
+    n.classList.add("bump");
+    const tag = el("dcDelta");
+    if (tag && delta > 0) {
+      tag.textContent = "+" + delta;
+      tag.classList.add("on");
+      clearTimeout(UI.bumpTotal._t);
+      UI.bumpTotal._t = setTimeout(() => tag.classList.remove("on"), 2600);
     }
   };
 
@@ -7301,6 +7375,7 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
         S.P.custom[m] = e;
         S.touch();
         UI.renderDict();
+        U.toast("«" + m + "» нэмэгдлээ · толь " + WB.dict.total(S.P.custom).toLocaleString("en-US") + " үг", "good");
       }
     };
     en.onkeydown = (ev) => {
@@ -7330,7 +7405,10 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
       }
       S.touch();
       UI.renderDict();
-      U.toast(n + " үг тольд нэмэгдлээ ✓", "good");
+      U.toast(
+        n + " үг тольд нэмэгдлээ · нийт " + WB.dict.total(S.P.custom).toLocaleString("en-US") + " үг ✓",
+        "good"
+      );
     });
     bar.done();
   };
@@ -7354,7 +7432,10 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
         }
         S.touch();
         UI.renderDict();
-        U.toast(n + " үг оруулж ирлээ", "good");
+        U.toast(
+          n + " үг оруулж ирлээ · нийт " + WB.dict.total(S.P.custom).toLocaleString("en-US") + " үг",
+          "good"
+        );
       } catch (err) {
         U.toast("Энэ файлыг уншиж чадсангүй", "bad");
       }
@@ -7501,7 +7582,7 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
   /* ── эхлүүлэлт ──────────────────────────────────────────── */
   function boot() {
     const brag = el("dictBrag");
-    if (brag) brag.textContent = WB.dict.size().toLocaleString("en-US");
+    if (brag) brag.textContent = WB.dict.total(S.P.custom).toLocaleString("en-US");
     const restored = S.restore();
     WB.tr.customRef = S.P.custom;
     UI.renderAll();
@@ -7517,7 +7598,7 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     WB.api.probe().then((mode) => {
       UI.setStatus();
       if (mode === "off") {
-        U.toast("AI холбогдоогүй — " + WB.dict.size().toLocaleString("en-US") + " үгтэй офлайн толиор ажиллана", "info", 5000);
+        U.toast("AI холбогдоогүй — " + WB.dict.total(S.P.custom).toLocaleString("en-US") + " үгтэй офлайн толиор ажиллана", "info", 5000);
       }
     });
   }
