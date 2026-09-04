@@ -972,7 +972,7 @@ function buildPrompt() {
           },
           style: styles,
           brand: brandOn && brand ? {
-            niche: brand.meta.niche || undefined,
+            niche: bmeta('niche') || undefined,
             look: bf('look') || undefined,
             lighting: bf('light') || undefined,
             palette: bf('palette') || undefined,
@@ -2244,9 +2244,18 @@ let brandSrc = '';         // хаанаас ирсэн
 
 /** Талбарын англи хувилбар (байхгүй бол монгол). */
 function bf(k) { if (!brand) return ''; const v = brand.f[k] || {}; return (v.en || v.mn || '').trim(); }
+/** Судалгааны талбар. v1‑д энгийн мөр, v2‑оос хойш {mn,en} объект. */
+function bmeta(k) {
+  if (!brand) return '';
+  const v = brand.meta ? brand.meta[k] : '';
+  if (typeof v === 'string') return v.trim();
+  return ((v && (v.en || v.mn)) || '').trim();
+}
 function brandCameraRule() { return bf('camera'); }
 function brandHasContent(b) {
-  return !!(b && (b.meta.niche.trim() || BKEYS.some(k => (b.f[k].mn || b.f[k].en).trim())));
+  if (!b) return false;
+  const m = k => { const v = b.meta[k]; return typeof v === 'string' ? v.trim() : ((v && (v.en || v.mn)) || '').trim(); };
+  return !!(m('niche') || m('titleFmt') || BKEYS.some(k => (b.f[k].mn || b.f[k].en).trim()));
 }
 
 /**
@@ -2261,6 +2270,7 @@ function normalizeBrand(x) {
   BKEYS.forEach(k => { const v = src.f[k] || {}; f[k] = { mn: v.mn || '', en: v.en || '' }; });
   const m = src.meta && typeof src.meta === 'object' ? src.meta : {};
   return {
+    /* meta‑г эх хэлбэрээр нь хадгална — Camera Director үүнийг заддаггүй */
     meta: { niche: m.niche || '', titleFmt: m.titleFmt || '', topics: m.topics || '' },
     f: f,
     ref: src.ref || '',
@@ -2482,7 +2492,7 @@ function pushBrandToWB() {
       const cur = d.brand.f[k] || { mn: '', en: '', auto: true, unk: [], src: '' };
       d.brand.f[k] = Object.assign({}, cur, brand.f[k]);
     });
-    d.brand.meta = brand.meta;
+    /* meta‑г Camera Director засдаггүй тул хөндөхгүй — mn/en хуваарь бүтэн үлдэнэ */
     if (d.opts) d.opts.ar = brand.ar || $('aspect').value;
     d.updated = Date.now();
     localStorage.setItem(WB_STORE_KEY, JSON.stringify(d));
@@ -2513,7 +2523,7 @@ function renderBrand() {
         : 'Ертөнц Бүтээгчийн <b>Алхам 1 · Брэнд</b> хэсгээс <b>brand.json</b> татаад энд оруулна.') + '</p>';
     return;
   }
-  const rows = [['niche', 'Ниш', brand.meta.niche]]
+  const rows = [['niche', 'Ниш', bmeta('niche')]]
     .concat(BKEYS.filter(k => bf(k)).map(k => [k, BLABEL[k], bf(k)]));
   el.innerHTML =
     '<div class="blk ' + (brand.locked ? 'on' : 'off') + '">' +

@@ -29,6 +29,19 @@
      layer 2 — харагдац (промт болгонд шингэнэ)
      layer 3 — хоолой (скрипт, дуу оруулгад шингэнэ)
      need    — «Нэг фрэйм дүрэм»‑ийг түгжихэд заавал шаардлагатай  */
+  /* Давхарга 1 — судалгаа. Эдгээр нь мастер промтод англиар орох тул
+     бусад талбарын адил хос хэлтэй байна. */
+  S.BRAND_META_FIELDS = [
+    {
+      k: "niche", lb: "Сувгийн ниш — нэг өгүүлбэр",
+      ph: "Монголын түүхэн үйл явдлыг кино маягийн богино өгүүлэмжээр тайлбарладаг суваг"
+    },
+    {
+      k: "titleFmt", lb: "Батлагдсан гарчгийн формат",
+      ph: "«Хэн ч мэддэггүй …», «… яагаад мартагдсан бэ»"
+    }
+  ];
+
   S.BRAND_FIELDS = [
     {
       k: "look", layer: 2, need: true, lb: "Визуал гарын үсэг",
@@ -99,8 +112,10 @@
   S.blankBrand = function () {
     const f = {};
     S.BRAND_FIELDS.forEach((d) => (f[d.k] = F("")));
+    const meta = { topics: "" };
+    S.BRAND_META_FIELDS.forEach((d) => (meta[d.k] = F("")));
     return {
-      meta: { niche: "", titleFmt: "", topics: "" },
+      meta: meta,
       f: f,
       frameSubject: "",
       ref: "",
@@ -188,9 +203,12 @@
     const out = S.blankBrand();
     if (!b || typeof b !== "object") return out;
     if (b.meta && typeof b.meta === "object") {
-      out.meta.niche = b.meta.niche || "";
-      out.meta.titleFmt = b.meta.titleFmt || "";
-      out.meta.topics = b.meta.topics || "";
+      /* v1 брэнд файлд niche / titleFmt нь энгийн мөр байсан */
+      S.BRAND_META_FIELDS.forEach((d) => {
+        const v = b.meta[d.k];
+        out.meta[d.k] = typeof v === "string" ? F(v) : fixField(v);
+      });
+      out.meta.topics = typeof b.meta.topics === "string" ? b.meta.topics : "";
     }
     out.f = fixFieldSet(b.f, S.BRAND_FIELDS);
     out.frameSubject = b.frameSubject || "";
@@ -213,10 +231,14 @@
     const out = [];
     const want = (k) => !kinds || kinds.includes(k);
     if (want("logline")) out.push({ field: P.logline, kind: "logline", label: "Логлайн" });
-    if (want("brand"))
+    if (want("brand")) {
+      S.BRAND_META_FIELDS.forEach((d) =>
+        out.push({ field: P.brand.meta[d.k], kind: "brand", label: "Брэнд · " + d.lb })
+      );
       S.BRAND_FIELDS.forEach((d) =>
         out.push({ field: P.brand.f[d.k], kind: "brand", label: "Брэнд · " + d.lb })
       );
+    }
     if (want("scene"))
       P.scenes.forEach((s, i) => out.push({ field: s.body, kind: "scene", label: s.name || "Үзэгдэл " + (i + 1) }));
     if (want("char"))

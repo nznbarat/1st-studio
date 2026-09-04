@@ -44,6 +44,8 @@
       <button class="rbtn" id="saveBtn">💾 Хадгалах</button>
       <button class="rbtn" id="openBtn">📂 Файлаас нээх</button>
       <button class="rbtn" id="libBtn">🗂 Төслийн сан</button>
+      <a class="rbtn link" href="../camera.html" target="_blank" rel="noopener"
+         title="Брэнд файл тэнд автоматаар ачаалагдана">🎥 Camera Director ↗</a>
       <input type="file" id="fileIn" accept=".json,application/json" hidden>
     </div>
   </nav>
@@ -114,9 +116,8 @@
       <div class="card">
         <div class="layerhead"><span class="lnum">1</span><b>Судалгаа</b><i>Батлагдсан сэдэв, батлагдсан гарчиг — таамаг биш</i></div>
 
-        <label class="fld"><span class="flabel">Сувгийн ниш — нэг өгүүлбэр</span>
-          <textarea id="brandNiche" class="lineIn ta" rows="2" spellcheck="false" placeholder="Жишээ: Монголын түүхэн үйл явдлыг кино маягийн богино өгүүлэмжээр тайлбарладаг суваг"></textarea>
-        </label>
+        <p class="note nb">Ниш ба гарчгийн формат нь мастер промтод <b>англиар</b> ордог тул бусад талбарын адил хос хэлтэй. Монголоор бичээд <b>⇄</b> дарах, эсвэл хэсэг хүлээхэд өөрөө орчуулагдана.</p>
+        <div id="brandMetaFields"></div>
 
         <div class="toolrow">
           <button class="aibtn" id="brandDraft">✨ Брэнд файл зохиох</button>
@@ -124,9 +125,6 @@
           <button class="tbtn2" id="brandTr">⇄ Брэндийг англи руу орчуулах</button>
         </div>
 
-        <label class="fld"><span class="flabel">Батлагдсан гарчгийн формат</span>
-          <input id="brandTitleFmt" class="lineIn" placeholder="Жишээ: «Хэн ч мэддэггүй … », «… яагаад мартагдсан бэ»">
-        </label>
         <label class="fld"><span class="flabel">Сэдвийн жагсаалт — мөр бүрд нэг</span>
           <textarea id="brandTopics" class="lineIn ta" rows="5" spellcheck="false" placeholder="Мөр бүрд нэг сэдэв…"></textarea>
         </label>
@@ -175,7 +173,9 @@
         </div>
         <div class="toolrow">
           <button class="aibtn" id="dirBtn">🧭 Чиглэл санал болгуул</button>
+          <button class="tbtn2" id="dirClear">✖ Чиглэлийг арилгах</button>
         </div>
+        <p class="note nb">Санал болгосон чиглэл нь доорх <b>мастер промтын LAYER 4</b> дотор «Approved direction» болж англиар орно, мөн туршилтын кадрын агуулгыг автоматаар дүүргэнэ.</p>
         <div id="dirOut" class="checkout"></div>
       </div>
 

@@ -482,14 +482,25 @@
       await B.direction();
       B.paintDirection();
       const d = S.P.brand.direction;
-      if (d && d.frame && !(S.P.brand.frameSubject || "").trim()) {
-        S.P.brand.frameSubject = d.frame;
-        el("frameSubject").value = d.frame;
+      /* Туршилтын кадрын промт англи болох тул англи хувилбарыг нь авна */
+      const fr = d && (d.frame_en || d.frame);
+      if (fr && !(S.P.brand.frameSubject || "").trim()) {
+        S.P.brand.frameSubject = fr;
+        el("frameSubject").value = fr;
         S.touch();
-        B.paintOutputs();
       }
+      B.paintOutputs();
       U.toast("Чиглэл бэлэн — доорх туршилтын кадрыг эхлээд шалгаарай", "good");
     });
+  };
+
+  el("dirClear").onclick = () => {
+    if (!S.P.brand.direction) {
+      U.toast("Арилгах чиглэл алга", "info");
+      return;
+    }
+    B.clearDirection();
+    U.toast("Чиглэл арилгалаа", "info");
   };
 
   el("brandChk").addEventListener("change", (e) => {

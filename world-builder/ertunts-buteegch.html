@@ -70,6 +70,7 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
 .railsec{margin-top:auto;display:flex;flex-direction:column;gap:7px;padding-top:12px;border-top:1px solid var(--line)}
 .rbtn{padding:9px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);font-size:12.5px;font-weight:500;text-align:left}
 .rbtn:hover{border-color:var(--daylight);color:var(--daylight)}
+.rbtn.link{display:block;text-decoration:none;color:var(--text)}
 
 #main{flex:1;min-width:0;overflow-y:auto;padding:22px 24px 70px}
 .pane-head{margin-bottom:20px;max-width:1000px}
@@ -348,6 +349,8 @@ textarea.lineIn.ta{resize:vertical;line-height:1.6;font-family:inherit}
       <button class="rbtn" id="saveBtn">💾 Хадгалах</button>
       <button class="rbtn" id="openBtn">📂 Файлаас нээх</button>
       <button class="rbtn" id="libBtn">🗂 Төслийн сан</button>
+      <a class="rbtn link" href="../camera.html" target="_blank" rel="noopener"
+         title="Брэнд файл тэнд автоматаар ачаалагдана">🎥 Camera Director ↗</a>
       <input type="file" id="fileIn" accept=".json,application/json" hidden>
     </div>
   </nav>
@@ -418,9 +421,8 @@ textarea.lineIn.ta{resize:vertical;line-height:1.6;font-family:inherit}
       <div class="card">
         <div class="layerhead"><span class="lnum">1</span><b>Судалгаа</b><i>Батлагдсан сэдэв, батлагдсан гарчиг — таамаг биш</i></div>
 
-        <label class="fld"><span class="flabel">Сувгийн ниш — нэг өгүүлбэр</span>
-          <textarea id="brandNiche" class="lineIn ta" rows="2" spellcheck="false" placeholder="Жишээ: Монголын түүхэн үйл явдлыг кино маягийн богино өгүүлэмжээр тайлбарладаг суваг"></textarea>
-        </label>
+        <p class="note nb">Ниш ба гарчгийн формат нь мастер промтод <b>англиар</b> ордог тул бусад талбарын адил хос хэлтэй. Монголоор бичээд <b>⇄</b> дарах, эсвэл хэсэг хүлээхэд өөрөө орчуулагдана.</p>
+        <div id="brandMetaFields"></div>
 
         <div class="toolrow">
           <button class="aibtn" id="brandDraft">✨ Брэнд файл зохиох</button>
@@ -428,9 +430,6 @@ textarea.lineIn.ta{resize:vertical;line-height:1.6;font-family:inherit}
           <button class="tbtn2" id="brandTr">⇄ Брэндийг англи руу орчуулах</button>
         </div>
 
-        <label class="fld"><span class="flabel">Батлагдсан гарчгийн формат</span>
-          <input id="brandTitleFmt" class="lineIn" placeholder="Жишээ: «Хэн ч мэддэггүй … », «… яагаад мартагдсан бэ»">
-        </label>
         <label class="fld"><span class="flabel">Сэдвийн жагсаалт — мөр бүрд нэг</span>
           <textarea id="brandTopics" class="lineIn ta" rows="5" spellcheck="false" placeholder="Мөр бүрд нэг сэдэв…"></textarea>
         </label>
@@ -479,7 +478,9 @@ textarea.lineIn.ta{resize:vertical;line-height:1.6;font-family:inherit}
         </div>
         <div class="toolrow">
           <button class="aibtn" id="dirBtn">🧭 Чиглэл санал болгуул</button>
+          <button class="tbtn2" id="dirClear">✖ Чиглэлийг арилгах</button>
         </div>
+        <p class="note nb">Санал болгосон чиглэл нь доорх <b>мастер промтын LAYER 4</b> дотор «Approved direction» болж англиар орно, мөн туршилтын кадрын агуулгыг автоматаар дүүргэнэ.</p>
         <div id="dirOut" class="checkout"></div>
       </div>
 
@@ -5350,6 +5351,19 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
      layer 2 — харагдац (промт болгонд шингэнэ)
      layer 3 — хоолой (скрипт, дуу оруулгад шингэнэ)
      need    — «Нэг фрэйм дүрэм»‑ийг түгжихэд заавал шаардлагатай  */
+  /* Давхарга 1 — судалгаа. Эдгээр нь мастер промтод англиар орох тул
+     бусад талбарын адил хос хэлтэй байна. */
+  S.BRAND_META_FIELDS = [
+    {
+      k: "niche", lb: "Сувгийн ниш — нэг өгүүлбэр",
+      ph: "Монголын түүхэн үйл явдлыг кино маягийн богино өгүүлэмжээр тайлбарладаг суваг"
+    },
+    {
+      k: "titleFmt", lb: "Батлагдсан гарчгийн формат",
+      ph: "«Хэн ч мэддэггүй …», «… яагаад мартагдсан бэ»"
+    }
+  ];
+
   S.BRAND_FIELDS = [
     {
       k: "look", layer: 2, need: true, lb: "Визуал гарын үсэг",
@@ -5420,8 +5434,10 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
   S.blankBrand = function () {
     const f = {};
     S.BRAND_FIELDS.forEach((d) => (f[d.k] = F("")));
+    const meta = { topics: "" };
+    S.BRAND_META_FIELDS.forEach((d) => (meta[d.k] = F("")));
     return {
-      meta: { niche: "", titleFmt: "", topics: "" },
+      meta: meta,
       f: f,
       frameSubject: "",
       ref: "",
@@ -5509,9 +5525,12 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     const out = S.blankBrand();
     if (!b || typeof b !== "object") return out;
     if (b.meta && typeof b.meta === "object") {
-      out.meta.niche = b.meta.niche || "";
-      out.meta.titleFmt = b.meta.titleFmt || "";
-      out.meta.topics = b.meta.topics || "";
+      /* v1 брэнд файлд niche / titleFmt нь энгийн мөр байсан */
+      S.BRAND_META_FIELDS.forEach((d) => {
+        const v = b.meta[d.k];
+        out.meta[d.k] = typeof v === "string" ? F(v) : fixField(v);
+      });
+      out.meta.topics = typeof b.meta.topics === "string" ? b.meta.topics : "";
     }
     out.f = fixFieldSet(b.f, S.BRAND_FIELDS);
     out.frameSubject = b.frameSubject || "";
@@ -5534,10 +5553,14 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     const out = [];
     const want = (k) => !kinds || kinds.includes(k);
     if (want("logline")) out.push({ field: P.logline, kind: "logline", label: "Логлайн" });
-    if (want("brand"))
+    if (want("brand")) {
+      S.BRAND_META_FIELDS.forEach((d) =>
+        out.push({ field: P.brand.meta[d.k], kind: "brand", label: "Брэнд · " + d.lb })
+      );
       S.BRAND_FIELDS.forEach((d) =>
         out.push({ field: P.brand.f[d.k], kind: "brand", label: "Брэнд · " + d.lb })
       );
+    }
     if (want("scene"))
       P.scenes.forEach((s, i) => out.push({ field: s.body, kind: "scene", label: s.name || "Үзэгдэл " + (i + 1) }));
     if (want("char"))
@@ -5754,6 +5777,16 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
   function txt(f) {
     return ((f && (f.en || f.mn)) || "").trim().replace(/\s*\.?\s*$/, "");
   }
+  /** Судалгааны талбар — mn (AI‑д монголоор өгөх) */
+  function metaMN(k) {
+    const v = S.P.brand.meta[k];
+    return ((v && v.mn) || "").trim();
+  }
+  /** Судалгааны талбар — en (мастер промтод) */
+  function metaEN(k) {
+    const v = S.P.brand.meta[k];
+    return ((v && (v.en || v.mn)) || "").trim();
+  }
   function joinParts(arr) {
     const body = arr.filter(Boolean).join(". ");
     return body ? body : "";
@@ -5763,7 +5796,7 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
   B.ready = function () {
     const b = S.P.brand;
     const missing = [];
-    if (!(b.meta.niche || "").trim()) missing.push("Сувгийн ниш");
+    if (!metaMN("niche")) missing.push("Сувгийн ниш");
     S.BRAND_FIELDS.forEach((d) => {
       if (d.need && !(b.f[d.k].mn || "").trim()) missing.push(d.lb);
     });
@@ -5773,7 +5806,7 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
   /** Брэнд файл огт хөндөгдөөгүй юу? (хоосон бол сануулга гаргахгүй) */
   B.untouched = function () {
     const b = S.P.brand;
-    if ((b.meta.niche || "").trim()) return false;
+    if (metaMN("niche") || metaMN("titleFmt")) return false;
     return !S.BRAND_FIELDS.some((d) => (b.f[d.k].mn || "").trim());
   };
 
@@ -5858,8 +5891,8 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     const L = [];
 
     L.push("=== LAYER 1 · RESEARCH ===");
-    L.push("Channel: " + ((b.meta.niche || "").trim() || "(тодорхойлоогүй)"));
-    if ((b.meta.titleFmt || "").trim()) L.push("Proven title format: " + b.meta.titleFmt.trim());
+    L.push("Channel: " + (metaEN("niche") || "(not defined)"));
+    if (metaEN("titleFmt")) L.push("Proven title format: " + metaEN("titleFmt"));
     if ((b.meta.topics || "").trim()) {
       L.push("Topic queue:");
       b.meta.topics
@@ -5894,6 +5927,16 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     if (txt(b.f.audio)) L.push("Audio palette: " + txt(b.f.audio) + ".");
 
     L.push("", "=== LAYER 4 · CHECKPOINT ===");
+    const d = b.direction;
+    if (d) {
+      const de = (k) => (d[k + "_en"] || d[k] || "").trim();
+      L.push("Approved direction:");
+      if (de("look")) L.push("  Look: " + de("look"));
+      if (de("pacing")) L.push("  Pacing: " + de("pacing"));
+      if (de("frame")) L.push("  Frame to approve first: " + de("frame"));
+      if ((d.risk_en || d.risk || "").trim()) L.push("  Known risk: " + (d.risk_en || d.risk).trim());
+      L.push("");
+    }
     if (b.checkpoint !== false) {
       L.push(
         "Before generating ANY image or video, propose the direction first:",
@@ -5903,7 +5946,7 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
         "Wait for my approval. Do not render the full sequence unprompted."
       );
     } else {
-      L.push("(Хяналтын цэг унтраалттай — AI шууд үүсгэнэ.)");
+      L.push("(Checkpoint disabled — generate directly without waiting for approval.)");
     }
     return L.join("\n");
   };
@@ -5928,8 +5971,8 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     const b = S.P.brand;
     if (!b || B.untouched() || S.P.opts.brandOn === false) return "";
     const L = ["", "Сувгийн брэнд файл — доорхийг ЗААВАЛ баримтална:"];
-    if ((b.meta.niche || "").trim()) L.push("- Ниш: " + b.meta.niche.trim());
-    if ((b.meta.titleFmt || "").trim()) L.push("- Гарчгийн формат: " + b.meta.titleFmt.trim());
+    if (metaMN("niche")) L.push("- Ниш: " + metaMN("niche"));
+    if (metaMN("titleFmt")) L.push("- Гарчгийн формат: " + metaMN("titleFmt"));
     if ((b.f.look.mn || "").trim()) L.push("- Визуал гарын үсэг: " + b.f.look.mn.trim());
     if ((b.f.palette.mn || "").trim()) L.push("- Өнгөний палетт: " + b.f.palette.mn.trim());
     if ((b.f.camera.mn || "").trim()) L.push("- Камерын дүрэм: " + b.f.camera.mn.trim());
@@ -5945,7 +5988,7 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
   /** Нэг өгүүлбэр нишээс бүтэн брэнд файл зохионо (монголоор). */
   B.draft = async function () {
     const b = S.P.brand;
-    const niche = (b.meta.niche || "").trim();
+    const niche = metaMN("niche");
     if (!niche) throw new Error("Эхлээд сувгийнхаа нишийг нэг өгүүлбэрээр бичнэ үү.");
 
     const keys = S.BRAND_FIELDS.map(
@@ -5971,8 +6014,10 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     if (!o || typeof o !== "object") throw new Error("хариу таарсангүй");
 
     S.pushHistory();
-    if (typeof o.titleFmt === "string" && o.titleFmt.trim() && !(b.meta.titleFmt || "").trim()) {
-      b.meta.titleFmt = o.titleFmt.trim();
+    if (typeof o.titleFmt === "string" && o.titleFmt.trim() && !metaMN("titleFmt")) {
+      b.meta.titleFmt.mn = o.titleFmt.trim();
+      b.meta.titleFmt.en = "";
+      b.meta.titleFmt.src = "";
     }
     let n = 0;
     S.BRAND_FIELDS.forEach((d) => {
@@ -5991,7 +6036,7 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
   /** Батлагдсан гарчгийн форматаар N ангийн гарчиг санал болгоно. */
   B.titles = async function (count) {
     const b = S.P.brand;
-    const niche = (b.meta.niche || "").trim();
+    const niche = metaMN("niche");
     if (!niche) throw new Error("Эхлээд сувгийнхаа нишийг бичнэ үү.");
     const n = Math.max(3, Math.min(12, count || 5));
 
@@ -6002,7 +6047,7 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
       "- Бүх гарчиг МОНГОЛ хэлээр.\n" +
       "- Сэдэв бүр бие даасан, тухайн ангийг ганцаараа авч үзэхэд ойлгомжтой.\n" +
       "- Ил тод сониуч байдал үүсгэ, гэхдээ худал амлалт (clickbait) бүү өг.\n" +
-      (b.meta.titleFmt ? '- Гарчгийн формат: "' + b.meta.titleFmt.trim() + '" — үүнийг баримтал.\n' : "") +
+      (metaMN("titleFmt") ? '- Гарчгийн формат: "' + metaMN("titleFmt") + '" — үүнийг баримтал.\n' : "") +
       (b.f.voice.mn ? "- Сувгийн өнгө аяс: " + b.f.voice.mn.trim() + "\n" : "") +
       "\nСувгийн ниш: " + niche;
 
@@ -6018,7 +6063,7 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
   B.direction = async function () {
     const b = S.P.brand;
     const P = S.P;
-    const idea = (P.logline.mn || b.meta.niche || "").trim();
+    const idea = (P.logline.mn || "").trim() || metaMN("niche");
     if (!idea) throw new Error("Эхлээд логлайн эсвэл сувгийн ниш бичнэ үү.");
 
     const prompt =
@@ -6029,13 +6074,18 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
       '{ "look": "яг ямар харагдацаар үүсгэхээ 2-3 өгүүлбэрээр",\n' +
       '  "pacing": "кадрын тоо, кадрын урт, шилжилтийн шийдэл",\n' +
       '  "frame": "эхлээд баталгаажуулах ГАНЦ туршилтын кадрын агуулга, нэг өгүүлбэр",\n' +
-      '  "risk": "энэ чиглэлийн хамгийн эмзэг тал, нэг өгүүлбэр" }\n' +
-      "- Бүх утга МОНГОЛ хэлээр, тодорхой шийдэл болгож бич. Асуулт бүү тавь.\n" +
+      '  "risk": "энэ чиглэлийн хамгийн эмзэг тал, нэг өгүүлбэр",\n' +
+      '  "look_en": "look‑ийн англи хувилбар",\n' +
+      '  "pacing_en": "pacing‑ийн англи хувилбар",\n' +
+      '  "frame_en": "frame‑ийн англи хувилбар — AI зураг үүсгэгчид өгөхөд бэлэн",\n' +
+      '  "risk_en": "risk‑ийн англи хувилбар" }\n' +
+      "- «_en» талбарууд нь монгол эхийнхээ ЯГ орчуулга байна, шинэ зүйл бүү нэм.\n" +
+      "- Монгол талбарууд бүгд МОНГОЛ, тодорхой шийдэл болгож бич. Асуулт бүү тавь.\n" +
       "- Брэнд файлаас гажсан зүйл бүү санал болго.\n\n" +
       B.autoContext() +
       "\nСанаа: " + idea;
 
-    const o = await WB.api.askJSON(prompt, 1500);
+    const o = await WB.api.askJSON(prompt, 2200);
     if (!o || typeof o !== "object") throw new Error("хариу таарсангүй");
     b.direction = o;
     S.touch();
@@ -6094,12 +6144,17 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     const b = S.P.brand;
     if (!b || !el("p-brand")) return;
 
-    bindPlain(el("brandNiche"), () => b.meta.niche, (v) => (b.meta.niche = v));
-    bindPlain(el("brandTitleFmt"), () => b.meta.titleFmt, (v) => (b.meta.titleFmt = v));
     bindPlain(el("brandTopics"), () => b.meta.topics, (v) => (b.meta.topics = v));
     bindPlain(el("brandRef"), () => b.ref, (v) => (b.ref = v));
     bindPlain(el("frameSubject"), () => b.frameSubject, (v) => (b.frameSubject = v));
 
+    const metaBox = el("brandMetaFields");
+    if (metaBox) {
+      metaBox.innerHTML = "";
+      S.BRAND_META_FIELDS.forEach((d) => {
+        metaBox.appendChild(WB.ui.dualField(b.meta[d.k], "brand", d.lb, d.ph));
+      });
+    }
     fieldsInto("brandLookFields", 2);
     fieldsInto("brandVoiceFields", 3);
 
@@ -6162,6 +6217,14 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
       .join("");
   }
   B.paintDirection = paintDirection;
+
+  /** Санал болгосон чиглэлийг устгана — мастер промтоос мөн хасагдана. */
+  B.clearDirection = function () {
+    S.P.brand.direction = null;
+    S.touch();
+    paintDirection();
+    B.paintOutputs();
+  };
 })(window.WB);
 
 </script>
@@ -8133,14 +8196,25 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
       await B.direction();
       B.paintDirection();
       const d = S.P.brand.direction;
-      if (d && d.frame && !(S.P.brand.frameSubject || "").trim()) {
-        S.P.brand.frameSubject = d.frame;
-        el("frameSubject").value = d.frame;
+      /* Туршилтын кадрын промт англи болох тул англи хувилбарыг нь авна */
+      const fr = d && (d.frame_en || d.frame);
+      if (fr && !(S.P.brand.frameSubject || "").trim()) {
+        S.P.brand.frameSubject = fr;
+        el("frameSubject").value = fr;
         S.touch();
-        B.paintOutputs();
       }
+      B.paintOutputs();
       U.toast("Чиглэл бэлэн — доорх туршилтын кадрыг эхлээд шалгаарай", "good");
     });
+  };
+
+  el("dirClear").onclick = () => {
+    if (!S.P.brand.direction) {
+      U.toast("Арилгах чиглэл алга", "info");
+      return;
+    }
+    B.clearDirection();
+    U.toast("Чиглэл арилгалаа", "info");
   };
 
   el("brandChk").addEventListener("change", (e) => {
