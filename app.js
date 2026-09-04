@@ -970,7 +970,16 @@ function buildPrompt() {
             end: { framing: szZ.ab, angle: anZ.ab, lens_mm: lensMM(Z.fov), distance_m: +Z.radius.toFixed(2) },
             keyframes: shots
           },
-          style: styles
+          style: styles,
+          brand: brandOn && brand ? {
+            niche: brand.meta.niche || undefined,
+            look: bf('look') || undefined,
+            lighting: bf('light') || undefined,
+            palette: bf('palette') || undefined,
+            camera_rule: bf('camera') || undefined,
+            never_render: bf('avoid') || undefined,
+            style_locked: !!brand.locked
+          } : undefined
         }, null, 2);
       } else {
         en = core + ' ' + tail;
@@ -990,8 +999,12 @@ function buildPrompt() {
     if (sceneTxt) parts.push(sceneTxt.replace(/\.?\s*$/, '.'));
     if ($('incEnv').checked) parts.push('Setting: ' + env.en + '.');
     parts.push(en);
+    const bStyle = brandStyleLine();
+    if (bStyle) parts.push(bStyle);
     if (styles.length) parts.push(styles.join(', ') + '.');
     if ($('incNeg').checked && fmt !== 'shots') parts.push('Single continuous shot, no cuts, no camera jitter, consistent subject identity, stable horizon.');
+    const bAvoid = brandAvoidLine();
+    if (bAvoid) parts.push('Avoid: ' + bAvoid.replace(/\.?\s*$/, '') + '.');
     txt = parts.join(' ');
     if (model === 'veo') txt = txt + '\n\nCamera: ' + (keys.length >= 2 ? analyseAll().flatMap(s => s.KW).join(', ') || 'static' : 'static locked off') + '. Duration: ' + dur + 's. Aspect: ' + $('aspect').value + '.';
     else if (model === 'runway') txt = txt.replace(/\s+/g, ' ');
@@ -1000,6 +1013,7 @@ function buildPrompt() {
   outEl.textContent = txt;
   sumEl.innerHTML = mn;
   $('pLen').textContent = txt.length + ' тэмдэгт';
+  paintAudit();
 }
 let promptTimer = null;
 function schedulePrompt() { if (promptTimer) return; promptTimer = setTimeout(() => { promptTimer = null; buildPrompt(); }, 90); }
@@ -1142,6 +1156,13 @@ function buildUI() {
 
     /* ── ПРОМТ ── */
     '<div class="page" id="pgPrompt">' +
+    box('🎨 Брэнд файл',
+      '<div class="g3" style="margin-bottom:8px">' +
+      '<button class="w" data-act="bwb">📥 Бүтээгчээс</button>' +
+      '<button class="w" data-act="bfile">📂 brand.json</button>' +
+      '<button class="w" data-act="bclear">✖ Салгах</button></div>' +
+      '<div id="brandBox"></div>' +
+      '<p class="hint">Ертөнц Бүтээгчийн <b>Алхам 1 · Брэнд</b> хэсэгт үүсгэсэн файл. Түүний <b>камерын дүрэм</b> ба энд хийсэн бодит хөдөлгөөнийг харьцуулж, зөрчлийг шууд харуулна.</p>') +
     box('✨ Промтоос камер удирдах',
       '<textarea class="w" id="inPrompt" rows="3" placeholder="Жишээ: slow 180° orbit clockwise around the two warriors, then push in to a close-up, low angle, 8 seconds"></textarea>' +
       '<button class="big gr" id="btnParse" style="margin-top:7px">⚡ Задлан шинжлээд камер үүсгэх</button>' +
@@ -1641,6 +1662,7 @@ function serialize() {
     styles: Array.from(document.querySelectorAll('.stl')).map(x => x.checked),
     people: people.map(p => ({ x: +p.position.x.toFixed(4), z: +p.position.z.toFixed(4), ry: +p.rotation.y.toFixed(4), s: +p.scale.x.toFixed(3) })),
     props: props.map(p => ({ t: p.userData.kind, x: +p.position.x.toFixed(4), z: +p.position.z.toFixed(4), ry: +p.rotation.y.toFixed(4), s: +p.scale.x.toFixed(3) })),
+    brand: brand || undefined, brandOn: brandOn, brandCheck: brandCheckOn, brandSrc: brandSrc || undefined,
     keys: keys.map(k => ({ th: k.theta, ph: k.phi, r: k.radius, f: k.fov, ro: k.roll || 0, tx: k.target.x, ty: k.target.y, tz: k.target.z, fr: k.frame }))
   }, null, 1);
 }
@@ -1668,6 +1690,13 @@ function loadProject(d) {
   $('sceneTxt').value = d.scene || '';
   $('inPrompt').value = d.inPrompt || '';
   Array.from(document.querySelectorAll('.stl')).forEach((x, i) => x.checked = !!(d.styles && d.styles[i]));
+  if (d.brand) {
+    brand = normalizeBrand(d.brand);
+    brandOn = d.brandOn !== false;
+    brandCheckOn = d.brandCheck !== false;
+    brandSrc = d.brandSrc || 'төслийн файл';
+  }
+  renderBrand();
   keys = (d.keys || []).slice(0, MAXK).map((k, i, arr) => clampS({
     theta: k.th, phi: k.ph, radius: k.r, fov: k.f, roll: k.ro || 0,
     target: new THREE.Vector3(k.tx, k.ty, k.tz),
@@ -2002,6 +2031,17 @@ function doAct(a) {
     case 'framesel': focusSel(); onCamMove(); break;
     case 'autodir': autoDirect('drama'); break;
     case 'reverse': reverseKeys(); break;
+    case 'bwb': {
+      const b = brandFromWB();
+      if (b) { setBrand(b, 'Ертөнц Бүтээгч (энэ хөтөч)'); toast('Брэнд ачааллаа', 'ok'); }
+      else toast('Энэ хөтөч дээр Ертөнц Бүтээгчийн брэнд олдсонгүй', 'err');
+      break;
+    }
+    case 'bfile': $('brandIn').click(); break;
+    case 'bclear': setBrand(null, ''); toast('Брэнд салгагдлаа'); break;
+    case 'bwrite': writeRuleToBrand(); break;
+    case 'bpush': pushBrandToWB(); break;
+    case 'bdl': if (brand) dl('brand-' + stamp() + '.json', brandJSON(), 'application/json'); break;
   }
 }
 document.addEventListener('click', e => {
@@ -2069,6 +2109,19 @@ $('fileIn').addEventListener('change', e => {
   rd.onload = () => { try { loadProject(JSON.parse(rd.result)); } catch (err) { toast('JSON уншиж чадсангүй', 'err'); } };
   rd.readAsText(f); e.target.value = '';
 });
+$('brandIn').addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    try {
+      const b = normalizeBrand(JSON.parse(rd.result));
+      if (!brandHasContent(b)) { toast('Энэ файлд брэнд олдсонгүй', 'err'); return; }
+      setBrand(b, f.name);
+      toast('Брэнд ачааллаа: ' + f.name, 'ok');
+    } catch (err) { toast('JSON уншиж чадсангүй', 'err'); }
+  };
+  rd.readAsText(f); e.target.value = '';
+});
 $('btnParse').onclick = runParse;
 $('copyBtn').onclick = async e => {
   const txt = $('promptOut').textContent;
@@ -2082,7 +2135,7 @@ $('btnTxt').onclick = () => doAct('txt');
 $('btnOverlay').onclick = e => { showOverlay = !showOverlay; e.currentTarget.classList.toggle('on', showOverlay); };
 $('btnGuides').onclick = e => { showGuides = !showGuides; e.currentTarget.classList.toggle('on', showGuides); };
 $('btnPip').onclick = e => { showPip = !showPip; e.currentTarget.classList.toggle('on', showPip); };
-$('aspect').onchange = () => { syncAll(); };
+$('aspect').onchange = () => { syncAll(); paintAudit(); };
 $('fps').onchange = () => { fps = +$('fps').value; syncAll(); };
 $('interp').onchange = () => { interp = $('interp').value; buildSpline(); rebuildHelpers(); schedulePrompt(); };
 $('fStart').onchange = () => { fStart = clamp(Math.round(+$('fStart').value) || 1, 0, fEnd - 1); $('fStart').value = fStart; setFrame(curFrame); syncAll(); };
@@ -2166,7 +2219,329 @@ document.addEventListener('keydown', e => {
 });
 window.addEventListener('resize', () => { drawTimeline(); });
 
-/* ─────────── 26. Эхлүүлэх ─────────── */
+/* ─────────── 26. БРЭНД ГҮҮР (Ертөнц Бүтээгч ↔ Camera Director) ───────────
+   Брэнд файлын «камерын дүрэм» ба энэ дээрх бодит хөдөлгөөн хоёрыг
+   нийцүүлнэ:
+
+     Брэнд → Камер : дүрмийг унших, дэлгэцийн харьцааг тааруулах,
+                     харагдац/гэрэл/палеттыг промтод шингээх
+     Камер → Брэнд : одоогийн хөдөлгөөнөөс камерын дүрэм бичиж буцаах
+     Шалгалт       : дүрэм зөрчигдсөн эсэхийг мөр мөрөөр нь харуулах
+
+   Брэнд файл нь `world-builder`‑ын Алхам 1‑д үүсдэг. Ижил домэйн дээр
+   бол localStorage‑оос шууд, эс бөгөөс `brand.json` файлаар дамжина.
+   ───────────────────────────────────────────────────────────────────── */
+const WB_STORE_KEY = 'wb3:autosave';
+const BKEYS = ['look', 'light', 'palette', 'camera', 'avoid', 'voice', 'words', 'nowords', 'audio'];
+const BLABEL = {
+  look: 'Харагдац', light: 'Гэрэл', palette: 'Палетт', camera: 'Камерын дүрэм',
+  avoid: 'Гаргахгүй', voice: 'Хоолой', words: 'Хэллэг', nowords: 'Хориотой үг', audio: 'Дуу авиа'
+};
+let brand = null;          // ачаалсан брэнд файл
+let brandOn = true;        // промтод шингээх эсэх
+let brandCheckOn = true;   // камерын дүрмийн шалгалт
+let brandSrc = '';         // хаанаас ирсэн
+
+/** Талбарын англи хувилбар (байхгүй бол монгол). */
+function bf(k) { if (!brand) return ''; const v = brand.f[k] || {}; return (v.en || v.mn || '').trim(); }
+function brandCameraRule() { return bf('camera'); }
+function brandHasContent(b) {
+  return !!(b && (b.meta.niche.trim() || BKEYS.some(k => (b.f[k].mn || b.f[k].en).trim())));
+}
+
+/**
+ * Ертөнц Бүтээгчийн төслийн JSON, дан брэнд JSON, эсвэл Camera Director
+ * төслийн аль нэгээс брэндийг гаргаж авна.
+ */
+function normalizeBrand(x) {
+  if (!x || typeof x !== 'object') return null;
+  const src = x.brand && typeof x.brand === 'object' ? x.brand : x;
+  if (!src.f || typeof src.f !== 'object') return null;
+  const f = {};
+  BKEYS.forEach(k => { const v = src.f[k] || {}; f[k] = { mn: v.mn || '', en: v.en || '' }; });
+  const m = src.meta && typeof src.meta === 'object' ? src.meta : {};
+  return {
+    meta: { niche: m.niche || '', titleFmt: m.titleFmt || '', topics: m.topics || '' },
+    f: f,
+    ref: src.ref || '',
+    locked: !!src.locked,
+    lockedAt: src.lockedAt || 0,
+    ar: x.ar || (x.opts && x.opts.ar) || src.ar || ''
+  };
+}
+
+/** Ижил домэйн дээрх Ертөнц Бүтээгчийн автомат хадгалалтаас уншина. */
+function brandFromWB() {
+  try {
+    const raw = localStorage.getItem(WB_STORE_KEY);
+    if (!raw) return null;
+    const b = normalizeBrand(JSON.parse(raw));
+    return brandHasContent(b) ? b : null;
+  } catch (e) { return null; }
+}
+
+function setBrand(b, src) {
+  brand = b; brandSrc = src || '';
+  if (b) {
+    /* Дэлгэцийн харьцааг брэндээс мөрдөнө — тухайн сонголт байвал */
+    if (b.ar && Array.from($('aspect').options).some(o => o.value === b.ar)) $('aspect').value = b.ar;
+    /* Нэг фрэйм дүрэм: стиль түгжигдээгүй бол автоматаар промтод шингээхгүй */
+    brandOn = !!b.locked;
+  }
+  renderBrand(); schedulePrompt();
+}
+
+/* ── Брэнд → промт ── */
+function brandStyleLine() {
+  if (!brand || !brandOn) return '';
+  const t = [bf('look'), bf('light'), bf('palette')].filter(Boolean).join('. ');
+  return t ? t.replace(/\.?\s*$/, '.') : '';
+}
+function brandAvoidLine() { return brand && brandOn ? bf('avoid') : ''; }
+
+/* ── Timeline‑ийн бодит баримтууд ── */
+function timelineFacts() {
+  const kw = keys.length >= 2 ? analyseAll().flatMap(s => s.static ? ['hold'] : s.KW) : ['hold'];
+  const ks = keys.length ? keys : [state];
+  return {
+    kw: kw,
+    angles: ks.map(k => camAngle(k).ab),
+    lenses: ks.map(k => lensMM(k.fov)),
+    moving: kw.some(k => k !== 'hold'),
+    dur: durSec(),
+    shake: shakeAmt,
+    has: rx => kw.some(k => rx.test(k))
+  };
+}
+
+/** Камерын дүрмийг хэсэг болгон салгаж, үгүйсгэлтэй эсэхийг тэмдэглэнэ. */
+function bClauses() {
+  const t = brandCameraRule();
+  if (!t) return [];
+  return t.split(/[,;·|]+|\band\b|\bба\b|\bмөн\b/gi)
+    .map(x => x.trim()).filter(Boolean)
+    .map(x => ({ t: x, neg: /\b(no|not|without|never|avoid)\b|байхгүй|бүү|гүй\b|гүйгээр/i.test(x) }));
+}
+
+/**
+ * Брэндийн камерын дүрэм ↔ одоогийн анимаци. Мөр бүр {ok, txt}.
+ * Дүрэмд дурдагдаагүй зүйлийг шалгахгүй — худал сануулга өгөхгүйн тулд.
+ */
+function brandAudit() {
+  const out = [];
+  if (!brand || !brandCheckOn) return out;
+  const cl = bClauses();
+  const f = timelineFacts();
+  const pos = rx => cl.some(c => !c.neg && rx.test(c.t));
+  const neg = rx => cl.some(c => c.neg && rx.test(c.t));
+  const pct = Math.round(f.shake * 100);
+  const add = (ok, txt) => out.push({ ok: ok, txt: txt });
+
+  /* дэлгэцийн харьцаа — дүрмээс хамаарахгүй */
+  if (brand.ar) {
+    const cur = $('aspect').value;
+    add(cur === brand.ar, cur === brand.ar
+      ? 'Харьцаа ' + cur + ' — брэндтэй нийцэж байна'
+      : 'Брэнд ' + brand.ar + ' гэсэн ч энд ' + cur + ' сонгогдсон');
+  }
+  if (!cl.length) {
+    out.push({ ok: null, txt: 'Брэнд файлд камерын дүрэм бичигдээгүй — шалгах зүйл алга' });
+    return out;
+  }
+
+  /* хөдөлгөөн байх / байхгүй */
+  if (pos(/locked[- ]?off|static camera|зогсонги/i) || neg(/\bmove(ment)?\b|хөдөлгөөн/i))
+    add(!f.moving, f.moving
+      ? 'Дүрэм «хөдөлгөөнгүй» — гэтэл ' + [...new Set(f.kw.filter(k => k !== 'hold'))].join(', ')
+      : 'Камер хөдөлгөөнгүй — дүрмийн дагуу');
+
+  /* гар камер ба доргио */
+  if (pos(/handheld|hand-held|гар камер/i))
+    add(f.shake >= .05, f.shake >= .05
+      ? 'Гар камерын доргио ' + pct + '% — дүрмийн дагуу'
+      : 'Дүрэм «гар камер» — гэтэл доргио 0%. Камерын тохиргооноос нэмнэ үү');
+  if (neg(/handheld|shake|jitter|доргио|гар камер/i) || pos(/tripod|трипод|stabili[sz]ed|тогтвортой/i))
+    add(f.shake <= .15, f.shake <= .15
+      ? 'Тогтвортой — доргио ' + pct + '%'
+      : 'Дүрэм «тогтвортой / трипод» — гэтэл доргио ' + pct + '%');
+
+  /* хэмнэл */
+  if (pos(/\bslow\b|удаан|аажим|аажуухан/i))
+    add(f.dur >= 4, f.dur >= 4
+      ? 'Удаан хэмнэл — ' + f.dur.toFixed(1) + 'с'
+      : 'Дүрэм «удаан» — гэтэл ' + f.dur.toFixed(1) + 'с нь хурдан уншигдана');
+  if (pos(/\bfast\b|хурдан|эрчтэй/i))
+    add(f.dur <= 8, f.dur <= 8
+      ? 'Хурдан хэмнэл — ' + f.dur.toFixed(1) + 'с'
+      : 'Дүрэм «хурдан» — гэтэл ' + f.dur.toFixed(1) + 'с нь удаан');
+
+  /* ойртолт, ухралт, зум */
+  if (pos(/push[- ]?in|dolly in|ойрт|дөх/i))
+    add(f.has(/dolly in|zoom in/), f.has(/dolly in|zoom in/)
+      ? 'Ойртох хөдөлгөөн байна' : 'Дүрэм «ойртох» — гэтэл ойртолт алга');
+  if (pos(/pull[- ]?back|dolly out|ухар|холд/i))
+    add(f.has(/dolly out|zoom out/), f.has(/dolly out|zoom out/)
+      ? 'Ухрах хөдөлгөөн байна' : 'Дүрэм «ухрах» — гэтэл ухралт алга');
+  if (neg(/zoom|зум/i))
+    add(!f.has(/zoom/), f.has(/zoom/) ? 'Дүрэм «зумгүй» — гэтэл зум байна' : 'Зум ашиглаагүй');
+
+  /* тойрол, налуу */
+  if (neg(/orbit|тойр|эргэ/i))
+    add(!f.has(/orbit/), f.has(/orbit/) ? 'Дүрэм «тойрохгүй» — гэтэл тойрол байна' : 'Тойрол ашиглаагүй');
+  if (neg(/dutch|canted|roll|налуу/i))
+    add(!f.has(/dutch/), f.has(/dutch/) ? 'Дүрэм «налуугүй» — гэтэл dutch roll байна' : 'Налуу өнцөг алга');
+  if (pos(/dutch|canted|налуу/i))
+    add(f.has(/dutch/), f.has(/dutch/) ? 'Налуу өнцөг байна' : 'Дүрэм «налуу» — гэтэл roll 0°');
+
+  /* өнцөг */
+  if (pos(/eye[- ]?level|нүдний түвшин/i)) {
+    const bad = f.angles.filter(a => a !== 'eye');
+    add(!bad.length, bad.length
+      ? 'Дүрэм «нүдний түвшин» — гэтэл ' + bad.length + ' кадр өөр өнцөгт байна'
+      : 'Бүх кадр нүдний түвшинд');
+  }
+  if (pos(/low angle|доод өнцөг|hero shot/i))
+    add(f.angles.some(a => a === 'low' || a === 'worm'), f.angles.some(a => a === 'low' || a === 'worm')
+      ? 'Доод өнцөг ашигласан' : 'Дүрэм «доод өнцөг» — гэтэл доод өнцөгт кадр алга');
+  if (pos(/high angle|bird|өндөр өнцөг|шувууны/i))
+    add(f.angles.some(a => a === 'high' || a === 'top'), f.angles.some(a => a === 'high' || a === 'top')
+      ? 'Өндөр өнцөг ашигласан' : 'Дүрэм «өндөр өнцөг» — гэтэл өндөр өнцөгт кадр алга');
+
+  /* линз */
+  const m = brandCameraRule().match(/(\d{2,3})\s*(?:mm|мм)/i);
+  if (m) {
+    const want = +m[1], lo = Math.min.apply(null, f.lenses), hi = Math.max.apply(null, f.lenses);
+    const ok = want >= lo * .7 && want <= hi * 1.4;
+    add(ok, ok ? 'Линз ' + (lo === hi ? lo + 'mm' : lo + '–' + hi + 'mm') + ' — дүрмийн ' + want + 'mm‑тэй ойр'
+      : 'Дүрэм ' + want + 'mm — гэтэл ' + (lo === hi ? lo + 'mm' : lo + '–' + hi + 'mm') + ' ашиглаж байна');
+  }
+
+  /* зүсэлт — энэ хэрэгсэл үргэлж нэг тасралтгүй кадр гаргадаг */
+  if (neg(/\bcut(s)?\b|зүсэлт/i)) add(true, 'Нэг тасралтгүй кадр — зүсэлтгүй');
+
+  if (!out.length) out.push({ ok: null, txt: 'Дүрэмд шалгах боломжтой заавар олдсонгүй' });
+  return out;
+}
+
+/** Одоогийн timeline‑аас брэндийн камерын дүрмийн мөр угсарна. */
+function cameraRuleFromTimeline() {
+  const f = timelineFacts();
+  const ks = keys.length ? keys : [state];
+  const A = ks[0], Z = ks[ks.length - 1];
+  const mv = [...new Set(f.kw.filter(k => k !== 'hold'))];
+  const angs = [...new Set(ks.map(k => camAngle(k).en.replace(/^an? /, '')))];
+  const lo = Math.min.apply(null, f.lenses), hi = Math.max.apply(null, f.lenses);
+  const p = paceOf().en.split(',')[0];
+  const parts = [
+    p,
+    mv.length ? mv.join(', ') : 'locked off, no camera movement',
+    shotSize(A).ab === shotSize(Z).ab ? shotSize(A).ab : shotSize(A).ab + ' → ' + shotSize(Z).ab,
+    angs.join(' → '),
+    lo === hi ? lo + 'mm' : lo + '–' + hi + 'mm',
+    shakeAmt >= .05 ? 'handheld shake ' + Math.round(shakeAmt * 100) + '%' : 'stabilised tripod, no shake',
+    'single continuous take, no cuts',
+    durSec().toFixed(1).replace(/\.0$/, '') + 's'
+  ];
+  return parts.filter(Boolean).join(', ');
+}
+
+/** Камерын дүрмийг брэнд рүү бичнэ (англи тал, гараар түгжсэн байдлаар). */
+function writeRuleToBrand() {
+  if (!brand) { toast('Эхлээд брэнд файл ачаална уу', 'err'); return; }
+  const rule = cameraRuleFromTimeline();
+  brand.f.camera.en = rule;
+  brand.f.camera.auto = false;
+  brand.f.camera.src = 'camera-director';
+  brand.ar = $('aspect').value;
+  renderBrand(); schedulePrompt();
+  toast('Камерын дүрэм брэнд рүү бичигдлээ', 'ok');
+}
+
+function brandJSON() {
+  const b = {
+    app: '1st-studio-brand', v: 1, ar: brand.ar || $('aspect').value,
+    exported: new Date().toISOString(),
+    brand: {
+      meta: brand.meta, f: brand.f, ref: brand.ref,
+      locked: brand.locked, lockedAt: brand.lockedAt
+    }
+  };
+  return JSON.stringify(b, null, 1);
+}
+
+/** Ижил домэйн дээрх Ертөнц Бүтээгчийн хадгалалт руу брэндийг буцаана. */
+function pushBrandToWB() {
+  if (!brand) return;
+  try {
+    const raw = localStorage.getItem(WB_STORE_KEY);
+    if (!raw) { toast('Ертөнц Бүтээгчийн хадгалалт олдсонгүй — brand.json татаж оруулна уу', 'err'); return; }
+    const d = JSON.parse(raw);
+    if (!d.brand) d.brand = {};
+    if (!d.brand.f) d.brand.f = {};
+    BKEYS.forEach(k => {
+      const cur = d.brand.f[k] || { mn: '', en: '', auto: true, unk: [], src: '' };
+      d.brand.f[k] = Object.assign({}, cur, brand.f[k]);
+    });
+    d.brand.meta = brand.meta;
+    if (d.opts) d.opts.ar = brand.ar || $('aspect').value;
+    d.updated = Date.now();
+    localStorage.setItem(WB_STORE_KEY, JSON.stringify(d));
+    toast('Ертөнц Бүтээгч рүү хадгаллаа — тэр хуудсаа сэргээнэ үү', 'ok');
+  } catch (e) { toast('Хадгалж чадсангүй: ' + e.message, 'err'); }
+}
+
+/* ── Дэлгэц ── */
+function paintAudit() {
+  const el = $('brandAudit');
+  if (!el) return;
+  if (!brand || !brandCheckOn) { el.innerHTML = ''; return; }
+  const rows = brandAudit();
+  el.innerHTML = rows.map(r =>
+    '<div class="aud ' + (r.ok === null ? 'na' : r.ok ? 'ok' : 'no') + '">' +
+    (r.ok === null ? '·' : r.ok ? '✓' : '⚠') + ' ' + esc(r.txt) + '</div>').join('');
+}
+function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+function renderBrand() {
+  const el = $('brandBox');
+  if (!el) return;
+  if (!brand) {
+    const avail = brandFromWB();
+    el.innerHTML = '<p class="hint" style="margin-top:0">Брэнд файл ачаагүй байна. ' +
+      (avail ? '<b style="color:#a8dfae">Ертөнц Бүтээгчээс брэнд олдлоо</b> — «📥» товчийг дарна уу.'
+        : 'Ертөнц Бүтээгчийн <b>Алхам 1 · Брэнд</b> хэсгээс <b>brand.json</b> татаад энд оруулна.') + '</p>';
+    return;
+  }
+  const rows = [['niche', 'Ниш', brand.meta.niche]]
+    .concat(BKEYS.filter(k => bf(k)).map(k => [k, BLABEL[k], bf(k)]));
+  el.innerHTML =
+    '<div class="blk ' + (brand.locked ? 'on' : 'off') + '">' +
+    (brand.locked ? '🔒 Стиль тогтоосон' + (brand.lockedAt ? ' · ' + new Date(brand.lockedAt).toLocaleDateString('mn-MN') : '')
+      : '🔓 Стиль түгжигдээгүй') + '</div>' +
+    (brandSrc ? '<p class="hint" style="margin:0 0 7px">Эх сурвалж: ' + esc(brandSrc) + '</p>' : '') +
+    rows.map(r => '<div class="bkv"><b>' + r[1] + '</b><span>' + esc(r[2]) + '</span></div>').join('') +
+    '<div class="styles" style="margin:9px 0 8px">' +
+    '<label><input type="checkbox" id="bOn"' + (brandOn ? ' checked' : '') + '> Промтод шингээх</label>' +
+    '<label><input type="checkbox" id="bChk"' + (brandCheckOn ? ' checked' : '') + '> Дүрмийг шалгах</label></div>' +
+    (brand.locked ? '' : '<p class="hint" style="margin:0 0 8px;color:#e6c887">Стиль түгжигдээгүй тул промтод автоматаар шингээгүй. Ертөнц Бүтээгч дээр нэг фрэймээ баталгаажуулаад түгжээрэй.</p>') +
+    '<div id="brandAudit"></div>' +
+    '<div class="g3" style="margin-top:8px">' +
+    '<button class="w" data-act="bwrite">🎥 Камер → дүрэм</button>' +
+    '<button class="w" data-act="bpush">↩ Бүтээгч рүү</button>' +
+    '<button class="w" data-act="bdl">⬇ brand.json</button></div>';
+  $('bOn').onchange = e => { brandOn = e.target.checked; schedulePrompt(); };
+  $('bChk').onchange = e => { brandCheckOn = e.target.checked; paintAudit(); };
+  paintAudit();
+}
+
+function brandInit() {
+  const b = brandFromWB();
+  if (b) { setBrand(b, 'Ертөнц Бүтээгч (энэ хөтөч)'); toast('Брэнд файл ачааллаа' + (b.locked ? '' : ' — стиль түгжигдээгүй'), b.locked ? 'ok' : ''); }
+  else renderBrand();
+}
+
+/* ─────────── 27. Эхлүүлэх ─────────── */
 buildUI();
 wireControls();
 applyEnv('night');
@@ -2180,6 +2555,7 @@ focusAll();
 setFrame(1);
 applyCam(viewCam, state, null);
 syncAll();
+brandInit();
 tick();
 console.log('%c1st Studio — Camera Director', 'color:#ed9e5c;font-weight:700', 'бэлэн.');
 

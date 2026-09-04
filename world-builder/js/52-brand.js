@@ -212,6 +212,21 @@
     return L.join("\n");
   };
 
+  /**
+   * Машинд уншигдах брэнд файл — Camera Director болон бусад
+   * хэрэгсэл яг ижил өгөгдлийг уншина. Дэлгэцийн харьцаа мөн орно.
+   */
+  B.asJSON = function () {
+    return {
+      app: "1st-studio-brand",
+      v: 1,
+      title: S.P.title || "",
+      ar: S.P.opts.ar || "16:9",
+      exported: new Date().toISOString(),
+      brand: U.clone(S.P.brand)
+    };
+  };
+
   /** Автомат горимд монгол текст зохиоход өгөх брэнд контекст. */
   B.autoContext = function () {
     const b = S.P.brand;

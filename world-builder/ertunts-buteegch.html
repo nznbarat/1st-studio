@@ -491,7 +491,9 @@ textarea.lineIn.ta{resize:vertical;line-height:1.6;font-family:inherit}
         <div class="toolrow" style="margin-top:10px">
           <button class="tbtn2 acc" id="masterCopy">📋 Хуулах</button>
           <button class="tbtn2" id="masterDl">⬇ brand-file.txt</button>
+          <button class="tbtn2" id="brandDl">⬇ brand.json</button>
         </div>
+        <p class="note">Хөтчийн санд автоматаар хадгалагдана. <b>Camera Director</b> (<code>camera.html</code>) үүнийг шууд уншиж, камерын дүрмийг хоёр талдаа нийцүүлнэ — ижил домэйн дээр бол товч дарахад л ачаална, эс бөгөөс <code>brand.json</code> файлаар дамжуулна.</p>
       </div>
 
       <div class="hintgrid">
@@ -5906,6 +5908,21 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     return L.join("\n");
   };
 
+  /**
+   * Машинд уншигдах брэнд файл — Camera Director болон бусад
+   * хэрэгсэл яг ижил өгөгдлийг уншина. Дэлгэцийн харьцаа мөн орно.
+   */
+  B.asJSON = function () {
+    return {
+      app: "1st-studio-brand",
+      v: 1,
+      title: S.P.title || "",
+      ar: S.P.opts.ar || "16:9",
+      exported: new Date().toISOString(),
+      brand: U.clone(S.P.brand)
+    };
+  };
+
   /** Автомат горимд монгол текст зохиоход өгөх брэнд контекст. */
   B.autoContext = function () {
     const b = S.P.brand;
@@ -8107,6 +8124,8 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
   el("masterCopy").onclick = (e) => UI.copy(B.masterPrompt(), e.target);
   el("masterDl").onclick = () =>
     S.download(U.slug(S.P.title) + "-brand-file.txt", B.masterPrompt(), "text/plain");
+  el("brandDl").onclick = () =>
+    S.download(U.slug(S.P.title) + "-brand.json", JSON.stringify(B.asJSON(), null, 1), "application/json");
 
   el("dirBtn").onclick = async (e) => {
     if (!AU.needAI()) return;

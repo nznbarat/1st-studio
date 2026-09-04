@@ -473,6 +473,8 @@
   el("masterCopy").onclick = (e) => UI.copy(B.masterPrompt(), e.target);
   el("masterDl").onclick = () =>
     S.download(U.slug(S.P.title) + "-brand-file.txt", B.masterPrompt(), "text/plain");
+  el("brandDl").onclick = () =>
+    S.download(U.slug(S.P.title) + "-brand.json", JSON.stringify(B.asJSON(), null, 1), "application/json");
 
   el("dirBtn").onclick = async (e) => {
     if (!AU.needAI()) return;
