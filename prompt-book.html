@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Промтын толь бичиг — 1st Studio</title>
+<meta name="description" content="AI зураг ба видеоны түлхүүр үгсийн монгол толь. Үг сонгоход промт өөрөө угсарна.">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --red:#E24B4A; --red-d:#c93b3a; --red-g:rgba(226,75,74,.10);
+  --bg:#0a0a0a; --bg2:#111; --card:#141414; --card2:#1a1a1a;
+  --line:#222; --line2:#2a2a2a; --line3:#333;
+  --txt:#fff; --dim:#999; --dim2:#666; --dim3:#444;
+  --ok:#5bbf6a;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:Georgia,serif;line-height:1.6;
+     -webkit-font-smoothing:antialiased;padding-bottom:180px}
+.ui{font-family:Arial,Helvetica,sans-serif}
+a{color:inherit;text-decoration:none}
+button{font-family:Arial,Helvetica,sans-serif;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea,select{font-family:Arial,Helvetica,sans-serif;color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+/* ═══ TOP ═══ */
+header{border-bottom:1px solid var(--line);background:var(--bg);position:relative;overflow:hidden}
+header .glow{position:absolute;inset:0;background:radial-gradient(ellipse at 78% 40%,var(--red-g) 0%,transparent 62%)}
+.hd{position:relative;padding:44px 0 36px}
+.logo{display:flex;align-items:baseline;gap:6px;margin-bottom:26px}
+.logo .num{font-size:26px;font-weight:700}
+.logo .sup{font-family:Arial,sans-serif;font-size:11px;color:var(--red);margin-bottom:11px}
+.logo .word{font-family:Arial,sans-serif;font-size:16px;letter-spacing:6px}
+.tag{font-family:Arial,sans-serif;font-size:11px;letter-spacing:6px;color:var(--red);margin-bottom:14px}
+h1{font-size:clamp(34px,5.5vw,58px);font-weight:700;line-height:1.02;margin-bottom:16px}
+h1 span{color:var(--red)}
+.lede{font-family:Arial,sans-serif;font-size:14.5px;color:var(--dim);max-width:620px;line-height:1.75}
+.dedic{font-family:Arial,sans-serif;font-size:11px;letter-spacing:3px;color:var(--dim3);margin-top:20px}
+
+/* ═══ CONTROL BAR ═══ */
+.bar{position:sticky;top:0;z-index:60;background:rgba(10,10,10,.94);backdrop-filter:blur(12px);
+     border-bottom:1px solid var(--line)}
+.bar-in{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 0}
+.seg{display:flex;border:1px solid var(--line2)}
+.seg button{font-size:11px;letter-spacing:2px;padding:9px 16px;color:var(--dim);transition:.15s}
+.seg button.on{background:var(--red);color:#fff}
+.seg button:not(.on):hover{color:#fff;background:#181818}
+.pill{font-family:Arial,sans-serif;font-size:11px;letter-spacing:2px;padding:9px 15px;
+      border:1px solid var(--line2);color:var(--dim);transition:.15s;white-space:nowrap}
+.pill:hover{border-color:var(--red);color:#fff}
+.pill.warn{border-color:var(--line2);color:var(--dim2)}
+.count{font-family:Arial,sans-serif;font-size:11px;letter-spacing:2px;color:var(--dim2);margin-left:auto}
+.count b{color:var(--red);font-size:13px}
+
+/* ═══ SECTION ═══ */
+section{padding:52px 0 12px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:6px;flex-wrap:wrap}
+.sec-n{font-family:Arial,sans-serif;font-size:11px;letter-spacing:4px;color:var(--red)}
+.sec-t{font-size:26px;font-weight:700}
+.sec-d{font-family:Arial,sans-serif;font-size:12.5px;color:var(--dim2);margin-bottom:22px;max-width:640px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:10px}
+
+/* ═══ CHIP ═══ */
+.chip{position:relative;text-align:left;background:var(--card);border:1px solid var(--line);
+      padding:13px 15px;transition:border-color .15s,background .15s;display:block;width:100%}
+.chip:hover{border-color:var(--line3)}
+.chip .w{font-family:Arial,sans-serif;font-size:13px;font-weight:600;letter-spacing:.3px;
+         color:#fff;display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.chip .mn{font-family:Arial,sans-serif;font-size:11.5px;color:var(--dim2);line-height:1.5}
+.chip .star{color:var(--red);font-size:10px}
+.chip .lrn{position:absolute;top:11px;right:12px;font-size:10px;color:var(--ok);opacity:0;transition:.15s}
+.chip.learned .lrn{opacity:1}
+.chip.on{background:var(--red-g);border-color:var(--red)}
+.chip.on .w{color:var(--red)}
+.chip.on .mn{color:#aa8281}
+.chip.ban{opacity:.3}
+.chip.ban .w{text-decoration:line-through}
+.chip.off{opacity:.22;pointer-events:none}
+.chip.solo::after{content:'1';position:absolute;bottom:9px;right:11px;font-family:Arial,sans-serif;
+                  font-size:9px;color:var(--dim3);border:1px solid var(--line2);
+                  width:14px;height:14px;line-height:12px;text-align:center;border-radius:50%}
+
+/* ═══ INPUTS ═══ */
+.io{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-bottom:20px}
+.fld label{display:block;font-family:Arial,sans-serif;font-size:10.5px;letter-spacing:3px;
+           color:var(--dim2);margin-bottom:8px}
+.fld input{width:100%;background:var(--card);border:1px solid var(--line);padding:11px 13px;
+           font-size:13px;outline:none;transition:border-color .15s}
+.fld input:focus{border-color:var(--red)}
+.fld input::placeholder{color:var(--dim3)}
+.quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.q{font-family:Arial,sans-serif;font-size:11px;padding:5px 10px;border:1px solid var(--line2);
+   color:var(--dim);transition:.15s}
+.q:hover{border-color:var(--red);color:#fff}
+
+/* ═══ PRESETS ═══ */
+.pre-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.pre{text-align:left;background:var(--card);border:1px solid var(--line);padding:16px;transition:.15s}
+.pre:hover{border-color:var(--red);background:var(--card2)}
+.pre .t{font-family:Georgia,serif;font-size:16px;font-weight:700;margin-bottom:5px}
+.pre .d{font-family:Arial,sans-serif;font-size:11px;color:var(--dim2);line-height:1.5}
+.pre .m{font-family:Arial,sans-serif;font-size:9.5px;letter-spacing:2px;color:var(--red);margin-top:9px}
+
+/* ═══ TRAINER ═══ */
+.trn{background:var(--card);border:1px solid var(--line);padding:26px}
+.trn-top{display:flex;justify-content:space-between;align-items:center;gap:14px;
+         flex-wrap:wrap;margin-bottom:18px}
+.trn-top .h{font-size:19px;font-weight:700}
+.prog{height:5px;background:#000;border:1px solid var(--line);margin-bottom:6px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--red);width:0;transition:width .35s}
+.prog-l{font-family:Arial,sans-serif;font-size:11px;color:var(--dim2);margin-bottom:20px}
+.card5{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.c5{background:var(--bg);border:1px solid var(--line2);padding:14px}
+.c5 .w{font-family:Arial,sans-serif;font-size:13px;font-weight:600;color:#fff;margin-bottom:4px}
+.c5 .mn{font-family:Arial,sans-serif;font-size:11px;color:var(--dim2);line-height:1.5;margin-bottom:11px;
+        min-height:33px}
+.c5 .row{display:flex;gap:6px}
+.c5 button{flex:1;font-size:10.5px;letter-spacing:1px;padding:7px 0;border:1px solid var(--line2);
+           color:var(--dim);transition:.15s}
+.c5 button:hover{border-color:var(--red);color:#fff}
+.c5.done{opacity:.42}
+.c5.done .w::after{content:' ✓';color:var(--ok)}
+
+/* ═══ OUTPUT DOCK ═══ */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:80;background:rgba(10,10,10,.97);
+      backdrop-filter:blur(14px);border-top:1px solid var(--line2)}
+.dock-in{padding:14px 0 16px}
+.dock-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.dock-top .lab{font-family:Arial,sans-serif;font-size:10px;letter-spacing:4px;color:var(--red)}
+.sel-select{background:var(--card);border:1px solid var(--line2);color:var(--dim);
+            font-size:11px;letter-spacing:1px;padding:7px 9px;outline:none}
+.out{width:100%;background:#000;border:1px solid var(--line2);color:#dcdcdc;
+     font-family:'Courier New',monospace;font-size:13px;line-height:1.65;padding:13px;
+     resize:vertical;min-height:78px;outline:none}
+.out:focus{border-color:var(--red)}
+.dock-btm{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.b-red{background:var(--red);color:#fff;font-size:11px;letter-spacing:3px;padding:11px 26px;transition:.15s}
+.b-red:hover{background:var(--red-d)}
+.b-out{border:1px solid var(--line3);font-size:11px;letter-spacing:3px;padding:11px 20px;
+       color:var(--dim);transition:.15s}
+.b-out:hover{border-color:#fff;color:#fff}
+.note{font-family:Arial,sans-serif;font-size:11px;color:var(--dim2);margin-left:auto;text-align:right;
+      line-height:1.5;max-width:400px}
+.note b{color:var(--red);font-weight:400}
+
+/* ═══ HISTORY ═══ */
+.hist{display:flex;flex-direction:column;gap:7px}
+.hi{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);
+    padding:12px 14px;text-align:left;width:100%;transition:.15s}
+.hi:hover{border-color:var(--red)}
+.hi .n{font-family:Arial,sans-serif;font-size:10px;letter-spacing:2px;color:var(--dim3);flex:none;
+       padding-top:2px}
+.hi .p{font-family:'Courier New',monospace;font-size:11.5px;color:var(--dim);line-height:1.55;
+       overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.empty{font-family:Arial,sans-serif;font-size:12px;color:var(--dim3);padding:16px 0}
+
+/* ═══ TOAST ═══ */
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:210px;z-index:200;
+       display:flex;flex-direction:column;gap:7px;align-items:center;pointer-events:none}
+.tst{background:#1c1c1c;border:1px solid var(--line3);border-left:2px solid var(--red);
+     font-family:Arial,sans-serif;font-size:12px;color:#ddd;padding:10px 16px;
+     animation:tin .2s ease-out}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}}
+
+footer{border-top:1px solid var(--line);margin-top:60px;padding:32px 0 40px;
+       font-family:Arial,sans-serif;font-size:11px;letter-spacing:2px;color:var(--dim3)}
+
+@media(max-width:640px){
+  .wrap{padding:0 16px}
+  .hd{padding:32px 0 26px}
+  .grid{grid-template-columns:1fr}
+  .note{display:none}
+  body{padding-bottom:250px}
+  #toast{bottom:270px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="glow"></div>
+  <div class="wrap hd">
+    <div class="logo"><span class="num">1</span><span class="sup">st</span><span class="word">STUDIO</span></div>
+    <div class="tag">ПРОМТЫН ТОЛЬ БИЧИГ</div>
+    <h1>Үг сонго.<br>Промт <span>өөрөө</span> угсарна.</h1>
+    <p class="lede"><b id="nWords">86</b> түлхүүр үг, 6 ангилал. Дарахад нь загварын дарааллаар өөрөө байрлаж,
+       хоорондоо зөрчилдөх үгсийг автоматаар хасна. Цээжлэх шаардлагагүй — өдөрт 5 үг
+       өөрөө гарч ирнэ.</p>
+    <div class="dedic">БАРААТАД ЗОРИУЛАВ</div>
+  </div>
+</header>
+
+<div class="bar">
+  <div class="wrap bar-in">
+    <div class="seg" id="mode">
+      <button data-m="image" class="on">🖼 ЗУРАГ</button>
+      <button data-m="video">🎬 ВИДЕО</button>
+    </div>
+    <button class="pill" id="btnRand">🎲 САНАМСАРГҮЙ</button>
+    <button class="pill" id="btnClear">✕ ЦЭВЭРЛЭХ</button>
+    <a class="pill" href="#trainer">📚 ӨДРИЙН 5 ҮГ</a>
+    <div class="count"><b id="cSel">0</b> ҮГ СОНГОСОН</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <section id="recipes">
+    <div class="sec-head"><span class="sec-n">ЖОР</span><span class="sec-t">Бэлэн хослолууд</span></div>
+    <p class="sec-d">Нэг товшилтоор зургаан ангилал бүрэн бөглөгдөнө. Дараа нь дурын үгийг нь солиод яв.</p>
+    <div class="pre-grid" id="preGrid"></div>
+  </section>
+
+  <section id="subject">
+    <div class="sec-head"><span class="sec-n">СУУРЬ</span><span class="sec-t">Юуны тухай вэ</span></div>
+    <p class="sec-d">Гурван талбар. Бичих дургүй бол доорх шошгыг дар — англиар өөрөө бөглөгдөнө.</p>
+    <div class="io">
+      <div class="fld">
+        <label>ОБЪЕКТ / ДҮР</label>
+        <input id="fSubj" placeholder="a vintage chrome microphone">
+        <div class="quick" id="qSubj"></div>
+      </div>
+      <div class="fld">
+        <label>ҮЙЛДЭЛ / ПОЗ</label>
+        <input id="fAct" placeholder="singing into the microphone">
+        <div class="quick" id="qAct"></div>
+      </div>
+      <div class="fld">
+        <label>ОРЧИН</label>
+        <input id="fSet" placeholder="on a dark stage">
+        <div class="quick" id="qSet"></div>
+      </div>
+    </div>
+  </section>
+
+  <div id="cats"></div>
+
+  <section id="trainer">
+    <div class="sec-head"><span class="sec-n">СУРАЛЦАХ</span><span class="sec-t">Өдрийн 5 үг</span></div>
+    <p class="sec-d">Мэдэхгүй үгсээс өдөр бүр таван ширхгийг өөрөө сонгож өгнө. Өнөөдөр нэг л
+       багц — маргааш шинэ. Бүгдийг эзэмших хүртэл тоолно.</p>
+    <div class="trn">
+      <div class="trn-top">
+        <div class="h" id="trnDate"></div>
+        <button class="pill" id="btnReset">↺ ЯВЦЫГ ТЭГЛЭХ</button>
+      </div>
+      <div class="prog"><i id="progBar"></i></div>
+      <div class="prog-l" id="progLbl"></div>
+      <div class="card5" id="card5"></div>
+    </div>
+  </section>
+
+  <section id="history">
+    <div class="sec-head"><span class="sec-n">ТҮҮХ</span><span class="sec-t">Сүүлд хийсэн промтууд</span></div>
+    <p class="sec-d">Хадгалсан промт дээр дарахад буцаад гаралтын талбарт орно.</p>
+    <div class="hist" id="hist"></div>
+  </section>
+
+  <footer>1st STUDIO · ПРОМТЫН ТОЛЬ БИЧИГ · БҮХ ЗҮЙЛ ХӨТӨЧ ДЭЭР, СЕРВЕРГҮЙ</footer>
+</div>
+
+<div class="dock">
+  <div class="wrap dock-in">
+    <div class="dock-top">
+      <span class="lab">ГАРАЛТ</span>
+      <select class="sel-select" id="platform">
+        <option value="plain">Энгийн (бүх AI)</option>
+        <option value="mj">Midjourney (--ar)</option>
+        <option value="veo">Veo 3.1 / видео</option>
+      </select>
+      <span class="count" id="cWords"></span>
+    </div>
+    <textarea class="out" id="out" spellcheck="false" placeholder="Дээрээс үг сонгоход энд промт өөрөө бичигдэнэ…"></textarea>
+    <div class="dock-btm">
+      <button class="b-red" id="btnCopy">📋 ХУУЛАХ</button>
+      <button class="b-out" id="btnSave">💾 ХАДГАЛАХ</button>
+      <div class="note" id="note"></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+"use strict";
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ТОЛЬ — 6 ангилал, 83 үг.
+   slot : нэг л сонгогдоно (шинийг дарвал хуучин нь өөрөө хасагдана)
+   pos  : промтын аль хэсэгт очих вэ
+   ══════════════════════════════════════════════════════════════════════════ */
+const CATS = [
+{ n:"1", id:"cam", t:"Камер ба композици", d:"Хаанаас, ямар зайнаас харж байна вэ. Хэмжээ · өнцөг · байрлал · линз — тус бүрээс нэгийг.",
+  words:[
+  ["close-up","Ойрын зураг — нүүр эсвэл объект дэлгэцийг дүүргэнэ","shot","frame"],
+  ["extreme close-up","Маш ойрын — нүд, уруул, гарын хуруу гэх мэт","shot","frame"],
+  ["medium shot","Дунд зэргийн — бэлхүүсээс дээш","shot","frame"],
+  ["wide shot","Өргөн — дүр болон орчин хоёулаа харагдана","shot","frame"],
+  ["full body shot","Бүтэн биеийн зураг","shot","frame"],
+  ["portrait","Хөрөг зураг","shot","frame"],
+  ["profile view","Хажуугийн харагдац","angle","frame",1],
+  ["top-down view","Яг дээрээс харсан — хоол, flat lay-д гоё","angle","frame"],
+  ["bird's eye view","Шувууны нүдээр — өндрөөс харсан","angle","frame"],
+  ["low angle","Доороос харсан — дүрийг сүрлэг харагдуулна","angle","frame"],
+  ["eye level","Нүдний түвшнээс — байгалийн, ойр дотно","angle","frame"],
+  ["over-the-shoulder","Нэг дүрийн мөрөн дээгүүр нөгөөг харах","angle","frame"],
+  ["centered composition","Гол объект яг төвд","comp","frame"],
+  ["symmetrical composition","Тэгш хэмтэй байрлал","comp","frame"],
+  ["rule of thirds","Гуравны нэгийн дүрэм — объект төвөөс зөрүүтэй","comp","frame"],
+  ["85mm lens","Хөрөгт хамгийн тохиромжтой линз, ар нь зөөлөн бүдэг","lens","frame"],
+  ["35mm lens","Өргөн, байгалийн харагдац — street / lifestyle","lens","frame"],
+  ["macro","Маш ойрын нарийвчилсан — шүүдэр, бичил зүйл","lens","frame"],
+  ["shallow depth of field","Гүехэн фокус — гол дүр тод, ар нь бүдэг",null,"frame"],
+  ["bokeh","Арын гэрлүүд зөөлөн дугуй толбо болох эффект",null,"frame"]
+]},
+{ n:"2", id:"light", t:"Гэрэл", d:"Промтыг хамгийн ихээр өөрчилдөг ангилал. Хэд хэдийг хамт авч болно — зөрчилдвөл өөрөө хасна.",
+  words:[
+  ["golden hour","Нар мандах / жаргах үеийн алтан дулаан гэрэл",null,"light"],
+  ["blue hour","Нар жаргасны дараах хөхөвтөр бүрий",null,"light"],
+  ["dappled light","Навчис дундуур тусах толботой гэрэл",null,"light",1],
+  ["rim lighting","Дүрийн захаар гэрэлтэх контур гэрэл",null,"light",1],
+  ["backlight","Ард талаас тусах гэрэл — silhouette үүсгэнэ",null,"light"],
+  ["soft studio lighting","Зөөлөн, сүүдэргүй студийн гэрэл",null,"light"],
+  ["dramatic lighting","Хурц тод, гүн сүүдэртэй — кино маягийн",null,"light"],
+  ["neon glow","Неон туяа — студийн aesthetic-д яг таарна",null,"light"],
+  ["candlelight","Лааны бүдэг дулаан гэрэл",null,"light"],
+  ["moonlight","Сарны хүйтэн зөөлөн гэрэл",null,"light"],
+  ["volumetric light","Агаарт харагдах гэрлийн багана — god rays",null,"light"],
+  ["high-key","Цайвар, гэгээлэг, сүүдэр багатай",null,"light"],
+  ["low-key","Бараан, нууцлаг, сүүдэр давамгай",null,"light"],
+  ["natural light","Байгалийн гэрэл",null,"light"],
+  ["silhouette","Гэрлийн эсрэг харагдах бараан дүрс",null,"light"]
+]},
+{ n:"3", id:"style", t:"Style — арга барил", d:"Промтын хамгийн эхэнд бичигдэнэ. Ганцхныг сонгоно — хоёр style зэрэг явбал AI эргэлзэнэ.",
+  words:[
+  ["photorealistic","Бодит гэрэл зураг шиг","style","style"],
+  ["cinematic photography","Киноны кадр шиг — өнгө, гэрэл нь найруулгатай","style","style"],
+  ["film still","Киноноос авсан хөлдөөсөн кадр мэт","style","style"],
+  ["analog film, 35mm film","Хальсан аппаратын дулаан өнгө, grain-тэй","style","style"],
+  ["3D render","Гурван хэмжээст дүрслэл","style","style"],
+  ["flat vector illustration","Хавтгай вектор — лого, icon, постерт","style","style"],
+  ["watercolor","Усан будгийн зөөлөн урсгалтай","style","style"],
+  ["oil painting","Тосон будгийн зузаан бүтэцтэй","style","style"],
+  ["anime style","Японы анимэ загвар","style","style"],
+  ["cartoon style","Хүүхэлдэйн киноны загвар","style","style"],
+  ["hand-drawn sketch","Гар зурсан ноорог — BODZ комиксын aesthetic","style","style",1],
+  ["line art","Цэвэр шугаман зураг","style","style"],
+  ["minimalist","Цомхон, илүүдэлгүй","style","style"],
+  ["pixel art","Пиксел график","style","style"],
+  ["concept art","Кино / тоглоомын концепт зураг","style","style"]
+]},
+{ n:"4", id:"mood", t:"Өнгө ба mood", d:"Сэтгэгдлийг тодорхойлно. Өнгөний үгс хоорондоо их зөрчилддөг тул анхаар.",
+  words:[
+  ["warm tones","Дулаан өнгө — улбар, шар, улаавтар",null,"mood"],
+  ["cool tones","Сэрүүн өнгө — хөх, ногоон",null,"mood"],
+  ["muted colors","Бүдэг намуухан, тайван өнгө",null,"mood"],
+  ["vibrant colors","Тод эрч хүчтэй өнгө",null,"mood"],
+  ["pastel colors","Пастель зөөлөн өнгө",null,"mood"],
+  ["monochrome","Нэг өнгөний сүүдэрт",null,"mood"],
+  ["black and white","Хар цагаан",null,"mood"],
+  ["high contrast","Гэрэл сүүдрийн эрс ялгаатай",null,"mood"],
+  ["moody atmosphere","Гүн, нууцлаг уур амьсгал",null,"mood"],
+  ["dreamy","Зүүд шиг зөөлөн, манантай",null,"mood"],
+  ["nostalgic","Дурсамж сэргээсэн",null,"mood"],
+  ["ethereal","Тэнгэрлэг, хөнгөн, гэрэлтсэн",null,"mood"],
+  ["serene, peaceful","Амгалан тайван",null,"mood"],
+  ["epic","Сүрлэг, том масштабтай",null,"mood"]
+]},
+{ n:"5", id:"move", t:"Камерын хөдөлгөөн", d:"ЗӨВХӨН ВИДЕОНД (Veo 3.1, Runway, Kling). Дээд талын 🎬 ВИДЕО горимыг асаахад идэвхжинэ.", video:true,
+  words:[
+  ["slow dolly-in","Аажим ойртох — сэтгэл хөдлөл рүү шумбана",null,"move"],
+  ["dolly-out","Аажим холдох — орчныг ил гаргана",null,"move"],
+  ["pan left","Камер зүүн тийш хэвтээ эргэх",null,"move"],
+  ["pan right","Камер баруун тийш хэвтээ эргэх",null,"move"],
+  ["tilt up","Камер дээш босоо эргэх",null,"move"],
+  ["tilt down","Камер доош босоо эргэх",null,"move"],
+  ["tracking shot","Хөдөлж буй дүрийг дагах",null,"move"],
+  ["orbit shot","Дүрийг тойрон эргэх",null,"move"],
+  ["crane shot","Өндөрсөж / буух хөдөлгөөн",null,"move"],
+  ["handheld","Гар камерын амьд чичиргээтэй",null,"move"],
+  ["static shot","Огт хөдөлгөөнгүй камер",null,"move"],
+  ["slow motion","Удаашруулсан хөдөлгөөн",null,"move"],
+  ["time-lapse","Хурдасгасан цаг хугацаа",null,"move"],
+  ["aerial drone shot","Дроноор авсан агаарын зураг",null,"move"]
+]},
+{ n:"6", id:"tech", t:"Техник үгс", d:"Хамгийн сүүлд наалддаг. Нарийвчлал ба харьцаа тус бүрээс нэг.",
+  words:[
+  ["4K","Нарийвчлалын түвшин — ихэнх тохиолдолд хангалттай","res","tech"],
+  ["8K","Илүү өндөр нарийвчлал — дэлгэрэнгүй том зурагт","res","tech"],
+  ["highly detailed","Маш нарийвчилсан",null,"tech"],
+  ["sharp focus","Хурц тод фокус",null,"tech"],
+  ["film grain","Хальсны ширхэглэг бүтэц — retro мэдрэмж",null,"tech"],
+  ["1:1","Album cover, Instagram пост","ratio","ratio"],
+  ["16:9","YouTube, кино формат","ratio","ratio"],
+  ["9:16","Reels, TikTok, Story","ratio","ratio"]
+]}
+];
+
+/* ══ Индекс ══ */
+const W = new Map();          // үг → мэдээлэл
+const ORDER = [];             // толины дараалал
+CATS.forEach(c => c.words.forEach(([w, mn, slot, pos, star]) => {
+  W.set(w, { w, mn, slot, pos, star: !!star, cat: c.id, video: !!c.video });
+  ORDER.push(w);
+}));
+
+/* ══ Зөрчил ══ */
+const BAN = new Map();
+function ban(a, b){
+  if (!W.has(a) || !W.has(b)) throw new Error("тодорхойгүй үг: " + a + " / " + b);
+  if (!BAN.has(a)) BAN.set(a, new Set());
+  if (!BAN.has(b)) BAN.set(b, new Set());
+  BAN.get(a).add(b); BAN.get(b).add(a);
+}
+function banCross(as, bs){ as.forEach(a => bs.forEach(b => { if (a !== b) ban(a, b); })); }
+
+// Гэрэл — эх үүсвэр, цаг хугацаа хоорондоо зөрчилддөг
+banCross(["golden hour"], ["blue hour","moonlight","candlelight","neon glow","soft studio lighting"]);
+banCross(["blue hour"],   ["moonlight","candlelight","soft studio lighting"]);
+banCross(["soft studio lighting"],
+         ["dramatic lighting","low-key","silhouette","natural light","dappled light",
+          "volumetric light","moonlight","candlelight","neon glow","backlight"]);
+ban("dramatic lighting","high-key");
+banCross(["high-key"], ["low-key","silhouette","moonlight","candlelight","neon glow"]);
+ban("low-key","natural light");
+banCross(["natural light"], ["neon glow","candlelight"]);
+banCross(["moonlight"], ["candlelight","neon glow"]);
+ban("candlelight","neon glow");
+banCross(["dappled light"], ["moonlight","candlelight","neon glow"]);
+
+// Өнгө
+banCross(["black and white","monochrome"],
+         ["warm tones","cool tones","muted colors","vibrant colors","pastel colors"]);
+ban("black and white","monochrome");
+ban("warm tones","cool tones");
+ban("muted colors","vibrant colors");
+banCross(["pastel colors"], ["high contrast","vibrant colors","moody atmosphere"]);
+ban("muted colors","high contrast");
+ban("dreamy","high contrast");
+banCross(["serene, peaceful"], ["epic","moody atmosphere"]);
+ban("moody atmosphere","high-key");
+ban("dreamy","sharp focus");
+ban("minimalist","highly detailed");
+
+// Зурсан / будсан style дээр камерын оптик утгагүй
+banCross(["flat vector illustration","line art","pixel art","watercolor","oil painting",
+          "cartoon style","hand-drawn sketch"],
+         ["bokeh","shallow depth of field","film grain","85mm lens","35mm lens","macro"]);
+ban("3D render","film grain");
+banCross(["macro"], ["wide shot","full body shot"]);
+
+// Гэрлийн температур ↔ өнгөний температур
+ban("golden hour","cool tones");
+ban("candlelight","cool tones");
+ban("blue hour","warm tones");
+ban("moonlight","warm tones");
+
+// Хөдөлгөөн
+banCross(["static shot"],
+         ["slow dolly-in","dolly-out","pan left","pan right","tilt up","tilt down",
+          "tracking shot","orbit shot","crane shot","handheld","aerial drone shot"]);
+ban("slow dolly-in","dolly-out");
+ban("pan left","pan right");
+ban("tilt up","tilt down");
+ban("slow motion","time-lapse");
+ban("handheld","aerial drone shot");
+ban("time-lapse","handheld");
+
+/* ══ Жор ══ */
+const PRESETS = [
+{ t:"Цомгийн нүүр", d:"Бараан тайз, неон контур, төвлөрсөн — 1:1", m:"IMAGE · 1:1",
+  mode:"image", subj:"a vintage chrome microphone with red accents", act:"", set:"on a dark stage",
+  w:["cinematic photography","rim lighting","neon glow","moody atmosphere","high contrast",
+     "close-up","centered composition","shallow depth of field","highly detailed","4K","1:1"] },
+{ t:"Артистын хөрөг", d:"Зөөлөн студи, 85mm, намуухан өнгө", m:"IMAGE · 1:1",
+  mode:"image", subj:"a young Mongolian singer", act:"looking straight into the camera", set:"inside a recording studio",
+  w:["photorealistic","soft studio lighting","muted colors","portrait","eye level","85mm lens",
+     "shallow depth of field","bokeh","sharp focus","4K","1:1"] },
+{ t:"Reels кадр", d:"Неон гудамж, доод өнцөг, босоо", m:"IMAGE · 9:16",
+  mode:"image", subj:"a young Mongolian rapper", act:"walking slowly", set:"on a neon-lit street",
+  w:["cinematic photography","neon glow","backlight","vibrant colors","moody atmosphere",
+     "medium shot","low angle","35mm lens","film grain","9:16"] },
+{ t:"Талын сүр", d:"Алтан цаг, өргөн кадр, туульсын мэдрэмж", m:"IMAGE · 16:9",
+  mode:"image", subj:"a nomad on the Mongolian steppe", act:"", set:"under a vast open sky",
+  w:["film still","golden hour","warm tones","epic","nostalgic","wide shot","rule of thirds",
+     "35mm lens","highly detailed","8K","16:9"] },
+{ t:"BODZ ноорог", d:"Гар зураг, хар цагаан, комикс", m:"IMAGE · 1:1",
+  mode:"image", subj:"a lone figure with a guitar", act:"head bowed, eyes closed", set:"in an empty room",
+  w:["hand-drawn sketch","dramatic lighting","black and white","high contrast","medium shot",
+     "low angle","rule of thirds","1:1"] },
+{ t:"Видео шот", d:"Аажим ойртолт, гар камер, кино өнгө", m:"VIDEO · 16:9",
+  mode:"video", subj:"a young Mongolian singer", act:"singing into the microphone", set:"on a dark stage",
+  w:["cinematic photography","rim lighting","volumetric light","cool tones","moody atmosphere",
+     "medium shot","eye level","85mm lens","shallow depth of field",
+     "slow dolly-in","handheld","4K","16:9"] }
+];
+
+/* ══ Түргэн шошго ══ */
+const QUICK = {
+  subj:[["Винтаж микрофон","a vintage chrome microphone with red accents"],
+        ["Залуу рэпэр","a young Mongolian rapper"],
+        ["Дуучин бүсгүй","a young Mongolian female singer"],
+        ["Винил пянз","a spinning vinyl record"],
+        ["Студийн пульт","a studio mixing console with glowing faders"],
+        ["Морин хуур","a morin khuur, the Mongolian horsehead fiddle"],
+        ["Цахилгаан гитар","an electric guitar leaning against an amplifier"],
+        ["Чихэвч","a pair of studio headphones on a wooden desk"],
+        ["Синт товчлуур","a close-up of synthesizer keys"]],
+  act:[["дуулж байна","singing into the microphone"],
+       ["тайзан дээр","performing on stage"],
+       ["толгойгоо бөхийлгөж","head bowed, eyes closed"],
+       ["камер руу харж","looking straight into the camera"],
+       ["алхаж яваа","walking slowly"],
+       ["гараа өргөсөн","one arm raised"],
+       ["үг бичиж суугаа","sitting and writing lyrics"]],
+  set:[["бараан тайз","on a dark stage"],
+       ["бичлэгийн студи","inside a recording studio"],
+       ["неон гудамж","on a neon-lit street"],
+       ["уудам тал","on the open steppe"],
+       ["хаягдсан байшин","in an abandoned building"],
+       ["том цонхны дэргэд","beside a large window"],
+       ["цас орж байна","in falling snow"]]
+};
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ТӨЛӨВ
+   ══════════════════════════════════════════════════════════════════════════ */
+const LS_LEARN = "pb.learned", LS_HIST = "pb.history";
+const sel = new Set();
+let mode = "image";
+let learned = new Set(load(LS_LEARN, []));
+let history = load(LS_HIST, []);
+
+function load(k, dflt){
+  try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? dflt : v; }
+  catch (e) { return dflt; }
+}
+function save(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+
+const $  = (s) => document.querySelector(s);
+const $$ = (s) => Array.from(document.querySelectorAll(s));
+
+function toast(msg){
+  const el = document.createElement("div");
+  el.className = "tst"; el.textContent = msg;
+  $("#toast").appendChild(el);
+  setTimeout(() => el.remove(), 2600);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   СОНГОЛТ — зөрчил ба slot-ыг өөрөө шийднэ
+   ══════════════════════════════════════════════════════════════════════════ */
+function toggle(w){
+  if (sel.has(w)) { sel.delete(w); render(); return; }
+
+  const info = W.get(w);
+  const dropped = [];
+
+  // Нэг л сонгогдох бүлэг — хуучныг нь солино
+  if (info.slot){
+    for (const s of Array.from(sel)){
+      if (W.get(s).slot === info.slot) { sel.delete(s); dropped.push(s); }
+    }
+  }
+  // Зөрчилдөх үгсийг хасна
+  const bans = BAN.get(w);
+  if (bans){
+    for (const s of Array.from(sel)){
+      if (bans.has(s)) { sel.delete(s); dropped.push(s); }
+    }
+  }
+
+  sel.add(w);
+  if (dropped.length) toast("«" + dropped.join("», «") + "» хасагдлаа — «" + w + "»-тэй зөрчилдөнө");
+  render();
+}
+
+function clearAll(){ sel.clear(); ["#fSubj","#fAct","#fSet"].forEach(s => $(s).value = ""); render(); }
+
+function setMode(m){
+  mode = m;
+  if (m === "image") for (const s of Array.from(sel)) if (W.get(s).video) sel.delete(s);
+  $$("#mode button").forEach(b => b.classList.toggle("on", b.dataset.m === m));
+  $("#platform").value = (m === "video") ? "veo" : "plain";
+  render();
+}
+
+function applyPreset(p){
+  sel.clear();
+  setModeSilent(p.mode);
+  p.w.forEach(w => { if (W.has(w)) sel.add(w); });
+  $("#fSubj").value = p.subj || "";
+  $("#fAct").value  = p.act  || "";
+  $("#fSet").value  = p.set  || "";
+  render();
+  toast("«" + p.t + "» жор ачааллаа");
+  $("#out").scrollIntoView({ block:"nearest" });
+}
+function setModeSilent(m){
+  mode = m;
+  $$("#mode button").forEach(b => b.classList.toggle("on", b.dataset.m === m));
+  $("#platform").value = (m === "video") ? "veo" : "plain";
+}
+
+function randomize(){
+  sel.clear();
+  const pool = (id) => ORDER.filter(w => W.get(w).cat === id && (mode === "video" || !W.get(w).video));
+  const pick = (arr, n) => {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--){ const j = (Math.random() * (i + 1)) | 0; [a[i], a[j]] = [a[j], a[i]]; }
+    return a.slice(0, n);
+  };
+  const tryAdd = (w) => {
+    const info = W.get(w);
+    if (info.slot && Array.from(sel).some(s => W.get(s).slot === info.slot)) return;
+    const b = BAN.get(w);
+    if (b && Array.from(sel).some(s => b.has(s))) return;
+    sel.add(w);
+  };
+
+  pick(pool("style"), 1).forEach(tryAdd);
+  pick(pool("light"), 3).forEach(tryAdd);
+  pick(pool("mood"),  3).forEach(tryAdd);
+  pick(pool("cam"),   5).forEach(tryAdd);
+  if (mode === "video") pick(pool("move"), 2).forEach(tryAdd);
+  pick(pool("tech"),  4).forEach(tryAdd);
+
+  if (!$("#fSubj").value){
+    const q = QUICK.subj[(Math.random() * QUICK.subj.length) | 0];
+    $("#fSubj").value = q[1];
+  }
+  render();
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ПРОМТ УГСРАХ — загварын дараалал
+   [Style]: [Subject], [үйлдэл], [орчин], [хөдөлгөөн], [гэрэл],
+            [өнгө/mood], [композици/линз], [техник], [ratio]
+   ══════════════════════════════════════════════════════════════════════════ */
+function inPos(pos){ return ORDER.filter(w => sel.has(w) && W.get(w).pos === pos); }
+
+function buildPrompt(){
+  const plat  = $("#platform").value;
+  const style = inPos("style")[0] || "";
+  const ratio = inPos("ratio")[0] || "";
+
+  const body = [];
+  const subj = $("#fSubj").value.trim();
+  const act  = $("#fAct").value.trim();
+  const set  = $("#fSet").value.trim();
+
+  if (subj) body.push(subj);
+  if (act)  body.push(act);
+  if (set)  body.push(set);
+  if (mode === "video") body.push(...inPos("move"));
+  // Техникээс нарийвчлал (4K / 8K) хамгийн сүүлд наалдана
+  const tech = inPos("tech"), res = tech.filter(w => W.get(w).slot === "res");
+  body.push(...inPos("light"), ...inPos("mood"), ...inPos("frame"),
+            ...tech.filter(w => W.get(w).slot !== "res"), ...res);
+
+  if (!body.length && !style) return "";
+
+  let head = style ? style.charAt(0).toUpperCase() + style.slice(1) : "";
+  let out  = head ? (body.length ? head + ": " + body.join(", ") : head) : body.join(", ");
+
+  if (ratio){
+    if (plat === "mj") out += " --ar " + ratio;
+    else out += ", " + ratio;
+  }
+  if (plat === "veo" && mode === "video" && !inPos("move").length){
+    out += ", static shot";
+  }
+  return out;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ДЭЛГЭЦ
+   ══════════════════════════════════════════════════════════════════════════ */
+function buildCats(){
+  const host = $("#cats");
+  CATS.forEach(c => {
+    const s = document.createElement("section");
+    s.id = "cat-" + c.id;
+    s.innerHTML =
+      '<div class="sec-head"><span class="sec-n">' + c.n + '</span>' +
+      '<span class="sec-t">' + c.t + '</span></div>' +
+      '<p class="sec-d">' + c.d + '</p><div class="grid"></div>';
+    const g = s.querySelector(".grid");
+    c.words.forEach(([w, mn, slot, pos, star]) => {
+      const b = document.createElement("button");
+      b.className = "chip" + (slot ? " solo" : "");
+      b.dataset.w = w;
+      b.innerHTML =
+        '<span class="lrn">✓</span>' +
+        '<span class="w">' + esc(w) + (star ? '<span class="star">★</span>' : '') + '</span>' +
+        '<span class="mn">' + esc(mn) + '</span>';
+      b.addEventListener("click", () => toggle(w));
+      g.appendChild(b);
+    });
+    host.appendChild(s);
+  });
+}
+function esc(s){ return String(s).replace(/[&<>"]/g, (m) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[m])); }
+
+function buildPresets(){
+  const g = $("#preGrid");
+  PRESETS.forEach(p => {
+    const b = document.createElement("button");
+    b.className = "pre";
+    b.innerHTML = '<div class="t">' + esc(p.t) + '</div><div class="d">' + esc(p.d) +
+                  '</div><div class="m">' + esc(p.m) + '</div>';
+    b.addEventListener("click", () => applyPreset(p));
+    g.appendChild(b);
+  });
+}
+
+function buildQuick(){
+  [["qSubj","subj","fSubj"], ["qAct","act","fAct"], ["qSet","set","fSet"]].forEach(([host, key, fld]) => {
+    const h = $("#" + host);
+    QUICK[key].forEach(([mn, en]) => {
+      const b = document.createElement("button");
+      b.className = "q"; b.textContent = mn; b.title = en;
+      b.addEventListener("click", () => { $("#" + fld).value = en; render(); });
+      h.appendChild(b);
+    });
+  });
+}
+
+function render(){
+  const banned = new Set();
+  sel.forEach(s => { const b = BAN.get(s); if (b) b.forEach(x => { if (!sel.has(x)) banned.add(x); }); });
+
+  $$(".chip").forEach(el => {
+    const w = el.dataset.w, info = W.get(w);
+    el.classList.toggle("on", sel.has(w));
+    el.classList.toggle("ban", banned.has(w) && !sel.has(w));
+    el.classList.toggle("off", info.video && mode !== "video");
+    el.classList.toggle("learned", learned.has(w));
+  });
+
+  $("#cSel").textContent = sel.size;
+  $("#nWords").textContent = ORDER.length;
+
+  const p = buildPrompt();
+  $("#out").value = p;
+  $("#cWords").textContent = p ? (p.split(/\s+/).length + " ҮГ · " + p.length + " ТЭМДЭГТ") : "";
+
+  const nStyle = inPos("style").length, nRatio = inPos("ratio").length;
+  const miss = [];
+  if (!nStyle) miss.push("style");
+  if (!$("#fSubj").value.trim()) miss.push("объект");
+  if (!nRatio) miss.push("харьцаа");
+  $("#note").innerHTML = miss.length
+    ? "Дутуу: <b>" + miss.join(", ") + "</b>"
+    : (banned.size ? banned.size + " үг зөрчилдөж байгаа тул бүдгэрсэн" : "Бүрэн бүрдсэн ✓");
+
+  renderTrainer();
+}
+
+/* ══ Өдрийн 5 үг ══ */
+function todayKey(){
+  const d = new Date();
+  return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+}
+function dailyFive(){
+  const pool = ORDER.filter(w => !learned.has(w));
+  if (!pool.length) return [];
+  // Өдөр бүр тогтмол — өдрийн дугаараас гаралтай энгийн хольц
+  let seed = todayKey();
+  const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+  const a = pool.slice();
+  for (let i = a.length - 1; i > 0; i--){ const j = (rnd() * (i + 1)) | 0; [a[i], a[j]] = [a[j], a[i]]; }
+  return a.slice(0, 5);
+}
+function renderTrainer(){
+  const d = new Date();
+  $("#trnDate").textContent = d.getFullYear() + " · " + (d.getMonth() + 1) + " сарын " + d.getDate();
+
+  const pct = Math.round((learned.size / ORDER.length) * 100);
+  $("#progBar").style.width = pct + "%";
+  const left = ORDER.length - learned.size;
+  $("#progLbl").textContent = learned.size + " / " + ORDER.length + " үг эзэмшсэн · " + pct + "%" +
+    (left ? "  —  " + left + " үг үлдлээ, өдөрт 5-аар бол " + Math.ceil(left / 5) + " хоног" : "  —  бүгдийг эзэмшлээ 🎉");
+
+  const host = $("#card5");
+  host.innerHTML = "";
+  const five = dailyFive();
+  if (!five.length){
+    host.innerHTML = '<div class="empty">Бүх үгийг эзэмшсэн байна. Явцыг тэглээд дахин давтаж болно.</div>';
+    return;
+  }
+  five.forEach(w => {
+    const info = W.get(w);
+    const el = document.createElement("div");
+    el.className = "c5";
+    el.innerHTML = '<div class="w">' + esc(w) + '</div><div class="mn">' + esc(info.mn) + '</div>' +
+                   '<div class="row"><button data-a="add">ПРОМТОД</button>' +
+                   '<button data-a="done">МЭДСЭН ✓</button></div>';
+    el.querySelector('[data-a="add"]').addEventListener("click", () => {
+      if (info.video && mode !== "video") setMode("video");
+      toggle(w);
+    });
+    el.querySelector('[data-a="done"]').addEventListener("click", () => {
+      learned.add(w); save(LS_LEARN, Array.from(learned)); render();
+    });
+    host.appendChild(el);
+  });
+}
+
+/* ══ Түүх ══ */
+function renderHist(){
+  const h = $("#hist");
+  h.innerHTML = "";
+  if (!history.length){ h.innerHTML = '<div class="empty">Одоогоор хадгалсан промт алга.</div>'; return; }
+  history.forEach((p, i) => {
+    const b = document.createElement("button");
+    b.className = "hi";
+    b.innerHTML = '<span class="n">' + String(i + 1).padStart(2, "0") + '</span>' +
+                  '<span class="p">' + esc(p) + '</span>';
+    b.addEventListener("click", () => {
+      $("#out").value = p;
+      $("#out").scrollIntoView({ block:"center" });
+      toast("Гаралтад буцаалаа");
+    });
+    h.appendChild(b);
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ХОЛБОЛТ
+   ══════════════════════════════════════════════════════════════════════════ */
+buildPresets();
+buildQuick();
+buildCats();
+renderHist();
+render();
+
+$$("#mode button").forEach(b => b.addEventListener("click", () => setMode(b.dataset.m)));
+$("#btnRand").addEventListener("click", randomize);
+$("#btnClear").addEventListener("click", clearAll);
+$("#platform").addEventListener("change", render);
+["#fSubj","#fAct","#fSet"].forEach(s => $(s).addEventListener("input", render));
+
+$("#btnCopy").addEventListener("click", async () => {
+  const t = $("#out").value.trim();
+  if (!t) { toast("Эхлээд үг сонгоно уу"); return; }
+  try { await navigator.clipboard.writeText(t); }
+  catch (e) { $("#out").select(); document.execCommand("copy"); }
+  toast("Хуулагдлаа");
+});
+
+$("#btnSave").addEventListener("click", () => {
+  const t = $("#out").value.trim();
+  if (!t) { toast("Хоосон промт хадгалахгүй"); return; }
+  history = [t].concat(history.filter(x => x !== t)).slice(0, 12);
+  save(LS_HIST, history);
+  renderHist();
+  toast("Хадгаллаа");
+});
+
+$("#btnReset").addEventListener("click", () => {
+  learned.clear(); save(LS_LEARN, []); render();
+  toast("Явц тэглэгдлээ");
+});
+</script>
+</body>
+</html>
