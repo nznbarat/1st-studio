@@ -112,6 +112,29 @@ if not exist "%DP%yt-dlp.exe" (
   goto :fail
 )
 
+:: YouTube одоо JavaScript ажиллуулж чаддаг байхыг шаарддаг болсон. Тийм
+:: хөрвүүлэгч байхгүй бол yt-dlp «HTTP Error 403: Forbidden» гэж унана.
+:: deno.exe нь yt-dlp.exe-тэй ИЖИЛ хавтсанд байхад yt-dlp өөрөө олж хэрэглэнэ.
+if exist "%DP%deno.exe" goto :deno_ok
+
+echo.
+echo   [0/3] Deno суулгаж байна  ^(YouTube-д шаардлагатай · ~40 МБ · нэг л удаа^)
+echo.
+
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+  "$ErrorActionPreference='Stop';[Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12;$z=Join-Path $env:TEMP 'deno-win.zip';try{Invoke-WebRequest -Uri 'https://github.com/denoland/deno/releases/latest/download/deno-x86_64-pc-windows-msvc.zip' -OutFile $z -UseBasicParsing;Expand-Archive -Path $z -DestinationPath '%DP%.' -Force;Remove-Item $z -Force;Write-Host '  [OK] deno.exe belen boloo'}catch{Write-Host ('  [X] ' + $_.Exception.Message)}"
+
+echo.
+if exist "%DP%deno.exe" goto :deno_ok
+
+echo   [!] Deno татагдсангүй. Гараар татаж болно:
+echo       https://github.com/denoland/deno/releases/latest
+echo       deno-x86_64-pc-windows-msvc.zip дотроос deno.exe-г
+echo       энэ хавтсанд гаргаж тавь.
+echo.
+
+:deno_ok
+
 echo.
 echo   [1/3] Аудио татаж байна...
 echo.
@@ -125,13 +148,47 @@ mkdir "%TMPDIR%"
 
 "%DP%yt-dlp.exe" -f bestaudio/best --no-playlist --restrict-filenames ^
   -o "%TMPDIR%\%%(title).80s.%%(ext)s" "%URL%"
+if not errorlevel 1 goto :dl_ok
 
-if errorlevel 1 (
-  echo.
-  echo   [X] Татаж чадсангүй. Холбоос зөв эсэх, интернэт холболтоо шалгана уу.
-  echo       Насны хязгаартай / хувийн видео байж болно.
-  goto :fail
-)
+:: YouTube байнга өөрчлөгддөг тул нэг оролдлого хангалтгүй. Шинэчлээд үзнэ.
+echo.
+echo   [!] Бүтсэнгүй. yt-dlp-г шинэчлээд дахин оролдоно...
+echo.
+"%DP%yt-dlp.exe" -U
+del /q "%TMPDIR%\*" >nul 2>nul
+
+"%DP%yt-dlp.exe" -f bestaudio/best --no-playlist --restrict-filenames ^
+  -o "%TMPDIR%\%%(title).80s.%%(ext)s" "%URL%"
+if not errorlevel 1 goto :dl_ok
+
+:: Сүүлийн оролдлого — хөтчийн cookie ашиглана (насны хязгаар, бот шалгалт)
+echo.
+echo   [!] Дахин бүтсэнгүй. Chrome-ийн cookie-гоор оролдоно...
+echo       ^(Chrome бүрэн хаагдсан байх шаардлагатай^)
+echo.
+del /q "%TMPDIR%\*" >nul 2>nul
+
+"%DP%yt-dlp.exe" -f bestaudio/best --no-playlist --restrict-filenames ^
+  --cookies-from-browser chrome ^
+  -o "%TMPDIR%\%%(title).80s.%%(ext)s" "%URL%"
+if not errorlevel 1 goto :dl_ok
+
+echo.
+echo   [X] Татаж чадсангүй.
+echo.
+echo       Шалгах зүйлс:
+echo         · deno.exe энэ хавтсанд байгаа эсэх  ^(403-ын гол шалтгаан^)
+echo         · Видео нас хязгаартай / хувийн / устсан эсэх
+echo         · Интернэт холболт
+echo.
+echo       Гарц: видеогоо өөр аргаар татаад энэ .bat дээр чирж тавь —
+echo             татах алхмыг алгасаад шууд хөрвүүлнэ.
+goto :fail
+
+:dl_ok
+:: Дуусаагүй хэсгүүд үлдсэн бол арилгана
+del /q "%TMPDIR%\*.part" >nul 2>nul
+del /q "%TMPDIR%\*.ytdl" >nul 2>nul
 
 :: Түр хавтас дахь цорын ганц файлыг авна
 for /f "usebackq delims=" %%F in (`dir /b /a-d "%TMPDIR%" 2^>nul`) do (
