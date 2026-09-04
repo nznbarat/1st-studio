@@ -194,6 +194,27 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
 .issue.warn{border-color:rgba(224,162,74,.4);color:#ffd9a0}
 .issue.tip{border-color:rgba(111,183,220,.35);color:#bfe0f2}
 
+/* ── брэнд файл ── */
+.lockbar{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;border-radius:10px;padding:11px 14px;margin-bottom:16px;font-size:12.5px;line-height:1.55;border:1px solid var(--line);background:var(--panel)}
+.lockbar b{font-family:'Oswald';font-size:14px;font-weight:600;white-space:nowrap}
+.lockbar span{color:var(--dim)}
+.lockbar.ok{border-color:rgba(87,217,138,.45);background:rgba(87,217,138,.07)} .lockbar.ok b{color:var(--ok)}
+.lockbar.warn{border-color:rgba(224,162,74,.45);background:rgba(224,162,74,.07)} .lockbar.warn b{color:var(--warn)}
+.lockbar.idle b{color:var(--dim)}
+.layerhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.layerhead b{font-family:'Oswald';font-size:16px;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+.layerhead i{font-style:normal;font-size:11.5px;color:var(--dim)}
+.lnum{font-family:'JetBrains Mono';font-size:11px;color:var(--tungsten);border:1px solid var(--tungsten);border-radius:5px;padding:2px 8px;flex-shrink:0}
+.card.frame{border-left:3px solid var(--daylight)}
+.card.frame .lnum{color:var(--daylight);border-color:var(--daylight)}
+.lockrow{margin:14px 0 12px;padding:11px 13px;border:1px dashed var(--line);border-radius:9px}
+.lockrow label{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--dim);cursor:pointer}
+.lockrow label b{color:var(--text);font-weight:600}
+.lockrow input{accent-color:var(--ok);width:16px;height:16px}
+textarea.lineIn.ta{resize:vertical;line-height:1.6;font-family:inherit}
+.out.dimmed{color:#5d6f80;font-style:italic}
+.note.nb{margin-top:0;margin-bottom:12px}
+
 /* ── гаралт ── */
 .out{background:#0a1118;border:1px solid var(--line);border-left:3px solid var(--daylight);border-radius:9px;padding:12px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.65;color:#c8d6e2;white-space:pre-wrap;word-break:break-word}
 .outwrap{margin-bottom:14px}
@@ -315,11 +336,12 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
 <div id="app">
   <nav id="rail">
     <button class="step on" data-p="auto"><span class="n">0</span><span><b>Авто</b><small>Санаанаас бүтэн ертөнц</small></span></button>
-    <button class="step" data-p="story"><span class="n">1</span><span><b>Түүх</b><small>Логлайн, үзэгдэл, кадр</small></span></button>
-    <button class="step" data-p="cast"><span class="n">2</span><span><b>Дүрүүд</b><small>Царай, хувцас, зан</small></span></button>
-    <button class="step" data-p="loc"><span class="n">3</span><span><b>Байршил</b><small>Орчин, цаг, уур амьсгал</small></span></button>
-    <button class="step" data-p="out"><span class="n">4</span><span><b>Промт</b><small>Бэлэн англи промт</small></span></button>
-    <button class="step" data-p="dict"><span class="n">5</span><span><b>Толь</b><small>Ангилсан үгсийн сан</small></span></button>
+    <button class="step" data-p="brand"><span class="n">1</span><span><b>Брэнд</b><small>Сувгийн гарын үсэг, нэг фрэйм</small></span></button>
+    <button class="step" data-p="story"><span class="n">2</span><span><b>Түүх</b><small>Логлайн, үзэгдэл, кадр</small></span></button>
+    <button class="step" data-p="cast"><span class="n">3</span><span><b>Дүрүүд</b><small>Царай, хувцас, зан</small></span></button>
+    <button class="step" data-p="loc"><span class="n">4</span><span><b>Байршил</b><small>Орчин, цаг, уур амьсгал</small></span></button>
+    <button class="step" data-p="out"><span class="n">5</span><span><b>Промт</b><small>Бэлэн англи промт</small></span></button>
+    <button class="step" data-p="dict"><span class="n">6</span><span><b>Толь</b><small>Ангилсан үгсийн сан</small></span></button>
     <div class="railsec">
       <button class="rbtn" id="demoBtn">✦ Жишээ ачаалах</button>
       <button class="rbtn" id="newBtn">✚ Шинэ төсөл</button>
@@ -382,10 +404,107 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
       </div>
     </section>
 
-    <!-- ══════════ 1 · ТҮҮХ ══════════ -->
+    <!-- ══════════ 1 · БРЭНД ══════════ -->
+    <section class="panel" id="p-brand">
+      <div class="pane-head">
+        <span class="eyebrow">Алхам 1 · Брэнд файл</span>
+        <h2>Сувгийн гарын үсэг</h2>
+        <p>AI таны бодлыг уншиж чадахгүй. Заагаад өгөхгүй бол хамгийн <b>ердийн</b> хувилбар руу орно — учир нь ердийн зүйл нь түүний хувьд хамгийн аюулгүй таамаг. Энд бичсэн зүйл бүх промтод автоматаар шингэж, таны видеог бусад бүх хүнийхээс ялгана.</p>
+      </div>
+
+      <div id="lockBar" class="lockbar idle"></div>
+
+      <!-- ── Давхарга 1 ── -->
+      <div class="card">
+        <div class="layerhead"><span class="lnum">1</span><b>Судалгаа</b><i>Батлагдсан сэдэв, батлагдсан гарчиг — таамаг биш</i></div>
+
+        <label class="fld"><span class="flabel">Сувгийн ниш — нэг өгүүлбэр</span>
+          <textarea id="brandNiche" class="lineIn ta" rows="2" spellcheck="false" placeholder="Жишээ: Монголын түүхэн үйл явдлыг кино маягийн богино өгүүлэмжээр тайлбарладаг суваг"></textarea>
+        </label>
+
+        <div class="toolrow">
+          <button class="aibtn" id="brandDraft">✨ Брэнд файл зохиох</button>
+          <button class="aibtn" id="brandTitles">🎯 5 сэдэв санал болгох</button>
+          <button class="tbtn2" id="brandTr">⇄ Брэндийг англи руу орчуулах</button>
+        </div>
+
+        <label class="fld"><span class="flabel">Батлагдсан гарчгийн формат</span>
+          <input id="brandTitleFmt" class="lineIn" placeholder="Жишээ: «Хэн ч мэддэггүй … », «… яагаад мартагдсан бэ»">
+        </label>
+        <label class="fld"><span class="flabel">Сэдвийн жагсаалт — мөр бүрд нэг</span>
+          <textarea id="brandTopics" class="lineIn ta" rows="5" spellcheck="false" placeholder="Мөр бүрд нэг сэдэв…"></textarea>
+        </label>
+      </div>
+
+      <!-- ── Давхарга 2 ── -->
+      <div class="card">
+        <div class="layerhead"><span class="lnum">2</span><b>Харагдац</b><i>Энэ давхарга промт бүрд шингэнэ</i></div>
+        <p class="note nb">Тодорхой бич — өнгө, материал, линз, гэрлийн чиглэлийг нэрлэ. «Гоё», «мэргэжлийн» гэх мэт ерөнхий үг AI‑д юу ч хэлдэггүй. <b>Санамж:</b> Алхам 5‑ын «Хэв маяг» сонголт мөн промтод нэмэгддэг тул зөрчилдөхгүйн тулд брэнд файл ашиглаж байвал тэндээ хэрэггүй хэв маягуудыг тайлаарай.</p>
+        <div id="brandLookFields"></div>
+      </div>
+
+      <!-- ── Нэг фрэйм дүрэм ── -->
+      <div class="card frame">
+        <div class="layerhead"><span class="lnum">◉</span><b>Нэг фрэйм дүрэм</b><i>Видео биш — эхлээд ГАНЦ зураг</i></div>
+        <p class="note nb">Бүтэн видео үүсгээд дараа нь буруу байсныг ойлгохоос илүү, ганц зураг дээр стилээ тогтоох нь хамаагүй хямд, хурдан. Доорх промтыг зураг үүсгэгчид өгөөд, гарсан кадр таалагдвал доор нь түгжинэ.</p>
+
+        <label class="fld"><span class="flabel">Туршилтын кадрын агуулга — нэг өгүүлбэр</span>
+          <input id="frameSubject" class="lineIn" placeholder="Жишээ: хөгшин анчин үүрийн бүрийд говийн хадан дээр ганцаараа зогсож байна">
+        </label>
+
+        <div class="out" id="frameOut"></div>
+        <div class="toolrow" style="margin-top:10px">
+          <button class="tbtn2 acc" id="frameCopy">📋 Туршилтын промт хуулах</button>
+        </div>
+
+        <div class="lockrow">
+          <label><input type="checkbox" id="lockChk"> <b>Стиль тогтоосон</b> — энэ харагдацыг түгжлээ</label>
+        </div>
+        <label class="fld"><span class="flabel">Баталсан кадрын лавлагаа (файлын нэр, холбоос эсвэл seed)</span>
+          <input id="brandRef" class="lineIn" placeholder="жишээ: ref-frame-03.png · seed 44219">
+        </label>
+      </div>
+
+      <!-- ── Давхарга 3 ── -->
+      <div class="card">
+        <div class="layerhead"><span class="lnum">3</span><b>Хоолой</b><i>Сувгийн чих — өнгө аяс, үг хэллэг, дуу авиа</i></div>
+        <div id="brandVoiceFields"></div>
+      </div>
+
+      <!-- ── Давхарга 4 ── -->
+      <div class="card">
+        <div class="layerhead"><span class="lnum">4</span><b>Хяналтын цэг</b><i>Юу ч үүсгэхээс өмнө чиглэлээ харуулах</i></div>
+        <div class="opt">
+          <label><input type="checkbox" id="dirChk" checked> Мастер промтод «эхлээд чиглэлээ харуул» гэсэн заавар оруулах</label>
+        </div>
+        <div class="toolrow">
+          <button class="aibtn" id="dirBtn">🧭 Чиглэл санал болгуул</button>
+        </div>
+        <div id="dirOut" class="checkout"></div>
+      </div>
+
+      <!-- ── Мастер промт ── -->
+      <div class="aisec">
+        <h3>🧩 Бүтэн 4 давхаргат промт</h3>
+        <p class="note nb">Дөрвөн давхарга нэг дор. Claude Code, Veo, Higgsfield — аль ч хэрэгсэлд сувгийн «үйлдвэрийн тохиргоо» болгож хуулж өгнө.</p>
+        <div class="out" id="masterOut"></div>
+        <div class="toolrow" style="margin-top:10px">
+          <button class="tbtn2 acc" id="masterCopy">📋 Хуулах</button>
+          <button class="tbtn2" id="masterDl">⬇ brand-file.txt</button>
+        </div>
+      </div>
+
+      <div class="hintgrid">
+        <div class="hint"><b>Нэг фрэйм дүрэм</b>Стилээ ЗУРАГ дээр тогтооно, видео дээр биш. Нэг зураг = нэг кредит; нэг видео = олон дахин их. Буруу стилийг эрт барих тусам хямд.</div>
+        <div class="hint"><b>Брэнд файл</b>Нэг удаа бичээд бүх ангид дахин ашиглана. Промт бүрд автоматаар шингэдэг тул 10 дахь видео чинь 1‑р видеотойгоо ижил төрхтэй байна.</div>
+        <div class="hint"><b>4 давхарга</b>Судалгаа юуны тухай, Харагдац ямар харагдах, Хоолой яаж сонсогдох, Хяналт хэзээ зогсохыг хэлнэ. Аль нэг нь дутвал AI өөрөө нөхөж — ердийн зүйлээр нөхнө.</div>
+      </div>
+    </section>
+
+    <!-- ══════════ 2 · ТҮҮХ ══════════ -->
     <section class="panel" id="p-story">
       <div class="pane-head">
-        <span class="eyebrow">Алхам 1 · Түүх</span>
+        <span class="eyebrow">Алхам 2 · Түүх</span>
         <h2>Үзэгдлээ монголоор бич</h2>
         <p>Зүүн талд монголоор бич — баруун талд англи промт зэрэгцээд бичигдэнэ. Бичихээ болиод хэсэг хүлээхэд өөрөө орчуулагдана, эсвэл дунд талын <b>→</b> товчийг дар.</p>
       </div>
@@ -401,10 +520,10 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
       <button class="addbtn" id="addScene">＋ Үзэгдэл нэмэх</button>
     </section>
 
-    <!-- ══════════ 2 · ДҮРҮҮД ══════════ -->
+    <!-- ══════════ 3 · ДҮРҮҮД ══════════ -->
     <section class="panel" id="p-cast">
       <div class="pane-head">
-        <span class="eyebrow">Алхам 2 · Дүрүүд</span>
+        <span class="eyebrow">Алхам 3 · Дүрүүд</span>
         <h2>Жүжигчдийнхээ хуудсыг үүсгэ</h2>
         <p>Дүр бүрийн царай, хувцас, зан чанарыг монголоор дүрсэл. Англи тал нь зураг үүсгэгчид шууд өгөх промт болно. Үзэгдэлд холбогдсон дүрийн дүрслэл нь тухайн үзэгдлийн промтод автоматаар шингэнэ.</p>
       </div>
@@ -416,10 +535,10 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
       <button class="addbtn" id="addCast">＋ Дүр нэмэх</button>
     </section>
 
-    <!-- ══════════ 3 · БАЙРШИЛ ══════════ -->
+    <!-- ══════════ 4 · БАЙРШИЛ ══════════ -->
     <section class="panel" id="p-loc">
       <div class="pane-head">
-        <span class="eyebrow">Алхам 3 · Байршил</span>
+        <span class="eyebrow">Алхам 4 · Байршил</span>
         <h2>Түүхийн орчноо байгуул</h2>
         <p>Газар бүрийн харагдац, цаг үе, цаг агаар, уур амьсгалыг бич. Байршлын промт нь дүрийн промттой хослоод тогтвортой ертөнц үүсгэнэ.</p>
       </div>
@@ -428,10 +547,10 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
       <button class="addbtn" id="addLoc">＋ Байршил нэмэх</button>
     </section>
 
-    <!-- ══════════ 4 · ПРОМТ ══════════ -->
+    <!-- ══════════ 5 · ПРОМТ ══════════ -->
     <section class="panel" id="p-out">
       <div class="pane-head">
-        <span class="eyebrow">Алхам 4 · Промт</span>
+        <span class="eyebrow">Алхам 5 · Промт</span>
         <h2>Бэлэн англи промтууд</h2>
         <p>Бүх хэсгээ нэгтгэсэн, хуулж хэрэглэхэд бэлэн промтууд. Хэв маягийн сонголт бүх промтод нэгэн зэрэг нэмэгдэнэ.</p>
       </div>
@@ -477,6 +596,7 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
         <div class="opt">
           <label><input type="checkbox" id="contChk" checked> Тууштай байдал — үзэгдлийн промтод дүр, байршлыг шингээх</label>
           <label><input type="checkbox" id="autoTrChk" checked> Бичиж байхад автоматаар орчуулах</label>
+          <label><input type="checkbox" id="brandChk" checked> Брэнд файлыг бүх промтод шингээх</label>
         </div>
       </div>
 
@@ -503,10 +623,10 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
       <div id="outList"></div>
     </section>
 
-    <!-- ══════════ 5 · ТОЛЬ ══════════ -->
+    <!-- ══════════ 6 · ТОЛЬ ══════════ -->
     <section class="panel" id="p-dict">
       <div class="pane-head">
-        <span class="eyebrow">Алхам 5 · Толь</span>
+        <span class="eyebrow">Алхам 6 · Толь</span>
         <h2>Ангилсан үгсийн сан</h2>
         <p>Офлайн горимд ажилладаг суурь толь. Ангилал бүрээр шүүж хайж болно. Таниагүй үгс доор цугларах бөгөөд Claude‑аар нэг товчоор бүгдийг нь бөглүүлж болно — нэмсэн үг төсөлтэй хамт хадгалагдана.</p>
       </div>
@@ -990,7 +1110,10 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
   G.tidy = function (s) {
     return String(s || "")
       .replace(/\s+([,.;:!?])/g, "$1")
-      .replace(/([,.;:!?])(?=[^\s.,;:!?)\]])/g, "$1 ")
+      /* Тоон дундах цэг, цэгийг бүү сал: 16:9, 2.39:1, 1.5 */
+      .replace(/([,.;:!?])(?=[^\s.,;:!?)\]])/g, (m, p1, off, str) =>
+        /\d/.test(str[off - 1] || "") && /\d/.test(str[off + 1] || "") ? m : m + " "
+      )
       .replace(/\bof of\b/g, "of")
       .replace(/\bwith with\b/g, "with")
       .replace(/\bin in\b/g, "in")
@@ -4980,6 +5103,7 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     char: "a film character description — a concrete English image-prompt fragment",
     loc: "a film location description — a concrete English image-prompt fragment",
     shot: "a single camera shot description for a video generator",
+    brand: "a channel style-guide fragment — a reusable English descriptor for look, lighting, palette, camera or narration tone",
     plain: "general descriptive text"
   };
 
@@ -5220,6 +5344,58 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     { k: "detail", lb: "Нарийн деталь", ph: "салхинд давалгаалах өвс, холын гэрийн утаа, морины мөр" }
   ];
 
+  /* ── Брэнд файл: сувгийн гарын үсэг ──────────────────────
+     layer 2 — харагдац (промт болгонд шингэнэ)
+     layer 3 — хоолой (скрипт, дуу оруулгад шингэнэ)
+     need    — «Нэг фрэйм дүрэм»‑ийг түгжихэд заавал шаардлагатай  */
+  S.BRAND_FIELDS = [
+    {
+      k: "look", layer: 2, need: true, lb: "Визуал гарын үсэг",
+      ph: "бодит кино дүрслэл, 35мм хальсны ширхэг, гүехэн фокус, бага зэрэг гар камерын хөдөлгөөн",
+      hint: "сувгийн ерөнхий харагдац — техник, материал, өнгө аяс"
+    },
+    {
+      k: "light", layer: 2, need: true, lb: "Гэрэлтүүлэг",
+      ph: "нам дор алтан гэрэл, хатуу урт сүүдэр, арын туяа, утаан дундах гэрлийн багана",
+      hint: "гэрлийн чиглэл, зөөлөн/хатуу, цагийн үе"
+    },
+    {
+      k: "palette", layer: 2, need: true, lb: "Өнгөний палетт",
+      ph: "бүдэг хүрэн, шатсан улбар шар, гүн индиго, цайвар элсэн өнгө",
+      hint: "3–4 нэрлэсэн өнгө, давамгайлах нь эхэнд"
+    },
+    {
+      k: "camera", layer: 2, need: true, lb: "Камерын дүрэм",
+      ph: "удаан дөхөж орох кадр, зогсонги трипод, огцом зүсэлт байхгүй, нүдний түвшин",
+      hint: "хөдөлгөөн, өндөр, линз, хэмнэл"
+    },
+    {
+      k: "avoid", layer: 2, need: false, lb: "Хэзээ ч гаргахгүй",
+      ph: "орчин үеийн хувцас, машин, неон өнгө, дэлгэц дээрх текст, лого",
+      hint: "энэ сувагт хэзээ ч харагдах ёсгүй зүйлс"
+    },
+    {
+      k: "voice", layer: 3, need: true, lb: "Өгүүлэгчийн өнгө аяс",
+      ph: "намуухан, өөртөө итгэлтэй, богино өгүүлбэр, яарахгүй, сүржин үггүй",
+      hint: "хоолойны өнгө, өгүүлбэрийн урт, хурд"
+    },
+    {
+      k: "words", layer: 3, need: false, lb: "Хэрэглэдэг үг, хэллэг",
+      ph: "«энэ л мөч», «одоо ажигла», «жаахан ухаж үзье»",
+      hint: "сувгийн давтагддаг 3–5 хэллэг"
+    },
+    {
+      k: "nowords", layer: 3, need: false, lb: "Хэрэглэдэггүй үг",
+      ph: "«гайхалтай», «хувьсгал», «шок», хэт сэтгэл хөдлөлийн хэллэг",
+      hint: "хориотой үг, хэллэг"
+    },
+    {
+      k: "audio", layer: 3, need: false, lb: "Дуу авианы палетт",
+      ph: "морин хуурын ганц шугам, гүн sub bass, амьсгалын өргөлт, 3 секундын sting",
+      hint: "хөгжмийн зэмсэг, темп, sting, чимээний давхарга"
+    }
+  ];
+
   S.STYLE_PRESETS = [
     { id: "anime", lb: "Аниме", v: "anime style, clean line art, vivid colours, cel shading" },
     { id: "cine", lb: "Кино гэрэлтүүлэг", v: "cinematic lighting, film grain, shallow depth of field, anamorphic" },
@@ -5238,12 +5414,29 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     { id: "sora", lb: "Sora — урт өгүүлэмжтэй" }
   ];
 
+  /** Хоосон брэнд файл. */
+  S.blankBrand = function () {
+    const f = {};
+    S.BRAND_FIELDS.forEach((d) => (f[d.k] = F("")));
+    return {
+      meta: { niche: "", titleFmt: "", topics: "" },
+      f: f,
+      frameSubject: "",
+      ref: "",
+      locked: false,
+      lockedAt: 0,
+      checkpoint: true,
+      direction: null
+    };
+  };
+
   S.blank = function () {
     return {
       v: 3,
       id: U.uid(),
       title: "Нэргүй төсөл",
       logline: F(),
+      brand: S.blankBrand(),
       scenes: [],
       cast: [],
       locs: [],
@@ -5254,7 +5447,8 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
         ar: "16:9",
         negative: "",
         continuity: true,
-        autoTranslate: true
+        autoTranslate: true,
+        brandOn: true
       },
       updated: Date.now()
     };
@@ -5270,6 +5464,7 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     p.id = d.id || p.id;
     p.title = d.title || p.title;
     p.logline = fixField(d.logline);
+    p.brand = fixBrand(d.brand);
     p.custom = d.custom && typeof d.custom === "object" ? d.custom : {};
     p.scenes = (Array.isArray(d.scenes) ? d.scenes : []).map((s) => ({
       id: s.id || U.uid(),
@@ -5308,6 +5503,23 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     if (!f || typeof f !== "object") return F(typeof f === "string" ? f : "");
     return { mn: f.mn || "", en: f.en || "", auto: f.auto !== false, unk: f.unk || [], src: f.src || "" };
   }
+  function fixBrand(b) {
+    const out = S.blankBrand();
+    if (!b || typeof b !== "object") return out;
+    if (b.meta && typeof b.meta === "object") {
+      out.meta.niche = b.meta.niche || "";
+      out.meta.titleFmt = b.meta.titleFmt || "";
+      out.meta.topics = b.meta.topics || "";
+    }
+    out.f = fixFieldSet(b.f, S.BRAND_FIELDS);
+    out.frameSubject = b.frameSubject || "";
+    out.ref = b.ref || "";
+    out.locked = !!b.locked;
+    out.lockedAt = b.lockedAt || 0;
+    out.checkpoint = b.checkpoint !== false;
+    out.direction = b.direction && typeof b.direction === "object" ? b.direction : null;
+    return out;
+  }
   function fixFieldSet(obj, defs) {
     const out = {};
     defs.forEach((d) => (out[d.k] = fixField(obj && obj[d.k])));
@@ -5320,6 +5532,10 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     const out = [];
     const want = (k) => !kinds || kinds.includes(k);
     if (want("logline")) out.push({ field: P.logline, kind: "logline", label: "Логлайн" });
+    if (want("brand"))
+      S.BRAND_FIELDS.forEach((d) =>
+        out.push({ field: P.brand.f[d.k], kind: "brand", label: "Брэнд · " + d.lb })
+      );
     if (want("scene"))
       P.scenes.forEach((s, i) => out.push({ field: s.body, kind: "scene", label: s.name || "Үзэгдэл " + (i + 1) }));
     if (want("char"))
@@ -5475,6 +5691,464 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
 
 </script>
 <script>
+/* ── js/52-brand.js ── */
+/* ═════════════════════════════════════════════════════════════
+   БРЭНД ФАЙЛ — сувгийн гарын үсэг ба 4 давхаргат промтын бүтэц.
+
+   Гурван зарчим дээр суурилна:
+
+   1. НЭГ ФРЭЙМ ДҮРЭМ — бүтэн видео үүсгэхээсээ ӨМНӨ ганц зураг
+      үүсгэж стилээ тогтооно. Зураг засах нь видео засахаас
+      олон дахин хямд, хурдан. Тогтоосон стилээ «түгжинэ».
+
+   2. БРЭНД ФАЙЛ — сувгийн харагдац, гэрэл, палетт, камерын дүрэм,
+      хоолойны өнгө аяс, дуу авианы палеттыг нэг дор бичиж
+      үзэгдэл болгонд автоматаар шингээнэ. Үүнгүй бол AI үргэлж
+      хамгийн ердийн (=хамгийн аюулгүй) хувилбар руу орно.
+
+   3. 4 ДАВХАРГАТ БҮТЭЦ:
+        1 · Судалгаа — ниш, батлагдсан гарчгийн формат, сэдвүүд
+        2 · Харагдац — нэг фрэйм дээр тогтоосон визуал
+        3 · Хоолой   — өгүүлэгчийн өнгө аяс, үг хэллэг, дуу авиа
+        4 · Хяналт   — юу ч үүсгэхээс өмнө чиглэлээ харуулах
+   ═════════════════════════════════════════════════════════════ */
+(function (WB) {
+  "use strict";
+
+  const B = (WB.brand = {});
+  const U = WB.util;
+  const S = WB.state;
+  const el = U.el;
+
+  /** Давхаргын тодорхойлолт — UI ба баримтжуулалтад хоёуланд нь. */
+  B.LAYERS = [
+    {
+      n: 1,
+      key: "research",
+      lb: "Судалгаа",
+      why: "Батлагдсан сэдэв, батлагдсан гарчгийн формат. Таамаг биш, өгөгдөл."
+    },
+    {
+      n: 2,
+      key: "look",
+      lb: "Харагдац",
+      why: "Нэг фрэйм дээр тогтоосон визуал. Энэ давхарга промт болгонд шингэнэ."
+    },
+    {
+      n: 3,
+      key: "voice",
+      lb: "Хоолой",
+      why: "Өгүүлэгчийн өнгө аяс, үг хэллэг, дуу авианы палетт. Сувгийн чих."
+    },
+    {
+      n: 4,
+      key: "check",
+      lb: "Хяналт",
+      why: "Юу ч үүсгэхээс өмнө чиглэлээ харуулах. Кредит хэмнэдэг ганц дүрэм."
+    }
+  ];
+
+  /* ── туслахууд ──────────────────────────────────────────── */
+  function txt(f) {
+    return ((f && (f.en || f.mn)) || "").trim().replace(/\s*\.?\s*$/, "");
+  }
+  function joinParts(arr) {
+    const body = arr.filter(Boolean).join(". ");
+    return body ? body : "";
+  }
+
+  /** Брэнд файлын хэсэг бүр бөглөгдсөн эсэх. */
+  B.ready = function () {
+    const b = S.P.brand;
+    const missing = [];
+    if (!(b.meta.niche || "").trim()) missing.push("Сувгийн ниш");
+    S.BRAND_FIELDS.forEach((d) => {
+      if (d.need && !(b.f[d.k].mn || "").trim()) missing.push(d.lb);
+    });
+    return { ok: missing.length === 0, missing: missing };
+  };
+
+  /** Брэнд файл огт хөндөгдөөгүй юу? (хоосон бол сануулга гаргахгүй) */
+  B.untouched = function () {
+    const b = S.P.brand;
+    if ((b.meta.niche || "").trim()) return false;
+    return !S.BRAND_FIELDS.some((d) => (b.f[d.k].mn || "").trim());
+  };
+
+  /* ── 2‑р давхарга: промт болгонд шингэдэг визуал мөр ────── */
+  B.visualLine = function () {
+    const b = S.P.brand;
+    if (!b) return "";
+    return joinParts([txt(b.f.look), txt(b.f.light), txt(b.f.palette), txt(b.f.camera)]);
+  };
+
+  /** Сөрөг промтод нэмэгдэх «хэзээ ч гаргахгүй» мөр. */
+  B.avoidLine = function () {
+    const b = S.P.brand;
+    return b ? txt(b.f.avoid) : "";
+  };
+
+  /** 3‑р давхарга: өгүүлэгчийн мөр (дуу оруулга, скриптэд). */
+  B.voiceLine = function () {
+    const b = S.P.brand;
+    if (!b) return "";
+    return joinParts([txt(b.f.voice), txt(b.f.audio)]);
+  };
+
+  /** Промт өнгөлөх үед AI‑д өгөх богино сануулга. */
+  B.polishHint = function () {
+    if (S.P.opts.brandOn === false) return "";
+    return B.visualLine();
+  };
+
+  /* ── 1. НЭГ ФРЭЙМ ДҮРЭМ ─────────────────────────────────── */
+  /**
+   * Ганц туршилтын кадрын промт. Видео биш — ЗУРАГ.
+   * Стиль зөв эсэхийг хамгийн хямд аргаар шалгах цорын ганц зам.
+   */
+  B.oneFramePrompt = function (subject) {
+    const b = S.P.brand;
+    const subj = (subject != null ? subject : b.frameSubject || "").trim();
+    const visual = B.visualLine();
+    if (!visual && !subj) return "";
+    const parts = [];
+    if (subj) parts.push(subj);
+    if (visual) parts.push(visual);
+    parts.push("single still frame, no motion, no text, no logo");
+    let out = joinParts(parts) + ".";
+    if (S.P.opts.ar) out += " --ar " + S.P.opts.ar;
+    return WB.gram && WB.gram.tidy ? WB.gram.tidy(out) : out;
+  };
+
+  /** Стилийг «түгжих» — нэг фрэйм баталгаажсаны дараа. */
+  B.lock = function (on) {
+    const b = S.P.brand;
+    b.locked = !!on;
+    b.lockedAt = on ? Date.now() : 0;
+    S.touch();
+  };
+
+  /**
+   * Юу үүсгэхийн өмнөх сануулга. Брэнд файл хоосон бол чимээгүй.
+   * @returns {string} хоосон бол асуудалгүй
+   */
+  B.gate = function () {
+    if (B.untouched()) return "";
+    const b = S.P.brand;
+    if (!b.locked) {
+      return (
+        "Стиль нэг фрэйм дээр хараахан тогтоогүй байна. " +
+        "Бүтэн видео үүсгэхээсээ өмнө ганц зураг гаргаж шалгах нь " +
+        "кредит ба цаг хоёуланг нь хэмнэдэг. Үргэлжлүүлэх үү?"
+      );
+    }
+    return "";
+  };
+
+  /* ── 3. 4 ДАВХАРГАТ БҮТЭН ПРОМТ ─────────────────────────── */
+  /**
+   * Claude Code / Veo / Higgsfield рүү шууд хуулж өгөх мастер промт.
+   * Дөрвөн давхарга нэг дор — энэ бол «сувгийн үйлдвэрийн тохиргоо».
+   */
+  B.masterPrompt = function () {
+    const b = S.P.brand;
+    const P = S.P;
+    const L = [];
+
+    L.push("=== LAYER 1 · RESEARCH ===");
+    L.push("Channel: " + ((b.meta.niche || "").trim() || "(тодорхойлоогүй)"));
+    if ((b.meta.titleFmt || "").trim()) L.push("Proven title format: " + b.meta.titleFmt.trim());
+    if ((b.meta.topics || "").trim()) {
+      L.push("Topic queue:");
+      b.meta.topics
+        .split(/\r?\n/)
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .forEach((t) => L.push("  - " + t));
+    }
+
+    L.push("", "=== LAYER 2 · LOOK (locked on one frame) ===");
+    if (txt(b.f.look)) L.push("Visual signature: " + txt(b.f.look) + ".");
+    if (txt(b.f.light)) L.push("Lighting: " + txt(b.f.light) + ".");
+    if (txt(b.f.palette)) L.push("Palette: " + txt(b.f.palette) + ".");
+    if (txt(b.f.camera)) L.push("Camera: " + txt(b.f.camera) + ".");
+    if (txt(b.f.avoid)) L.push("Never render: " + txt(b.f.avoid) + ".");
+    L.push("Aspect ratio: " + (P.opts.ar || "16:9") + ".");
+    if (b.locked) {
+      L.push(
+        "Style is LOCKED — approved on a single reference frame" +
+          (b.lockedAt ? " (" + new Date(b.lockedAt).toISOString().slice(0, 10) + ")" : "") +
+          "."
+      );
+      if ((b.ref || "").trim()) L.push("Reference frame: " + b.ref.trim());
+    } else {
+      L.push("Style is NOT locked yet — generate ONE still image first and wait for approval.");
+    }
+
+    L.push("", "=== LAYER 3 · VOICE ===");
+    if (txt(b.f.voice)) L.push("Narrator tone: " + txt(b.f.voice) + ".");
+    if (txt(b.f.words)) L.push("Signature phrasing: " + txt(b.f.words) + ".");
+    if (txt(b.f.nowords)) L.push("Never say: " + txt(b.f.nowords) + ".");
+    if (txt(b.f.audio)) L.push("Audio palette: " + txt(b.f.audio) + ".");
+
+    L.push("", "=== LAYER 4 · CHECKPOINT ===");
+    if (b.checkpoint !== false) {
+      L.push(
+        "Before generating ANY image or video, propose the direction first:",
+        "  - the exact look you will render,",
+        "  - the pacing decision (shot count, shot lengths, transitions),",
+        "  - one still frame to approve.",
+        "Wait for my approval. Do not render the full sequence unprompted."
+      );
+    } else {
+      L.push("(Хяналтын цэг унтраалттай — AI шууд үүсгэнэ.)");
+    }
+    return L.join("\n");
+  };
+
+  /** Автомат горимд монгол текст зохиоход өгөх брэнд контекст. */
+  B.autoContext = function () {
+    const b = S.P.brand;
+    if (!b || B.untouched() || S.P.opts.brandOn === false) return "";
+    const L = ["", "Сувгийн брэнд файл — доорхийг ЗААВАЛ баримтална:"];
+    if ((b.meta.niche || "").trim()) L.push("- Ниш: " + b.meta.niche.trim());
+    if ((b.meta.titleFmt || "").trim()) L.push("- Гарчгийн формат: " + b.meta.titleFmt.trim());
+    if ((b.f.look.mn || "").trim()) L.push("- Визуал гарын үсэг: " + b.f.look.mn.trim());
+    if ((b.f.palette.mn || "").trim()) L.push("- Өнгөний палетт: " + b.f.palette.mn.trim());
+    if ((b.f.camera.mn || "").trim()) L.push("- Камерын дүрэм: " + b.f.camera.mn.trim());
+    if ((b.f.voice.mn || "").trim()) L.push("- Өгүүлэгчийн өнгө аяс: " + b.f.voice.mn.trim());
+    if ((b.f.words.mn || "").trim()) L.push("- Хэрэглэх үг хэллэг: " + b.f.words.mn.trim());
+    if ((b.f.nowords.mn || "").trim()) L.push("- ХЭРЭГЛЭХГҮЙ үг хэллэг: " + b.f.nowords.mn.trim());
+    if ((b.f.avoid.mn || "").trim()) L.push("- Дүр зурагт гаргахгүй: " + b.f.avoid.mn.trim());
+    return L.join("\n") + "\n";
+  };
+
+  /* ── AI туслахууд ───────────────────────────────────────── */
+
+  /** Нэг өгүүлбэр нишээс бүтэн брэнд файл зохионо (монголоор). */
+  B.draft = async function () {
+    const b = S.P.brand;
+    const niche = (b.meta.niche || "").trim();
+    if (!niche) throw new Error("Эхлээд сувгийнхаа нишийг нэг өгүүлбэрээр бичнэ үү.");
+
+    const keys = S.BRAND_FIELDS.map(
+      (d) => '  "' + d.k + '": "' + d.hint + '"'
+    ).join(",\n");
+
+    const prompt =
+      "Та YouTube сувгийн урлагийн найруулагч бөгөөд брэнд стратегич. " +
+      "Доорх ниш дээр үндэслэн уг сувгийн ӨВӨРМӨЦ брэнд файлыг зохио.\n\n" +
+      "Шаардлага:\n" +
+      "- Зөвхөн JSON объект буцаа. Тайлбар, код блокын хашилтгүй.\n" +
+      "- Бүх утга МОНГОЛ хэлээр, богино (8–20 үг), маш тодорхой, харагдахуйц.\n" +
+      "- Ерөнхий үг бүү хэрэглэ («гоё», «сайхан», «мэргэжлийн»). Өнгө, материал, " +
+      "линз, гэрлийн чиглэл, багажийн нэр гэх мэт бодит зүйл нэрлэ.\n" +
+      "- Энэ суваг бусдаас ЯЛГАРАХ ёстой. Хамгийн ердийн хувилбарыг бүү сонго.\n" +
+      "- Формат:\n{\n" +
+      '  "titleFmt": "энэ нишид ажилладаг гарчгийн давтагдах загвар, нэг мөр",\n' +
+      keys +
+      "\n}\n\nСувгийн ниш: " +
+      niche;
+
+    const o = await WB.api.askJSON(prompt, 2200);
+    if (!o || typeof o !== "object") throw new Error("хариу таарсангүй");
+
+    S.pushHistory();
+    if (typeof o.titleFmt === "string" && o.titleFmt.trim() && !(b.meta.titleFmt || "").trim()) {
+      b.meta.titleFmt = o.titleFmt.trim();
+    }
+    let n = 0;
+    S.BRAND_FIELDS.forEach((d) => {
+      const v = o[d.k];
+      if (typeof v === "string" && v.trim()) {
+        b.f[d.k].mn = v.trim();
+        b.f[d.k].en = "";
+        b.f[d.k].src = "";
+        n++;
+      }
+    });
+    S.touch();
+    return n;
+  };
+
+  /** Батлагдсан гарчгийн форматаар N ангийн гарчиг санал болгоно. */
+  B.titles = async function (count) {
+    const b = S.P.brand;
+    const niche = (b.meta.niche || "").trim();
+    if (!niche) throw new Error("Эхлээд сувгийнхаа нишийг бичнэ үү.");
+    const n = Math.max(3, Math.min(12, count || 5));
+
+    const prompt =
+      "Та YouTube контентын судлаач. Доорх сувагт зориулж " + n + " ангийн гарчиг санал болго.\n\n" +
+      "Шаардлага:\n" +
+      "- Зөвхөн JSON массив буцаа: [\"гарчиг\", …]. Өөр юу ч бүү бич.\n" +
+      "- Бүх гарчиг МОНГОЛ хэлээр.\n" +
+      "- Сэдэв бүр бие даасан, тухайн ангийг ганцаараа авч үзэхэд ойлгомжтой.\n" +
+      "- Ил тод сониуч байдал үүсгэ, гэхдээ худал амлалт (clickbait) бүү өг.\n" +
+      (b.meta.titleFmt ? '- Гарчгийн формат: "' + b.meta.titleFmt.trim() + '" — үүнийг баримтал.\n' : "") +
+      (b.f.voice.mn ? "- Сувгийн өнгө аяс: " + b.f.voice.mn.trim() + "\n" : "") +
+      "\nСувгийн ниш: " + niche;
+
+    const arr = await WB.api.askJSON(prompt, 1200);
+    if (!Array.isArray(arr)) throw new Error("жагсаалт ирсэнгүй");
+    return arr.filter((x) => typeof x === "string" && x.trim()).map((x) => x.trim());
+  };
+
+  /**
+   * 4‑р давхарга: юу ч үүсгэхээс өмнө чиглэл санал болгуулах.
+   * Хариу нь бодит шийдэл байх ёстой — «юу хиймээр байна?» гэсэн асуулт биш.
+   */
+  B.direction = async function () {
+    const b = S.P.brand;
+    const P = S.P;
+    const idea = (P.logline.mn || b.meta.niche || "").trim();
+    if (!idea) throw new Error("Эхлээд логлайн эсвэл сувгийн ниш бичнэ үү.");
+
+    const prompt =
+      "Та кино найруулагч. Доорх брэнд файл ба санаан дээр үндэслэн " +
+      "ЮУ Ч ҮҮСГЭХЭЭС ӨМНӨ найруулгын чиглэлээ санал болго.\n\n" +
+      "Шаардлага:\n" +
+      "- Зөвхөн JSON объект буцаа. Формат:\n" +
+      '{ "look": "яг ямар харагдацаар үүсгэхээ 2-3 өгүүлбэрээр",\n' +
+      '  "pacing": "кадрын тоо, кадрын урт, шилжилтийн шийдэл",\n' +
+      '  "frame": "эхлээд баталгаажуулах ГАНЦ туршилтын кадрын агуулга, нэг өгүүлбэр",\n' +
+      '  "risk": "энэ чиглэлийн хамгийн эмзэг тал, нэг өгүүлбэр" }\n' +
+      "- Бүх утга МОНГОЛ хэлээр, тодорхой шийдэл болгож бич. Асуулт бүү тавь.\n" +
+      "- Брэнд файлаас гажсан зүйл бүү санал болго.\n\n" +
+      B.autoContext() +
+      "\nСанаа: " + idea;
+
+    const o = await WB.api.askJSON(prompt, 1500);
+    if (!o || typeof o !== "object") throw new Error("хариу таарсангүй");
+    b.direction = o;
+    S.touch();
+    return o;
+  };
+
+  /* ═════════════════ ДЭЛГЭЦ ═════════════════════════════════ */
+
+  function bindPlain(node, get, set) {
+    if (!node) return;
+    if (node.value !== get()) node.value = get();
+    node.oninput = () => {
+      set(node.value);
+      S.touch();
+    };
+  }
+
+  function fieldsInto(boxId, layer) {
+    const box = el(boxId);
+    if (!box) return;
+    box.innerHTML = "";
+    const b = S.P.brand;
+    S.BRAND_FIELDS.filter((d) => d.layer === layer).forEach((d) => {
+      box.appendChild(WB.ui.dualField(b.f[d.k], "brand", d.lb, d.ph));
+    });
+  }
+
+  /** Түгжээний мөр — нэг фрэйм дүрмийн одоогийн байдал. */
+  function paintLock() {
+    const bar = el("lockBar");
+    if (!bar) return;
+    const b = S.P.brand;
+    const r = B.ready();
+    bar.className = "lockbar " + (b.locked ? "ok" : r.ok ? "warn" : "idle");
+    const when = b.lockedAt ? new Date(b.lockedAt).toLocaleDateString("mn-MN") : "";
+    if (b.locked) {
+      bar.innerHTML =
+        "<b>🔒 Стиль тогтсон</b><span>" +
+        U.esc(when) +
+        " — энэ харагдац бүх промтод автоматаар шингэж байна." +
+        "</span>";
+    } else if (r.ok) {
+      bar.innerHTML =
+        "<b>🔓 Түгжээгүй</b><span>Брэнд файл бөглөгдсөн. Одоо доорх туршилтын кадрыг " +
+        "нэг зураг болгож үүсгээд, таалагдвал «Стиль тогтоосон» гэж тэмдэглэ.</span>";
+    } else {
+      bar.innerHTML =
+        "<b>◻ Эхлээгүй</b><span>Дутуу: " +
+        U.esc(r.missing.slice(0, 4).join(", ")) +
+        (r.missing.length > 4 ? " …" : "") +
+        "</span>";
+    }
+  }
+
+  B.render = function () {
+    const b = S.P.brand;
+    if (!b || !el("p-brand")) return;
+
+    bindPlain(el("brandNiche"), () => b.meta.niche, (v) => (b.meta.niche = v));
+    bindPlain(el("brandTitleFmt"), () => b.meta.titleFmt, (v) => (b.meta.titleFmt = v));
+    bindPlain(el("brandTopics"), () => b.meta.topics, (v) => (b.meta.topics = v));
+    bindPlain(el("brandRef"), () => b.ref, (v) => (b.ref = v));
+    bindPlain(el("frameSubject"), () => b.frameSubject, (v) => (b.frameSubject = v));
+
+    fieldsInto("brandLookFields", 2);
+    fieldsInto("brandVoiceFields", 3);
+
+    const lockChk = el("lockChk");
+    if (lockChk) {
+      lockChk.checked = !!b.locked;
+      lockChk.onchange = () => {
+        B.lock(lockChk.checked);
+        paintLock();
+        B.paintOutputs();
+      };
+    }
+    const dirChk = el("dirChk");
+    if (dirChk) {
+      dirChk.checked = b.checkpoint !== false;
+      dirChk.onchange = () => {
+        b.checkpoint = dirChk.checked;
+        S.touch();
+        B.paintOutputs();
+      };
+    }
+
+    paintLock();
+    B.paintOutputs();
+    paintDirection();
+  };
+
+  /** Гаралтын хоёр блокийг (нэг фрэйм + мастер промт) шинэчилнэ. */
+  B.paintOutputs = function () {
+    const fo = el("frameOut");
+    if (fo) {
+      const p = B.oneFramePrompt();
+      fo.textContent = p || "Брэнд файлын «Харагдац» хэсгийг бөглөөд туршилтын кадраа бичнэ үү.";
+      fo.classList.toggle("dimmed", !p);
+    }
+    const mo = el("masterOut");
+    if (mo) mo.textContent = B.masterPrompt();
+    paintLock();
+  };
+
+  function paintDirection() {
+    const box = el("dirOut");
+    if (!box) return;
+    const d = S.P.brand.direction;
+    if (!d) {
+      box.classList.remove("on");
+      box.innerHTML = "";
+      return;
+    }
+    const rows = [
+      ["Харагдац", d.look],
+      ["Хэмнэл", d.pacing],
+      ["Эхлээд баталгаажуулах кадр", d.frame],
+      ["Эмзэг тал", d.risk]
+    ];
+    box.classList.add("on");
+    box.innerHTML = rows
+      .filter((r) => r[1])
+      .map((r) => '<div class="issue tip"><b>' + U.esc(r[0]) + ":</b> " + U.esc(r[1]) + "</div>")
+      .join("");
+  }
+  B.paintDirection = paintDirection;
+})(window.WB);
+
+</script>
+<script>
 /* ── js/55-prompt.js ── */
 /* ═════════════════════════════════════════════════════════════
    Промт угсрагч — хэсгүүдийг нэгтгэж, хэв маяг, тууштай байдлыг нэмнэ.
@@ -5558,6 +6232,11 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     const style = PR.styleText(o);
     let out = text;
     if (style) out += " " + style + ".";
+    /* Брэнд файлын харагдацын давхарга — сувгийн гарын үсэг. */
+    if (o.brandOn !== false && WB.brand) {
+      const bl = WB.brand.visualLine();
+      if (bl) out += " " + bl + ".";
+    }
     const suf = PR.SUFFIX[o.target] ? PR.SUFFIX[o.target](o) : "";
     if (o.target === "image" && suf) out += " " + suf;
     return WB.gram.tidy(out);
@@ -5565,8 +6244,12 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
 
   PR.negative = function (opts) {
     const o = opts || S.P.opts;
+    const parts = [PR.NEGATIVE_DEFAULT];
+    const avoid = o.brandOn !== false && WB.brand ? WB.brand.avoidLine() : "";
+    if (avoid) parts.push(avoid);
     const extra = (o.negative || "").trim();
-    return extra ? PR.NEGATIVE_DEFAULT + ", " + extra : PR.NEGATIVE_DEFAULT;
+    if (extra) parts.push(extra);
+    return parts.join(", ");
   };
 
   /** Гаралтын бүх блокийг цуглуулна. */
@@ -5735,6 +6418,7 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     WB.store.set("panel", p);
     if (p === "dict") UI.renderDict();
     if (p === "out") UI.renderOut();
+    if (p === "brand" && WB.brand) WB.brand.paintOutputs();
   };
 
   /* ── хос хэлний талбар ──────────────────────────────────── */
@@ -6351,6 +7035,7 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
   /* ── бүх зүйлийг дахин зурах ────────────────────────────── */
   UI.renderAll = function () {
     duals = [];
+    if (WB.brand) WB.brand.render();
     UI.renderStory();
     UI.renderCards(S.P.cast, S.CAST_FIELDS, "castList", "char", "Дүр", "Дүрийн нэр…");
     UI.renderCards(S.P.locs, S.LOC_FIELDS, "locList", "loc", "Байршил", "Байршлын нэр…");
@@ -6374,6 +7059,8 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     if (cont) cont.checked = !!o.continuity;
     const at = el("autoTrChk");
     if (at) at.checked = !!o.autoTranslate;
+    const br = el("brandChk");
+    if (br) br.checked = o.brandOn !== false;
   };
 
   /* ── багц орчуулга ──────────────────────────────────────── */
@@ -6512,8 +7199,9 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
       "}\n" +
       "- cast дотор яг " + nCast + " дүр, locs дотор " + nLocs + " байршил, scenes дотор " + nScenes + " үзэгдэл байна.\n" +
       '- scenes доторх "cast" ба "loc" талбарууд нь дээр зохиосон нэрсийг ЯГ давтаж бичнэ.\n' +
-      "- Үзэгдлүүд цаг хугацааны дарааллаар, эхлэл–тэмцэл–шийдэл бүхий бүтэцтэй.\n\n" +
-      "Санаа: " + idea;
+      "- Үзэгдлүүд цаг хугацааны дарааллаар, эхлэл–тэмцэл–шийдэл бүхий бүтэцтэй.\n" +
+      (WB.brand ? WB.brand.autoContext() : "") +
+      "\nСанаа: " + idea;
 
     const data = await WB.api.askJSON(prompt, 6000);
     return data;
@@ -6754,6 +7442,9 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
         "- Keep every concrete detail from the original; add precision, never invent contradictions.\n" +
         "- Keep Mongolian cultural terms and their clarifiers intact.\n" +
         "- One paragraph each, under 110 words, English only.\n" +
+        (WB.brand && WB.brand.polishHint()
+          ? "- Honour the channel style exactly, never drift from it: " + WB.brand.polishHint() + ".\n"
+          : "") +
         '- Return ONLY a JSON object mapping each id to its rewritten prompt: {"id":"text"}.\n\n' +
         body;
       try {
@@ -7053,6 +7744,12 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
       target: el("targetSel").value
     };
     autoBar = UI.progress("Эхэлж байна…");
+    const warn = WB.brand.gate();
+    if (warn && !(await U.confirm(warn, "Үргэлжлүүлэх"))) {
+      UI.goto("brand");
+      return;
+    }
+
     el("autoLog").innerHTML = "";
     el("autoRun").disabled = true;
     el("autoStop").classList.add("on");
@@ -7362,6 +8059,84 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
     rd.readAsText(f);
     e.target.value = "";
   });
+
+  /* ── брэнд файл (алхам 1) ───────────────────────────────── */
+  const B = WB.brand;
+
+  el("brandDraft").onclick = async (e) => {
+    if (!AU.needAI()) return;
+    await UI.withBtn(e.target, "Зохиож байна…", async () => {
+      const n = await B.draft();
+      UI.renderAll();
+      UI.goto("brand");
+      U.toast(n + " талбар бөглөлөө — уншаад засаарай", "good");
+      await UI.translatePending(["brand"]);
+      B.paintOutputs();
+    });
+  };
+
+  el("brandTitles").onclick = async (e) => {
+    if (!AU.needAI()) return;
+    await UI.withBtn(e.target, "Бодож байна…", async () => {
+      const list = await B.titles(5);
+      if (!list.length) {
+        U.toast("Санал ирсэнгүй", "bad");
+        return;
+      }
+      const box = el("brandTopics");
+      const cur = (S.P.brand.meta.topics || "").trim();
+      S.P.brand.meta.topics = (cur ? cur + "\n" : "") + list.join("\n");
+      box.value = S.P.brand.meta.topics;
+      S.touch();
+      B.paintOutputs();
+      U.toast(list.length + " сэдэв нэмлээ", "good");
+    });
+  };
+
+  el("brandTr").onclick = () => UI.translatePending(["brand"]);
+
+  el("frameCopy").onclick = (e) => {
+    const p = B.oneFramePrompt();
+    if (!p) {
+      U.toast("Эхлээд «Харагдац» хэсгээ бөглөнө үү", "info");
+      return;
+    }
+    UI.copy(p, e.target);
+  };
+
+  el("masterCopy").onclick = (e) => UI.copy(B.masterPrompt(), e.target);
+  el("masterDl").onclick = () =>
+    S.download(U.slug(S.P.title) + "-brand-file.txt", B.masterPrompt(), "text/plain");
+
+  el("dirBtn").onclick = async (e) => {
+    if (!AU.needAI()) return;
+    await UI.withBtn(e.target, "Бодож байна…", async () => {
+      await B.direction();
+      B.paintDirection();
+      const d = S.P.brand.direction;
+      if (d && d.frame && !(S.P.brand.frameSubject || "").trim()) {
+        S.P.brand.frameSubject = d.frame;
+        el("frameSubject").value = d.frame;
+        S.touch();
+        B.paintOutputs();
+      }
+      U.toast("Чиглэл бэлэн — доорх туршилтын кадрыг эхлээд шалгаарай", "good");
+    });
+  };
+
+  el("brandChk").addEventListener("change", (e) => {
+    S.P.opts.brandOn = e.target.checked;
+    S.touch();
+    UI.renderOut();
+    B.paintOutputs();
+  });
+
+  /* Брэнд самбар нээлттэй үед гаралтыг шууд шинэчилж байна. */
+  const repaintBrand = U.debounce(() => {
+    const panel = el("p-brand");
+    if (panel && panel.classList.contains("on")) B.paintOutputs();
+  }, 350);
+  WB.on("state:changed", repaintBrand);
 
   /* ── төслийн үйлдэл ─────────────────────────────────────── */
   el("newBtn").onclick = async () => {

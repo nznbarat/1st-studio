@@ -59,8 +59,9 @@
       "}\n" +
       "- cast дотор яг " + nCast + " дүр, locs дотор " + nLocs + " байршил, scenes дотор " + nScenes + " үзэгдэл байна.\n" +
       '- scenes доторх "cast" ба "loc" талбарууд нь дээр зохиосон нэрсийг ЯГ давтаж бичнэ.\n' +
-      "- Үзэгдлүүд цаг хугацааны дарааллаар, эхлэл–тэмцэл–шийдэл бүхий бүтэцтэй.\n\n" +
-      "Санаа: " + idea;
+      "- Үзэгдлүүд цаг хугацааны дарааллаар, эхлэл–тэмцэл–шийдэл бүхий бүтэцтэй.\n" +
+      (WB.brand ? WB.brand.autoContext() : "") +
+      "\nСанаа: " + idea;
 
     const data = await WB.api.askJSON(prompt, 6000);
     return data;
@@ -301,6 +302,9 @@
         "- Keep every concrete detail from the original; add precision, never invent contradictions.\n" +
         "- Keep Mongolian cultural terms and their clarifiers intact.\n" +
         "- One paragraph each, under 110 words, English only.\n" +
+        (WB.brand && WB.brand.polishHint()
+          ? "- Honour the channel style exactly, never drift from it: " + WB.brand.polishHint() + ".\n"
+          : "") +
         '- Return ONLY a JSON object mapping each id to its rewritten prompt: {"id":"text"}.\n\n' +
         body;
       try {

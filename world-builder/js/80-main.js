@@ -110,6 +110,12 @@
       target: el("targetSel").value
     };
     autoBar = UI.progress("Эхэлж байна…");
+    const warn = WB.brand.gate();
+    if (warn && !(await U.confirm(warn, "Үргэлжлүүлэх"))) {
+      UI.goto("brand");
+      return;
+    }
+
     el("autoLog").innerHTML = "";
     el("autoRun").disabled = true;
     el("autoStop").classList.add("on");
@@ -419,6 +425,84 @@
     rd.readAsText(f);
     e.target.value = "";
   });
+
+  /* ── брэнд файл (алхам 1) ───────────────────────────────── */
+  const B = WB.brand;
+
+  el("brandDraft").onclick = async (e) => {
+    if (!AU.needAI()) return;
+    await UI.withBtn(e.target, "Зохиож байна…", async () => {
+      const n = await B.draft();
+      UI.renderAll();
+      UI.goto("brand");
+      U.toast(n + " талбар бөглөлөө — уншаад засаарай", "good");
+      await UI.translatePending(["brand"]);
+      B.paintOutputs();
+    });
+  };
+
+  el("brandTitles").onclick = async (e) => {
+    if (!AU.needAI()) return;
+    await UI.withBtn(e.target, "Бодож байна…", async () => {
+      const list = await B.titles(5);
+      if (!list.length) {
+        U.toast("Санал ирсэнгүй", "bad");
+        return;
+      }
+      const box = el("brandTopics");
+      const cur = (S.P.brand.meta.topics || "").trim();
+      S.P.brand.meta.topics = (cur ? cur + "\n" : "") + list.join("\n");
+      box.value = S.P.brand.meta.topics;
+      S.touch();
+      B.paintOutputs();
+      U.toast(list.length + " сэдэв нэмлээ", "good");
+    });
+  };
+
+  el("brandTr").onclick = () => UI.translatePending(["brand"]);
+
+  el("frameCopy").onclick = (e) => {
+    const p = B.oneFramePrompt();
+    if (!p) {
+      U.toast("Эхлээд «Харагдац» хэсгээ бөглөнө үү", "info");
+      return;
+    }
+    UI.copy(p, e.target);
+  };
+
+  el("masterCopy").onclick = (e) => UI.copy(B.masterPrompt(), e.target);
+  el("masterDl").onclick = () =>
+    S.download(U.slug(S.P.title) + "-brand-file.txt", B.masterPrompt(), "text/plain");
+
+  el("dirBtn").onclick = async (e) => {
+    if (!AU.needAI()) return;
+    await UI.withBtn(e.target, "Бодож байна…", async () => {
+      await B.direction();
+      B.paintDirection();
+      const d = S.P.brand.direction;
+      if (d && d.frame && !(S.P.brand.frameSubject || "").trim()) {
+        S.P.brand.frameSubject = d.frame;
+        el("frameSubject").value = d.frame;
+        S.touch();
+        B.paintOutputs();
+      }
+      U.toast("Чиглэл бэлэн — доорх туршилтын кадрыг эхлээд шалгаарай", "good");
+    });
+  };
+
+  el("brandChk").addEventListener("change", (e) => {
+    S.P.opts.brandOn = e.target.checked;
+    S.touch();
+    UI.renderOut();
+    B.paintOutputs();
+  });
+
+  /* Брэнд самбар нээлттэй үед гаралтыг шууд шинэчилж байна. */
+  const repaintBrand = U.debounce(() => {
+    const panel = el("p-brand");
+    if (panel && panel.classList.contains("on")) B.paintOutputs();
+  }, 350);
+  WB.on("state:changed", repaintBrand);
 
   /* ── төслийн үйлдэл ─────────────────────────────────────── */
   el("newBtn").onclick = async () => {

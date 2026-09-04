@@ -32,11 +32,12 @@
 <div id="app">
   <nav id="rail">
     <button class="step on" data-p="auto"><span class="n">0</span><span><b>Авто</b><small>Санаанаас бүтэн ертөнц</small></span></button>
-    <button class="step" data-p="story"><span class="n">1</span><span><b>Түүх</b><small>Логлайн, үзэгдэл, кадр</small></span></button>
-    <button class="step" data-p="cast"><span class="n">2</span><span><b>Дүрүүд</b><small>Царай, хувцас, зан</small></span></button>
-    <button class="step" data-p="loc"><span class="n">3</span><span><b>Байршил</b><small>Орчин, цаг, уур амьсгал</small></span></button>
-    <button class="step" data-p="out"><span class="n">4</span><span><b>Промт</b><small>Бэлэн англи промт</small></span></button>
-    <button class="step" data-p="dict"><span class="n">5</span><span><b>Толь</b><small>Ангилсан үгсийн сан</small></span></button>
+    <button class="step" data-p="brand"><span class="n">1</span><span><b>Брэнд</b><small>Сувгийн гарын үсэг, нэг фрэйм</small></span></button>
+    <button class="step" data-p="story"><span class="n">2</span><span><b>Түүх</b><small>Логлайн, үзэгдэл, кадр</small></span></button>
+    <button class="step" data-p="cast"><span class="n">3</span><span><b>Дүрүүд</b><small>Царай, хувцас, зан</small></span></button>
+    <button class="step" data-p="loc"><span class="n">4</span><span><b>Байршил</b><small>Орчин, цаг, уур амьсгал</small></span></button>
+    <button class="step" data-p="out"><span class="n">5</span><span><b>Промт</b><small>Бэлэн англи промт</small></span></button>
+    <button class="step" data-p="dict"><span class="n">6</span><span><b>Толь</b><small>Ангилсан үгсийн сан</small></span></button>
     <div class="railsec">
       <button class="rbtn" id="demoBtn">✦ Жишээ ачаалах</button>
       <button class="rbtn" id="newBtn">✚ Шинэ төсөл</button>
@@ -99,10 +100,107 @@
       </div>
     </section>
 
-    <!-- ══════════ 1 · ТҮҮХ ══════════ -->
+    <!-- ══════════ 1 · БРЭНД ══════════ -->
+    <section class="panel" id="p-brand">
+      <div class="pane-head">
+        <span class="eyebrow">Алхам 1 · Брэнд файл</span>
+        <h2>Сувгийн гарын үсэг</h2>
+        <p>AI таны бодлыг уншиж чадахгүй. Заагаад өгөхгүй бол хамгийн <b>ердийн</b> хувилбар руу орно — учир нь ердийн зүйл нь түүний хувьд хамгийн аюулгүй таамаг. Энд бичсэн зүйл бүх промтод автоматаар шингэж, таны видеог бусад бүх хүнийхээс ялгана.</p>
+      </div>
+
+      <div id="lockBar" class="lockbar idle"></div>
+
+      <!-- ── Давхарга 1 ── -->
+      <div class="card">
+        <div class="layerhead"><span class="lnum">1</span><b>Судалгаа</b><i>Батлагдсан сэдэв, батлагдсан гарчиг — таамаг биш</i></div>
+
+        <label class="fld"><span class="flabel">Сувгийн ниш — нэг өгүүлбэр</span>
+          <textarea id="brandNiche" class="lineIn ta" rows="2" spellcheck="false" placeholder="Жишээ: Монголын түүхэн үйл явдлыг кино маягийн богино өгүүлэмжээр тайлбарладаг суваг"></textarea>
+        </label>
+
+        <div class="toolrow">
+          <button class="aibtn" id="brandDraft">✨ Брэнд файл зохиох</button>
+          <button class="aibtn" id="brandTitles">🎯 5 сэдэв санал болгох</button>
+          <button class="tbtn2" id="brandTr">⇄ Брэндийг англи руу орчуулах</button>
+        </div>
+
+        <label class="fld"><span class="flabel">Батлагдсан гарчгийн формат</span>
+          <input id="brandTitleFmt" class="lineIn" placeholder="Жишээ: «Хэн ч мэддэггүй … », «… яагаад мартагдсан бэ»">
+        </label>
+        <label class="fld"><span class="flabel">Сэдвийн жагсаалт — мөр бүрд нэг</span>
+          <textarea id="brandTopics" class="lineIn ta" rows="5" spellcheck="false" placeholder="Мөр бүрд нэг сэдэв…"></textarea>
+        </label>
+      </div>
+
+      <!-- ── Давхарга 2 ── -->
+      <div class="card">
+        <div class="layerhead"><span class="lnum">2</span><b>Харагдац</b><i>Энэ давхарга промт бүрд шингэнэ</i></div>
+        <p class="note nb">Тодорхой бич — өнгө, материал, линз, гэрлийн чиглэлийг нэрлэ. «Гоё», «мэргэжлийн» гэх мэт ерөнхий үг AI‑д юу ч хэлдэггүй. <b>Санамж:</b> Алхам 5‑ын «Хэв маяг» сонголт мөн промтод нэмэгддэг тул зөрчилдөхгүйн тулд брэнд файл ашиглаж байвал тэндээ хэрэггүй хэв маягуудыг тайлаарай.</p>
+        <div id="brandLookFields"></div>
+      </div>
+
+      <!-- ── Нэг фрэйм дүрэм ── -->
+      <div class="card frame">
+        <div class="layerhead"><span class="lnum">◉</span><b>Нэг фрэйм дүрэм</b><i>Видео биш — эхлээд ГАНЦ зураг</i></div>
+        <p class="note nb">Бүтэн видео үүсгээд дараа нь буруу байсныг ойлгохоос илүү, ганц зураг дээр стилээ тогтоох нь хамаагүй хямд, хурдан. Доорх промтыг зураг үүсгэгчид өгөөд, гарсан кадр таалагдвал доор нь түгжинэ.</p>
+
+        <label class="fld"><span class="flabel">Туршилтын кадрын агуулга — нэг өгүүлбэр</span>
+          <input id="frameSubject" class="lineIn" placeholder="Жишээ: хөгшин анчин үүрийн бүрийд говийн хадан дээр ганцаараа зогсож байна">
+        </label>
+
+        <div class="out" id="frameOut"></div>
+        <div class="toolrow" style="margin-top:10px">
+          <button class="tbtn2 acc" id="frameCopy">📋 Туршилтын промт хуулах</button>
+        </div>
+
+        <div class="lockrow">
+          <label><input type="checkbox" id="lockChk"> <b>Стиль тогтоосон</b> — энэ харагдацыг түгжлээ</label>
+        </div>
+        <label class="fld"><span class="flabel">Баталсан кадрын лавлагаа (файлын нэр, холбоос эсвэл seed)</span>
+          <input id="brandRef" class="lineIn" placeholder="жишээ: ref-frame-03.png · seed 44219">
+        </label>
+      </div>
+
+      <!-- ── Давхарга 3 ── -->
+      <div class="card">
+        <div class="layerhead"><span class="lnum">3</span><b>Хоолой</b><i>Сувгийн чих — өнгө аяс, үг хэллэг, дуу авиа</i></div>
+        <div id="brandVoiceFields"></div>
+      </div>
+
+      <!-- ── Давхарга 4 ── -->
+      <div class="card">
+        <div class="layerhead"><span class="lnum">4</span><b>Хяналтын цэг</b><i>Юу ч үүсгэхээс өмнө чиглэлээ харуулах</i></div>
+        <div class="opt">
+          <label><input type="checkbox" id="dirChk" checked> Мастер промтод «эхлээд чиглэлээ харуул» гэсэн заавар оруулах</label>
+        </div>
+        <div class="toolrow">
+          <button class="aibtn" id="dirBtn">🧭 Чиглэл санал болгуул</button>
+        </div>
+        <div id="dirOut" class="checkout"></div>
+      </div>
+
+      <!-- ── Мастер промт ── -->
+      <div class="aisec">
+        <h3>🧩 Бүтэн 4 давхаргат промт</h3>
+        <p class="note nb">Дөрвөн давхарга нэг дор. Claude Code, Veo, Higgsfield — аль ч хэрэгсэлд сувгийн «үйлдвэрийн тохиргоо» болгож хуулж өгнө.</p>
+        <div class="out" id="masterOut"></div>
+        <div class="toolrow" style="margin-top:10px">
+          <button class="tbtn2 acc" id="masterCopy">📋 Хуулах</button>
+          <button class="tbtn2" id="masterDl">⬇ brand-file.txt</button>
+        </div>
+      </div>
+
+      <div class="hintgrid">
+        <div class="hint"><b>Нэг фрэйм дүрэм</b>Стилээ ЗУРАГ дээр тогтооно, видео дээр биш. Нэг зураг = нэг кредит; нэг видео = олон дахин их. Буруу стилийг эрт барих тусам хямд.</div>
+        <div class="hint"><b>Брэнд файл</b>Нэг удаа бичээд бүх ангид дахин ашиглана. Промт бүрд автоматаар шингэдэг тул 10 дахь видео чинь 1‑р видеотойгоо ижил төрхтэй байна.</div>
+        <div class="hint"><b>4 давхарга</b>Судалгаа юуны тухай, Харагдац ямар харагдах, Хоолой яаж сонсогдох, Хяналт хэзээ зогсохыг хэлнэ. Аль нэг нь дутвал AI өөрөө нөхөж — ердийн зүйлээр нөхнө.</div>
+      </div>
+    </section>
+
+    <!-- ══════════ 2 · ТҮҮХ ══════════ -->
     <section class="panel" id="p-story">
       <div class="pane-head">
-        <span class="eyebrow">Алхам 1 · Түүх</span>
+        <span class="eyebrow">Алхам 2 · Түүх</span>
         <h2>Үзэгдлээ монголоор бич</h2>
         <p>Зүүн талд монголоор бич — баруун талд англи промт зэрэгцээд бичигдэнэ. Бичихээ болиод хэсэг хүлээхэд өөрөө орчуулагдана, эсвэл дунд талын <b>→</b> товчийг дар.</p>
       </div>
@@ -118,10 +216,10 @@
       <button class="addbtn" id="addScene">＋ Үзэгдэл нэмэх</button>
     </section>
 
-    <!-- ══════════ 2 · ДҮРҮҮД ══════════ -->
+    <!-- ══════════ 3 · ДҮРҮҮД ══════════ -->
     <section class="panel" id="p-cast">
       <div class="pane-head">
-        <span class="eyebrow">Алхам 2 · Дүрүүд</span>
+        <span class="eyebrow">Алхам 3 · Дүрүүд</span>
         <h2>Жүжигчдийнхээ хуудсыг үүсгэ</h2>
         <p>Дүр бүрийн царай, хувцас, зан чанарыг монголоор дүрсэл. Англи тал нь зураг үүсгэгчид шууд өгөх промт болно. Үзэгдэлд холбогдсон дүрийн дүрслэл нь тухайн үзэгдлийн промтод автоматаар шингэнэ.</p>
       </div>
@@ -133,10 +231,10 @@
       <button class="addbtn" id="addCast">＋ Дүр нэмэх</button>
     </section>
 
-    <!-- ══════════ 3 · БАЙРШИЛ ══════════ -->
+    <!-- ══════════ 4 · БАЙРШИЛ ══════════ -->
     <section class="panel" id="p-loc">
       <div class="pane-head">
-        <span class="eyebrow">Алхам 3 · Байршил</span>
+        <span class="eyebrow">Алхам 4 · Байршил</span>
         <h2>Түүхийн орчноо байгуул</h2>
         <p>Газар бүрийн харагдац, цаг үе, цаг агаар, уур амьсгалыг бич. Байршлын промт нь дүрийн промттой хослоод тогтвортой ертөнц үүсгэнэ.</p>
       </div>
@@ -145,10 +243,10 @@
       <button class="addbtn" id="addLoc">＋ Байршил нэмэх</button>
     </section>
 
-    <!-- ══════════ 4 · ПРОМТ ══════════ -->
+    <!-- ══════════ 5 · ПРОМТ ══════════ -->
     <section class="panel" id="p-out">
       <div class="pane-head">
-        <span class="eyebrow">Алхам 4 · Промт</span>
+        <span class="eyebrow">Алхам 5 · Промт</span>
         <h2>Бэлэн англи промтууд</h2>
         <p>Бүх хэсгээ нэгтгэсэн, хуулж хэрэглэхэд бэлэн промтууд. Хэв маягийн сонголт бүх промтод нэгэн зэрэг нэмэгдэнэ.</p>
       </div>
@@ -194,6 +292,7 @@
         <div class="opt">
           <label><input type="checkbox" id="contChk" checked> Тууштай байдал — үзэгдлийн промтод дүр, байршлыг шингээх</label>
           <label><input type="checkbox" id="autoTrChk" checked> Бичиж байхад автоматаар орчуулах</label>
+          <label><input type="checkbox" id="brandChk" checked> Брэнд файлыг бүх промтод шингээх</label>
         </div>
       </div>
 
@@ -220,10 +319,10 @@
       <div id="outList"></div>
     </section>
 
-    <!-- ══════════ 5 · ТОЛЬ ══════════ -->
+    <!-- ══════════ 6 · ТОЛЬ ══════════ -->
     <section class="panel" id="p-dict">
       <div class="pane-head">
-        <span class="eyebrow">Алхам 5 · Толь</span>
+        <span class="eyebrow">Алхам 6 · Толь</span>
         <h2>Ангилсан үгсийн сан</h2>
         <p>Офлайн горимд ажилладаг суурь толь. Ангилал бүрээр шүүж хайж болно. Таниагүй үгс доор цугларах бөгөөд Claude‑аар нэг товчоор бүгдийг нь бөглүүлж болно — нэмсэн үг төсөлтэй хамт хадгалагдана.</p>
       </div>
@@ -350,6 +449,7 @@
 <script src="js/30-api.js"></script>
 <script src="js/40-translate.js"></script>
 <script src="js/50-state.js"></script>
+<script src="js/52-brand.js"></script>
 <script src="js/55-prompt.js"></script>
 <script src="js/60-ui.js"></script>
 <script src="js/70-auto.js"></script>

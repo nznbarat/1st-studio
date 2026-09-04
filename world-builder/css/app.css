@@ -180,6 +180,27 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
 .issue.warn{border-color:rgba(224,162,74,.4);color:#ffd9a0}
 .issue.tip{border-color:rgba(111,183,220,.35);color:#bfe0f2}
 
+/* ── брэнд файл ── */
+.lockbar{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;border-radius:10px;padding:11px 14px;margin-bottom:16px;font-size:12.5px;line-height:1.55;border:1px solid var(--line);background:var(--panel)}
+.lockbar b{font-family:'Oswald';font-size:14px;font-weight:600;white-space:nowrap}
+.lockbar span{color:var(--dim)}
+.lockbar.ok{border-color:rgba(87,217,138,.45);background:rgba(87,217,138,.07)} .lockbar.ok b{color:var(--ok)}
+.lockbar.warn{border-color:rgba(224,162,74,.45);background:rgba(224,162,74,.07)} .lockbar.warn b{color:var(--warn)}
+.lockbar.idle b{color:var(--dim)}
+.layerhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.layerhead b{font-family:'Oswald';font-size:16px;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+.layerhead i{font-style:normal;font-size:11.5px;color:var(--dim)}
+.lnum{font-family:'JetBrains Mono';font-size:11px;color:var(--tungsten);border:1px solid var(--tungsten);border-radius:5px;padding:2px 8px;flex-shrink:0}
+.card.frame{border-left:3px solid var(--daylight)}
+.card.frame .lnum{color:var(--daylight);border-color:var(--daylight)}
+.lockrow{margin:14px 0 12px;padding:11px 13px;border:1px dashed var(--line);border-radius:9px}
+.lockrow label{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--dim);cursor:pointer}
+.lockrow label b{color:var(--text);font-weight:600}
+.lockrow input{accent-color:var(--ok);width:16px;height:16px}
+textarea.lineIn.ta{resize:vertical;line-height:1.6;font-family:inherit}
+.out.dimmed{color:#5d6f80;font-style:italic}
+.note.nb{margin-top:0;margin-bottom:12px}
+
 /* ── гаралт ── */
 .out{background:#0a1118;border:1px solid var(--line);border-left:3px solid var(--daylight);border-radius:9px;padding:12px;font-family:'JetBrains Mono';font-size:11.5px;line-height:1.65;color:#c8d6e2;white-space:pre-wrap;word-break:break-word}
 .outwrap{margin-bottom:14px}

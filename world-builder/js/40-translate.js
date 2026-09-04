@@ -106,6 +106,7 @@
     char: "a film character description — a concrete English image-prompt fragment",
     loc: "a film location description — a concrete English image-prompt fragment",
     shot: "a single camera shot description for a video generator",
+    brand: "a channel style-guide fragment — a reusable English descriptor for look, lighting, palette, camera or narration tone",
     plain: "general descriptive text"
   };
 

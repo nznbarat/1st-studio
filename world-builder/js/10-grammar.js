@@ -212,7 +212,10 @@
   G.tidy = function (s) {
     return String(s || "")
       .replace(/\s+([,.;:!?])/g, "$1")
-      .replace(/([,.;:!?])(?=[^\s.,;:!?)\]])/g, "$1 ")
+      /* Тоон дундах цэг, цэгийг бүү сал: 16:9, 2.39:1, 1.5 */
+      .replace(/([,.;:!?])(?=[^\s.,;:!?)\]])/g, (m, p1, off, str) =>
+        /\d/.test(str[off - 1] || "") && /\d/.test(str[off + 1] || "") ? m : m + " "
+      )
       .replace(/\bof of\b/g, "of")
       .replace(/\bwith with\b/g, "with")
       .replace(/\bin in\b/g, "in")

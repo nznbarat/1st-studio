@@ -80,6 +80,11 @@
     const style = PR.styleText(o);
     let out = text;
     if (style) out += " " + style + ".";
+    /* Брэнд файлын харагдацын давхарга — сувгийн гарын үсэг. */
+    if (o.brandOn !== false && WB.brand) {
+      const bl = WB.brand.visualLine();
+      if (bl) out += " " + bl + ".";
+    }
     const suf = PR.SUFFIX[o.target] ? PR.SUFFIX[o.target](o) : "";
     if (o.target === "image" && suf) out += " " + suf;
     return WB.gram.tidy(out);
@@ -87,8 +92,12 @@
 
   PR.negative = function (opts) {
     const o = opts || S.P.opts;
+    const parts = [PR.NEGATIVE_DEFAULT];
+    const avoid = o.brandOn !== false && WB.brand ? WB.brand.avoidLine() : "";
+    if (avoid) parts.push(avoid);
     const extra = (o.negative || "").trim();
-    return extra ? PR.NEGATIVE_DEFAULT + ", " + extra : PR.NEGATIVE_DEFAULT;
+    if (extra) parts.push(extra);
+    return parts.join(", ");
   };
 
   /** Гаралтын бүх блокийг цуглуулна. */
