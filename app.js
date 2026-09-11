@@ -1778,7 +1778,8 @@ function blenderKey(k) {
   const m = new THREE.Matrix4().multiplyMatrices(CONV, tmp.matrixWorld);
   const pos = new THREE.Vector3(), q = new THREE.Quaternion(), sc = new THREE.Vector3();
   m.decompose(pos, q, sc);
-  const e = new THREE.Euler().setFromQuaternion(q, 'XYZ');
+  // Blender-ийн rotation_mode "XYZ" нь Rz*Ry*Rx эвлүүлэлт — энэ нь three.js-ийн 'ZYX'-тэй тэнцүү.
+  const e = new THREE.Euler().setFromQuaternion(q, 'ZYX');
   const t = k.target;
   return {
     f: k.frame,
@@ -1795,7 +1796,7 @@ function exportPY() {
   const kdata = K.map(k => '    (' + k.f + ', (' + k.p.map(num).join(', ') + '), (' + k.r.map(num).join(', ') + '), (' + k.t.map(num).join(', ') + '), ' + num(k.lens) + '),').join('\n');
   const pdata = people.map((p, i) => '    ("Subject_' + String(i + 1).padStart(2, '0') + '", ' + num(p.position.x) + ', ' + num(-p.position.z) + ', ' + num(p.rotation.y) + ', ' + num(p.scale.x) + '),').join('\n');
   const rdata = props.map((p, i) => '    ("' + p.userData.kind + '_' + String(i + 1).padStart(2, '0') + '", "' + p.userData.kind + '", ' + num(p.position.x) + ', ' + num(-p.position.z) + ', ' + num(p.rotation.y) + ', ' + num(p.scale.x) + '),').join('\n');
-  const promptTxt = ($('promptOut').textContent || '').replace(/\\/g, '\\\\').replace(/"""/g, '\\"\\"\\"');
+  const promptTxt = ($('promptOut').textContent || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 
   const py = [
 '# ══════════════════════════════════════════════════════════════',
@@ -1939,7 +1940,7 @@ rdata || '',
 '    txt.write(PROMPT)',
 '',
 '    scene.frame_set(FRAME_START)',
-'    print("[1st Studio] %d түлхүүр кадр, %d фрейм, %d fps үүслээ." % (len(KEYS), FRAME_END - FRAME_START, FPS))',
+'    print("[1st Studio] %d түлхүүр кадр, %d фрейм, %d fps үүслээ." % (len(KEYS), FRAME_END - FRAME_START + 1, FPS))',
 '',
 '',
 'main()',
