@@ -1,0 +1,2014 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0d141c">
+<!-- ГАНЦ ФАЙЛЫН ХУВИЛБАР — tools/build-resolve-mn.mjs-ээр үүссэн. Гараар бүү зас.
+     Эх код: resolve-mn/ хавтас. -->
+<title>DaVinci Resolve — Монгол хөтөч</title>
+<meta name="description" content="DaVinci Resolve-ийн бүх цэс, самбар, товчлуурын монгол тайлбар. 650 гаруй нэр томьёо, ажлын урсгалын заавар.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎞%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Фонтыг хаалтгүй ачаална: fonts.googleapis.com удаан эсвэл хаагдсан үед ч
+     скриптүүд хүлээхгүй, хуудас нөөц фонтоор шууд ажиллана. -->
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet" media="print" onload="this.media='all';this.onload=null">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+<style>
+/* ── css/app.css ── */
+/* ═══════════ DaVinci Resolve — Монгол хөтөч ═══════════ */
+:root{
+  --ink:#0d141c; --panel:#141e29; --panel2:#18242f; --line:#25333f;
+  --text:#e9eff5; --dim:#93a5b5; --dim2:#5d6f80;
+  --tungsten:#f5a83c; --daylight:#6fb7dc;
+  --ok:#57d98a; --warn:#e0a24a; --rec:#ff5252;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{min-height:100dvh}  /* эцэг элемент өндөргүй үед хумигдахаас сэргийлнэ */
+body{background:var(--ink);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:14px;line-height:1.55;overflow:hidden;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;color:var(--text);background:none;border:0}
+h1,h2,h3{font-family:'Oswald','Inter',system-ui,sans-serif}
+a{color:var(--daylight);text-decoration:none}
+code{font-family:'JetBrains Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;font-size:.9em;background:var(--ink);border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--tungsten)}
+mark{background:rgba(245,168,60,.28);color:#ffd79a;border-radius:3px;padding:0 2px}
+::selection{background:var(--tungsten);color:#181008}
+:focus-visible{outline:2px solid var(--daylight);outline-offset:2px}
+
+/* ── дээд мөр ── */
+#top{height:56px;display:flex;align-items:center;gap:12px;padding:0 16px;background:var(--panel);border-bottom:1px solid var(--line);flex-shrink:0}
+#top h1{font-size:16px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+#top h1 span{color:var(--tungsten)}
+#top h1 em{font-style:normal;font-family:'JetBrains Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;font-size:10px;color:var(--daylight);vertical-align:top;margin-left:4px}
+.spacer{flex:1}
+.pair{display:flex;align-items:center;gap:7px;font-family:'JetBrains Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;font-size:11px;letter-spacing:.1em;color:var(--dim)}
+.pair b{color:var(--daylight);font-weight:500}
+.pair i{color:var(--tungsten);font-style:normal;font-weight:500}
+.backlink{font-size:12px;border:1px solid var(--line);background:var(--panel2);border-radius:8px;padding:6px 11px;color:var(--dim);white-space:nowrap}
+.backlink:hover{border-color:var(--tungsten);color:var(--tungsten)}
+.backlink .bl-ico{margin-right:5px}
+
+/* ── байрлал ── */
+#app{display:flex;height:calc(100% - 56px)}
+#rail{width:224px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--line);padding:14px 12px;display:flex;flex-direction:column;gap:8px;overflow-y:auto}
+.step{display:flex;gap:11px;align-items:flex-start;text-align:left;width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 12px;transition:border-color .15s,transform .15s}
+.step:hover{border-color:#3a4c5e;transform:translateX(2px)}
+.step.on{border-color:var(--tungsten);background:rgba(245,168,60,.07)}
+.step .n{font-family:'JetBrains Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;font-size:12px;color:var(--tungsten);border:1px solid var(--tungsten);border-radius:4px;padding:0 5px;margin-top:2px;flex-shrink:0;line-height:1.5}
+.step.on .n{background:var(--tungsten);color:#1b1206}
+.step b{display:block;font-size:13.5px;font-weight:600;font-family:'Oswald','Inter',system-ui,sans-serif;letter-spacing:.02em}
+.step small{display:block;font-size:11px;color:var(--dim);line-height:1.4;margin-top:1px}
+.railsec{margin-top:auto;padding-top:12px;border-top:1px solid var(--line)}
+.railstat{font-family:'JetBrains Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;font-size:11px;color:var(--dim);line-height:1.9}
+.railstat b{color:var(--daylight);font-weight:500}
+
+#main{flex:1;min-width:0;overflow-y:auto;padding:22px 24px 70px}
+.pane-head{margin-bottom:18px;max-width:80ch}
+.eyebrow{font-family:'JetBrains Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--tungsten)}
+.pane-head h2{font-size:clamp(22px,3vw,30px);text-transform:uppercase;font-weight:600;margin:6px 0}
+.pane-head p{color:var(--dim);font-size:13.5px}
+.panel{display:none;max-width:1180px}
+.panel.on{display:block}
+
+/* ── хайлтын мөр ── */
+.searchbar{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:0 14px;margin-bottom:14px;transition:border-color .15s}
+.searchbar:focus-within{border-color:var(--tungsten)}
+.searchbar .sicon{color:var(--tungsten);font-size:16px}
+#q{flex:1;background:none;border:0;outline:0;color:var(--text);font-family:inherit;font-size:15px;padding:14px 0}
+#q::placeholder{color:var(--dim2)}
+#q::-webkit-search-cancel-button{display:none}
+#qclear{width:26px;height:26px;border-radius:6px;border:1px solid var(--line);color:var(--dim);font-size:12px;line-height:1;visibility:hidden}
+#qclear.on{visibility:visible}
+#qclear:hover{border-color:var(--rec);color:var(--rec)}
+
+/* ── шүүлтүүр ── */
+.filters{margin-bottom:12px}
+.frow{display:flex;flex-wrap:wrap;gap:7px}
+.frow.sub{display:none;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.frow.sub.on{display:flex}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:5px 12px;font-size:12.5px;color:var(--dim);transition:.15s}
+.chip:hover{border-color:#3a4c5e;color:var(--text)}
+.chip.on{border-color:var(--tungsten);color:var(--tungsten);background:rgba(245,168,60,.1)}
+.chip i{font-style:normal;font-family:'JetBrains Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;font-size:10px;color:var(--dim2);background:var(--ink);border-radius:999px;padding:1px 6px}
+.chip.on i{color:var(--tungsten)}
+
+.resultbar{font-family:'JetBrains Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;font-size:11px;letter-spacing:.1em;color:var(--dim);margin:14px 0 10px;text-transform:uppercase}
+
+/* ── нэр томьёоны карт ── */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px}
+.term{background:var(--panel);border:1px solid var(--line);border-left:3px solid hsl(var(--hue) 55% 55% / .75);border-radius:11px;padding:13px 14px;transition:border-color .15s,transform .15s}
+.term:hover{border-color:#3a4c5e;border-left-color:hsl(var(--hue) 70% 62%);transform:translateY(-1px)}
+.term-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:3px}
+.term-head .en{flex:1;font-size:15px;font-weight:600;font-family:'Oswald','Inter',system-ui,sans-serif;letter-spacing:.01em;color:var(--daylight);line-height:1.3}
+.term .mn{font-size:14px;font-weight:600;color:var(--tungsten);margin-bottom:6px}
+.term .desc{font-size:12.8px;color:var(--dim);line-height:1.6}
+.term-foot{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;padding-top:9px;border-top:1px dashed var(--line)}
+.term-foot span{font-family:'JetBrains Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;font-size:9.5px;letter-spacing:.08em;color:var(--dim2);border:1px solid var(--line);border-radius:5px;padding:2px 7px;text-transform:uppercase}
+.term-foot .pg{color:hsl(var(--hue) 50% 65%);border-color:hsl(var(--hue) 40% 40% / .5)}
+.term-foot .loc{text-transform:none;letter-spacing:0;font-family:'Inter';font-size:10.5px;color:var(--dim)}
+
+/* ── товчлуурын харагдац ── */
+.kbd{display:inline-flex;align-items:center;gap:3px;flex-shrink:0;background:none;border:0;padding:0}
+.kbd kbd{font-family:'JetBrains Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;font-size:10.5px;background:var(--ink);border:1px solid #3a4c5e;border-bottom-width:2px;border-radius:5px;padding:3px 7px;color:var(--text);white-space:nowrap}
+.kbd .plus{font-size:9px;color:var(--dim2)}
+.kbd:hover kbd{border-color:var(--tungsten);color:var(--tungsten)}
+
+/* ── хоосон, анхааруулга ── */
+.empty{grid-column:1/-1;text-align:center;padding:44px 20px;color:var(--dim);border:1px dashed var(--line);border-radius:12px;line-height:2}
+.empty b{color:var(--text);font-size:16px}
+.warn{background:rgba(224,162,74,.07);border:1px solid rgba(224,162,74,.35);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--dim);margin-bottom:18px;line-height:1.7}
+.warn b{color:var(--warn)}
+
+/* ── хуудсаар үзэх ── */
+#pagesBox{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
+.pagecard{background:var(--panel);border:1px solid var(--line);border-top:3px solid hsl(var(--hue) 55% 55% / .8);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:7px}
+.pagecard-head{display:flex;align-items:center;gap:12px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.pgicon{font-size:22px;color:hsl(var(--hue) 60% 62%);line-height:1}
+.pagecard-head h3{font-size:17px;text-transform:uppercase;letter-spacing:.03em}
+.pagecard-head small{font-family:'JetBrains Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;font-size:10px;color:var(--dim2)}
+.catrow{display:flex;align-items:center;gap:11px;text-align:left;width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:9px 11px;transition:.15s}
+.catrow:hover{border-color:hsl(var(--hue) 50% 50%);transform:translateX(2px)}
+.catrow .ci{font-size:14px;flex-shrink:0;color:hsl(var(--hue) 55% 62%)}
+.catrow .ct{flex:1;min-width:0}
+.catrow .ct b{display:block;font-size:13px;font-weight:600}
+.catrow .ct small{display:block;font-size:11px;color:var(--dim2);line-height:1.4;margin-top:2px}
+.catrow .cn{font-family:'JetBrains Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;font-size:10px;color:var(--dim2);border:1px solid var(--line);border-radius:999px;padding:2px 8px;flex-shrink:0}
+
+/* ── товчлуурын хүснэгт ── */
+.keygroup{margin-bottom:22px}
+.keygroup h3{font-size:14px;text-transform:uppercase;letter-spacing:.08em;color:hsl(var(--hue) 50% 65%);margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--line)}
+.keytable{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:8px}
+.keyrow{display:flex;align-items:flex-start;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:10px 12px}
+.keyrow:hover{border-color:#3a4c5e}
+.keyrow .kbd{min-width:96px;justify-content:flex-start;padding-top:1px}
+.keytxt{min-width:0}
+.keytxt b{display:block;font-size:13px;font-weight:600;color:var(--tungsten)}
+.keytxt small{display:block;font-size:12px;color:var(--dim);line-height:1.55;margin-top:2px}
+
+/* ── хөтөч ── */
+.guide{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.guide-head{display:flex;align-items:center;gap:13px;width:100%;text-align:left;padding:14px 15px;transition:background .15s}
+.guide-head:hover{background:var(--panel2)}
+.gnum{font-size:19px;color:var(--tungsten);flex-shrink:0;line-height:1}
+.gt{flex:1;min-width:0}
+.gt b{display:block;font-family:'Oswald','Inter',system-ui,sans-serif;font-size:16px;font-weight:600;letter-spacing:.02em}
+.gt small{display:block;font-size:12.5px;color:var(--dim);line-height:1.55;margin-top:3px}
+.gcount{font-family:'JetBrains Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;font-size:10px;color:var(--dim2);border:1px solid var(--line);border-radius:999px;padding:3px 9px;white-space:nowrap;flex-shrink:0}
+.gchev{color:var(--dim);font-size:12px;transition:transform .2s;flex-shrink:0}
+.guide.open .gchev{transform:rotate(180deg)}
+.guide-body{display:none;padding:4px 18px 18px 52px;list-style:none;counter-reset:gs}
+.guide.open .guide-body{display:block}
+.guide-body li{position:relative;padding:0 0 16px 8px;border-left:2px solid var(--line);padding-left:20px;counter-increment:gs}
+.guide-body li:last-child{border-left-color:transparent;padding-bottom:2px}
+.guide-body li::before{content:counter(gs);position:absolute;left:-13px;top:0;width:24px;height:24px;border-radius:50%;background:var(--panel2);border:1px solid var(--line);color:var(--tungsten);font-family:'JetBrains Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;font-size:11px;display:flex;align-items:center;justify-content:center}
+.guide-body li b{display:block;font-size:14px;font-weight:600;margin-bottom:4px;padding-top:2px}
+.guide-body li p{font-size:13px;color:var(--dim);line-height:1.7}
+.guide-body li p b{display:inline;font-size:inherit;color:var(--daylight);font-weight:600}
+.guide-body .tip{margin-top:7px;background:rgba(111,183,220,.06);border-left:2px solid var(--daylight);border-radius:0 7px 7px 0;padding:8px 11px;font-size:12.5px}
+.guide-body .tip b{color:var(--daylight)}
+
+/* ── тухай хэсгийн карт ── */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px;max-width:80ch}
+.card h3{font-size:15px;text-transform:uppercase;letter-spacing:.05em;color:var(--tungsten);margin-bottom:9px}
+.card p{font-size:13.5px;color:var(--dim);line-height:1.75;margin-bottom:9px}
+.card p:last-child{margin-bottom:0}
+.card p b{color:var(--text)}
+.bullets{list-style:none;font-size:13.5px;color:var(--dim);line-height:1.85}
+.bullets li{padding-left:18px;position:relative}
+.bullets li::before{content:"▸";position:absolute;left:0;color:var(--tungsten)}
+.bullets b{color:var(--text)}
+
+/* ── мэдэгдэл ── */
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--panel2);border:1px solid var(--tungsten);color:var(--text);border-radius:9px;padding:10px 18px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;z-index:99;box-shadow:0 8px 26px rgba(0,0,0,.5)}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── жижиг дэлгэц ── */
+@media (max-width:820px){
+  body{overflow:auto}
+  #app{flex-direction:column;height:auto}
+  #rail{width:100%;flex-direction:row;flex-wrap:wrap;border-right:0;border-bottom:1px solid var(--line);gap:6px}
+  .step{width:auto;flex:1 1 132px;padding:8px 10px}
+  .step small{display:none}
+  .railsec{display:none}
+  #main{padding:16px 14px 50px}
+  .grid,.keytable,#pagesBox{grid-template-columns:1fr}
+  .guide-body{padding-left:30px}
+  #top .pair{display:none}
+  #top{padding:0 10px;gap:8px}
+  #top h1{font-size:14px}
+  .backlink .bl-txt{display:none}
+  .backlink{padding:6px 9px}
+  .backlink .bl-ico{margin-right:0}
+}
+
+</style>
+</head>
+<body>
+
+<div id="top">
+  <h1>Resolve <span>Монголоор</span><em>v1</em></h1>
+  <div class="spacer"></div>
+  <div class="pair"><b>ENGLISH</b> → <i>МОНГОЛ</i></div>
+  <a class="backlink" href="resolve-dotor.html" title="Интерфейсийн загвар"><span class="bl-ico">🖥</span><span class="bl-txt">Resolve дотор</span></a>
+</div>
+
+<div id="app">
+  <nav id="rail"></nav>
+
+  <main id="main">
+
+    <!-- ══════════ ХАЙЛТ ══════════ -->
+    <section class="panel on" id="p-hailt">
+      <div class="pane-head">
+        <span class="eyebrow">Хайлт</span>
+        <h2>Нэр томьёо хайх</h2>
+        <p>Англи нэрээр нь, монголоор нь, эсвэл тайлбар доторх үгээр хайж болно.
+           Жишээ нь <code>ripple</code>, <code>долгиолон</code>, <code>ногоон дэлгэц</code>, <code>Alt+S</code>.</p>
+      </div>
+
+      <div class="searchbar">
+        <span class="sicon">◎</span>
+        <input id="q" type="search" autocomplete="off" spellcheck="false"
+               placeholder="Юу хайж байна вэ?  (/ дарж шууд энд ирнэ)" aria-label="Хайлт">
+        <button id="qclear" title="Цэвэрлэх">✕</button>
+      </div>
+
+      <div class="filters">
+        <div class="frow" id="pageFilter"></div>
+        <div class="frow sub" id="catFilter"></div>
+      </div>
+
+      <div class="resultbar"><span id="resultMeta"></span></div>
+      <div id="results" class="grid"></div>
+    </section>
+
+    <!-- ══════════ ХУУДСААР ══════════ -->
+    <section class="panel" id="p-huudas">
+      <div class="pane-head">
+        <span class="eyebrow">Бүтэц</span>
+        <h2>Resolve-ийн хуудсууд</h2>
+        <p>Программын доод талын табууд бол ажлын урсгалын үе шатууд.
+           Resolve 21-д Photo хуудас нэмэгдэж найм болсон.
+           Ангилал дээр товшвол тухайн хэсгийн бүх нэр томьёо нээгдэнэ.</p>
+      </div>
+      <div id="pagesBox"></div>
+    </section>
+
+    <!-- ══════════ ТОВЧЛУУР ══════════ -->
+    <section class="panel" id="p-tovch">
+      <div class="pane-head">
+        <span class="eyebrow">Гарын товчлуур</span>
+        <h2>Товчлуурын лавлах</h2>
+        <p><b id="keyCount">—</b> товчлуур. Товчлуур дээр товшвол хуулагдана.</p>
+      </div>
+      <div class="warn">
+        <b>Анхаар.</b> Эдгээр нь DaVinci Resolve-ийн <b>үндсэн (default)</b> товчлуурын багц, Windows дээрх утга.
+        Хэрэглэгч өөрчилсөн, эсвэл Premiere / Final Cut загварын багц сонгосон бол өөр байна.
+        Шалгах газар: <code>DaVinci Resolve → Keyboard Customization</code>.
+      </div>
+      <div id="keysBox"></div>
+    </section>
+
+    <!-- ══════════ ХӨТӨЧ ══════════ -->
+    <section class="panel" id="p-hutuch">
+      <div class="pane-head">
+        <span class="eyebrow">Ажлын урсгал</span>
+        <h2>Алхам алхмаар</h2>
+        <p>Хамгийн олон асуудаг ажлуудыг эхнээс нь дуустал. Гарчиг дээр товшиж дэлгэнэ.</p>
+      </div>
+      <div id="guidesBox"></div>
+    </section>
+
+    <!-- ══════════ ТУХАЙ ══════════ -->
+    <section class="panel" id="p-tuhai">
+      <div class="pane-head">
+        <span class="eyebrow">Тухай</span>
+        <h2>Энэ юу вэ, юу биш вэ</h2>
+      </div>
+
+      <div class="card">
+        <h3>Юу вэ</h3>
+        <p>DaVinci Resolve-ийн интерфейсийн монгол хэл дээрх лавлах, хөтөч.
+           Программын цэс, самбар, товчлуур, тохиргоо бүрийн монгол нэр, тайлбар, хаана байдгийг цуглуулсан.
+           Англи интерфейстэйгээ зэрэгцүүлж хажууд нь нээж ажиллахад зориулагдсан.</p>
+      </div>
+
+      <div class="card">
+        <h3>Юу биш вэ</h3>
+        <p>Энэ бол <b>DaVinci Resolve-ийн монгол хувилбар биш</b>, программын хэлийг өөрчилдөг хэрэгсэл ч биш.</p>
+        <p>Resolve бол Blackmagic Design компанийн хаалттай эх кодтой арилжааны программ.
+           Түүний интерфейсийн хэлийг гаднаас солих албан ёсны боломж байхгүй —
+           <code>Preferences → UI Settings → Language</code> дотор монгол хэл байдаггүй,
+           хэрэглэгчийн засах боломжтой хэлний файл ч гаргадаггүй.</p>
+        <p>Тиймээс энэ хөтөч өөр замыг сонгосон: программыг өөрчлөхийн оронд
+           <b>программыг ойлгуулах</b>. Интерфейс англиараа хэвээр, харин утга нь монголоор ойлгогдоно.</p>
+      </div>
+
+      <div class="card">
+        <h3>Хэрхэн ашиглах вэ</h3>
+        <ul class="bullets">
+          <li>Resolve дээр ойлгомжгүй товч, цэс тааралдвал англи нэрийг нь энд хайна.</li>
+          <li>Монголоор юу гэдгийг нь мэдэж байгаа ч англиар нь мэдэхгүй бол монголоор хайна.</li>
+          <li><b>/</b> товч дарвал хаанаас ч хайлтын мөр рүү шууд шилжинэ.</li>
+          <li>Товчлуур дээр товшвол санах ойд хуулагдана.</li>
+          <li>Шинэ ажил эхлэхийн өмнө <b>Хөтөч</b> хэсгээс тухайн урсгалыг уншаарай.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Нэр томьёоны талаар</h3>
+        <p>Монгол нэрсийг сонгохдоо гурван зарчим баримталсан:
+           утгыг нь оносон байх, богино байх, аль хэдийн хэрэглэгддэг үг байвал түүнийг нь хүндэтгэх.</p>
+        <p>Зарим үгийг зориудаар орчуулаагүй үлдээсэн — <i>timeline</i>, <i>клип</i>, <i>нод</i>, <i>рендер</i> гэх мэт.
+           Эдгээр нь монгол мэргэжлийн ярианд аль хэдийн бат суусан бөгөөд албан ёсны орчуулга нь ойлгоход нь саад болдог.</p>
+        <p>Санал, засвар байвал төслийн репод нэмээрэй — толь өргөжих тусмаа хэрэгтэй болно.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+/* ── js/00-core.js ── */
+/* ═════════════════════════════════════════════════════════════
+   DaVinci Resolve — Монгол хөтөч
+   00 · Цөм: нэрийн орон зай, туслах функцууд
+   ═════════════════════════════════════════════════════════════ */
+(function (global) {
+  "use strict";
+
+  const RM = (global.RM = global.RM || {});
+
+  RM.version = "1.0";
+
+  /* ── DOM туслахууд ── */
+  RM.$  = (sel, root) => (root || document).querySelector(sel);
+  RM.$$ = (sel, root) => Array.prototype.slice.call((root || document).querySelectorAll(sel));
+
+  RM.el = function (tag, attrs, kids) {
+    const n = document.createElement(tag);
+    if (attrs) {
+      for (const k in attrs) {
+        if (k === "class") n.className = attrs[k];
+        else if (k === "text") n.textContent = attrs[k];
+        else if (k === "html") n.innerHTML = attrs[k];
+        else if (k.slice(0, 2) === "on") n.addEventListener(k.slice(2), attrs[k]);
+        else if (attrs[k] != null && attrs[k] !== false) n.setAttribute(k, attrs[k]);
+      }
+    }
+    if (kids) (Array.isArray(kids) ? kids : [kids]).forEach((k) => {
+      if (k == null) return;
+      n.appendChild(typeof k === "string" ? document.createTextNode(k) : k);
+    });
+    return n;
+  };
+
+  /* HTML-д аюулгүй болгох */
+  RM.esc = function (s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  };
+
+  /* Хайлтын үрийг тодруулах */
+  RM.mark = function (text, q) {
+    const safe = RM.esc(text);
+    if (!q) return safe;
+    const needle = RM.esc(q).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    try {
+      return safe.replace(new RegExp("(" + needle + ")", "gi"), "<mark>$1</mark>");
+    } catch (e) { return safe; }
+  };
+
+  /* Кирилл/латин ялгаагүй жижигрүүлэлт */
+  RM.norm = function (s) {
+    return String(s == null ? "" : s).toLowerCase().replace(/ё/g, "е").trim();
+  };
+
+  /* Хугацаа хойшлуулагч (хайлтын оролтод) */
+  RM.debounce = function (fn, ms) {
+    let t = 0;
+    return function () {
+      const args = arguments, self = this;
+      clearTimeout(t);
+      t = setTimeout(() => fn.apply(self, args), ms || 120);
+    };
+  };
+
+  /* Түр зуурын мэдэгдэл */
+  RM.toast = function (msg) {
+    let box = RM.$("#toast");
+    if (!box) {
+      box = RM.el("div", { id: "toast" });
+      document.body.appendChild(box);
+    }
+    box.textContent = msg;
+    box.classList.add("on");
+    clearTimeout(RM.toast._t);
+    RM.toast._t = setTimeout(() => box.classList.remove("on"), 1800);
+  };
+
+  /* Санах ойд хадгалах (localStorage аюулгүй) */
+  RM.store = {
+    get(key, fallback) {
+      try {
+        const v = localStorage.getItem("rm." + key);
+        return v == null ? fallback : JSON.parse(v);
+      } catch (e) { return fallback; }
+    },
+    set(key, val) {
+      try { localStorage.setItem("rm." + key, JSON.stringify(val)); } catch (e) { /* үл хайхрах */ }
+    },
+    del(key) {
+      try { localStorage.removeItem("rm." + key); } catch (e) { /* үл хайхрах */ }
+    }
+  };
+
+  /* Хуулах */
+  RM.copy = function (text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(
+        () => RM.toast("Хуулагдлаа: " + text),
+        () => RM.toast("Хуулж чадсангүй")
+      );
+      return;
+    }
+    const ta = RM.el("textarea", { style: "position:fixed;opacity:0" });
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); RM.toast("Хуулагдлаа: " + text); }
+    catch (e) { RM.toast("Хуулж чадсангүй"); }
+    ta.remove();
+  };
+
+})(window);
+
+</script>
+<script>
+/* ── js/10-dict.js ── */
+/* ═════════════════════════════════════════════════════════════
+   10 · Нэр томьёоны сан — бүртгэл, индекс, хайлт
+   dict/*.js файлууд RM.dict.add({...}) дуудаж өөрсдийгөө бүртгүүлнэ.
+
+   Нэг мөрийн бүтэц:
+     [ англи нэр, монгол нэр, тайлбар, товчлуур?, байрлал? ]
+   ═════════════════════════════════════════════════════════════ */
+(function (RM) {
+  "use strict";
+
+  const D = (RM.dict = RM.dict || {});
+
+  D.cats  = [];                    /* [{id,label,icon,page,count}] */
+  D.rows  = [];                    /* бүх нэр томьёо, хавтгайгаар */
+  D.byId  = Object.create(null);   /* id → мөр */
+  D.dupes = [];                    /* давхардсан англи нэр (хөгжүүлэлтийн шалгалт) */
+
+  /* Resolve-ийн хуудсууд — өнгө, дараалал.
+     Resolve 21-д Photo хуудас нэмэгдсэн боловч энд ангиллын бүлэглэлт л явагддаг тул
+     Photo-гийн нэр томьёо "Ерөнхий" бүлэгт орсон. */
+  D.pages = [
+    { id: "erunhii",   label: "Ерөнхий",   icon: "◈", hue: 200 },
+    { id: "media",     label: "Media",     icon: "▤", hue: 150 },
+    { id: "cut",       label: "Cut",       icon: "◨", hue:  35 },
+    { id: "edit",      label: "Edit",      icon: "✂", hue:  35 },
+    { id: "fusion",    label: "Fusion",    icon: "⬡", hue: 265 },
+    { id: "color",     label: "Color",     icon: "◐", hue: 330 },
+    { id: "fairlight", label: "Fairlight", icon: "♪", hue: 100 },
+    { id: "deliver",   label: "Deliver",   icon: "▶", hue:  15 },
+    { id: "tehnik",    label: "Техник",    icon: "⚙", hue: 210 }
+  ];
+
+  function slug(s) {
+    /* "+" нь Text+ шиг нэрэнд утга агуулдаг тул хадгална */
+    return RM.norm(s)
+      .replace(/\+/g, "-plus")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+  }
+
+  /** Ангилал бүртгэх. */
+  D.add = function (cat) {
+    const list = cat.terms || [];
+    let n = 0;
+
+    for (let i = 0; i < list.length; i++) {
+      const t = list[i];
+      if (!t || !t[0] || !t[1]) continue;
+
+      const en = String(t[0]).trim();
+      let id = slug(en) || "t" + D.rows.length;
+
+      /* Давхцвал мөрийг хаяхгүй — ялгаатай id өгч хадгална.
+         Ингэснээр өгөгдөл чимээгүй алдагдахаас сэргийлнэ. */
+      if (D.byId[id]) {
+        D.dupes.push(en + " (" + cat.id + ")");
+        let k = 2;
+        while (D.byId[id + "-" + k]) k++;
+        id = id + "-" + k;
+      }
+
+      const row = {
+        id:    id,
+        en:    en,
+        mn:    String(t[1]).trim(),
+        desc:  t[2] ? String(t[2]).trim() : "",
+        key:   t[3] ? String(t[3]).trim() : "",
+        loc:   t[4] ? String(t[4]).trim() : "",
+        cat:   cat.id,
+        page:  cat.page || "erunhii",
+        _hay:  ""
+      };
+      /* Хайлтын индекс — нэг мөр болгож урьдчилан бэлдэнэ.
+         Ангилал, хуудасны нэрийг ч оруулснаар "товчлуур", "fairlight" гэх мэт
+         бүлгийн нэрээр хайхад тухайн бүлгийн бүх мөр олдоно. */
+      const pageLabel = (D.pages.find((x) => x.id === row.page) || {}).label || "";
+      row._hay = RM.norm([row.en, row.mn, row.desc, row.key, row.loc,
+                          cat.label, pageLabel].join(" ⋄ "));
+
+      D.byId[id] = row;
+      D.rows.push(row);
+      n++;
+    }
+
+    const found = D.cats.find((c) => c.id === cat.id);
+    if (found) found.count += n;
+    else D.cats.push({
+      id:    cat.id,
+      label: cat.label,
+      icon:  cat.icon || "•",
+      page:  cat.page || "erunhii",
+      note:  cat.note || "",
+      count: n
+    });
+    return n;
+  };
+
+  D.size = function () { return D.rows.length; };
+
+  D.page = function (id) { return D.pages.find((p) => p.id === id) || D.pages[0]; };
+  D.cat  = function (id) { return D.cats.find((c) => c.id === id) || null; };
+
+  /** Хуудас тус бүрийн нэр томьёоны тоо. */
+  D.pageCount = function (pageId) {
+    let n = 0;
+    for (let i = 0; i < D.rows.length; i++) if (D.rows[i].page === pageId) n++;
+    return n;
+  };
+
+  /**
+   * Хайлт. Англи, монгол, тайлбар, товчлуур — бүгдээс хайна.
+   * Оноо: англи/монгол нэрний яг таарц хамгийн дээр.
+   */
+  D.search = function (q, opts) {
+    opts = opts || {};
+    const limit = opts.limit || 400;
+    const page  = opts.page && opts.page !== "all" ? opts.page : null;
+    const cat   = opts.cat  && opts.cat  !== "all" ? opts.cat  : null;
+    const query = RM.norm(q);
+    /* Олон үгээр хайхад бүх үг агуулсан мөрийг олно —
+       "ногоон дэлгэц" гэж бичихэд хоёр үг тус тусдаа байсан ч олдоно. */
+    const words = query ? query.split(/\s+/).filter(Boolean) : [];
+    const multi = words.length > 1;
+    const out   = [];
+
+    for (let i = 0; i < D.rows.length; i++) {
+      const r = D.rows[i];
+      if (page && r.page !== page) continue;
+      if (cat  && r.cat  !== cat)  continue;
+
+      let score = 0;
+      if (!query) {
+        score = 1;
+      } else {
+        const en = RM.norm(r.en), mn = RM.norm(r.mn);
+        if (en === query || mn === query)              score = 100;
+        else if (en.startsWith(query) || mn.startsWith(query)) score = 80;
+        else if (en.includes(query)   || mn.includes(query))   score = 60;
+        else if (RM.norm(r.key).includes(query))       score = 40;
+        else if (r._hay.includes(query))               score = 20;
+        else if (multi && words.every((w) => r._hay.includes(w))) score = 10;
+        else continue;
+      }
+      out.push({ row: r, score: score });
+    }
+
+    if (query) out.sort((a, b) => b.score - a.score || a.row.en.localeCompare(b.row.en));
+
+    return { total: out.length, items: out.slice(0, limit).map((x) => x.row) };
+  };
+
+})(window.RM);
+
+</script>
+<script>
+/* ── js/dict/r01-erunhii.js ── */
+/* ═══ 01 · Ерөнхий интерфейс, төсөл, тохиргоо ═══ */
+
+RM.dict.add({ id:"suuri", label:"Үндсэн ойлголт", icon:"◈", page:"erunhii",
+note:"Resolve-той анх танилцахад мэдэх ёстой суурь үгс.", terms:[
+["DaVinci Resolve","ДаВинчи Резолв","Blackmagic Design компанийн видео монтаж, өнгө засвар, дуу, эффектийг нэг программд нэгтгэсэн бүтээл. Үнэгүй болон Studio гэсэн хоёр хувилбартай."],
+["DaVinci Resolve Studio","Студио хувилбар","Төлбөрт хувилбар. Neural Engine (AI хэрэглүүр), 4K-аас дээш рендер, олон GPU, шуугиан арилгагч, гадаад скрипт зэрэг нэмэлт боломжуудыг нээнэ."],
+["Free version","Үнэгүй хувилбар","Бүрэн ажиллагаатай, хугацааны хязгааргүй. Гол хязгаарлалт: UHD-ээс дээш рендер байхгүй, AI хэрэглүүрүүд хаалттай, гадаад скриптийн эрх хаалттай."],
+["Page","Хуудас","Программын доод талд байрлах табууд — Media, Cut, Edit, Fusion, Color, Fairlight, Deliver. Resolve 21-д гэрэл зурагт зориулсан Photo хуудас нэмэгдэж найм болсон. Ажлын урсгалын үе шат бүрд тусдаа ажлын орон зай."],
+["Project","Төсөл","Нэг бүтээлийн бүх мэдээлэл — импортолсон файлын холбоос, timeline, өнгөний засвар, тохиргоо. Видео файлыг өөрөө дотроо агуулдаггүй, зөвхөн замыг нь хадгална."],
+["Database","Мэдээллийн сан","Төслүүдийг хадгалдаг агуулах. Disk (энгийн, файл хэлбэрээр) эсвэл PostgreSQL (олон хүн зэрэг ажиллах) гэсэн хоёр төрөл.","","Project Manager → зүүн доод булан"],
+["Project Manager","Төслийн менежер","Төсөл үүсгэх, нээх, хуулах, устгах, экспортлох цонх. Программ нээхэд хамгийн түрүүнд гарч ирнэ.","Shift+1"],
+["Project Library","Төслийн сан","Мэдээллийн сан доторх төслүүдийн жагсаалт. Хавтас (folder) үүсгэж эмхэлж болно."],
+["Bin","Сан / хогийн сав биш","Media Pool доторх хавтас. Клипээ ангилж эмхлэхэд хэрэглэнэ. Англи үгийг нь \"хогийн сав\" гэж бүү ойлгоорой — энд \"сан\" гэсэн утгатай."],
+["Clip","Клип","Timeline эсвэл Media Pool дахь нэг видео, дуу, зураг, эсвэл гарчгийн хэсэг."],
+["Timeline","Цагийн шугам / монтажийн шугам","Клипүүдийг цаг хугацааны дарааллаар нь өрсөн ажлын талбар. Нэг төсөлд олон timeline байж болно."],
+["Track","Зам / трек","Timeline доторх хэвтээ давхарга. Видео зам (V1, V2…) дээшээ, дуу зам (A1, A2…) доошоо өрөгдөнө."],
+["Playhead","Тоглуулагчийн заагч","Timeline дээрх улаан босоо шугам. Одоо ямар кадрыг харж байгааг заана."],
+["Viewer","Дэлгэц / харагч","Видеог харах цонх. Source Viewer (эх клип) ба Timeline Viewer (монтажийн үр дүн) гэж хоёр төрөлтэй."],
+["Source Viewer","Эх дэлгэц","Media Pool-оос сонгосон эх клипийг харах цонх. Энд In/Out тэмдэглэж timeline руу оруулна."],
+["Timeline Viewer","Монтажийн дэлгэц","Timeline дээр эвлүүлсэн эцсийн үр дүнг харах цонх."],
+["Inspector","Шинжүүр самбар","Сонгосон клипийн бүх тохиргоог (байрлал, хэмжээ, хурд, эффект, гарчгийн текст) харуулж засварлах баруун талын самбар."],
+["Effects Library","Эффектийн сан","Шилжилт, эффект, гарчиг, генератор, Fusion загваруудыг агуулсан сан."],
+["Media Pool","Материалын сан","Төсөлд импортолсон бүх клип, дуу, зураг байрлах агуулах."],
+["Metadata","Мета өгөгдөл","Клипийн тухай нэмэлт мэдээлэл — авсан огноо, камер, линз, түлхүүр үг, тайлбар. Хайлт, ангилалд ашиглагдана."],
+["Smart Bin","Ухаалаг сан","Гараар биш, дүрмээр (жишээ нь \"түлхүүр үг нь говь\") автоматаар бөглөгддөг сан."],
+["Preferences","Тохиргоо","Программын ерөнхий тохиргоо — санах ой, GPU, дискний зам, хэл, гадаад скрипт. Төсөл бүрд биш, программд нэг удаа тохирно.","Ctrl+,"],
+["Project Settings","Төслийн тохиргоо","Зөвхөн энэ төсөлд хамаарах тохиргоо — нягтрал, кадрын давтамж, өнгөний удирдлага, дууны давтамж.","Shift+9"],
+["Timeline Resolution","Timeline-ий нягтрал","Төслийн ажлын нягтрал. Жишээ нь 1920×1080 (HD), 3840×2160 (UHD).","","Project Settings → Master Settings"],
+["Timeline Frame Rate","Timeline-ий кадрын давтамж","Секундэд хэдэн кадр (fps). Төсөл эхлүүлсний дараа өөрчлөхөд хэцүү тул эхэндээ зөв сонгоно уу.","","Project Settings → Master Settings"],
+["Workspace","Ажлын орон зай","Самбаруудын байрлал. Нүүлгэж, нуулгаж, өөрийн байрлалыг хадгалж болно.","","Workspace цэс"],
+["Dual Screen","Хос дэлгэц","Хоёр монитор дээр ажиллах горим. Дэлгэцийг тусад нь бүтэн дэлгэцээр гаргана.","","Workspace → Dual Screen"],
+["Scripting","Скрипт","Resolve-ийг гаднаас Python эсвэл Lua кодоор удирдах боломж. Гадны программаас холбогдох эрх зөвхөн Studio хувилбарт нээлттэй.","","Preferences → General → External scripting using"],
+["Console","Консол","Lua/Python команд шууд бичиж туршдаг цонх.","","Workspace → Console"],
+["Auto Save","Автомат хадгалалт","Тодорхой хугацаа тутам төслийг өөрөө хадгална. Live Save бол өөрчлөлт бүрийг шууд хадгалдаг.","","Preferences → User → Project Save and Load"],
+["Live Save","Шууд хадгалалт","Өөрчлөлт хийх бүрд төслийг тэр дор нь хадгална. Асаахыг зөвлөе."],
+["Undo","Буцаах","Сүүлчийн үйлдлийг цуцлана. Resolve хуудас бүрд тусдаа буцаах түүх хөтөлдөг.","Ctrl+Z"],
+["Redo","Дахин хийх","Буцаасан үйлдлийг сэргээнэ.","Ctrl+Shift+Z"],
+["Render Cache","Рендерийн кэш","Хүнд эффект бүхий хэсгийг урьдчилан тооцоолж диск дээр хадгалснаар тоглуулалт жигд болно.","","Playback → Render Cache"],
+["Optimized Media","Хөнгөвчилсөн материал","Эх файлын хөнгөн хувилбарыг үүсгэж, монтаж хийхэд ашиглана. Рендерлэхдээ эх файл руугаа автоматаар буцна."],
+["Proxy Media","Прокси материал","Хөнгөвчилсөн материалтай төстэй, гэхдээ гадуур үүсгэсэн, тусдаа удирддаг хөнгөн хувилбар."],
+["Cache Clip","Клипийн кэш","Ганц клипийг урьдчилан тооцоолох. Хүнд Fusion эсвэл өнгөний засвартай клипэд тустай."],
+["Relink","Дахин холбох","Байршил нь өөрчлөгдсөн, эсвэл алдагдсан файлыг эх байршилтай нь дахин холбох.","","Media Pool → баруун товч → Relink Clips"],
+["Offline Clip","Тасарсан клип","Эх файл нь олдохгүй байгаа клип. Timeline дээр улаан \"Media Offline\" гэж харагдана."],
+["Media Offline","Материал холбогдоогүй","Улаан дэлгэц дээр гарч ирдэг анхааруулга. Файл зөөгдсөн, устсан, эсвэл гадаад диск салсан гэсэн үг."],
+["Archive","Архивлах","Төсөл болон бүх материалыг нэг хавтаст цуглуулж хадгалах.","","Project Manager → баруун товч → Export Project Archive"],
+["Power Bin","Хүчит сан","Бүх төсөлд нийтлэг харагддаг сан. Лого, хөгжим, загвар зэрэг байнга хэрэглэдэг материалыг энд хийнэ.","","View → Show Power Bins"]
+]});
+
+RM.dict.add({ id:"tuluv", label:"Төлөв, тэмдэглэгээ", icon:"⚑", page:"erunhii",
+note:"Клип, timeline дээрх тэмдэг, тэмдэглэгээ, өнгөт ялгаа.", terms:[
+["Marker","Тэмдэглэгээ","Timeline эсвэл клип дээр тавьдаг өнгөт тэмдэг. Тайлбар бичиж, дараа нь хурдан олоход хэрэглэнэ.","M"],
+["Marker Color","Тэмдэглэгээний өнгө","Тэмдэглэгээг өнгөөр ангилна. Жишээ нь улаан — засах ёстой, ногоон — бэлэн."],
+["Flag","Туг","Клипэд бүхэлд нь өнгөт туг тавьж, дараа нь шүүхэд хэрэглэнэ. Тэмдэглэгээнээс ялгаатай нь тодорхой кадарт биш, клипэд бүхэлд нь хамаарна."],
+["Clip Color","Клипийн өнгө","Клипийг өнгөөр будаж ялгах. Жишээ нь ярианы клип — цэнхэр, шилжилт — шар."],
+["In Point","Эхлэх цэг","Клипээс авах хэсгийн эхлэл.","I"],
+["Out Point","Дуусах цэг","Клипээс авах хэсгийн төгсгөл.","O"],
+["Duration","Үргэлжлэх хугацаа","In-ээс Out хүртэлх урт."],
+["Timecode","Цагийн код","Кадар бүрийн хаяг: цаг:минут:секунд:кадр. Жишээ 01:23:45:12."],
+["Drop Frame","Кадар алгасах код","29.97 fps дээр цагийн кодыг бодит цагтай тааруулах арга. Кадар устдаггүй, зөвхөн дугаарлалт алгасдаг."],
+["Non-Drop Frame","Алгасахгүй код","Кадрыг дараалан дугаарлах энгийн арга. Урт бичлэгт бодит цагаас бага зэрэг зөрөх магадлалтай."],
+["Track Lock","Замын түгжээ","Замыг түгжвэл түүн дээрх клипүүд өөрчлөгдөхгүй.","","Timeline толгой дээрх түгжээний тэмдэг"],
+["Auto Select","Автомат сонголт","Тухайн зам үйлдэлд хамрагдах эсэхийг заана. Унтраасан зам дээрх клипүүд ripple үйлдэлд хөдлөхгүй."],
+["Enable/Disable Clip","Клип идэвхгүй болгох","Клипийг устгалгүйгээр түр далдлах.","D"],
+["Solo","Ганцаар сонсох","Зөвхөн сонгосон дууны замыг сонсох."],
+["Mute","Дуугүй болгох","Тухайн замын дууг түр хаах."],
+["Snapping","Наалдац","Клип чирэхэд ойролцоох ирмэг, заагч рүү автоматаар наалдана.","N"],
+["Linked Selection","Холбоотой сонголт","Видео болон түүний дуу хамт сонгогдох эсэх. Унтраавал видеог дуунаас нь тусад нь зөөж болно.","","Timeline хэрэгслийн мөр дэх холбоосны тэмдэг"]
+]});
+
+</script>
+<script>
+/* ── js/dict/r02-media.js ── */
+/* ═══ 02 · Media хуудас — материал оруулах, эмхлэх ═══ */
+
+RM.dict.add({ id:"media", label:"Media — импорт, эмхлэл", icon:"▤", page:"media",
+note:"Материалаа программд оруулж, эмхэлж, шалгах хуудас.", terms:[
+["Media Storage","Медиа агуулах","Компьютерийн диск, хавтасны мод. Эндээс файлаа чирж Media Pool руу оруулна."],
+["Import Media","Материал оруулах","Файлыг төсөлд нэмнэ. Файл өөрөө хуулагдахгүй, зөвхөн холбоос үүснэ.","Ctrl+I"],
+["Import Media Folder","Хавтсаар оруулах","Хавтас бүхэлд нь, дэд хавтастай нь хамт импортолж, ижил бүтэцтэй сан үүсгэнэ."],
+["Add Folder into Media Pool","Хавтсыг сан болгон нэмэх","Дискний хавтсыг Media Pool-д санг нь давхарлан хадгалж оруулна."],
+["Clone Tool","Хувилагч","Санах ойн картаас материалыг баталгаажуулан хуулах хэрэглүүр. Хуулсны дараа шалгалтын нийлбэр (checksum) тааруулж, файл гэмтээгүйг батална.","","Media хуудас → зүүн дээд"],
+["Checksum","Шалгалтын нийлбэр","Файлын агуулгаас гарган авсан тоон хурууны хээ. Хуулбар эхтэйгээ яг ижил эсэхийг батлана."],
+["Clip Attributes","Клипийн шинж","Кадрын давтамж, харьцаа, дууны суваг, alpha суваг зэргийг гараар зассан тохиргоо.","","Media Pool → баруун товч → Clip Attributes"],
+["Scene Cut Detection","Огтлолт илрүүлэх","Аль хэдийн монтаж хийгдсэн нэг том файлыг клип болгон автоматаар хуваах хэрэглүүр.","","Media Pool → баруун товч"],
+["Audio Sync","Дуу тааруулах","Камерын дуу болон тусдаа бичсэн сайн чанарын дууг долгионоор нь эсвэл цагийн кодоор нь автоматаар нийлүүлэх.","","Media Pool → баруун товч → Auto Sync Audio"],
+["Audio Waveform","Дууны долгион","Дууны хүчийг зурган хэлбэрээр харуулсан дүрслэл."],
+["Thumbnail View","Хураангуй харагдац","Клипүүдийг зурган карт хэлбэрээр харуулах."],
+["List View","Жагсаалтын харагдац","Клипүүдийг мөрөөр, багана бүхий хүснэгт хэлбэрээр харуулах. Мета өгөгдөлтэй ажиллахад тохиромжтой."],
+["Metadata Editor","Мета өгөгдлийн засварлагч","Клипийн үзэгдэл, дубль, тайлбар, түлхүүр үгийг бичих самбар."],
+["Keyword","Түлхүүр үг","Клипэд өгсөн шошго. Ухаалаг сан болон хайлтад ашиглагдана."],
+["Shot","Кадар (мета)","Мета өгөгдөлд бичдэг кадрын дугаар."],
+["Take","Дубль","Нэг үзэгдлийн хэд дэх удаагийн авалт болохыг заана."],
+["Camera #","Камерын дугаар","Олон камертай зураг авалтад аль камерын материал болохыг заана. Multicam-д зайлшгүй."],
+["Duplicate Frame Detection","Давхардсан кадар илрүүлэх","Timeline дотор ижил кадар давтагдсан эсэхийг шалгах Studio хэрэглүүр."],
+["Transcribe Audio","Дууг бичвэр болгох","Ярианы дууг автоматаар текст болгож мета өгөгдөлд хадгална. Studio хувилбарын AI боломж.","","Media Pool → баруун товч → Audio Transcription"],
+["Proxy Generation","Прокси үүсгэх","Хүнд файлын хөнгөн хувилбарыг багцаар үүсгэх.","","Media Pool → баруун товч → Generate Proxy Media"],
+["Timecode Track","Цагийн кодын зам","Файлд шингэсэн цагийн кодын мэдээлэл. Олон камерын материал нийлүүлэхэд түлхүүр болно."],
+["Sub Clip","Дэд клип","Урт клипээс тодорхой хэсгийг тусад нь бие даасан клип болгож авах.","","In/Out тэмдэглээд баруун товч → Create Subclip"],
+["Reel Name","Ороомгийн нэр","Материалын багцын нэр. Өнгөний засварыг гадуур солилцоход (EDL, XML) чухал."],
+["Frame Rate Conflict","Кадрын давтамжийн зөрчил","Клипийн давтамж timeline-ийхтэй таарахгүй байгаа тохиолдол. Хөдөлгөөн таталдаж болзошгүй."],
+["Mixed Frame Rate","Холимог давтамж","Нэг timeline дээр өөр өөр fps-тэй материал байгаа тохиолдол. Resolve автоматаар тааруулах боловч Retime тохиргоог шалгах хэрэгтэй."]
+]});
+
+</script>
+<script>
+/* ── js/dict/r03-cut.js ── */
+/* ═══ 03 · Cut хуудас — хурдан монтаж ═══ */
+
+RM.dict.add({ id:"cut", label:"Cut — хурдан монтаж", icon:"◨", page:"cut",
+note:"Хугацаа шахсан ажилд зориулсан хялбаршуулсан монтажийн хуудас. Edit хуудастай нэг timeline дээр ажиллана.", terms:[
+["Cut Page","Cut хуудас","Мэдээ, контент, хурдан эргэлттэй ажилд зориулсан хялбаршуулсан монтажийн орчин. Edit хуудастай ижил timeline дээр ажиллана.","Shift+3"],
+["Dual Timeline","Хос timeline","Дээд талд нь бүтэн timeline, доод талд нь ойртуулсан хэсэг — зэрэг харуулна. Ойртуулж холдуулах шаардлагагүй болгодог Cut хуудасны онцлог."],
+["Source Tape","Эх соронзон хальс","Бүх импортолсон клипийг нэг урт үргэлжилсэн хальс мэт болгож харуулна. Хайж байгаа кадраа хурдан олоход хэрэглэнэ."],
+["Sync Bin","Нийлүүлсэн сан","Олон камерын материалыг цагийн кодоор нь нийлүүлж, timeline-ий одоогийн байрлалд тохирох бүх өнцгийг зэрэг харуулна."],
+["Smart Insert","Ухаалаг шигтгээ","Клипийг хамгийн ойрын огтлолтын цэг рүү автоматаар шигтгэнэ. Байрлалыг нарийн заах шаардлагагүй."],
+["Close Up","Ойртуулсан кадар","Сонгосон клипэд автоматаар ойртуулалт хийж, шинэ давхарга дээр байрлуулна. Ярианы кадрыг өөрчлөхөд хурдан арга."],
+["Source Overwrite","Эхээс дарах","Sync Bin-ээс сонгосон өнцгийг timeline-ий одоогийн байрлалд шууд дээрээс нь тавина. Олон камерын монтажид хурдан."],
+["Fast Review","Хурдан үзэлт","Бүх материалыг автоматаар хурдасган тоглуулж, урт клипийг илүү хурдан, богиныг удаан гүйлгэнэ."],
+["Boring Detector","Уйтгар илрүүлэгч","Хэт урт (уйтгартай) эсвэл хэт богино (сэтгэл түгшээх) клипүүдийг тодруулж харуулна."],
+["Trim Editor","Тайралтын засварлагч","Огтлолтын цэгийн хоёр талыг зэрэг харуулж нарийвчлан тааруулах цонх."],
+["Transition Button","Шилжилтийн товч","Огтлолтын цэг дээр нэг товшилтоор уусалт (dissolve) нэмнэ."],
+["Speed Ramp","Хурдны налуу","Клипийн хурдыг аажим нэмэгдүүлж, бууруулах бэлэн загварууд."],
+["Sync Clip","Нийлүүлсэн клип","Нэг агшныг олон өнцгөөс авсан клипүүдийг цагаар нь нийлүүлж нэг нэгж болгосон бүлэг."],
+["Audio Trim","Дууны тайралт","Дууг видеонаас нь тусад нь урт богино болгож, L-cut / J-cut үүсгэх."],
+["Quick Export","Хурдан экспорт","Deliver хуудас руу орохгүйгээр шууд бэлэн тохиргоогоор рендерлэх.","","File → Quick Export"]
+]});
+
+</script>
+<script>
+/* ── js/dict/r04-edit.js ── */
+/* ═══ 04 · Edit хуудас — монтажийн үндсэн үйлдэл ═══ */
+
+RM.dict.add({ id:"edit-op", label:"Edit — оруулах, тайрах", icon:"✂", page:"edit",
+note:"Клип оруулах долоон арга, тайралтын таван горим — монтажийн цөм.", terms:[
+["Edit Page","Edit хуудас","Бүрэн хэмжээний монтажийн хуудас. Олон зам, нарийн тайралт, эффект, гарчиг — бүгд энд.","Shift+4"],
+["Insert","Шигтгэх","Клипийг заагчийн байрлалд оруулж, тэндээс хойших бүх клипийг баруун тийш түлхэнэ. Timeline урт болно.","F9"],
+["Overwrite","Дарж бичих","Клипийг заагчийн байрлалд тавьж, доор нь байсныг нь устгана. Timeline-ий урт өөрчлөгдөхгүй.","F10"],
+["Replace","Солих","Заагч байгаа клипийг шинэ клипээр бүхэлд нь солино. Урт нь хуучныхтай яг таарна.","F11"],
+["Fit to Fill","Дүүргэж тааруулах","Эх клипийг In/Out хоёрын хооронд багтаахын тулд хурдыг нь өөрчилж сунгах эсвэл шахна.","Shift+F11"],
+["Place on Top","Дээр нь тавих","Клипийг чөлөөтэй байгаа хамгийн дээд видео давхарга дээр байрлуулна.","F12"],
+["Append to End","Төгсгөлд залгах","Клипийг timeline-ий хамгийн ард нэмнэ.","Shift+F12"],
+["Ripple Overwrite","Долгиолон дарах","Сонгосон клипийг солиод, урт нь өөр бол хойших клипүүдийг зөрүүлж тохируулна.","Shift+F10"],
+["Three Point Editing","Гурван цэгийн монтаж","In/Out дөрвөн цэгээс гурвыг нь заавал зааж өгвөл дөрөв дэх нь өөрөө тодорхойлогдоно гэсэн монтажийн үндсэн зарчим."],
+["Blade","Хутга","Клипийг заагч дээр огтолж хоёр хуваах хэрэглүүр. Видео огтлох хамгийн шууд арга.","B"],
+["Split Clip","Клип хуваах","Заагчийн байрлал дээр клипийг хоёр болгоно.","Ctrl+\\"],
+["Join Clips","Клип нийлүүлэх","Салгасан хоёр хэсгийг буцаан нэг болгоно (эх файл нь залгаа бол).","Alt+\\"],
+["Selection Mode","Сонголтын горим","Ердийн сум — клип сонгож, чирэх горим.","A"],
+["Trim Edit Mode","Тайралтын горим","Огтлолтын цэгүүдийг чирж slip, slide, ripple, roll хийх горим.","T"],
+["Ripple Delete","Долгиолон устгах","Клипийг устгаад үлдсэн зайг хааж, хойших клипүүдийг зөөнө. Timeline богиносно.","Shift+Backspace"],
+["Lift / Delete","Өргөж авах","Клипийг устгаад орондоо хоосон зай үлдээнэ. Timeline-ий урт хэвээр.","Backspace"],
+["Trim","Тайрах","Клипийн эхлэл эсвэл төгсгөлийн ирмэгийг чирж урт богино болгох."],
+["Ripple Trim","Долгиолон тайрах","Ирмэгийг тайрахад хойших бүх клип хамт зөрнө. Timeline-ий урт өөрчлөгдөнө."],
+["Roll","Өнхрүүлэх","Хоёр клипийн хоорондох огтлолтын цэгийг зөөнө. Нэг нь урт, нөгөө нь богино болох тул нийт урт хэвээр."],
+["Slip","Гулсуулах","Клипийн timeline дээрх байрлал, уртыг хөдөлгөлгүйгээр дотор нь ямар хэсгийг харуулахыг өөрчилнө."],
+["Slide","Шилжүүлэх","Клипийн агуулгыг хөдөлгөлгүйгээр timeline дээрх байрлалыг нь зөөж, хажуугийн хоёр клипийг зөрүүлнэ."],
+["Dynamic Trim","Хөдөлгөөнт тайралт","Тоглуулж байхдаа J/K/L товчоор огтлолтыг шууд тааруулах горим.","W"],
+["Trim Start/End to Playhead","Заагч хүртэл тайрах","Клипийн эхлэл эсвэл төгсгөлийг заагчийн байрлал хүртэл шууд тайрна."],
+["L-Cut","L огтлолт","Өмнөх кадрын дуу шинэ кадар руу үргэлжлэн орох монтажийн арга. Яриа тасрахгүй, зураг солигдоно."],
+["J-Cut","J огтлолт","Дараагийн кадрын дуу зурагнаас нь өмнө эхлэх арга. Үзэгчийг шилжилтэд бэлддэг."],
+["Match Frame","Кадар тааруулах","Timeline дээрх кадартай яг тохирох эх клипийн кадрыг Source Viewer-т нээнэ.","F"],
+["Gap","Хоосон зай","Клипүүдийн хооронд үлдсэн хоосон хэсэг. Рендерлэхэд хар дэлгэц болно."],
+["Close Gap","Зай хаах","Хоосон зайг устгаж клипүүдийг ойртуулна.","","Хоосон зай дээр товшоод Backspace"],
+["Add Track","Зам нэмэх","Шинэ видео эсвэл дууны зам үүсгэнэ.","","Timeline толгой дээр баруун товч → Add Track"],
+["Track Destination","Замын хаяг","Шинэ клип аль зам руу орохыг заасан тэмдэглэгээ. Timeline-ий зүүн талд байрлана."],
+["Compound Clip","Нийлмэл клип","Хэд хэдэн клипийг нэг болгож багцлах. Дотор нь ороод засаж болно.","","Клипүүдийг сонгоод баруун товч → New Compound Clip"],
+["Decompose","Задлах","Нийлмэл клипийг буцаан бүрэлдэхүүн хэсгүүд болгож задална.","","Баруун товч → Decompose in Place"],
+["Nested Timeline","Үүрлэсэн timeline","Нэг timeline-ийг өөр timeline дотор клип мэт ашиглах."],
+["Adjustment Clip","Тохируулгын клип","Доор нь байгаа бүх клипэд эффект нэгэн зэрэг үйлчлүүлдэг тунгалаг клип.","","Effects Library → Effects"],
+["Fusion Clip","Fusion клип","Fusion хуудсанд задлан ажиллуулахаар багцалсан клип."],
+["Multicam Clip","Олон камерын клип","Хэд хэдэн камерын өнцгийг цагаар нь нийлүүлж нэг болгосон клип. Шууд эфирийн найруулга шиг өнцөг сольж монтаж хийнэ."],
+["Angle Viewer","Өнцгийн дэлгэц","Олон камерын бүх өнцгийг нэг дор харуулах цонх. Товшиж өнцөг сольж бичнэ."],
+["Timeline View Options","Timeline харагдацын тохиргоо","Замын өндөр, дууны долгион, хураангуй зураг харагдах эсэхийг тохируулна."],
+["Zoom to Fit","Багтаан харах","Бүтэн timeline-ийг дэлгэцэнд багтаана.","Shift+Z"],
+["Index","Жагсаалт самбар","Timeline доторх клип, тэмдэглэгээ, туг, засварыг жагсаалтаар харуулах самбар."],
+["Edit Index","Монтажийн жагсаалт","Timeline дээрх бүх огтлолтыг мөр мөрөөр харуулсан хүснэгт."],
+["Stack Timelines","Timeline давхарлах","Хоёр timeline-ийг дээр доор нь зэрэг харуулж харьцуулах, хооронд нь клип зөөх."],
+["Sync Lock","Нийлүүлэлтийн түгжээ","Ripple үйлдэлд аль замууд хамт зөрөхийг заана. Дуу зургаасаа салахаас хамгаална."]
+]});
+
+</script>
+<script>
+/* ── js/dict/r05-edit2.js ── */
+/* ═══ 05 · Edit хуудас — эффект, гарчиг, хурд, хувиргалт ═══ */
+
+RM.dict.add({ id:"edit-fx", label:"Edit — хувиргалт, хурд", icon:"⬚", page:"edit",
+note:"Inspector самбар доторх клип бүрийн тохиргоо.", terms:[
+["Transform","Хувиргалт","Клипийн байрлал, хэмжээ, эргэлтийг өөрчлөх Inspector-ийн үндсэн хэсэг."],
+["Zoom","Томруулалт","Клипийг томруулах, жижигрүүлэх. X, Y-г тусад нь өөрчилж болно."],
+["Position","Байрлал","Клипийг хүрээн дотор хэвтээ (X), босоо (Y) чиглэлд зөөх."],
+["Rotation Angle","Эргэлтийн өнцөг","Клипийг градусаар эргүүлэх."],
+["Anchor Point","Тулгуур цэг","Эргэлт, томруулалт хийгдэх төв цэг."],
+["Pitch / Yaw","Ташуулга","Клипийг гурван хэмжээст мэт хазайлгах."],
+["Flip","Толин тусгал","Клипийг хэвтээ эсвэл босоо тэнхлэгээр эргүүлэх."],
+["Crop","Тайралт (хүрээ)","Клипийн дөрвөн талаас нь хэсгийг далдлах."],
+["Softness","Зөөлрөлт","Тайралтын ирмэгийг бүдгэрүүлэх."],
+["Dynamic Zoom","Хөдөлгөөнт томруулалт","Клипийн эхлэл, төгсгөлд хоёр хүрээ зааж өгөхөд хооронд нь жигд гүйлгэнэ. Хөдөлгөөнгүй зурагт амь оруулах хялбар арга (Ken Burns эффект)."],
+["Composite Mode","Хольцын горим","Дээд давхарга доод давхаргатайгаа хэрхэн холилдохыг заана — Normal, Add, Screen, Multiply, Overlay гэх мэт."],
+["Opacity","Тунгалаг байдал","Клипийн үзэгдэх хэмжээ. 0 бол огт харагдахгүй, 100 бол бүрэн."],
+["Add","Нэмэх горим","Пиксэлийн утгыг нэмнэ. Гал, оч, гэрлийн эффектэд тохиромжтой."],
+["Screen","Дэлгэц горим","Add-тай төстэй боловч зөөлөн. Хар хэсэг нь тунгалаг болно."],
+["Multiply","Үржүүлэх горим","Утгыг үржүүлнэ. Цагаан хэсэг тунгалаг болох тул сүүдэр, бохирдол нэмэхэд тохиромжтой."],
+["Overlay","Давхарлах горим","Харанхуй хэсгийг илүү харанхуй, гэрэлтэйг илүү гэрэлтэй болгож ялгарлыг нэмнэ."],
+["Speed Change","Хурд өөрчлөх","Клипийн тоглуулах хурдыг хувиар өөрчлөх.","Ctrl+R"],
+["Retime Controls","Хурдны удирдлага","Клип дотор хэд хэдэн хэсэгт өөр өөр хурд өгөх удирдлагууд.","Ctrl+R"],
+["Retime Curve","Хурдны муруй","Хурдны өөрчлөлтийг муруйгаар нарийвчлан зурах."],
+["Freeze Frame","Хөлдөөсөн кадар","Нэг кадрыг зогсоож удаан харуулах."],
+["Reverse Clip","Ухраан тоглуулах","Клипийг эцсээс нь эхлүүлж тоглуулна."],
+["Optical Flow","Оптик урсгал","Кадар хоорондын хөдөлгөөнийг тооцоолж шинэ кадар зохиож үүсгэдэг удаашруулалтын хамгийн чанартай арга. Studio хувилбарт илүү сайн."],
+["Frame Blend","Кадар холих","Хөрш кадруудыг холиж шилжилтийг зөөлрүүлэх дунд зэргийн арга."],
+["Nearest","Хамгийн ойрын","Хамгийн ойрын кадрыг давтах хамгийн энгийн арга. Хурдан боловч таталдана."],
+["Stabilization","Тогтворжуулалт","Гар чичрэлтийг багасгах, бичлэгийг тогтворжуулах. Perspective, Similarity, Translation гэсэн гурван горимтой.","","Inspector → Stabilization"],
+["Camera Lock","Камер түгжих","Тогтворжуулалтын тохиргоо. Камерыг бүрэн хөдөлгөөнгүй мэт харагдуулна."],
+["Cropping Ratio","Тайралтын харьцаа","Тогтворжуулахад хүрээний захаас хэр их тайрахыг заана. Их байх тусмаа тогтвортой, гэхдээ ойртоно."],
+["Lens Correction","Линзний засвар","Өргөн өнцгийн линзний гажуудлыг (нугалаа, харанхуй булан) засах."],
+["Scaling","Хэмжээ тааруулалт","Клипийн нягтрал timeline-ийхаас өөр үед хэрхэн багтаахыг заана.","","Project Settings → Image Scaling"],
+["Crop / Fit / Fill / Stretch","Багтаах аргууд","Crop — тайрч багтаана. Fit — бүхэлд нь багтааж хажуугаар хар зурвас үлдээнэ. Fill — дүүргэж тайрна. Stretch — харьцааг гажуудуулж сунгана."],
+["Smart Reframe","Ухаалаг дахин хүрээлэлт","Хэвтээ видеог босоо болгоход гол объектыг өөрөө олж хүрээнд байлгах Studio боломж."]
+]});
+
+RM.dict.add({ id:"garchig", label:"Гарчиг, шилжилт, эффект", icon:"Ⓣ", page:"edit",
+note:"Effects Library доторх бэлэн хэрэглүүрүүд.", terms:[
+["Text","Энгийн текст","Хамгийн энгийн гарчиг. Хурдан, хөнгөн."],
+["Text+","Өргөтгөсөн текст","Fusion дээр суурилсан хүчирхэг гарчиг. Үсэг бүрээр хөдөлгөх, контур, сүүдэр, бичих эффект зэрэг олон боломжтой."],
+["Lower Third","Доод гуравны нэг","Дэлгэцийн доод хэсэгт хүний нэр, албан тушаалыг харуулах гарчгийн загвар."],
+["Scroll","Гүйдэг текст","Кино төгсгөлийн титэм бичиг шиг дээшээ гүйх текст."],
+["Subtitle","Хадмал","Timeline дээр тусдаа хадмалын зам үүсгэж оруулна. SRT файлаар экспортлож болно.","","Timeline → Add Subtitle Track"],
+["Auto Subtitle","Автомат хадмал","Ярианы дууг таньж хадмалыг өөрөө үүсгэх Studio боломж.","","Timeline → Create Subtitles from Audio"],
+["Transition","Шилжилт","Хоёр клипийн хооронд орох дүрслэлийн шилжилт."],
+["Cross Dissolve","Уусалт","Хамгийн түгээмэл шилжилт — нэг зураг нөгөө рүүгээ аажим уусна."],
+["Dip to Color Dissolve","Өнгө дундуур уусах","Хоёр кадрын хооронд тодорхой өнгө (ихэвчлэн хар эсвэл цагаан) дундуур өнгөрнө."],
+["Fade In / Fade Out","Тодрох / бүдгэрэх","Хараас гарч ирэх, хар руу шингэх."],
+["Smooth Cut","Зөөлөн огтлолт","Ярианы дундах завсарлагааг арилгахад огтлолтыг мэдэгдэхгүй болгодог шилжилт. Ижил хүрээтэй, бага хөдөлгөөнтэй кадарт сайн ажиллана."],
+["Add Video Transition","Видео шилжилт нэмэх","Сонгосон огтлолтын цэг дээр үндсэн шилжилтийг нэмнэ.","Ctrl+T"],
+["Add Audio Transition","Дууны шилжилт нэмэх","Дууны огтлолт дээр зөөлөн уусалт нэмнэ.","Shift+T"],
+["Transition Duration","Шилжилтийн урт","Шилжилт хэдэн кадар үргэлжлэхийг заана."],
+["Handles","Нөөц кадар","Клипийн In цэгээс өмнө, Out цэгээс хойш үлдсэн ашиглагдаагүй кадрууд. Шилжилт нэмэхэд эдгээр нөөц шаардлагатай."],
+["Effects","Эффект","Дүрслэлийн боловсруулалт — бүдгэрүүлэх, гэрэлтүүлэх, хуучирсан кино мэт харагдуулах гэх мэт."],
+["OpenFX","OpenFX эффект","Стандарт эффектийн формат. Resolve-ийн дотоод эффект болон гуравдагч талын нэмэлтүүд энэ хэлбэрээр ажиллана."],
+["Generator","Генератор","Кадар өөрөө үүсгэдэг эх үүсвэр — цул өнгө, өнгөт зурвас, тоолуур гэх мэт."],
+["Solid Color","Цул өнгө","Нэг өнгөөр дүүрсэн кадар. Дэвсгэр, өнгө засварт хэрэглэнэ."],
+["Color Bars","Өнгөт зурвас","Дэлгэц, дохио тохируулах стандарт өнгөт загвар."],
+["Titles","Гарчгууд","Effects Library доторх бүх төрлийн гарчгийн загварууд."],
+["Keyframe","Түлхүүр кадар","Тодорхой цаг дээр параметрийн утгыг тогтоох цэг. Хоёр түлхүүр кадрын хооронд Resolve утгыг өөрөө тооцоолж хөдөлгөөн үүсгэнэ."],
+["Keyframe Editor","Түлхүүр кадрын засварлагч","Түлхүүр кадруудыг timeline дээр харж, зөөж, устгах самбар."],
+["Ease In / Ease Out","Зөөлөн эхлэл / төгсгөл","Хөдөлгөөнийг гэнэт биш, аажим эхлүүлж, аажим зогсоох. Байгалийн харагдац өгнө."],
+["Linear","Шулуун","Түлхүүр кадруудын хооронд жигд, тогтмол хурдтай өөрчлөлт."],
+["Bezier","Безье муруй","Хөдөлгөөний хурдны өөрчлөлтийг бариулаар нарийвчлан хянах муруй."],
+["Video Fade Handle","Бүдгэрүүлэх бариул","Клипийн дээд буланд байрлах жижиг дугуй. Чирэхэд тодрох/бүдгэрэх эффект үүснэ."]
+]});
+
+</script>
+<script>
+/* ── js/dict/r06-fusion.js ── */
+/* ═══ 06 · Fusion хуудас — нод, компоузит ═══ */
+
+RM.dict.add({ id:"fusion", label:"Fusion — үндэс, нод", icon:"⬡", page:"fusion",
+note:"Давхарга биш, нодны системээр ажилладаг дүрслэлийн эффект, компоузитын хуудас.", terms:[
+["Fusion Page","Fusion хуудас","Дүрслэлийн эффект, хөдөлгөөнт график, компоузит хийх хуудас. Давхарга биш, нодны холбоосоор ажиллана.","Shift+5"],
+["Node","Нод","Нэг үйлдэл гүйцэтгэдэг дөрвөлжин нэгж. Нодуудыг холбож урсгал үүсгэнэ."],
+["Node Graph","Нодны талбар","Нодуудыг байрлуулж холбодог ажлын талбар. Fusion-ий гол орон зай."],
+["MediaIn","Материал оруулагч","Timeline дээрх клипийг Fusion руу оруулах нод. Edit хуудаснаас автоматаар үүснэ."],
+["MediaOut","Материал гаргагч","Fusion-ий үр дүнг timeline руу буцаах нод. Хамгийн сүүлийн нод үргэлж энд холбогдоно."],
+["Loader","Ачаалагч","Дискнээс шууд файл уншдаг нод. Fusion Studio-д түгээмэл, Resolve дотор MediaIn илүү хэрэглэгддэг."],
+["Saver","Хадгалагч","Үр дүнг диск рүү файл болгож бичдэг нод."],
+["Merge","Нийлүүлэгч","Хоёр дүрсийг дээр доор нь давхарлах хамгийн чухал нод. Background (шар) ба Foreground (ногоон) гэсэн хоёр оролттой."],
+["Background","Дэвсгэр (оролт)","Merge нодны доод давхарга. Шар өнгөөр тэмдэглэгдэнэ."],
+["Foreground","Урд тал (оролт)","Merge нодны дээд давхарга. Ногоон өнгөөр тэмдэглэгдэнэ."],
+["Background Node","Дэвсгэр нод","Цул өнгө эсвэл градиент үүсгэдэг нод."],
+["Transform (Fusion)","Хувиргагч нод","Дүрсийг зөөх, эргүүлэх, томруулах нод."],
+["Text+ Node","Текст нод","Fusion доторх хүчирхэг текст нод. Үсэг бүрээр хөдөлгөх, 3D болгох, контур нэмэх боломжтой."],
+["Paint","Будалт","Кадар дээр шууд зурж, толбо, ор мөрийг арилгах нод."],
+["Clone (Paint)","Хувилах багс","Кадрын нэг хэсгийг өөр хэсэг рүү хуулж, хэрэггүй зүйлийг арилгах."],
+["Tracker","Мөрдөгч","Кадар доторх цэгийн хөдөлгөөнийг дагаж, өөр объектыг тэрхүү хөдөлгөөнд наах нод."],
+["Planar Tracker","Хавтгай мөрдөгч","Хавтгай гадаргууг (хана, дэлгэц, тэмдэг) бүхэлд нь мөрдөж, түүн дээр өөр дүрс наах Studio нод."],
+["Camera Tracker","Камер мөрдөгч","Бодит камерын гурван хэмжээст хөдөлгөөнийг сэргээж, 3D объект нэмэх боломж олгодог Studio нод."],
+["Delta Keyer","Дельта түлхүүрлэгч","Ногоон эсвэл цэнхэр дэлгэцийг арилгах гол нод. Resolve-ийн хамгийн чанартай түлхүүрлэгч."],
+["Luma Keyer","Гэрлийн түлхүүрлэгч","Гэрлийн хүчээр (гэгээн/харанхуй) хэсгийг тусгаарлах."],
+["Chroma Keyer","Өнгөний түлхүүрлэгч","Тодорхой өнгийг тусгаарлаж арилгах."],
+["Matte","Багавч / маск","Аль хэсэг харагдах, аль нь харагдахгүйг заасан хар цагаан зураг. Цагаан — харагдана, хар — харагдахгүй."],
+["Alpha Channel","Тунгалагийн суваг","Пиксэл бүрийн тунгалаг байдлыг хадгалдаг дөрөв дэх суваг."],
+["Matte Control","Маскны удирдлага","Маскыг цэвэрлэх, өргөтгөх, багасгах, урвуулах нод."],
+["Spill Suppression","Тусгал арилгах","Ногоон дэлгэцээс арьс, үс рүү тусаж туссан ногоон өнгийг арилгах."],
+["Garbage Matte","Хог маск","Кадрын хэрэггүй хэсгийг (гэрлийн тавиур, хүрээ) бүдүүлгээр таслан хаях маск."],
+["Rectangle Mask","Дөрвөлжин маск","Дөрвөлжин хэлбэрийн маск."],
+["Ellipse Mask","Зууван маск","Дугуй, зууван хэлбэрийн маск."],
+["Polygon Mask","Олон өнцөгт маск","Цэг цэгээр зурсан дурын хэлбэрийн маск. Кадар бүрд хөдөлгөж болно (rotoscope)."],
+["B-Spline Mask","Гөлгөр маск","Полигоноос илүү гөлгөр муруй үүсгэдэг маск. Хүний бие, нүүр зэрэг гөлгөр хэлбэрт тохиромжтой."],
+["Rotoscoping","Ротоскоп","Объектыг кадар бүрд гараар маскдаж тусгаарлах ажил. Уйтгартай боловч заримдаа өөр арга байхгүй."],
+["Spline Editor","Муруйн засварлагч","Түлхүүр кадруудын хоорондох өөрчлөлтийн муруйг нарийвчлан засварлах цонх."],
+["Inspector (Fusion)","Fusion шинжүүр","Сонгосон нодны бүх тохиргоог харуулах баруун талын самбар."],
+["Viewer 1 / 2","Дэлгэц 1 / 2","Fusion-д хоёр дэлгэц зэрэг ажиллана. Нод дээр 1 эсвэл 2 дарж аль дэлгэцэнд харахыг сонгоно."],
+["Node Thumbnail","Нодны хураангуй","Нод дээр гарч ирдэг жижиг урьдчилсан зураг."],
+["Merge Node Shortcut","Хурдан нийлүүлэх","Нэг нодыг нөгөө дээр нь чирэхэд Merge нод автоматаар үүснэ."],
+["Add Tool","Хэрэглүүр нэмэх","Нодны талбарт хулганы баруун товч дарж эсвэл хайлтаар шинэ нод нэмэх.","Shift+Space"],
+["Instance Node","Хуулбар нод","Эх нодтойгоо тохиргоогоо хуваалцдаг хуулбар. Эхийг өөрчлөхөд бүгд өөрчлөгдөнө."],
+["Macro","Макро","Хэд хэдэн нодыг нэг болгож багцалж, зөвхөн хэрэгтэй тохиргоог гадагш гаргах."],
+["Group","Бүлэг","Нодуудыг харагдацын хувьд нэг хайрцагт хийж эмхэлнэ."]
+]});
+
+</script>
+<script>
+/* ── js/dict/r07-fusion2.js ── */
+/* ═══ 07 · Fusion — 3D, бөөм, цаг, гажуудал ═══ */
+
+RM.dict.add({ id:"fusion-3d", label:"Fusion — 3D, бөөм, цаг", icon:"◈", page:"fusion",
+note:"Гурван хэмжээст орчин, бөөмийн систем, цагийн эффектүүд.", terms:[
+["Renderer 3D","3D рендерлэгч","Гурван хэмжээст үзэгдлийг хавтгай зураг болгож хувиргах нод. 3D урсгалын төгсгөлд байрлана."],
+["Merge 3D","3D нийлүүлэгч","Гурван хэмжээст объект, гэрэл, камерыг нэг үзэгдэлд цуглуулах нод."],
+["Camera 3D","3D камер","Гурван хэмжээст орчин доторх камер. Байрлал, өнцөг, фокусыг тохируулна."],
+["Image Plane 3D","3D зургийн хавтгай","Хавтгай зургийг гурван хэмжээст орон зайд байрлуулах."],
+["Shape 3D","3D хэлбэр","Шоо, бөмбөг, цилиндр зэрэг үндсэн биет үүсгэх."],
+["Text 3D","3D текст","Зузаантай, гурван хэмжээст үсэг үүсгэх."],
+["Light","Гэрэл","3D үзэгдлийг гэрэлтүүлэх эх үүсвэр. Directional, Point, Spot, Ambient гэсэн төрлүүдтэй."],
+["Material","Материал","3D объектын гадаргуугийн шинж — өнгө, гялбаа, тусгал."],
+["Texture","Бүрхүүл зураг","3D объектын гадаргууд наасан зураг."],
+["UV Map","UV зураглал","3D гадаргууг хавтгайд дэлгэж, зураг наах байрлалыг тодорхойлсон зураглал."],
+["Particle Emitter","Бөөм цацагч","Тоос, цас, оч, гал зэрэг олон жижиг хэсгийг үүсгэдэг нод (pEmitter)."],
+["pRender","Бөөм рендерлэгч","Бөөмийн системийн үр дүнг зураг болгож гаргах нод."],
+["Particle Gravity","Бөөмийн таталцал","Бөөмүүдийг доош чиглүүлэх хүч."],
+["Particle Turbulence","Бөөмийн үймээн","Бөөмийг санамсаргүй хазайлгаж байгалийн жам мэт харагдуулах."],
+["Time Stretcher","Цаг сунгагч","Клипийн хурдыг Fusion дотор өөрчлөх нод."],
+["Time Speed","Цагийн хурд","Тогтмол хурдны өөрчлөлт хийх энгийн нод."],
+["Optical Flow (Fusion)","Оптик урсгал (Fusion)","Хөдөлгөөнийг тооцоолж дунд кадар зохион бүтээх нод. Гөлгөр удаашруулалтад."],
+["Trails","Мөр үлдээх","Хөдөлж буй объектын ард сүүл, мөр үлдээх эффект."],
+["Vector Motion Blur","Векторт хөдөлгөөнт бүдгэрэл","Хөдөлгөөний чиглэлээр бүдгэрүүлж бодит камерын мэдрэмж өгөх."],
+["Displace","Шилжүүлэлт","Нэг зургийн гэрлийн утгыг ашиглан нөгөө зургийг гажуудуулах. Ус, шил, дулааны долгион."],
+["Warp","Мушгилт","Дүрсийг татаж, мушгиж хэлбэрийг өөрчлөх."],
+["Corner Pin","Булан бэхлэлт","Дүрсийн дөрвөн буланг зааж, өөр гадаргуу дээр наах. Дэлгэц солиход хэрэглэнэ."],
+["Grid Warp","Тор мушгилт","Торны цэгүүдийг чирж дүрсийг нарийвчлан мушгих."],
+["Glow","Гэрэлтүүлэг","Гэгээн хэсгүүдээс гэрэл цацруулах эффект."],
+["Soft Glow","Зөөлөн гэрэлтүүлэг","Дүрсийг зөөлрүүлж мөрөөдөл мэт харагдуулах."],
+["Blur (Fusion)","Бүдгэрүүлэлт","Дүрсийг зөөлрүүлэх. Gaussian, Directional, Radial, Zoom гэсэн төрлүүдтэй."],
+["Defocus","Фокус алдагдуулалт","Линзний бодит фокус алдалтыг дуурайлган бүдгэрүүлэх. Гэрлийн цэгүүд дугуй болно."],
+["Color Corrector (Fusion)","Өнгө засагч нод","Fusion доторх өнгө засварын нод."],
+["Brightness Contrast","Гэрэл, ялгарал","Гэрэлтүүлэг, ялгарлыг өөрчлөх энгийн нод."],
+["Channel Boolean","Сувгийн үйлдэл","Улаан, ногоон, цэнхэр, alpha сувгуудыг хооронд нь солих, холих."],
+["Custom Tool","Захиалгат хэрэглүүр","Пиксэл бүрд өөрийн математик томьёо бичих нод. Гүнзгий боловч хүчирхэг."],
+["Fuse","Fuse нэмэлт","Lua хэлээр бичсэн өөрийн нод."],
+["Auto Domain","Автомат хүрээ","Зөвхөн ажиллах шаардлагатай хэсгийг тооцоолж хурдыг нэмэгдүүлэх."],
+["Region of Interest","Сонирхлын муж","Дэлгэц дээр зөвхөн тэмдэглэсэн хэсгийг л тооцоолж урьдчилан харах. Хүнд урсгалыг хурдасгана."],
+["Proxy Mode (Fusion)","Прокси горим","Fusion-д багасгасан нягтралаар тооцоолж хурдан ажиллах."],
+["Bins (Fusion)","Fusion сан","Fusion загвар, нод, макро хадгалах сан.","","Fusion → Bins"]
+]});
+
+</script>
+<script>
+/* ── js/dict/r08-color.js ── */
+/* ═══ 08 · Color — нод, үндсэн засвар ═══ */
+
+RM.dict.add({ id:"color-node", label:"Color — нодны бүтэц", icon:"◍", page:"color",
+note:"Өнгө засварын урсгалыг нодоор барьдаг. Дараалал нь эцсийн үр дүнг шийднэ.", terms:[
+["Color Page","Color хуудас","Өнгө засварын хуудас. Resolve-ийг дэлхийд алдаршуулсан хэсэг.","Shift+6"],
+["Node Editor","Нодны засварлагч","Өнгө засварын нодуудыг холбож урсгал үүсгэх талбар."],
+["Corrector Node","Засагч нод","Нэг өнгөний засварыг агуулах үндсэн нод."],
+["Serial Node","Дараалсан нод","Өмнөх нодны үр дүн дээр дараагийн нод үйлчилнэ. Хамгийн түгээмэл холболт.","Alt+S"],
+["Parallel Node","Зэрэгцээ нод","Хэд хэдэн нод эх дүрс дээр зэрэг ажиллаж, үр дүн нь нэмэгдэн нийлнэ.","Alt+P"],
+["Layer Node","Давхарга нод","Зэрэгцээтэй төстэй, гэхдээ дээд нод доодоо бүрэн дарна. Хольцын горим сонгож болно.","Alt+L"],
+["Outside Node","Гадна нод","Өмнөх нодны маскны эсрэг талд үйлчилнэ. Objектыг тусгаарлаад үлдсэн хэсгийг засахад.","Alt+O"],
+["Splitter / Combiner","Салгагч / нийлүүлэгч","Улаан, ногоон, цэнхэр сувгийг тусад нь салгаж, тус бүрд нь засвар хийгээд буцаан нийлүүлнэ."],
+["Shared Node","Хуваалцсан нод","Олон клип нэг ижил нодыг хуваалцах. Нэгийг өөрчлөхөд бүгд өөрчлөгдөнө."],
+["Node Label","Нодны нэр","Нод бүрд нэр өгч, юу хийж байгааг тэмдэглэх. Хожим өөрөө өөртөө талархана.","","Нод дээр баруун товч → Node Label"],
+["RGB Input / Output","RGB оролт / гаралт","Нодны зүүн, баруун талын дөрвөлжин холбоос. Дүрсний мэдээлэл дамжина."],
+["Key Input / Output","Түлхүүр оролт / гаралт","Нодны дээд талын гурвалжин холбоос. Маскны мэдээлэл дамжина."],
+["Source Node","Эх нод","Урсгалын хамгийн эхэнд байрлах, засвар ороогүй эх дүрс."],
+["Node Bypass","Нод түр хаах","Тухайн нодыг түр унтрааж, өмнөх, дараах байдлыг харьцуулах.","Ctrl+D"],
+["Bypass All Grades","Бүх засварыг хаах","Өнгөний бүх засварыг зэрэг унтрааж эх дүрсийг харах.","Shift+D"],
+["Node Cache","Нодны кэш","Хүнд нодны үр дүнг урьдчилан тооцоолж хадгалах."],
+["Node Sizing","Нодны хэмжээ","Нодны түвшинд хэмжээ, байрлалыг өөрчлөх. Маскны дараа хийвэл маск хамт хөдөлнө."],
+["Node Graph Order","Нодны дараалал","Засварууд аль дарааллаар үйлчлэхийг заана. Ялгарлыг өнгөнөөс өмнө эсвэл хойно хийх нь өөр үр дүн өгнө."]
+]});
+
+RM.dict.add({ id:"color-primary", label:"Color — үндсэн засвар", icon:"◐", page:"color",
+note:"Гэрэл, ялгарал, өнгөний температурыг бүхэлд нь өөрчилдөг үндсэн хэрэглүүрүүд.", terms:[
+["Primaries","Үндсэн засвар","Дүрсэнд бүхэлд нь үйлчлэх гэрэл, өнгөний засвар."],
+["Secondaries","Хоёрдогч засвар","Зөвхөн тодорхой өнгө эсвэл хэсэгт (арьс, тэнгэр) чиглэсэн засвар."],
+["Color Wheels","Өнгөний дугуй","Lift, Gamma, Gain, Offset дөрвөн дугуй. Өнгө засварын хамгийн үндсэн хэрэглүүр."],
+["Lift","Сүүдэр (Lift)","Хамгийн харанхуй хэсгийг өргөх, буулгах. Хар түвшинг тохируулна."],
+["Gamma","Дунд өнгө (Gamma)","Дунд зэргийн гэрэлтэй хэсгийг тохируулна. Нүүрний өнгө ихэвчлэн энд байна."],
+["Gain","Гэгээ (Gain)","Хамгийн гэгээн хэсгийг тохируулна. Тэнгэр, гэрлийн эх үүсвэр."],
+["Offset","Шилжилт (Offset)","Дүрсийг бүхэлд нь дээш доош хөдөлгөнө. Цагаан тэнцвэрийг барихад тохиромжтой."],
+["Log Wheels","Лог дугуй","Shadow, Midtone, Highlight гэсэн гурван бүсийг хооронд нь бага давхцуулж хуваасан дугуйнууд. Лог материалд илүү нарийн хяналт өгнө."],
+["Contrast","Ялгарал","Гэгээн ба харанхуйн зөрүү. Ихэсгэвэл хурц, багасгавал зөөлөн болно."],
+["Pivot","Тэнхлэг","Ялгарлыг аль түвшний эргэн тойронд өөрчлөхийг заана."],
+["Saturation","Ханалт","Өнгөний тод байдал. 0 бол хар цагаан."],
+["Hue","Өнгөний аяс","Өнгөний дугуй дээрх байрлал — улаан, шар, ногоон гэх мэт."],
+["Temperature","Температур","Дулаан (шаравтар) эсвэл хүйтэн (цэнхэр) тийш нь шилжүүлэх."],
+["Tint","Сүүдэрлэлт","Ногоон болон ягаан хоорондын тэнцвэр. Гэрэлтүүлгийн ногоон аясыг засахад."],
+["Midtone Detail","Дунд өнгөний нарийвчлал","Дунд бүсийн нарийн ширийн зүйлийг илэрхий болгох эсвэл зөөлрүүлэх."],
+["Color Boost","Өнгө нэмэгдүүлэлт","Ханалт багатай өнгийг сонгож нэмэгдүүлнэ. Аль хэдийн тод өнгийг өршөөнө."],
+["Shadows / Highlights","Сүүдэр / гэгээ","Харанхуй эсвэл гэгээн хэсгийг тусад нь сэргээх."],
+["Bars","Баганан удирдлага","Өнгөний дугуйтай ижил зүйлийг босоо баганаар харуулсан хэлбэр. Илүү нарийн."],
+["Auto Balance","Автомат тэнцвэр","Resolve цагаан тэнцвэрийг өөрөө таамаглаж тохируулна. Эхлэх цэг болгож болно."],
+["White Balance Picker","Цагаан сонгогч","Кадар доторх цагаан байх ёстой хэсэг дээр товшиж цагаан тэнцвэрийг засах."],
+["Reset","Сэргээх","Тухайн засварыг анхны байдалд нь буцаана."],
+["Grade","Засвар (грейд)","Нэг клипэд хийсэн бүх өнгөний засварын нийлбэр."],
+["Still","Хөлдөөсөн зураг","Тухайн клипийн засвартай хамт хадгалсан жишиг кадар. Дараа нь бусад клипт хуулж болно.","Alt+G"],
+["Gallery","Цомог","Хадгалсан хөлдөөсөн зургууд болон бэлэн загваруудын сан."],
+["Apply Grade","Засвар хэрэглэх","Хадгалсан засварыг өөр клипэд хуулж тавих.","","Still дээр хоёр товшилт"],
+["Ripple Grade","Засвар тараах","Нэг клипийн засварыг сонгосон бүх клипэд нэгэн зэрэг тараах.","","Баруун товч → Apply Grade to Selected Clips"],
+["Shot Match","Кадрын өнгө тааруулах","Хоёр клипийн өнгийг автоматаар ойртуулах.","","Клип дээр баруун товч → Shot Match to this Clip"],
+["Split Screen","Хуваасан дэлгэц","Хэд хэдэн клип эсвэл хувилбарыг зэрэг харьцуулж харах.","","Color хуудасны дэлгэцийн дээд талын Split Screen товч"],
+["Version","Хувилбар","Нэг клипэд өөр өөр засварын хувилбар хадгалж, хооронд нь солих."],
+["Timeline Grade","Timeline засвар","Бүх клипэд нэгэн зэрэг үйлчлэх дээд түвшний засвар."],
+["Group Pre-Clip / Post-Clip","Бүлгийн өмнөх / дараах засвар","Бүлэгт багтсан бүх клипэд клипийн засвараас өмнө эсвэл хойно үйлчлэх засвар."]
+]});
+
+</script>
+<script>
+/* ── js/dict/r09-color2.js ── */
+/* ═══ 09 · Color — муруй, цонх, скоп ═══ */
+
+RM.dict.add({ id:"color-curve", label:"Color — муруй, сонголт", icon:"∿", page:"color",
+note:"Тодорхой өнгө, гэрлийн бүсэд чиглэсэн нарийн засвар.", terms:[
+["Curves","Муруйнууд","Гэрэл, өнгийг муруйгаар нарийвчлан хянах хэрэглүүр."],
+["Custom Curve","Захиалгат муруй","Гэрлийн шилжилтийг цэг нэмж чирч өөрчлөх үндсэн муруй. S хэлбэр өгвөл ялгарал нэмэгдэнэ."],
+["S-Curve","S муруй","Сүүдрийг доош, гэгээг дээш татсан муруй. Кино мэдрэмж өгдөг сонгодог арга."],
+["Soft Clip","Зөөлөн таслалт","Гэгээн эсвэл харанхуй хэсэг огцом тасрахаас сэргийлж зөөлрүүлнэ."],
+["Hue vs Hue","Аяс → аяс","Тодорхой өнгийг өөр өнгө болгож шилжүүлэх. Улаан цамцыг цэнхэр болгох гэх мэт."],
+["Hue vs Sat","Аяс → ханалт","Тодорхой өнгөний тод байдлыг нэмэх, багасгах. Тэнгэрийг илүү цэнхэр болгох."],
+["Hue vs Lum","Аяс → гэрэл","Тодорхой өнгийг гэрэлтүүлэх эсвэл харанхуйлуулах."],
+["Lum vs Sat","Гэрэл → ханалт","Гэрлийн түвшнээс хамааруулж ханалтыг өөрчлөх. Сүүдрийн өнгийг тайвшруулахад."],
+["Sat vs Sat","Ханалт → ханалт","Аль хэдийн тод өнгийг илүү тод, эсвэл дарж тайвшруулах."],
+["Sat vs Lum","Ханалт → гэрэл","Ханалтаас хамааруулж гэрлийг өөрчлөх."],
+["Qualifier","Сонгогч","Тодорхой өнгийг сонгож зөвхөн түүнд засвар хийх хэрэглүүр. Арьсны өнгө засахад гол."],
+["HSL Qualifier","HSL сонгогч","Аяс, ханалт, гэрэл гурваар өнгө сонгох хамгийн түгээмэл сонгогч."],
+["Picker","Дуслуур","Кадар дээр товшиж эсвэл чирч өнгө сонгох хэрэглүүр."],
+["Highlight","Тодруулга","Сонгосон хэсгийг хар цагаанаар эсвэл өнгөт дэвсгэр дээр тодруулж харуулах.","Shift+H"],
+["Denoise (Qualifier)","Сонголт цэвэрлэх","Сонголтын ирмэгийн шуугиан, толбыг арилгах."],
+["Clean Black / White","Хар цагаан цэвэрлэх","Маскны бүрэн хар, бүрэн цагаан хэсгийг цэвэрлэж, дунд зэргийн бүдэг хэсгийг арилгах."],
+["Blur Radius (Qualifier)","Сонголтын зөөлрөлт","Маскны ирмэгийг зөөлрүүлж, засварын хил мэдэгдэхгүй болгох."],
+["Power Window","Хүчит цонх","Кадрын тодорхой хэсгийг геометр хэлбэрээр тусгаарлах маск."],
+["Linear Window","Шулуун цонх","Дөрвөлжин хэлбэрийн хүчит цонх."],
+["Circular Window","Дугуй цонх","Дугуй эсвэл зууван цонх. Нүүрийг тусгаарлахад түгээмэл."],
+["Polygon Window","Олон өнцөгт цонх","Цэг нэмж дурын хэлбэр үүсгэх цонх."],
+["Curve Window","Муруй цонх","Гөлгөр муруйгаар зурсан цонх."],
+["Gradient Window","Шатлалт цонх","Шугамаар хуваагдсан, аажим шилжих цонх. Тэнгэрийг тусад нь харанхуйлуулахад."],
+["Window Softness","Цонхны зөөлрөлт","Цонхны ирмэг хэр аажим шилжихийг заана. Их байх тусмаа мэдэгдэхгүй."],
+["Invert Window","Цонх урвуулах","Цонхны дотор, гадна талыг сольж, эсрэг хэсэгт нь засвар хийх."],
+["Window Tracker","Цонхны мөрдөгч","Хүчит цонхыг хөдөлж буй объектын араас дагуулах."],
+["Track Forward / Reverse","Урагш / хойш мөрдөх","Мөрдөлтийг заагчаас урагш эсвэл хойш тооцоолох."],
+["Interactive Mode","Гар горим","Мөрдөлт алдагдсан хэсгийг гараар засах горим."],
+["Cloud Tracker","Үүлэн мөрдөгч","Кадар доторх олон цэгийг зэрэг мөрдөх сонгодог арга."],
+["Point Tracker","Цэгэн мөрдөгч","Тодорхой цэгүүдийг гараар сонгож мөрдөх нарийн арга."],
+["Magic Mask","Шидэт маск","Хүн, объектыг товшиход л AI нь өөрөө таньж кадар бүрд дагаж маскдана. Studio боломж."],
+["Depth Map","Гүний зураглал","Кадрын аль хэсэг ойр, аль нь хол болохыг AI-аар тооцоолж маск болгож гаргана. Studio боломж."],
+["Object Mask","Объектын маск","Кадар доторх тодорхой объектыг AI-аар таньж тусгаарлах Studio боломж."],
+["Face Refinement","Нүүр өнгөлөлт","Нүүрийг таньж, арьс, нүд, уруулыг тусад нь засварлах Studio хэрэглүүр."],
+["Skin Tone Indicator","Арьсны шугам","Векторскоп дээрх ташуу шугам. Арьсны өнгө энэ шугам дээр буувал байгалийн харагдана."],
+["Blur / Sharpen / Mist","Бүдгэрүүлэх / хурцлах / манан","Өнгө засварын хуудасны зөөлрүүлэх, хурцлах, манантуулах самбар."],
+["Sharpen","Хурцлах","Ирмэгийг тодруулж дүрсийг хурц болгох. Хэтрүүлбэл хиймэл харагдана."],
+["Mist","Манан","Гэгээн хэсгээс зөөлөн туяа тарааж, кинонд ойр зөөлөн мэдрэмж өгөх."],
+["Noise Reduction","Шуугиан бууруулалт","Дүрслэлийн бүдэг толбыг арилгах. Temporal (цаг хугацааны) ба Spatial (орон зайн) гэж хоёр төрөлтэй. Studio боломж."],
+["Temporal NR","Цагийн шуугиан бууруулалт","Хөрш кадруудыг харьцуулж шуугианыг арилгана. Хөдөлгөөн багатай кадарт маш үр дүнтэй."],
+["Spatial NR","Орон зайн шуугиан бууруулалт","Нэг кадар доторх хөрш пиксэлүүдийг харьцуулж зөөлрүүлнэ."],
+["Motion Effects","Хөдөлгөөний эффект","Шуугиан бууруулалт болон хөдөлгөөнт бүдгэрэл агуулсан самбар."],
+["Grain","Мөхлөг","Кино хальсны мөхлөг нэмж, дижитал цэвэр байдлыг зөөлрүүлэх."],
+["Film Look Creator","Кино төрх бүтээгч","Хальсны төрхийг (мөхлөг, halation, өнгөний шилжилт) нэг самбараас бүрдүүлэх Studio хэрэглүүр."]
+]});
+
+RM.dict.add({ id:"scope", label:"Хэмжих багаж (скоп)", icon:"◲", page:"color",
+note:"Нүд хуурдаг. Багаж хуурдаггүй. Өнгө засварын шийдвэрийг эдгээрээр батал.", terms:[
+["Scopes","Хэмжих багажууд","Дүрслэлийн дохиог тоон, графикаар харуулах цонх. Нүдээр биш багажаар шийдвэрлэх нь мэргэжлийн зарчим.","","Workspace → Video Scopes"],
+["Waveform","Долгион","Кадрын гэрлийн түвшинг зүүнээс баруун тийш байрлалаар нь харуулна. Гэрэлтүүлгийн гол багаж."],
+["Parade","Жагсаал","Улаан, ногоон, цэнхэр сувгийг зэрэгцүүлэн харуулна. Өнгөний хазайлтыг олоход хамгийн сайн."],
+["Vectorscope","Векторскоп","Өнгөний аяс, ханалтыг дугуй дээр харуулна. Төвөөс хол байх тусмаа өнгө тод."],
+["Histogram","Гистограм","Гэрлийн түвшин бүрд хэдэн пиксэл байгааг баганаар харуулна."],
+["CIE Chromaticity","CIE диаграм","Өнгөний орон зайн хамрах хүрээг гутал хэлбэрийн диаграмд харуулна."],
+["Clipping","Таслагдалт","Дохио дээд эсвэл доод хязгаараас хэтэрч мэдээлэл алдагдах. Сэргээх боломжгүй."],
+["Crushed Blacks","Дарагдсан хар","Харанхуй хэсэг бүрэн хар болж нарийн зүйл алдагдсан байдал."],
+["Blown Highlights","Шатсан гэгээ","Гэгээн хэсэг бүрэн цагаан болж мэдээлэл алдагдсан байдал."],
+["Legal Range","Хууль ёсны хүрээ","Нэвтрүүлгийн стандартад зөвшөөрөгдсөн дохионы хүрээ (16–235 8 битэд)."],
+["Broadcast Safe","Нэвтрүүлэгт тэнцэх","Дохиог стандарт хүрээнд албадан оруулах тохиргоо.","","Project Settings → Color Management"],
+["IRE","IRE нэгж","Долгионы хэмжүүрийн нэгж. 0 — хар, 100 — цагаан."],
+["Nits","Нит","Гэрэлтэлтийн нэгж (кд/м²). HDR-т 1000 нит, 4000 нит гэх мэтээр яригдана."]
+]});
+
+</script>
+<script>
+/* ── js/dict/r10-color3.js ── */
+/* ═══ 10 · Color — өнгөний удирдлага, LUT, HDR ═══ */
+
+RM.dict.add({ id:"color-mgmt", label:"Өнгөний удирдлага", icon:"◑", page:"color",
+note:"Камерын түүхий дохиог хэрхэн уншиж, эцсийн дэлгэц рүү хэрхэн хөрвүүлэхийг зохицуулна.", terms:[
+["Color Management","Өнгөний удирдлага","Оролт, ажлын орчин, гаралтын өнгөний орон зайг нэгтгэн зохицуулах систем.","","Project Settings → Color Management"],
+["DaVinci YRGB","DaVinci YRGB","Уламжлалт горим. Өнгөний хөрвүүлэлтийг гараар, LUT-аар хийнэ."],
+["DaVinci YRGB Color Managed","Удирдлагатай горим (RCM)","Оролт, гаралтын орон зайг заавал л Resolve өөрөө хөрвүүлнэ. Эхлэгчдэд хамгийн зөвлөмжтэй."],
+["ACES","ACES","Кино салбарын олон улсын өнгөний стандарт. Олон камерын материалыг нэг орон зайд нэгтгэнэ."],
+["ACEScct","ACEScct","ACES доторх лог хэлбэрийн ажлын орон зай. Өнгө засварт тохиромжтой."],
+["Input Color Space","Оролтын өнгөний орон зай","Клип ямар камерын ямар орон зайд бичигдсэнийг заана. Буруу заавал өнгө гажина."],
+["Timeline Color Space","Ажлын өнгөний орон зай","Засвар хийгдэх дотоод орон зай."],
+["Output Color Space","Гаралтын өнгөний орон зай","Эцсийн үзэгчийн дэлгэцэд зориулсан орон зай. Ихэвчлэн Rec.709 Gamma 2.4."],
+["Color Space Transform","Өнгө хөрвүүлэгч","Нэг өнгөний орон зайгаас нөгөө рүү хөрвүүлэх нод (CST). LUT-ийн орчин үеийн орлуулагч."],
+["Gamut Mapping","Хүрээ зураглал","Эх орон зайн өнгө шинэ орон зайд багтахгүй үед хэрхэн шахахыг заана."],
+["Tone Mapping","Аяс зураглал","HDR-ийн өргөн гэрлийн хүрээг SDR дэлгэцэд багтаах хөрвүүлэлт."],
+["LUT","Өнгөний хүснэгт","Оролтын өнгийг гаралтын өнгө рүү хөрвүүлэх урьдчилан бэлдсэн хүснэгт (Look-Up Table)."],
+["1D LUT","1D хүснэгт","Зөвхөн гэрлийн муруйг өөрчилдөг энгийн хүснэгт."],
+["3D LUT","3D хүснэгт","Өнгө, гэрлийг хамтад нь өөрчилдөг бүрэн хүснэгт. .cube өргөтгөлтэй байдаг."],
+["Technical LUT","Техникийн хүснэгт","Лог дохиог стандарт дүрслэл рүү зөв хөрвүүлэх зорилготой хүснэгт."],
+["Creative LUT","Уран сайхны хүснэгт","Тодорхой төрх, уур амьсгал өгөх зорилготой хүснэгт. Эхлэлийн цэг л болохоос эцсийн шийдэл биш."],
+["LUT Folder","LUT хавтас","Өөрийн LUT файлыг хийж, Resolve-д уншуулах хавтас.","","Project Settings → Color Management → Open LUT Folder"],
+["CDL","CDL","Зураг авалтын талбай дээр хийсэн энгийн өнгөний засварыг (Slope, Offset, Power, Saturation) дамжуулах стандарт."],
+["Log","Лог дүрслэл","Камер өргөн гэрлийн хүрээг хадгалахын тулд ашигладаг тэгш, бүдэг дүрслэл. Заавал засвар шаардана."],
+["Raw","Түүхий дохио","Мэдрэгчээс шууд гарсан, боловсруулаагүй өгөгдөл. Цагаан тэнцвэр, ISO-г дараа нь чөлөөтэй өөрчилнө."],
+["Camera Raw","Камерын түүхий тохиргоо","BRAW, R3D зэрэг түүхий файлын тохиргоог Resolve дотор өөрчлөх самбар."],
+["BRAW","Blackmagic RAW","Blackmagic камерын түүхий формат. Хөнгөн, уян хатан, Resolve-д маш сайн ажиллана."],
+["Rec.709","Rec.709","HD телевиз, вэбийн стандарт өнгөний орон зай. Хамгийн түгээмэл гаралт."],
+["Rec.2020","Rec.2020","UHD, HDR-т зориулсан илүү өргөн орон зай."],
+["DCI-P3","DCI-P3","Кино театрын өнгөний стандарт. Rec.709-өөс өргөн."],
+["sRGB","sRGB","Компьютер, вэбийн стандарт. Rec.709-тэй өнгөний хувьд ижил, гамма нь бага зэрэг өөр."],
+["HDR","Өндөр динамик хүрээ","Илүү гэгээн гэгээ, илүү гүн сүүдэр харуулах технологи."],
+["SDR","Энгийн динамик хүрээ","Уламжлалт дүрслэлийн хүрээ."],
+["PQ (ST.2084)","PQ муруй","HDR-ийн үнэмлэхүй гэрэлтэлтэд суурилсан дамжуулах муруй. Dolby Vision, HDR10 үүнийг ашиглана."],
+["HLG","HLG","Нэвтрүүлэгт зориулсан HDR муруй. SDR дэлгэцтэй нийцтэй байхаар зохиогдсон."],
+["Dolby Vision","Dolby Vision","Кадар бүрд тохирсон мэдээлэл дамжуулдаг HDR систем. Resolve Studio дотор шинжилж, засварлаж болно."],
+["HDR Palette","HDR самбар","Гэрлийн бүсийг (хар, харанхуй, сүүдэр, дунд, гэгээ, тод) тусад нь засварлах орчин үеийн хэрэглүүр. Studio боломж."],
+["Color Warper","Өнгө мушгигч","Өнгийг тор дээр чирж, аяс болон ханалтыг гараар мушгих Studio хэрэглүүр."],
+["Chroma Subsampling","Өнгөний сийрэгжүүлэлт","Өнгөний мэдээллийг гэрлийнхээс бага нягтралаар хадгалах шахалтын арга. 4:4:4 бүрэн, 4:2:2 дунд, 4:2:0 хамгийн шахсан."],
+["Bit Depth","Битийн гүн","Өнгөний шатлалын нарийвчлал. 8 бит — 256 шат, 10 бит — 1024 шат. Их байх тусмаа өнгө засварт уян хатан."],
+["Banding","Зурвасжилт","Тэнгэр зэрэг жигд шилжилтэд өнгө шатлан зурвасжих алдаа. Бага битийн гүнд түгээмэл."],
+["Data Levels","Өгөгдлийн түвшин","Дохио бүтэн (Full) эсвэл видео (Video) хүрээтэй эсэхийг заана. Буруу тохируулбал хар угаагдсан эсвэл дарагдсан харагдана."]
+]});
+
+</script>
+<script>
+/* ── js/dict/r11-fairlight.js ── */
+/* ═══ 11 · Fairlight — дууны монтаж, микшер ═══ */
+
+RM.dict.add({ id:"fairlight", label:"Fairlight — трек, микшер", icon:"♪", page:"fairlight",
+note:"Мэргэжлийн дууны ажлын орчин. Кино театрын түвшний дуу боловсруулалт.", terms:[
+["Fairlight Page","Fairlight хуудас","Мэргэжлийн дууны монтаж, холилт хийх хуудас.","Shift+7"],
+["Mixer","Микшер","Бүх дууны замын түвшин, тэнцвэр, эффектийг нэг дор удирдах самбар.","","Fairlight → Mixer"],
+["Channel Strip","Сувгийн зурвас","Микшер доторх нэг замын босоо удирдлагын багана — оролт, EQ, динамик, илгээлт, фадер."],
+["Fader","Фадер","Замын дууны түвшинг өөрчлөх гүйлгэгч."],
+["Pan","Тэнцвэр","Дууг зүүн, баруун чанга яригчийн хооронд байрлуулах."],
+["Bus","Шугам (бус)","Хэд хэдэн замын дууг нэгтгэн цуглуулах суваг."],
+["Main Bus","Үндсэн шугам","Эцсийн гаралт руу очих гол шугам."],
+["Sub Mix Bus","Дэд шугам","Ижил төрлийн замуудыг (яриа, хөгжим, эффект) бүлэглэн нэгтгэх шугам."],
+["Aux Bus","Туслах шугам","Эффект (реверб гэх мэт) руу дуу илгээж, буцааж холих зориулалттай шугам."],
+["Send","Илгээлт","Замын дууны хэсгийг туслах шугам руу илгээх."],
+["Bus Format","Шугамын формат","Моно, стерео, 5.1, 7.1 гэх мэт сувгийн бүтэц."],
+["Track Format","Замын формат","Дууны зам хэдэн суваг агуулахыг заана."],
+["Mono","Моно","Нэг сувгийн дуу."],
+["Stereo","Стерео","Зүүн, баруун хоёр суваг."],
+["5.1 Surround","5.1 орчлон дуу","Тав нь чанга яригч, нэг нь бас — кино театрын стандарт."],
+["Immersive Audio","Гүн шимтгэх дуу","Dolby Atmos зэрэг гурван хэмжээст дууны формат."],
+["Automation","Автоматжуулалт","Фадер, тэнцвэр зэргийн өөрчлөлтийг цаг хугацааны дагуу бичиж хадгалах."],
+["Touch / Latch / Write","Автоматжуулалтын горим","Touch — гар тавихад л бичнэ. Latch — хүрснээс хойш үргэлжлүүлэн бичнэ. Write — тасралтгүй бичнэ."],
+["Clip Gain","Клипийн өсгөлт","Ганц клипийн түвшинг фадераас тусад нь өөрчлөх."],
+["Normalize","Жигдрүүлэх","Клипийн түвшинг тодорхой оргилд эсвэл дундаж чангад автоматаар хүргэх.","","Клип дээр баруун товч → Normalize Audio Levels"],
+["Gain (Audio)","Дууны өсгөлт","Дууны хүчийг децибелээр нэмэх, бууруулах."],
+["dB","Децибел","Дууны хүчний нэгж. 0 dB бол өөрчлөлтгүй."],
+["Headroom","Нөөц зай","Хамгийн чанга агшнаас дээших үлдсэн зай. Гажилтаас хамгаална."],
+["Clipping (Audio)","Дууны таслагдалт","Дуу дээд хязгаараас хэтэрч мурийж гажих алдаа. Улаанаар анхааруулна."],
+["Peak","Оргил","Дууны хамгийн чанга агшин."],
+["True Peak","Жинхэнэ оргил","Дижитал дохиог аналог руу хөрвүүлэхэд үүсэх бодит оргил. dBTP нэгжээр хэмжинэ."],
+["LUFS","LUFS","Хүний сонсголд тохирсон дундаж чангын нэгж. Нэвтрүүлэг, платформын стандарт үүгээр тавигдана."],
+["Loudness","Чанга байдал","Дууны мэдрэгдэх хүч. Оргилоос илүү бодит мэдрэмжийг илэрхийлнэ."],
+["Loudness Meter","Чангын хэмжүүр","LUFS, True Peak, динамик хүрээг хэмжих багаж.","","Fairlight → Meters"],
+["Elastic Wave","Уян долгион","Дууны бие даасан үеийг сунгаж, зөөж, зурагтай нь тааруулах хэрэглүүр. Хадмал, дубляжид."],
+["Waveform Editing","Долгионы засвар","Дууны долгионыг харж, нарийн агшин дээр огтолж засварлах."],
+["Fade Handles (Audio)","Дууны бүдгэрүүлэлт","Клипийн ирмэг дэх бариулыг чирж дууг аажим оруулж, гаргах."],
+["Crossfade","Хөндлөн уусалт","Хоёр дууны клипийг давхцуулан зөөлөн шилжүүлэх."],
+["Audio Track Layers","Дууны давхарга","Нэг зам дотор клипүүдийг давхарлаж байрлуулах горим."],
+["Link Group","Холбоот бүлэг","Хэд хэдэн замыг холбож нэг фадераар хамт удирдах."],
+["ADR","ADR","Зураг авалтын дараа студид яриаг дахин бичиж, дүрсэнд тааруулах ажил.","","Fairlight → ADR"],
+["Foley","Фоли","Алхаа, хувцасны чимээ зэрэг өдөр тутмын дууг студид дахин бүтээх ажил."],
+["Sound Library","Дууны сан","Дууны эффектийг индексжүүлэн хайж, урьдчилан сонсох сан."],
+["Patch Input/Output","Оролт гаралт холбох","Микрофон, чанга яригчийг замуудтай холбох.","","Fairlight → Patch Input/Output"],
+["Monitoring","Хяналтын сонсголт","Ажлын явцад дууг хэрхэн сонсох тохиргоо."],
+["Dim","Түр намсгах","Хяналтын дууг түр багасгах."]
+]});
+
+</script>
+<script>
+/* ── js/dict/r12-fairlight2.js ── */
+/* ═══ 12 · Fairlight — эффект, боловсруулалт ═══ */
+
+RM.dict.add({ id:"fairlight-fx", label:"Fairlight — дууны эффект", icon:"◉", page:"fairlight",
+note:"FairlightFX багц болон дууны боловсруулалтын нэр томьёо.", terms:[
+["EQ","Тэнцвэржүүлэгч","Дууны давтамжийн тэнцвэрийг өөрчлөх. Басс, дунд, өндөр давтамжийг тусад нь нэмэх, бууруулах."],
+["High Pass Filter","Өндөр нэвтрүүлэгч шүүлтүүр","Тодорхой давтамжаас доош бүх зүйлийг таслана. Салхи, чичиргээний намхан шуугиан арилгахад гол хэрэглүүр."],
+["Low Pass Filter","Намхан нэвтрүүлэгч шүүлтүүр","Тодорхой давтамжаас дээшхийг таслана. Хана цаанаас сонсогдох мэт эффект."],
+["Notch Filter","Нарийн шүүлтүүр","Ганц нарийн давтамжийг л таслана. Цахилгааны 50 Гц шуугиан арилгахад."],
+["Q Factor","Q утга","Шүүлтүүр хэр нарийн эсвэл өргөн ажиллахыг заана."],
+["Compressor","Шахагч","Чанга агшинг дарж, дууны хүчний зөрүүг багасгана. Яриаг тогтвортой, сонсоход тав тухтай болгоно."],
+["Threshold","Босго","Эффект ажиллаж эхлэх түвшин."],
+["Ratio","Шахалтын харьцаа","Босгоос давсан дууг хэр хүчтэй дарахыг заана. 4:1 бол дунд зэрэг, 20:1 бол хязгаарлагчтай ойролцоо."],
+["Attack","Барих хугацаа","Эффект хэр хурдан ажиллаж эхлэхийг заана."],
+["Release","Тавих хугацаа","Эффект хэр хурдан суллахыг заана."],
+["Makeup Gain","Нөхөх өсгөлт","Шахалтын улмаас алдагдсан хүчийг буцаан нэмэх."],
+["Limiter","Хязгаарлагч","Дууг тогтоосон дээд хязгаараас хэтрүүлэхгүй хатуу хамгаалалт."],
+["Noise Gate","Шуугианы хаалт","Тогтоосон түвшнээс доош дууг бүрэн хаана. Ярианы завсарлагааны дэвсгэр шуугиан арилгахад."],
+["Expander","Өргөтгөгч","Хаалтын зөөлөн хувилбар. Намхан дууг бүрэн хаахгүй, зөвхөн улам намсгана."],
+["De-Esser","С дарагч","Ярианы хурц \"с\", \"ш\" авиаг зөөлрүүлэх."],
+["De-Hummer","Шуугиан дарагч","Цахилгааны тогтмол дүнгэнэх чимээг арилгах."],
+["De-Esser / De-Hummer / De-Reverb","Цэвэрлэх багц","FairlightFX доторх дууны согог засах хэрэглүүрүүд."],
+["Reverb","Цуурай","Дууг өрөө, танхим, сүм дотор байгаа мэт орон зайд байрлуулах."],
+["Delay","Хойшлуулалт","Дууг давтан цуурайтуулах."],
+["Echo","Цуурай (эхо)","Тодорхой хугацааны дараа дуу давтагдах."],
+["Chorus","Найрал","Нэг дууг олон хувь мэт сонсогдуулж өргөжүүлэх."],
+["Flanger","Флэнжер","Хөдөлгөөнт, шүүрдэх мэт өнгө нэмэх эффект."],
+["Pitch","Өндөр","Дууны өндрийг өөрчлөх. Хурдыг хөндөхгүй."],
+["Vocal Channel","Ярианы суваг","EQ, шахагч, хаалтыг нэг самбарт нэгтгэсэн ярианд зориулсан хэрэглүүр."],
+["Voice Isolation","Дуу тусгаарлагч","Дэвсгэр шуугианаас хүний яриаг AI-аар салгаж авах Studio боломж. Гадаа бичсэн муу дууг аварна."],
+["Dialogue Leveler","Ярианы жигдрүүлэгч","Ярианы түвшний хэлбэлзлийг автоматаар тэгшлэх Studio боломж."],
+["Music Remixer","Хөгжим задлагч","Бэлэн хөгжмийг дуучин, бөмбөр, басс, бусад гэж салгаж, түвшинг нь тусад нь өөрчлөх Studio боломж."],
+["Ambience Match","Орчны дуу тааруулах","Дүрсэнд тохирох дэвсгэр орчны дууг AI-аар үүсгэж, огтлолтын завсрыг нөхөх Studio боломж."],
+["Dialogue Separator","Яриа салгагч","Бичлэгийг яриа, орчин, шуугиан гэж гурав салгах Studio боломж."],
+["FairlightFX","FairlightFX","Resolve-д суулгаастай ирдэг дууны эффектийн багц."],
+["VST / AU Plugin","Гадаад нэмэлт","Гуравдагч талын дууны эффект. Windows дээр VST, macOS дээр AU форматтай.","","Preferences → Video and Audio I/O → Audio Plugins"],
+["Sample Rate","Дээж авалтын давтамж","Секундэд дууг хэдэн удаа хэмжсэнийг заана. 48 кГц бол видеоны стандарт."],
+["Audio Bit Depth","Дууны битийн гүн","Дээж бүрийн нарийвчлал. 24 бит нь мэргэжлийн стандарт."],
+["Latency","Хоцролт","Дуу боловсруулагдаж чихэнд хүрэх хүртэлх саатал."],
+["Bounce","Бэхжүүлэх","Эффект бүхий замыг шинэ дууны файл болгон буулгах."],
+["Audio Sweetening","Дуу өнгөлөлт","Дууг цэвэрлэж, тэнцвэржүүлж, чанартай болгох нийт ажлын нэр."]
+]});
+
+</script>
+<script>
+/* ── js/dict/r13-deliver.js ── */
+/* ═══ 13 · Deliver — рендер, экспорт ═══ */
+
+RM.dict.add({ id:"deliver", label:"Deliver — рендер", icon:"▶", page:"deliver",
+note:"Бэлэн болсон ажлаа файл болгон гаргах хуудас.", terms:[
+["Deliver Page","Deliver хуудас","Эцсийн файл рендерлэх хуудас.","Shift+8"],
+["Render Settings","Рендерийн тохиргоо","Формат, кодлогч, нягтрал, чанарын бүх тохиргоо байрлах зүүн талын самбар."],
+["Render Queue","Рендерийн дараалал","Рендерлэх ажлуудын жагсаалт. Хэд хэдэн ажлыг нэмээд дараалуулан гүйцэтгүүлж болно."],
+["Add to Render Queue","Дараалалд нэмэх","Одоогийн тохиргоог ажил болгож дараалалд оруулна."],
+["Render All","Бүгдийг рендерлэх","Дараалал дахь бүх ажлыг эхлүүлнэ."],
+["Single Clip","Нэг файл","Бүх timeline-ийг нэг видео файл болгож гаргана. Хамгийн түгээмэл."],
+["Individual Clips","Тус тусад нь","Клип бүрийг тусдаа файл болгож гаргана. Өнгө засварыг гадагш дамжуулахад."],
+["Render In Place","Байранд нь рендерлэх","Timeline дээрх клипийг эффекттэй нь хамт шинэ файл болгож солино. Хүнд эффектийг бэхжүүлэхэд.","","Клип дээр баруун товч → Render In Place"],
+["Format","Формат","Файлын сав — MP4, MOV, MXF гэх мэт."],
+["Codec","Кодлогч","Видеог шахах арга — H.264, H.265, ProRes, DNxHR гэх мэт."],
+["H.264","H.264","Хамгийн түгээмэл, нийцтэй кодлогч. Вэб, сошиал, ерөнхий түгээлтэд."],
+["H.265 (HEVC)","H.265","H.264-ээс илүү үр ашигтай шахалт. Ижил чанарыг бага хэмжээгээр. Хуучин төхөөрөмж дэмжихгүй байж болно."],
+["ProRes","ProRes","Apple-ийн монтажид зориулсан чанартай кодлогч. Файл том, гэхдээ чанар өндөр, засварт уян хатан."],
+["ProRes 422 HQ","ProRes 422 HQ","Мастер файл, архивт өргөн хэрэглэгддэг чанартай хувилбар."],
+["ProRes 4444","ProRes 4444","Тунгалагийн суваг дэмждэг хамгийн чанартай хувилбар. График, компоузитод."],
+["DNxHR","DNxHR","Avid-ийн монтажийн кодлогч. ProRes-ийн Windows дахь өрсөлдөгч."],
+["Bit Rate","Битийн урсгал","Секундэд хэдэн бит зарцуулахыг заана. Их байх тусмаа чанар сайн, файл том."],
+["CBR / VBR","Тогтмол / хувьсах урсгал","CBR — тогтмол хурд. VBR — хүнд хэсэгт илүү, хөнгөнд бага зарцуулж илүү ухаалаг."],
+["Quality","Чанар","Автомат эсвэл гарын тохиргоогоор битийн урсгалыг тодорхойлно."],
+["Resolution (Render)","Рендерийн нягтрал","Гаралтын хэмжээ. Timeline-ийхаас өөр байж болно."],
+["Frame Rate (Render)","Рендерийн давтамж","Гаралтын кадрын давтамж."],
+["Key Frames (Codec)","Түлхүүр кадар (кодлогч)","Кодлогч дотор бүрэн хадгалагдсан кадар. Хоорондох кадрууд зөвхөн өөрчлөлтийг хадгална."],
+["Encoding Profile","Кодлолтын хувилбар","Main, High гэх мэт нийцтэй байдлын түвшин."],
+["Network Optimization","Сүлжээнд тохируулах","Файлын толгойн мэдээллийг эхэнд байрлуулж, интернэтээр урсгахад тохиромжтой болгох."],
+["Audio Codec","Дууны кодлогч","AAC (шахсан, вэбэд) эсвэл Linear PCM (шахаагүй, чанартай)."],
+["Audio Bit Rate","Дууны битийн урсгал","AAC-д 320 кбит/с бол сайн чанар."],
+["Render at Source Resolution","Эх нягтралаар рендерлэх","Timeline-ийхээс үл хамааран эх файлын нягтралаар гаргах."],
+["Force Sizing to Highest Quality","Хамгийн сайн хэмжээ тааруулалт","Хэмжээ өөрчлөх алгоритмыг рендерт хамгийн чанартай болгож албадах."],
+["Force Debayer to Highest Quality","Түүхий задралыг дээд чанараар","Түүхий файлыг рендерт бүрэн чанараар боловсруулахыг албадах."],
+["Use Render Cached Images","Кэшийг ашиглах","Аль хэдийн тооцоолсон кэшийг рендерт дахин ашиглаж хурдасгах."],
+["Render Presets","Бэлэн тохиргоо","YouTube, Vimeo, Twitter, ProRes Master зэрэг урьдчилан бэлдсэн тохиргоонууд."],
+["YouTube Preset","YouTube тохиргоо","YouTube-д тохирсон H.264 бэлэн тохиргоо. Эхлэгчдэд хамгийн хялбар сонголт."],
+["Custom Export","Захиалгат экспорт","Бүх тохиргоог өөрөө сонгох горим."],
+["Subtitle Export","Хадмал экспорт","Хадмалыг видеонд шатаах (burn in) эсвэл тусдаа SRT файл болгож гаргах."],
+["Burn In","Шатаах","Хадмал, цагийн код, лого зэргийг дүрсэнд бүрмөсөн шингээх. Дараа нь салгах боломжгүй."],
+["Data Burn-In","Мэдээлэл шатаах","Цагийн код, файлын нэр, тайлбарыг дүрсэн дээр харуулах. Хянан үзэх хувилбарт хэрэгтэй.","","Workspace → Data Burn-In"],
+["Deliverable","Хүлээлгэн өгөх файл","Захиалагчид өгөх эцсийн файл."],
+["Master File","Мастер файл","Хамгийн өндөр чанартай, архивт хадгалах эх хувилбар. Үүнээс бусад бүх хувилбарыг гаргана."],
+["Round Trip","Тойрог аялал","Материалыг өөр программ руу гаргаж, боловсруулаад буцаан оруулах ажлын урсгал."],
+["XML / AAF / EDL","Солилцооны формат","Монтажийн шийдвэрийг өөр программ руу дамжуулах файлын форматууд. Видео өөрөө биш, зөвхөн заавар дамжина."],
+["OTIO","OpenTimelineIO","Монтажийн мэдээлэл солилцох нээлттэй эх сурвалжтай орчин үеийн формат."],
+["Presentation / Review","Хянан үзэлт","Blackmagic Cloud эсвэл Frame.io зэрэгт байршуулж, захиалагчаас санал авах."]
+]});
+
+</script>
+<script>
+/* ── js/dict/r14-tehnik.js ── */
+/* ═══ 14 · Техникийн ерөнхий нэр томьёо ═══ */
+
+RM.dict.add({ id:"tehnik", label:"Техникийн нэр томьёо", icon:"⚙", page:"tehnik",
+note:"Ямар ч видео программд хэрэгтэй суурь ойлголтууд.", terms:[
+["Resolution","Нягтрал","Дүрсний хэвтээ, босоо пиксэлийн тоо. 1920×1080 гэх мэт."],
+["HD","HD","1280×720 эсвэл 1920×1080 нягтрал."],
+["Full HD","Бүтэн HD","1920×1080. Хамгийн түгээмэл."],
+["UHD","UHD","3840×2160. Гэрийн \"4K\" телевизийн жинхэнэ нэр."],
+["4K DCI","4K DCI","4096×2160. Кино театрын жинхэнэ 4K."],
+["Aspect Ratio","Харьцаа","Өргөн, өндрийн харьцаа. 16:9 — түгээмэл, 2.39:1 — өргөн дэлгэцийн кино, 9:16 — босоо."],
+["Pixel Aspect Ratio","Пиксэлийн харьцаа","Пиксэл өөрөө дөрвөлжин эсэх. Орчин үеийн материалд бараг үргэлж дөрвөлжин."],
+["Frame Rate","Кадрын давтамж","Секундэд хэдэн кадар. 24 — кино, 25 — PAL, 30 — NTSC, 50/60 — жигд хөдөлгөөн."],
+["fps","кадр/сек","Frames per second — секунд дэх кадрын тоо."],
+["23.976 fps","23.976","24-ийн NTSC системд тохируулсан хувилбар. Америкийн стандарт."],
+["Progressive","Дараалсан","Кадар бүрийг бүтнээр нь харуулах орчин үеийн арга. 1080p дахь p үүнийг заана."],
+["Interlaced","Сүлжсэн","Кадрыг тэгш, сондгой мөрөөр хувааж ээлжлэн харуулах хуучин арга. 1080i дахь i."],
+["Deinterlacing","Сүлжээ задлах","Сүлжсэн материалыг дараалсан болгож хувиргах."],
+["Field Order","Талбарын дараалал","Сүлжсэн материалд аль талбар эхлэхийг заана. Буруу бол хөдөлгөөн чичирнэ."],
+["Shutter Angle","Хаалтын өнцөг","Кадар тутам мэдрэгч хэр удаан нээлттэй байхыг заана. 180° нь байгалийн хөдөлгөөнт бүдгэрэл өгнө."],
+["Motion Blur","Хөдөлгөөнт бүдгэрэл","Хурдан хөдөлгөөн кадарт бүдгэрч тусах үзэгдэл. Байгалийн харагдацын чухал хэсэг."],
+["Judder","Таталдаа","Кадрын давтамж таарахгүйгээс хөдөлгөөн тасалдан харагдах."],
+["Rolling Shutter","Гүйдэг хаалт","CMOS мэдрэгч мөр мөрөөр уншдагаас хурдан хөдөлгөөнд босоо шугам хазайх алдаа."],
+["Container","Сав (формат)","Видео, дуу, хадмалыг агуулах файлын бүрхүүл — MP4, MOV, MKV."],
+["Intra-frame","Кадар доторх шахалт","Кадар бүрийг бие даан шахах арга. ProRes, DNxHR. Монтажид хөнгөн."],
+["Inter-frame","Кадар хоорондын шахалт","Хөрш кадрын ялгааг л хадгалах арга. H.264, H.265. Файл жижиг, гэхдээ монтажид хүнд."],
+["Long GOP","Урт GOP","Кадар хоорондын шахалтын нэг хэлбэр. Хэмнэлттэй боловч засварт хүнд."],
+["Transcode","Хөрвүүлэлт","Нэг кодлогчоос нөгөө рүү хувиргах."],
+["Generation Loss","Үеийн алдагдал","Шахсан файлыг дахин дахин шахахад чанар аажим муудах."],
+["Premultiplied","Урьдчилан үржүүлсэн","Өнгийг тунгалагаар нь урьдчилан үржүүлж хадгалсан хэлбэр. Буруу тайлбарлавал ирмэг харлана."],
+["Straight Alpha","Шулуун alpha","Өнгө, тунгалагийг тусад нь хадгалсан хэлбэр."],
+["Color Space","Өнгөний орон зай","Ямар өнгийг илэрхийлэх боломжтойг тодорхойлсон систем."],
+["Gamut","Өнгөний хүрээ","Тухайн систем харуулж чадах бүх өнгөний багц."],
+["Gamma (Transfer Curve)","Гамма муруй","Дохионы утга ба бодит гэрэлтэлтийн хоорондын хамаарлын муруй. Өнгөний дугуй дээрх Gamma-гаас өөр ойлголт."],
+["Luma","Гэрэл (luma)","Дүрсний гэрэлтэй холбоотой мэдээлэл."],
+["Chroma","Өнгө (chroma)","Дүрсний өнгөтэй холбоотой мэдээлэл."],
+["GPU","График процессор","Resolve-ийн бараг бүх тооцоолол GPU дээр хийгддэг. Хүчирхэг видео карт хамгийн чухал."],
+["VRAM","Видео санах ой","Видео картын өөрийн санах ой. 4K, олон нодтой ажилд 8 ГБ ба түүнээс дээш зөвлөмжтэй."],
+["CUDA / OpenCL / Metal","GPU технологи","Nvidia — CUDA, AMD/Intel — OpenCL, Apple — Metal.","","Preferences → Memory and GPU"],
+["Cache Drive","Кэш диск","Түр файл бичих диск. Хурдан SSD сонговол ажил мэдэгдэхүйц хурдасна.","","Preferences → Media Storage"],
+["Scratch Disk","Ажлын диск","Кэш дисктэй ижил утга."]
+]});
+
+</script>
+<script>
+/* ── js/dict/r15-tovchluur.js ── */
+/* ═══ 15 · Товчлуурын лавлах — нэмэлт ═══
+   ЗӨВХӨН өөр ангилалд нэр томьёо болж ороогүй товчлуурууд энд байна.
+   "Товчлуур" харагдац нь толь даяарх key талбартай БҮХ мөрийг цуглуулдаг тул
+   энд давхардуулах шаардлагагүй.
+
+   Бүгд DaVinci Resolve-ийн үндсэн (default) багц, Windows.
+   DaVinci Resolve → Keyboard Customization дотроос шалгана уу. */
+
+RM.dict.add({ id:"tovch-erunhii", label:"Товчлуур — файл, төсөл", icon:"⌨", page:"erunhii",
+note:"Аль ч хуудсанд ажилладаг ерөнхий товчлуурууд.", terms:[
+["Media Page","Media хуудас руу очих","Материал оруулах хуудас руу шилжинэ.","Shift+2"],
+["Save Project","Төсөл хадгалах","Одоогийн төслийг хадгална.","Ctrl+S"],
+["Save As","Өөр нэрээр хадгалах","Төслийн хуулбарыг шинэ нэрээр үүсгэнэ. Том өөрчлөлт хийхийн өмнө хийвэл тустай.","Ctrl+Shift+S"],
+["New Timeline","Шинэ timeline","Шинэ монтажийн шугам үүсгэнэ.","Ctrl+N"],
+["Copy","Хуулах","Сонгосныг санах ойд хуулна.","Ctrl+C"],
+["Cut (clipboard)","Тасалж авах","Сонгосныг таслаж санах ойд хуулна.","Ctrl+X"],
+["Paste","Наах","Хуулсныг заагчийн байрлалд тавина.","Ctrl+V"],
+["Paste Attributes","Шинжийг наах","Хуулсан клипийн тохиргоог (хэмжээ, байрлал, өнгө, хурд) өөр клип рүү шилжүүлнэ. Нэг л удаа тохируулаад бүгдэд тараах хамгийн хурдан арга.","Alt+V"],
+["Select All","Бүгдийг сонгох","Timeline дээрх бүх клипийг сонгоно.","Ctrl+A"],
+["Deselect All","Сонголт цуцлах","Бүх сонголтыг арилгана.","Ctrl+Shift+A"],
+["Full Screen Viewer","Дэлгэц бүтэн","Дэлгэцийг бүтэн болгож харна. Дахин дарвал буцна.","Ctrl+F"]
+]});
+
+RM.dict.add({ id:"tovch-toglool", label:"Товчлуур — тоглуулалт", icon:"▷", page:"edit",
+note:"Гар дээрээс салахгүйгээр материалаа гүйлгэх товчлуурууд. Мэргэжлийн монтажчийн үндсэн зуршил.", terms:[
+["Play / Stop","Тоглуулах / зогсоох","Тоглуулалтыг эхлүүлж, зогсооно.","Space"],
+["J","Ухраан гүйлгэх","Буцаж тоглуулна. Дараалан дарах бүрд хурд нэмэгдэнэ — 2х, 4х, 8х.","J"],
+["K","Зогсоох (J-K-L)","Тоглуулалтыг зогсооно. J эсвэл L-ийг хамт барихад удаашруулж гүйлгэнэ.","K"],
+["L","Урагш гүйлгэх","Урагш тоглуулна. Дараалан дарах бүрд хурд нэмэгдэнэ.","L"],
+["Step Forward","Нэг кадар урагш","Заагчийг нэг кадраар урагшлуулна.","→"],
+["Step Backward","Нэг кадар хойш","Заагчийг нэг кадраар ухраана.","←"],
+["Next Edit","Дараагийн огтлолт","Дараагийн огтлолтын цэг рүү үсэрнэ.","↓"],
+["Previous Edit","Өмнөх огтлолт","Өмнөх огтлолтын цэг рүү үсэрнэ.","↑"],
+["Clear In","Эхлэх цэг арилгах","In тэмдэглэгээг устгана.","Alt+I"],
+["Clear Out","Дуусах цэг арилгах","Out тэмдэглэгээг устгана.","Alt+O"],
+["Mark Clip","Клипийг бүтнээр сонгох","Заагч дээрх клипийн эхлэл, төгсгөлд In/Out хоёуланг автоматаар тавина.","X"],
+["Zoom In (timeline)","Timeline томруулах","Timeline-ийг ойртуулж харна.","Ctrl+="],
+["Zoom Out (timeline)","Timeline холдуулах","Timeline-ийг холдуулж харна.","Ctrl+-"]
+]});
+
+</script>
+<script>
+/* ── js/dict/r16-asuudal.js ── */
+/* ═══ 16 · Түгээмэл асуудал, алдааны мессеж ═══ */
+
+RM.dict.add({ id:"asuudal", label:"Түгээмэл асуудал", icon:"⚠", page:"tehnik",
+note:"Монголчуудын хамгийн олон асуудаг асуудлууд ба шийдэл.", terms:[
+["Media Offline (error)","Улаан \"Media Offline\" гарч байна","Эх файлын зам өөрчлөгдсөн. Media Pool дотор клипээ сонгоод баруун товч → Relink Clips сонгоод файлын шинэ байрлалыг зааж өгнө. Гадаад диск салсан бол буцааж холбоно уу."],
+["No Audio in H.264","MP4 файлын дуу гарахгүй байна","Deliver хуудасны Audio таб дотор \"Export Audio\" тэмдэглэгдсэн эсэх, кодлогч нь AAC байгаа эсэхийг шалгана уу."],
+["Choppy Playback","Тоглуулалт таталдаж байна","Гурван шийдэл: (1) дэлгэцийн доор Timeline Proxy Mode-ийг Half эсвэл Quarter болгох, (2) Optimized Media үүсгэх, (3) Playback → Render Cache → Smart асаах."],
+["GPU Memory Full","GPU санах ой дүүрсэн","Нээлттэй бусад программыг хаах, timeline-ий нягтралыг түр багасгах, эсвэл Preferences → Memory and GPU дотор GPU-ийн санах ойн хязгаарыг тохируулах."],
+["Render Job Failed","Рендер тасарлаа","Хамгийн түгээмэл шалтгаан: диск дүүрсэн, эх файлын аль нэг нь тасарсан, эсвэл гуравдагч талын эффект зөрчилдсөн. Timeline-ийг хэсэгчлэн рендерлэж алдаатай хэсгийг олно уу."],
+["Fusion Slow","Fusion удаан ажиллаж байна","Region of Interest тэмдэглэж зөвхөн хэрэгтэй хэсгийг тооцоолуулах, Proxy горимд шилжих, эсвэл хүнд нодыг кэшлэх."],
+["Audio Out of Sync","Дуу зурагтайгаа таарахгүй байна","Клипийн кадрын давтамж timeline-ийхтэй таарахгүй байх магадлалтай. Clip Attributes дотроос давтамжийг шалгана уу. Хувьсах давтамжтай (VFR) утасны бичлэг бол тогтмол давтамж руу хөрвүүлэх нь шийдэл."],
+["Variable Frame Rate","Хувьсах кадрын давтамж (VFR)","Утас, дэлгэц бичигч программ ихэвчлэн хувьсах давтамжтай бичдэг. Resolve үүнийг сайн зохицуулдаггүй тул HandBrake зэргээр тогтмол давтамж руу хөрвүүлээд оруулна уу."],
+["Washed Out Colors","Өнгө угаагдсан, бүдэг харагдаж байна","Хоёр шалтгаан: (1) Лог материалд засвар ороогүй байна — Color Space Transform нод нэмнэ үү. (2) Data Levels буруу — Clip Attributes дотор Full/Video-г сольж үзнэ үү."],
+["Colors Differ After Export","Экспортын дараа өнгө өөрчлөгдсөн","Тоглуулагч программ өнгөний удирдлагыг өөрөөр тайлбарлаж байна. QuickTime, вэб хөтөч, VLC гурав өөр харуулж болно. Мэргэжлийн дэлгэц эсвэл ижил тоглуулагч дээр шалгана уу."],
+["Codec Not Supported","Кодлогч дэмжигдэхгүй байна","Үнэгүй хувилбарт зарим кодлогч (жишээ нь H.265 зарим хэлбэр, AAC зарим тохиолдолд) хаалттай. ProRes эсвэл DNxHR руу хөрвүүлээд оруулна уу."],
+["Project Won't Open","Төсөл нээгдэхгүй байна","Project Manager дотор баруун товч → зөв мэдээллийн сан сонгогдсон эсэхийг шалгана уу. Гэмтсэн бол Project Archive-аас сэргээнэ."],
+["Timeline Frame Rate Locked","Кадрын давтамж өөрчлөгдөхгүй байна","Timeline үүссэний дараа давтамжийг өөрчлөх боломжгүй. Шинэ timeline үүсгэж клипүүдээ хуулна уу. Тиймээс эхэндээ зөв сонгох нь чухал."],
+["Missing Fonts","Үсгийн фонт олдохгүй байна","Монгол кирилл фонт системд суусан эсэхийг шалгана уу. Resolve системийн фонтыг ашигладаг тул фонтоо суулгаад программаа дахин нээнэ үү."],
+["Cyrillic Text Issue","Монгол бичиг буруу харагдаж байна","Text+ нод дотор Unicode дэмждэг фонт (жишээ нь Arial, Noto Sans) сонгоно уу. Зарим гоёмсог фонт кирилл үсэггүй байдаг."],
+["Scripting Not Working","Скрипт ажиллахгүй байна","Гурвыг шалга: (1) Studio хувилбар мөн эсэх, (2) Preferences → General → External scripting using нь Local болсон эсэх, (3) Resolve нээлттэй, төсөл нээгдсэн эсэх."],
+["Disk Full","Диск дүүрсэн","Кэш файл асар их зай эзэлдэг. Playback → Delete Render Cache → All сонгож цэвэрлэнэ үү."],
+["Cache Growing","Кэш хэт томорсон","Preferences → Media Storage дотор кэшийн диск, Project Settings дотор кэшийн хугацааг тохируулна уу."],
+["Crash on Startup","Нээх үед унана","Ихэвчлэн видео картын драйвер хуучирсан эсвэл гуравдагч талын эффект зөрчилдсөнөөс. Драйвераа шинэчилж, суулгасан нэмэлт эффектээ түр хасаж үзнэ үү."],
+["Undo Not Working","Буцаах ажиллахгүй байна","Resolve хуудас бүрд тусдаа буцаах түүх хөтөлдөг. Color хуудасны засварыг Edit хуудсанд буцаах боломжгүй — тухайн хуудсандаа буцаана уу."]
+]});
+
+</script>
+<script>
+/* ── js/dict/r17-nemelt.js ── */
+/* ═══ 17 · Нэмэлт — түгээмэл хайгддаг ойлголтууд ═══ */
+
+RM.dict.add({ id:"nemelt-fx", label:"Түлхүүрлэлт, компоузит", icon:"⧉", page:"fusion",
+note:"Ногоон дэлгэц болон давхарлалттай холбоотой ойлголтууд.", terms:[
+["Green Screen","Ногоон дэлгэц","Дүрсний ард тавьдаг жигд ногоон даавуу эсвэл ханa. Дараа нь тэр ногоон өнгийг арилгаж өөр дэвсгэр орлуулна. Хүний арьсны өнгөнөөс хамгийн хол тул ногоон сонгогддог."],
+["Blue Screen","Цэнхэр дэлгэц","Ногоон дэлгэцтэй ижил зарчим. Дүрд ногоон хувцас байвал, эсвэл шөнийн үзэгдэлд цэнхэрийг илүүд үзнэ."],
+["Chroma Key","Өнгөний түлхүүрлэлт","Тодорхой өнгийг тунгалаг болгож арилгах арга. Ногоон дэлгэц арилгах ажлын албан ёсны нэр."],
+["Keying","Түлхүүрлэлт","Дүрсний нэг хэсгийг тунгалаг болгож тусгаарлах бүх аргын нийтлэг нэр."],
+["Compositing","Компоузит (давхарлалт)","Хэд хэдэн тусдаа дүрсийг нэг бүтэн кадар болгож нийлүүлэх ажил. Fusion хуудасны гол зорилго."],
+["Edge Blend","Ирмэгийн уусалт","Түлхүүрлэсэн объектын ирмэгийг шинэ дэвсгэртэй нь жам ёсоор нийлүүлэх."],
+["Light Wrap","Гэрлийн бүрхүүл","Шинэ дэвсгэрийн гэрлийг урд талын объектын ирмэг рүү бага зэрэг тусгаж, зохиомол харагдацыг арилгах арга."],
+["Picture in Picture","Зурган доторх зураг","Нэг кадрын буланд жижиг хэмжээгээр өөр кадар харуулах. Хоёр давхарга дээр тавьж, дээдийг нь Transform-оор жижигрүүлж хийнэ."]
+]});
+
+RM.dict.add({ id:"nemelt-hurd", label:"Хурд, хэмнэл, монтажийн арга", icon:"◷", page:"edit",
+note:"Монтажийн ярианд байнга сонсогддог хэллэгүүд.", terms:[
+["Slow Motion","Удаашруулалт","Клипийг хэвийн хурднаас удаан тоглуулах. Чанартай гаргахын тулд эх материал өндөр давтамжтай (60, 120 fps) бичигдсэн байх ёстой."],
+["Fast Motion","Хурдасгалт","Клипийг хэвийнээс хурдан тоглуулах."],
+["Time Lapse","Цаг хураангуйлалт","Урт хугацааг маш богиноор харуулах. Үүл, нар жаргах, барилгын явц."],
+["Hyperlapse","Гиперлапс","Хөдөлж байхдаа авсан цаг хураангуйлалт."],
+["Jump Cut","Үсрэлт огтлолт","Нэг кадрын дунд хэсгийг таслан авахад дүр гэнэт үсрэх мэт харагдах монтаж. Влог, ярианы контентод зориудаар хэрэглэдэг."],
+["Match Cut","Тааруулсан огтлолт","Хоёр өөр үзэгдлийг ижил хэлбэр, хөдөлгөөнөөр холбож жам ёсоор шилжүүлэх."],
+["Cutaway","Хажуугийн кадар","Гол үйл явдлаас түр салж өөр зүйл харуулах кадар. Огтлолтыг нуухад ч тустай."],
+["B-Roll","Нэмэлт материал","Гол ярианы дээр давхарлаж харуулдаг туслах кадрууд. Ярианы огтлолтыг нуух, өгүүлэмжийг баяжуулах."],
+["A-Roll","Үндсэн материал","Гол яриа, ярилцлага, үйл явдлын үндсэн бичлэг."],
+["Rough Cut","Бүдүүн огтлолт","Монтажийн эхний хувилбар. Дараалал зөв эсэхийг л шалгана, нарийн зүйл хойно."],
+["Fine Cut","Нарийн огтлолт","Кадар бүрийг агшин нарийвчлалтай тааруулсан хувилбар."],
+["Picture Lock","Дүрс түгжих","Монтаж эцэслэгдэж, цаашид өөрчлөхгүй болсон үе. Үүнээс хойш л өнгө засвар, дуу өнгөлөлт эхэлнэ."],
+["Montage","Монтаж дараалал","Хугацааны урсгал эсвэл үйл явцыг богино кадруудын дараалал, хөгжмөөр харуулах арга."],
+["Pacing","Хэмнэл","Кадруудын урт, солигдох хурдаас үүсэх мэдрэмж. Монтажийн хамгийн чухал, хамгийн мэдрэмждээ найддаг тал."]
+]});
+
+RM.dict.add({ id:"nemelt-ongo", label:"Уран сайхны төрх", icon:"◕", page:"color",
+note:"Өнгө засварт байнга яригддаг харагдацууд.", terms:[
+["Vignette","Вингет (булан харанхуйлалт)","Кадрын захыг бага зэрэг харанхуйлж, үзэгчийн анхаарлыг төв рүү татах. Дугуй хүчит цонх урвуулж, дотор нь Gain бууруулж хийнэ."],
+["Bloom","Гэрлийн цацралт","Хамгийн гэгээн хэсгээс зөөлөн туяа тархах эффект."],
+["Halation","Улаан туяарал","Кино хальсан дээр хурц гэрлийн эргэн тойронд үүсдэг улаавтар туяа. Аналог мэдрэмж өгдөг."],
+["Teal and Orange","Хөх-улбар төрх","Арьсыг дулаан улбар, дэвсгэрийг хүйтэн хөх болгож ялгаруулдаг Холливудын түгээмэл төрх."],
+["Day for Night","Өдрөөс шөнө","Өдөр авсан кадрыг шөнө мэт харагдуулах засвар. Хүйтэн цэнхэр аяс, ялгарал буулгах, гэгээ дарах."],
+["Bleach Bypass","Цайруулсан төрх","Ханалт багатай, ялгарал өндөртэй, хатуу төрх. Дайны кинонд түгээмэл."],
+["Skin Tone","Арьсны өнгө","Хүний арьсны өнгө. Векторскопын ташуу шугам дээр буувал байгалийн харагдана — өнгө засварын хамгийн чухал жишиг."],
+["Look","Төрх","Бүтээлийн ерөнхий дүрслэлийн өнгө аяс, мэдрэмж."],
+["Contrast Ratio","Ялгарлын харьцаа","Хамгийн гэгээн ба хамгийн харанхуй хэсгийн харьцаа."],
+["Flat","Тэгш (бүдэг)","Ялгарал, ханалт багатай, засварт бэлдсэн дүрслэл. Лог материал ийм харагдана."]
+]});
+
+RM.dict.add({ id:"nemelt-huree", label:"Хүрээ, аюулгүй бүс", icon:"▭", page:"deliver",
+note:"Гаралт, хүрээтэй холбоотой ойлголтууд.", terms:[
+["Letterbox","Хэвтээ хар зурвас","Өргөн дэлгэцийн кадрыг нарийн дэлгэцэд багтаахад дээд, доод талд үлдэх хар зурвас."],
+["Pillarbox","Босоо хар зурвас","Нарийн кадрыг өргөн дэлгэцэд багтаахад хоёр хажууд үлдэх хар зурвас."],
+["Safe Area","Аюулгүй бүс","Аль ч дэлгэц дээр таслагдахгүй гэдэг нь баталгаатай төв хэсэг.","","View → Safe Area"],
+["Title Safe","Гарчгийн аюулгүй бүс","Текст байрлуулж болох хамгийн гадна хязгаар. Ойролцоогоор кадрын 90%."],
+["Action Safe","Үйлдлийн аюулгүй бүс","Гол үйл явдал багтах ёстой бүс. Ойролцоогоор кадрын 93%."],
+["Watermark","Ус тэмдэг","Дүрсэн дээр тавьдаг хагас тунгалаг лого, тэмдэг."],
+["Aspect Ratio Mask","Харьцааны маск","Өөр харьцааны хүрээг урьдчилан харуулах туслах маск."],
+["Vertical Video","Босоо видео","9:16 харьцаатай, гар утсанд зориулсан хэлбэр. TikTok, Reels, Shorts."]
+]});
+
+</script>
+<script>
+/* ── js/dict/r18-interface.js ── */
+/* ═══ 18 · Интерфейсийн эд анги, цэсний мөр ═══ */
+
+RM.dict.add({ id:"tses", label:"Цэсний мөр", icon:"▾", page:"erunhii",
+note:"Программын хамгийн дээд талын цэснүүд. Юу хаана байдгийг мэдэх нь цагийг ихээр хэмнэнэ.", terms:[
+["File Menu","Файл цэс","Төсөл үүсгэх, нээх, хадгалах, импорт, экспорт, Quick Export, төслийн архив. Media Management ч энд."],
+["Edit Menu","Засвар цэс","Буцаах, дахин хийх, хуулах, наах, Paste Attributes, Delete, сонголтын командууд."],
+["Trim Menu","Тайралт цэс","Тайралтын горимууд, ripple, roll, slip, slide, огтлолтын цэг сонгох командууд."],
+["Timeline Menu","Timeline цэс","Зам нэмэх, хадмалын зам үүсгэх, timeline-ий тохиргоо, Stack Timelines, хадмал автоматаар үүсгэх."],
+["Clip Menu","Клип цэс","Сонгосон клипэд хамаарах үйлдлүүд — хурд өөрчлөх, нийлмэл клип, идэвхгүй болгох, шинжийг нь харах."],
+["Mark Menu","Тэмдэг цэс","In/Out тавих, арилгах, тэмдэглэгээ нэмэх, тэмдэглэгээ хооронд үсрэх."],
+["View Menu","Харагдац цэс","Дэлгэцийн горим, аюулгүй бүс харуулах, Power Bin харуулах, тор, шугам."],
+["Playback Menu","Тоглуулалт цэс","Тоглуулах, гүйлгэх, Render Cache, Proxy горим, кэш устгах."],
+["Workspace Menu","Ажлын орон зай цэс","Самбар нуух, гаргах, хос дэлгэц, Console, Video Scopes, Data Burn-In."],
+["Help Menu","Тусламж цэс","Гарын авлага, хувилбарын мэдээлэл (About), шинэчлэл шалгах."],
+["Menu Bar","Цэсний мөр","Программын хамгийн дээд мөр. Хуудас солиход зарим цэс өөрчлөгдөнө — Fusion, Color, Fairlight цэс тухайн хуудсанд л гарна."],
+["Interface Toolbar","Интерфейсийн хэрэгслийн мөр","Цэсний мөрийн доорх товчны эгнээ. Самбаруудыг нээж хаана — Media Pool, Effects, Inspector гэх мэт. Хуудас бүрд өөр товчтой."],
+["Panel Toggle","Самбар нээх / хаах","Хэрэгслийн мөрийн товч. Дарахад тухайн самбар гарч ирнэ, дахин дарахад нуугдана. Дэлгэц бага үед хэрэгцээгүйг нь хааж зай гаргана."]
+]});
+
+RM.dict.add({ id:"interface", label:"Дэлгэцийн эд анги", icon:"▣", page:"erunhii",
+note:"Интерфейсийн нэр бүхий хэсгүүд — хаана нь юу байдаг вэ.", terms:[
+["Page Bar","Хуудасны мөр","Программын хамгийн доод мөр дэх хуудсын товчнууд. Энд дарж ажлын үе шат хооронд шилжинэ."],
+["Photo Page","Photo хуудас","Resolve 21-д шинээр нэмэгдсэн хуудас. Гэрэл зургийг оруулж, эмхэлж, засварлаж, экспортлоно. Color хуудасны нодны хөдөлгүүрийг ашигладаг тул видеоны өнгө засварын бүх хэрэглүүр зурган дээр ажиллана."],
+["Photo Album","Зургийн цомог","Photo хуудасны доод талд нээгддэг зургийн цуглуулга. Үнэлгээ, дуртай тэмдэг, шошгоор эмхэлнэ."],
+["Lightbox","Гэрлэн самбар","Бүх клип эсвэл зургийг нэг дэлгэцэнд тор хэлбэрээр харуулах горим. Олон материалыг нэг дор харьцуулахад."],
+["Clips Panel","Клипийн самбар","Color хуудасны дээд талын клипүүдийн жижиг зурган эгнээ. Клип хооронд шилжих, засвар орсон эсэхийг харах."],
+["Thumbnail Timeline","Хураангуй timeline","Клип бүрийг нэг кадраар харуулсан эгнээ. Color хуудсанд клип хооронд хурдан шилжихэд."],
+["Mini Timeline","Бяцхан timeline","Color хуудасны клипийн доторх байрлалыг харуулах нарийн зурвас."],
+["LUT Browser","LUT сан","Суулгасан бүх өнгөний хүснэгтийг харах, урьдчилан үзэх самбар."],
+["Timeline Ruler","Timeline шугам","Timeline-ий дээд талын цагийн хэмжүүр. Дарахад заагч тэр байрлал руу үсэрнэ."],
+["Transport Controls","Тоглуулалтын товчнууд","Дэлгэцийн доорх тоглуулах, зогсоох, ухраах, урагшлуулах товчнууд."],
+["Jog Bar","Гүйлгэх зурвас","Дэлгэцийн доорх зурвас. Чирэхэд клипийг гараар гүйлгэнэ."],
+["Zoom Slider","Томруулах гүйлгэгч","Timeline-ий томруулалтыг өөрчлөх гүйлгэгч."],
+["Toolbar (Timeline)","Timeline хэрэгслийн мөр","Timeline-ий яг дээр байрлах хэрэгслийн эгнээ — сонголт, тайралт, хутга, наалдац, туг, тэмдэглэгээ."],
+["Viewer Mode","Дэлгэцийн горим","Дэлгэцийг юу харуулахыг сонгох — эх клип, timeline, хос дэлгэц, offline, Lightbox."],
+["Splitter","Хуваагч","Самбаруудын хоорондох шугам. Чирэхэд самбарын хэмжээ өөрчлөгдөнө."],
+["Folder Track","Хавтас зам","Fairlight дээр олон замыг нэг хавтсанд хийж хураах боломж. Resolve 21-д нэмэгдсэн, том холилтыг эмхлэхэд."],
+["Source Track Selector","Эх замын сонгогч","Эх клипийн аль замыг timeline-ий аль зам руу оруулахыг заах хэсэг. Resolve 20.2-оос шинэчлэгдсэн."],
+["Inspector Presets","Шинжүүрийн бэлдэц","Inspector доторх тохиргоог нэрлэж хадгалаад өөр клипэд хурдан тавих боломж. Resolve 21.1-д нэмэгдсэн."]
+]});
+
+</script>
+<script>
+/* ── js/20-guide.js ── */
+/* ═════════════════════════════════════════════════════════════
+   20 · Ажлын урсгалын хөтөч — алхам алхмаар заавар
+   ═════════════════════════════════════════════════════════════ */
+(function (RM) {
+  "use strict";
+
+  RM.guides = [
+  {
+    id: "ehleh",
+    icon: "①",
+    title: "Анхны төсөл — эхнээс дуустал",
+    lead: "Resolve-ийг анх нээснээс эцсийн файл гартал явах бүтэн зам. Дараалал нь санамсаргүй биш — хуудас бүр өмнөхөө үндэслэдэг.",
+    steps: [
+      { t: "Төслөө зөв эхлүүл",
+        b: "Project Manager дотор New Project. Дараа нь <b>Shift+9</b> дарж Project Settings нээгээд нягтрал (ихэвчлэн 1920×1080), кадрын давтамж (камерынхаа давтамжтай ижил) сонго.",
+        tip: "Кадрын давтамжийг timeline үүссэний дараа өөрчилж болдоггүй. Энэ бол буцаагдашгүй ганц шийдвэр." },
+      { t: "Материалаа оруул",
+        b: "Media хуудас (<b>Shift+2</b>). Зүүн дээд Media Storage-оос хавтсаа олж, файлуудаа доод талын Media Pool руу чирнэ. Файл хуулагдахгүй — зөвхөн холбоос үүснэ.",
+        tip: "Гадаад дискнээс шууд ажиллаж болно, гэхдээ дискээ салгавал бүх клип улаан болно." },
+      { t: "Сан үүсгэж эмхэл",
+        b: "Media Pool дотор баруун товч → New Bin. Видео, дуу, хөгжим, зураг гэж салга. Гурван клиптэй бол хэрэггүй, гурван зуутай бол амь аварна." },
+      { t: "Timeline үүсгэж монтаж хий",
+        b: "Edit хуудас (<b>Shift+4</b>), <b>Ctrl+N</b> дарж timeline үүсгэ. Клипээ Source Viewer-т нээж <b>I</b> ба <b>O</b> дарж хэрэгтэй хэсгээ тэмдэглээд <b>F10</b> (Overwrite) дарж timeline руу тавь.",
+        tip: "Хугацаа багатай, энгийн ажил бол Cut хуудас (<b>Shift+3</b>) илүү хурдан." },
+      { t: "Огтлолтоо цэвэрлэ",
+        b: "<b>B</b> дарж хутгаар огтол, <b>A</b> дарж сум руу буц. Хэрэггүй клипийг <b>Shift+Backspace</b>-ээр долгиолон устгавал зай үлдэхгүй." },
+      { t: "Дуугаа тэнцвэржүүл",
+        b: "Fairlight хуудас (<b>Shift+7</b>). Яриаг −12 dB орчимд, хөгжмийг ярианаас 15–20 dB доор байлга. Loudness хэмжүүрээр шалга." },
+      { t: "Өнгөө зас",
+        b: "Color хуудас (<b>Shift+6</b>). Эхлээд бүх клипийг ижил түвшинд аваачих (тэнцвэржүүлэлт), дараа нь уран сайхны төрх өг." },
+      { t: "Рендерлэ",
+        b: "Deliver хуудас (<b>Shift+8</b>). Дээд талын YouTube бэлэн тохиргоог сонго, нэр, хавтсаа зааж Add to Render Queue → Render All." }
+    ]
+  },
+  {
+    id: "ongo",
+    icon: "②",
+    title: "Өнгө засварын зөв дараалал",
+    lead: "Өнгө засвар бол дур зоргоор биш, дараалалтай ажил. Дараалал буруу бол хожим бүх зүйл нурна.",
+    steps: [
+      { t: "Эхлээд өнгөний удирдлагыг тохируул",
+        b: "Project Settings → Color Management. Эхлэгчид: <b>DaVinci YRGB Color Managed</b>, Output Color Space нь <b>Rec.709 Gamma 2.4</b>. Ингэвэл лог материал өөрөө зөв харагдана." },
+      { t: "1-р нод — тэнцвэржүүлэлт",
+        b: "Долгион (Waveform) харж хар түвшинг 0-д, цагаан түвшинг 100-д хүргэ. Дараа нь Parade харж улаан, ногоон, цэнхэрийн хар үзүүрийг тэгшил. Энэ бол өнгөний хазайлтыг арилгах алхам.",
+        tip: "Нүдээрээ биш скопоор шийд. Нүд 20 минутын дараа хуурч эхэлдэг." },
+      { t: "2-р нод — ялгарал",
+        b: "<b>Alt+S</b> дарж шинэ нод нэм. Contrast болон Pivot-оор дүрсэнд гүн өг. Захын мэдээлэл тасрахаас болгоомжил." },
+      { t: "3-р нод — хоёрдогч засвар",
+        b: "Дахин <b>Alt+S</b>. Qualifier-ээр арьс сонгож зөөлрүүл, эсвэл Power Window-оор тэнгэрийг тусгаарлаж цэнхэрийг нь нэм. Хөдөлж байвал Tracker-аар дагуул." },
+      { t: "4-р нод — уран сайхны төрх",
+        b: "Log дугуй эсвэл Color Warper-оор уур амьсгал өг. Хүсвэл энд Creative LUT тавьж болно — гэхдээ энэ бол эхлэл, эцсийн шийдэл биш." },
+      { t: "Бусад клипт тарааж, тааруул",
+        b: "Сайн болсон клип дээр <b>Alt+G</b> дарж зураг барь. Дараа нь бусад клип дээр очиж тэр зурган дээр хоёр товшилт хийвэл засвар хуулагдана. Ялгаатай кадруудыг Shot Match-аар ойртуул." },
+      { t: "Шалга",
+        b: "<b>Shift+D</b> дарж бүх засварыг унтраагаад асаа. Хэтрүүлсэн эсэхээ шууд мэдэрнэ." }
+    ]
+  },
+  {
+    id: "nogoon",
+    icon: "③",
+    title: "Ногоон дэлгэц арилгах",
+    lead: "Fusion хуудсанд хийвэл чанар хамгийн сайн. Edit хуудасны 3D Keyer-ээс хамаагүй илүү.",
+    steps: [
+      { t: "Fusion руу ор",
+        b: "Ногоон дэлгэцтэй клипээ сонгоод <b>Shift+5</b>. MediaIn1 болон MediaOut1 гэсэн хоёр нод харагдана." },
+      { t: "Delta Keyer нэм",
+        b: "MediaIn1 нодыг сонгоод <b>Shift+Space</b> дарж хайлт нээ, \"Delta Keyer\" бичээд Enter. Нод автоматаар холбогдоно." },
+      { t: "Ногоон өнгийг ав",
+        b: "Delta Keyer сонгоод дэлгэц дээрх ногоон хэсэг дээр чирж өнгө ав. Хамгийн жигд ногоон хэсгээс сонгоно уу." },
+      { t: "Маскаа шалга",
+        b: "Inspector → Matte таб дотроос Matte-ийг харах горимд шилж. Хүн бүрэн цагаан, дэвсгэр бүрэн хар байх ёстой. Саарал хэсэг үлдвэл Matte Contrast-аар цэвэрлэ.",
+        tip: "Үсний ирмэг саарал байх нь хэвийн — тэнд бүрэн цагаан хийвэл үс нь тасарна." },
+      { t: "Ногоон тусгалыг арилга",
+        b: "Spill Suppression-ийг нэм. Арьс, цагаан хувцас руу тусаж туссан ногоон аяс арилна." },
+      { t: "Хог маск тавь",
+        b: "Кадрын захад ногоон дэлгэцээс гадуур зүйл (гэрлийн тавиур, хана) харагдвал Polygon маск зурж таслан хая." },
+      { t: "Шинэ дэвсгэр нийлүүл",
+        b: "Дэвсгэр зургаа MediaIn2 болгож оруулаад Merge нод нэм. Дэвсгэр → шар оролт (Background), түлхүүрлэсэн хүн → ногоон оролт (Foreground). Merge-ийн гаралтыг MediaOut1 руу холбо." }
+    ]
+  },
+  {
+    id: "hadmal",
+    icon: "④",
+    title: "Монгол хадмал үүсгэх",
+    lead: "Монгол кирилл үсэг Resolve дээр бүрэн ажиллана. Гол нь фонтоо зөв сонгох.",
+    steps: [
+      { t: "Хадмалын зам нэм",
+        b: "Edit хуудсанд Timeline цэс → Add Subtitle Track. Timeline-ий дээд талд шинэ зам үүснэ." },
+      { t: "Хадмал бичих",
+        b: "Хадмалын зам дээр заагчаа тавиад хоёр товшилт хийж текстээ бич. Урт, байрлалыг клип шиг чирж тохируулна." },
+      { t: "Фонтоо зөв сонго",
+        b: "Inspector → Font дотроос кирилл дэмждэг фонт сонго. <b>Arial</b>, <b>Noto Sans</b>, <b>Segoe UI</b> найдвартай. Гоёмсог латин фонтууд монгол үсэггүй байж болно.",
+        tip: "Фонт сонгосны дараа \"өө\", \"үү\", \"ё\" зэрэг үсгээ шалгаарай — эдгээр хамгийн түрүүнд эвдэрдэг." },
+      { t: "Уншигдахаар болго",
+        b: "Хэмжээ 40–60, цагаан үсэг, хар контур (Stroke) эсвэл хагас тунгалаг хар дэвсгэр. Аль ч дэвсгэр дээр уншигдана." },
+      { t: "Автомат хадмал (зөвхөн Studio)",
+        b: "Timeline цэс → Create Subtitles from Audio. Одоогоор англи зэрэг цөөн хэлийг дэмждэг тул монгол ярианд гараар бичих нь найдвартай." },
+      { t: "Экспортло",
+        b: "Deliver хуудсанд Subtitle Settings дотор \"Export Subtitle\" тэмдэглэ. <b>Burn into video</b> сонговол дүрсэнд шингэнэ, <b>As a separate file</b> сонговол SRT файл болно.",
+        tip: "YouTube-д тавих бол SRT нь дээр — үзэгч асааж унтрааж чадна." }
+    ]
+  },
+  {
+    id: "hurdan",
+    icon: "⑤",
+    title: "Компьютер удаан бол",
+    lead: "Resolve хүнд программ. Гэхдээ дунд зэргийн машин дээр ч жигд ажиллуулж болно.",
+    steps: [
+      { t: "Эхлээд тоглуулалтын нягтралыг бууруул",
+        b: "Дэлгэцийн доод талд Timeline Proxy Mode → <b>Half Resolution</b> эсвэл <b>Quarter</b>. Зөвхөн урьдчилан харахад нөлөөлнө — рендерт бүтэн чанараар гарна.",
+        tip: "Хамгийн хурдан, хамгийн хялбар алхам. Эндээс эхэл." },
+      { t: "Хөнгөвчилсөн материал үүсг",
+        b: "Media Pool дотор бүх клипээ сонгоод баруун товч → Generate Optimized Media. Хэсэг хугацаа авна, гэхдээ дараа нь бүх зүйл жигд болно." },
+      { t: "Ухаалаг кэш асаа",
+        b: "Playback цэс → Render Cache → <b>Smart</b>. Resolve хүнд хэсгүүдийг өөрөө таньж урьдчилан тооцоолно." },
+      { t: "Кэшээ хурдан диск дээр байлга",
+        b: "Preferences → Media Storage дотор хамгийн эхний зам нь хурдан SSD байх ёстой. Гадаад удаан диск дээр байвал бүх зүйл удаашрана." },
+      { t: "Fusion-д Region of Interest ашигла",
+        b: "Хүнд компоузит дээр зөвхөн ажиллаж буй хэсгээ тэмдэглэ. Үлдсэнийг тооцоолохгүй." },
+      { t: "Кэшээ цэвэрлэ",
+        b: "Кэш хэдэн зуун ГБ хүрч дискийг дүүргэдэг. Playback → Delete Render Cache → All." }
+    ]
+  },
+  {
+    id: "studio",
+    icon: "⑥",
+    title: "Studio эсэхээ шалгаж, скриптийг асаах",
+    lead: "Гаднаас (Python, MCP, автоматжуулалт) Resolve-ийг удирдах эрх зөвхөн Studio хувилбарт нээлттэй.",
+    steps: [
+      { t: "Хувилбараа шалга",
+        b: "Resolve нээгээд дээд цэсний <b>DaVinci Resolve → About DaVinci Resolve</b>. \"DaVinci Resolve Studio\" гэж бичсэн байвал Studio. Зөвхөн \"DaVinci Resolve\" бол үнэгүй хувилбар." },
+      { t: "Python суулга (Windows)",
+        b: "python.org-оос Python 3.10 буюу түүнээс дээш татаж суулга. <b>Add Python to PATH</b> болон <b>Install for all users</b> хоёуланг нь заавал тэмдэглэ.",
+        tip: "Resolve Python-г системийн бүртгэлээс хайдаг. Зөвхөн нэг хэрэглэгчийн доор суулгавал олохгүй." },
+      { t: "Скриптийг зөвшөөр",
+        b: "DaVinci Resolve → Preferences → General → <b>External scripting using</b> тохиргоог <b>Local</b> болго. Дараа нь программаа дахин нээ." },
+      { t: "Ажиллаж байгааг шалга",
+        b: "Workspace → Console нээгээд Py3 таб сонго. <code>print(resolve.GetProjectManager().GetCurrentProject().GetName())</code> бичээд Enter дар. Төслийн нэр хэвлэгдвэл бүх зүйл бэлэн." },
+      { t: "Гадны программ холбогдоход",
+        b: "Resolve нээлттэй, төсөл нээгдсэн байх ёстой. Хаалттай Resolve руу гаднаас холбогдох боломжгүй." },
+      { t: "Үнэгүй хувилбар дээр",
+        b: "Гаднаас холбогдох эрх хаалттай. Гэхдээ <b>Workspace → Scripts</b> цэс нээлттэй хэвээр — тэндээс дотроос нь скрипт ажиллуулж болно.",
+        tip: "Дотроос ажиллуулах нь автоматжуулалтын ихэнх ажлыг гүйцэтгэнэ. Зөвхөн гадны программтай шууд яриа л хаалттай." }
+    ]
+  }
+  ];
+
+})(window.RM);
+
+</script>
+<script>
+/* ── js/30-ui.js ── */
+/* ═════════════════════════════════════════════════════════════
+   30 · Интерфейс — хайлт, жагсаалт, хөтөч
+   ═════════════════════════════════════════════════════════════ */
+(function (RM) {
+  "use strict";
+
+  const UI = (RM.ui = RM.ui || {});
+  const $ = RM.$, el = RM.el;
+
+  UI.state = {
+    q:    "",
+    page: "all",
+    cat:  "all",
+    view: RM.store.get("view", "hailt")
+  };
+
+  /* ══════════ Зүүн талын хөтлөгч ══════════ */
+
+  UI.buildRail = function () {
+    const rail = $("#rail");
+    rail.innerHTML = "";
+
+    const views = [
+      { id: "hailt",  n: "◎", t: "Хайлт",     s: "Нэр томьёо хайх" },
+      { id: "huudas", n: "▦", t: "Хуудсаар",  s: "Ажлын орон зайгаар нь" },
+      { id: "tovch",  n: "⌨", t: "Товчлуур",  s: "Гарын товчлуурууд" },
+      { id: "hutuch", n: "▶", t: "Хөтөч",     s: "Алхам алхмаар заавар" },
+      { id: "tuhai",  n: "ⓘ", t: "Тухай",     s: "Энэ юу вэ" }
+    ];
+
+    views.forEach((v) => {
+      const b = el("button", {
+        class: "step" + (UI.state.view === v.id ? " on" : ""),
+        "data-v": v.id,
+        onclick: () => UI.go(v.id)
+      });
+      b.appendChild(el("span", { class: "n", text: v.n }));
+      const wrap = el("span");
+      wrap.appendChild(el("b", { text: v.t }));
+      wrap.appendChild(el("small", { text: v.s }));
+      b.appendChild(wrap);
+      rail.appendChild(b);
+    });
+
+    const sec = el("div", { class: "railsec" });
+    sec.appendChild(el("div", { class: "railstat", html:
+      "<b>" + RM.dict.size() + "</b> нэр томьёо<br>" +
+      "<b>" + RM.dict.cats.length + "</b> ангилал<br>" +
+      "<b>" + RM.guides.length + "</b> ажлын урсгал" }));
+    rail.appendChild(sec);
+  };
+
+  UI.go = function (view) {
+    UI.state.view = view;
+    RM.store.set("view", view);
+    RM.$$("#rail .step").forEach((b) => b.classList.toggle("on", b.getAttribute("data-v") === view));
+    RM.$$("#main .panel").forEach((p) => p.classList.toggle("on", p.id === "p-" + view));
+    if (view === "hailt")  { const i = $("#q"); if (i) i.focus(); }
+    if (view === "huudas") UI.renderPages();
+    if (view === "tovch")  UI.renderKeys();
+    if (view === "hutuch") UI.renderGuides();
+    window.scrollTo(0, 0);
+    const m = $("#main"); if (m) m.scrollTop = 0;
+  };
+
+  /* ══════════ Шүүлтүүрийн товчнууд ══════════ */
+
+  UI.buildFilters = function () {
+    /* хуудсаар шүүх */
+    const pf = $("#pageFilter");
+    pf.innerHTML = "";
+    pf.appendChild(mkChip("all", "Бүгд", RM.dict.size(), () => setPage("all")));
+    RM.dict.pages.forEach((p) => {
+      const n = RM.dict.pageCount(p.id);
+      if (!n) return;
+      pf.appendChild(mkChip(p.id, p.icon + " " + p.label, n, () => setPage(p.id)));
+    });
+
+    UI.buildCatFilter();
+
+    function setPage(id) {
+      UI.state.page = id;
+      UI.state.cat = "all";
+      RM.$$("#pageFilter .chip").forEach((c) => c.classList.toggle("on", c.getAttribute("data-id") === id));
+      UI.buildCatFilter();
+      UI.renderResults();
+    }
+  };
+
+  UI.buildCatFilter = function () {
+    const cf = $("#catFilter");
+    cf.innerHTML = "";
+    /* Ангиллын шүүлтүүрийг зөвхөн тодорхой хуудас сонгосон үед гаргана —
+       бүх ангиллыг зэрэг харуулбал 26 товч болж нүд зайлуулна. */
+    if (UI.state.page === "all") { cf.classList.remove("on"); return; }
+    const cats = RM.dict.cats.filter((c) => c.page === UI.state.page);
+    if (cats.length < 2) { cf.classList.remove("on"); return; }
+    cf.classList.add("on");
+    cf.appendChild(mkChip("all", "Бүх ангилал", 0, () => setCat("all"), true));
+    cats.forEach((c) => cf.appendChild(mkChip(c.id, c.icon + " " + c.label, c.count, () => setCat(c.id))));
+
+    function setCat(id) {
+      UI.state.cat = id;
+      RM.$$("#catFilter .chip").forEach((x) => x.classList.toggle("on", x.getAttribute("data-id") === id));
+      UI.renderResults();
+    }
+  };
+
+  function mkChip(id, label, count, fn, plain) {
+    const c = el("button", { class: "chip" + (id === "all" ? " on" : ""), "data-id": id, onclick: fn });
+    c.appendChild(document.createTextNode(label));
+    if (count && !plain) c.appendChild(el("i", { text: String(count) }));
+    return c;
+  }
+
+  /* ══════════ Хайлтын үр дүн ══════════ */
+
+  UI.renderResults = function () {
+    const box = $("#results"), meta = $("#resultMeta");
+    const r = RM.dict.search(UI.state.q, { page: UI.state.page, cat: UI.state.cat, limit: 400 });
+
+    meta.textContent = UI.state.q
+      ? r.total + " илэрц" + (r.total > r.items.length ? " (эхний " + r.items.length + ") " : "")
+      : r.total + " нэр томьёо";
+
+    box.innerHTML = "";
+
+    if (!r.items.length) {
+      box.appendChild(el("div", { class: "empty", html:
+        "<b>Олдсонгүй.</b><br>Англи нэрээр нь (жишээ нь <code>ripple</code>), " +
+        "монголоор нь (<code>долгиолон</code>), эсвэл тайлбар доторх үгээр хайж үзнэ үү." }));
+      return;
+    }
+
+    const frag = document.createDocumentFragment();
+    r.items.forEach((row) => frag.appendChild(UI.card(row)));
+    box.appendChild(frag);
+  };
+
+  UI.card = function (row) {
+    const q = UI.state.q;
+    const page = RM.dict.page(row.page);
+    const c = el("article", { class: "term", "data-page": row.page, style: "--hue:" + page.hue });
+
+    const head = el("div", { class: "term-head" });
+    head.appendChild(el("h3", { class: "en", html: RM.mark(row.en, q) }));
+    if (row.key) {
+      const k = el("button", {
+        class: "kbd", title: "Хуулах", onclick: () => RM.copy(row.key)
+      });
+      row.key.split("+").forEach((part, i) => {
+        if (i) k.appendChild(el("span", { class: "plus", text: "+" }));
+        k.appendChild(el("kbd", { text: part }));
+      });
+      head.appendChild(k);
+    }
+    c.appendChild(head);
+
+    c.appendChild(el("p", { class: "mn", html: RM.mark(row.mn, q) }));
+    if (row.desc) c.appendChild(el("p", { class: "desc", html: RM.mark(row.desc, q) }));
+
+    const foot = el("div", { class: "term-foot" });
+    foot.appendChild(el("span", { class: "pg", text: page.icon + " " + page.label }));
+    const cat = RM.dict.cat(row.cat);
+    if (cat) foot.appendChild(el("span", { class: "ct", text: cat.label }));
+    if (row.loc) foot.appendChild(el("span", { class: "loc", html: "📍 " + RM.mark(row.loc, q) }));
+    c.appendChild(foot);
+
+    return c;
+  };
+
+  /* ══════════ Хуудсаар үзэх ══════════ */
+
+  UI.renderPages = function () {
+    const box = $("#pagesBox");
+    if (box.dataset.built) return;
+    box.dataset.built = "1";
+
+    RM.dict.pages.forEach((p) => {
+      const cats = RM.dict.cats.filter((c) => c.page === p.id);
+      if (!cats.length) return;
+
+      const sec = el("section", { class: "pagecard", style: "--hue:" + p.hue });
+      const h = el("div", { class: "pagecard-head" });
+      h.appendChild(el("span", { class: "pgicon", text: p.icon }));
+      const ht = el("div");
+      ht.appendChild(el("h3", { text: p.label }));
+      ht.appendChild(el("small", { text: RM.dict.pageCount(p.id) + " нэр томьёо · " + cats.length + " ангилал" }));
+      h.appendChild(ht);
+      sec.appendChild(h);
+
+      cats.forEach((c) => {
+        const row = el("button", {
+          class: "catrow",
+          onclick: () => {
+            UI.state.page = p.id; UI.state.cat = c.id; UI.state.q = "";
+            $("#q").value = "";
+            UI.buildFilters();
+            RM.$$("#pageFilter .chip").forEach((x) => x.classList.toggle("on", x.getAttribute("data-id") === p.id));
+            UI.buildCatFilter();
+            RM.$$("#catFilter .chip").forEach((x) => x.classList.toggle("on", x.getAttribute("data-id") === c.id));
+            UI.renderResults();
+            UI.go("hailt");
+          }
+        });
+        row.appendChild(el("span", { class: "ci", text: c.icon }));
+        const t = el("span", { class: "ct" });
+        t.appendChild(el("b", { text: c.label }));
+        if (c.note) t.appendChild(el("small", { text: c.note }));
+        row.appendChild(t);
+        row.appendChild(el("span", { class: "cn", text: String(c.count) }));
+        sec.appendChild(row);
+      });
+
+      box.appendChild(sec);
+    });
+  };
+
+  /* ══════════ Товчлуурын хүснэгт ══════════ */
+
+  UI.renderKeys = function () {
+    const box = $("#keysBox");
+    if (box.dataset.built) return;
+    box.dataset.built = "1";
+
+    const withKeys = RM.dict.rows.filter((r) => r.key);
+    const groups = {};
+    withKeys.forEach((r) => { (groups[r.cat] = groups[r.cat] || []).push(r); });
+
+    $("#keyCount").textContent = withKeys.length;
+
+    RM.dict.cats.forEach((c) => {
+      const list = groups[c.id];
+      if (!list) return;
+      const p = RM.dict.page(c.page);
+
+      const sec = el("section", { class: "keygroup", style: "--hue:" + p.hue });
+      sec.appendChild(el("h3", { text: c.icon + "  " + c.label }));
+
+      const tbl = el("div", { class: "keytable" });
+      list.forEach((r) => {
+        const row = el("div", { class: "keyrow" });
+        const k = el("button", { class: "kbd", title: "Хуулах", onclick: () => RM.copy(r.key) });
+        r.key.split("+").forEach((part, i) => {
+          if (i) k.appendChild(el("span", { class: "plus", text: "+" }));
+          k.appendChild(el("kbd", { text: part }));
+        });
+        row.appendChild(k);
+        const txt = el("div", { class: "keytxt" });
+        txt.appendChild(el("b", { text: r.mn }));
+        txt.appendChild(el("small", { text: r.desc }));
+        row.appendChild(txt);
+        tbl.appendChild(row);
+      });
+      sec.appendChild(tbl);
+      box.appendChild(sec);
+    });
+  };
+
+  /* ══════════ Ажлын урсгалын хөтөч ══════════ */
+
+  UI.renderGuides = function () {
+    const box = $("#guidesBox");
+    if (box.dataset.built) return;
+    box.dataset.built = "1";
+
+    RM.guides.forEach((g) => {
+      const sec = el("section", { class: "guide" });
+
+      const head = el("button", {
+        class: "guide-head",
+        onclick: () => sec.classList.toggle("open")
+      });
+      head.appendChild(el("span", { class: "gnum", text: g.icon }));
+      const ht = el("span", { class: "gt" });
+      ht.appendChild(el("b", { text: g.title }));
+      ht.appendChild(el("small", { text: g.lead }));
+      head.appendChild(ht);
+      head.appendChild(el("span", { class: "gcount", text: g.steps.length + " алхам" }));
+      head.appendChild(el("span", { class: "gchev", text: "▾" }));
+      sec.appendChild(head);
+
+      const body = el("ol", { class: "guide-body" });
+      g.steps.forEach((s) => {
+        const li = el("li");
+        li.appendChild(el("b", { text: s.t }));
+        li.appendChild(el("p", { html: s.b }));
+        if (s.tip) li.appendChild(el("p", { class: "tip", html: "<b>Санамж:</b> " + s.tip }));
+        body.appendChild(li);
+      });
+      sec.appendChild(body);
+      box.appendChild(sec);
+    });
+
+    if (box.firstChild) box.firstChild.classList.add("open");
+  };
+
+  /* ══════════ Холболт ══════════ */
+
+  UI.bind = function () {
+    const input = $("#q");
+    const run = RM.debounce(() => {
+      UI.state.q = input.value;
+      $("#qclear").classList.toggle("on", !!input.value);
+      UI.renderResults();
+    }, 110);
+
+    input.addEventListener("input", run);
+
+    $("#qclear").addEventListener("click", () => {
+      input.value = ""; UI.state.q = "";
+      $("#qclear").classList.remove("on");
+      UI.renderResults(); input.focus();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName);
+      if (e.key === "/" && !typing) { e.preventDefault(); UI.go("hailt"); input.focus(); input.select(); }
+      else if (e.key === "Escape" && typing) { input.value = ""; UI.state.q = ""; $("#qclear").classList.remove("on"); UI.renderResults(); }
+    });
+  };
+
+})(window.RM);
+
+</script>
+<script>
+/* ── js/90-main.js ── */
+/* ═══ 90 · Эхлүүлэлт ═══ */
+(function (RM) {
+  "use strict";
+  function boot() {
+    RM.ui.buildRail();
+    RM.ui.buildFilters();
+    RM.ui.bind();
+
+    /* Гаднаас ирсэн хайлт: ?q=... (интерфейсийн загвараас ийм холбоос ирдэг) */
+    const q = new URLSearchParams(location.search).get("q");
+    if (q) {
+      RM.ui.state.view = "hailt";
+      RM.ui.state.q = q;
+      const input = RM.$("#q");
+      if (input) input.value = q;
+      const clear = RM.$("#qclear");
+      if (clear) clear.classList.add("on");
+    }
+
+    RM.ui.renderResults();
+    RM.ui.go(RM.ui.state.view);
+
+    if (RM.dict.dupes.length) {
+      console.warn("Давхардсан нэр томьёо:", RM.dict.dupes);
+    }
+    console.log("DaVinci Resolve — Монгол хөтөч v" + RM.version +
+                " · " + RM.dict.size() + " нэр томьёо, " + RM.dict.cats.length + " ангилал");
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
+})(window.RM);
+
+</script>
+</body>
+</html>

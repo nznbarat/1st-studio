@@ -19,6 +19,7 @@
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%}
+body{min-height:100dvh}  /* эцэг элемент өндөргүй үед хумигдахаас сэргийлнэ */
 body{background:var(--ui-ink);color:var(--ui-text);
   font-family:'Inter',system-ui,sans-serif;font-size:14px;line-height:1.55;
   overflow:hidden;-webkit-font-smoothing:antialiased}

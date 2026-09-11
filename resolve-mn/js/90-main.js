@@ -5,6 +5,18 @@
     RM.ui.buildRail();
     RM.ui.buildFilters();
     RM.ui.bind();
+
+    /* Гаднаас ирсэн хайлт: ?q=... (интерфейсийн загвараас ийм холбоос ирдэг) */
+    const q = new URLSearchParams(location.search).get("q");
+    if (q) {
+      RM.ui.state.view = "hailt";
+      RM.ui.state.q = q;
+      const input = RM.$("#q");
+      if (input) input.value = q;
+      const clear = RM.$("#qclear");
+      if (clear) clear.classList.add("on");
+    }
+
     RM.ui.renderResults();
     RM.ui.go(RM.ui.state.view);
 
