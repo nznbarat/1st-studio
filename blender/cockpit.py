@@ -22,16 +22,16 @@ from mathutils import Vector
 CFG = {
     "seed": 7,
     "clear_scene": True,        # Blender-ийн анхны Cube/Light/Camera-г устгах
-    "haze": 0.0018,            # агаарын манан (0 = унтраах)
+    "haze": 0.0003,            # агаарын манан (0 = унтраах)
     "glass": False,            # цонхонд шил тавих эсэх
     "room": {"w": 10.0, "d": 8.0, "h": 3.15},   # өргөн (X), гүн (Y), өндөр (Z)
     "window": {
-        "tilt_deg": 9.0,        # цонхны хана дээшээ гадагш налах өнцөг
-        "sill": 0.86,           # цонхны доод ирмэг
-        "head": 2.62,           # цонхны дээд ирмэг
+        "tilt_deg": 14.0,       # цонхны хана дээшээ гадагш налах өнцөг
+        "sill": 0.06,           # цонхны доод ирмэг — бараг шалнаас
+        "head": 3.02,           # цонхны дээд ирмэг — таазны дор
         "pillar": 0.34,         # хоёр цонхны дундах баганын хагас өргөн
-        "edge": 0.55,           # хана ба цонхны хоорондох зай
-        "mullions": 2,          # цонх тус бүрийг хэдэн хэсэг болгох
+        "edge": 0.45,           # хана ба цонхны хоорондох зай
+        "mullions": 1,          # 1 = хуваагчгүй цэлгэр цонх
     },
     "console": {
         "y": 1.95, "w": 7.2, "depth": 1.35, "h": 0.80,
@@ -41,6 +41,22 @@ CFG = {
     "seat": {"x": 1.18, "y": -0.55, "scale": 1.28},
     "exposure": -0.45,
     "angle": "wide",
+    "ship": {                   # хөлгийн гадна их бие — 0110 ачааны хөлөг
+        "on": True,
+        "number": "0110",
+        "width": 42.0,          # их биеийн өргөн
+        "depth": 26.0,          # их биеийн босоо зузаан
+        "bay": 0.55,            # гүүрний цонхны булангийн гүн
+        "nose": 62.0,           # хамрын урт
+        "nose_drop": 21.0,      # хамар доошоо унах хэмжээ
+        "segments": 6,          # ачааны сегментийн тоо
+        "seg_len": 23.0,        # нэг сегментийн урт
+        "stern": 40.0,          # хойд блокийн урт
+        "engine_r": 9.0,        # том хөдөлгүүрийн радиус
+        "portholes": 46,        # гэрэлтэй жижиг цонхны тоо
+    },
+    "sun": {"energy": 2.6, "color": (1.0, 0.97, 0.93)},
+    "flythrough": True,         # цонхоор нэвтэрч ордог камерын анимац
     "device": "AUTO",          # AUTO = GPU байвал GPU, үгүй бол CPU. "CPU" / "GPU" гэж тулгаж болно
     "grime": 0.55,              # 0 = цэвэр, 1 = маш бохир
     "warm": (1.0, 0.62, 0.26),  # консолын бүлээн гэрэл
@@ -53,6 +69,9 @@ ANGLES = {
     "seat":   ((-0.30, -2.45, 1.86), (1.15, 2.40, 1.20), 35.0),   # суудлын мөрөн дээгүүр
     "window": ((-2.30, 0.20, 1.30), (2.40, 3.70, 1.80), 28.0),    # цонх өөд доод өнцгөөс
     "corner": ((3.70, -3.30, 2.10), (-1.30, 2.40, 1.05), 20.0),   # баруун булангаас өргөн
+    "bow":    ((21.0, 40.0, 17.0), (0.0, 5.0, 1.4), 50.0),        # хамрын цонх рүү дээрээс
+    "ship":   ((205.0, 165.0, 130.0), (0.0, -70.0, -8.0), 50.0),  # бүтэн хөлөг
+    "stern":  ((-95.0, -235.0, 24.0), (0.0, -150.0, -8.0), 48.0), # хойд талаас, хөдөлгүүрүүд
 }
 
 COL = "COCKPIT"
@@ -331,16 +350,29 @@ def build_floor(M):
 def build_shell(M):
     """Хана, дээвэр, тэдгээрийн хавтангууд."""
     w, d, h = CFG["room"]["w"], CFG["room"]["d"], CFG["room"]["h"]
-    box("Ceiling", (w + 0.4, d + 0.4, 0.25), (0, 0, h + 0.12), mat=M["ceil"])
+    # налуу цонхны хана урагш гарах тул тааз, хажуу ханыг тэр хэмжээгээр уртасгана
+    lean = h * math.sin(math.radians(CFG["window"]["tilt_deg"])) + 0.5
+    dd, cy = d + 0.4 + lean, lean / 2
+    box("Ceiling", (w + 0.4, dd, 0.25), (0, cy, h + 0.12), mat=M["ceil"])
     box("WallBack", (w + 0.4, 0.25, h), (0, -d / 2 - 0.12, h / 2), mat=M["wall"])
     for side in (-1, 1):
-        box("WallSide_%d" % side, (0.25, d + 0.4, h), (side * (w / 2 + 0.12), 0, h / 2), mat=M["wall"])
+        box("WallSide_%d" % side, (0.25, dd, h), (side * (w / 2 + 0.12), cy, h / 2), mat=M["wall"])
         # хананы хэвтээ хавирга
         for z in (0.55, 1.5, 2.35):
             box("Rib", (0.09, d, 0.16), (side * (w / 2 - 0.05), 0, z), mat=M["metal"], bevel=0.01)
         # босоо завсар
         for y in [-3.0, -1.4, 0.4, 2.2]:
             box("Seam", (0.06, 0.05, h - 0.3), (side * (w / 2 - 0.04), y, h / 2), mat=M["dark"])
+
+    # таазны гэрлийн самбарууд — доторхыг гаднаас харагдуулна
+    for i, yy in enumerate((-2.4, -0.3, 1.9)):
+        box("CeilLampRim_%d" % i, (4.6, 0.70, 0.16), (0, yy, h - 0.14), mat=M["metal"], bevel=0.02)
+        box("CeilLamp_%d" % i, (4.2, 0.50, 0.09), (0, yy, h - 0.20), mat=M["warmpanel"])
+    for sx in (-1, 1):
+        box("WallLampRim_%d" % sx, (0.16, 3.2, 0.34), (sx * (w / 2 - 0.20), 0.6, 2.25),
+            mat=M["metal"], bevel=0.02)
+        box("WallLamp_%d" % sx, (0.08, 2.9, 0.22), (sx * (w / 2 - 0.29), 0.6, 2.25),
+            mat=M["warmpanel"])
 
     # дээврийн дам нуруу ба хавтангууд
     for x in [-3.6, -1.2, 1.2, 3.6]:
@@ -414,19 +446,20 @@ def build_window(M):
             box("Glass_%d" % side, (abs(x_out - x_in) - 0.04, 0.02, head - sill - 0.08),
                 ((lo + hi) / 2, 0.04, (sill + head) / 2), mat=M["glass"], parent=root)
 
-    # доод самбарын нарийн ширхэгүүд
-    for k in range(18):
+    # доод самбарын нарийн ширхэгүүд (зай байвал)
+    for k in range(18 if sill > 0.55 else 0):
         x = rng.uniform(-w / 2 + 0.6, w / 2 - 0.6)
         box("SillGreeble", (rng.uniform(0.18, 0.5), 0.06, rng.uniform(0.05, 0.14)),
             (x, -th / 2 - 0.03, rng.uniform(0.2, sill - 0.15)), mat=M["dark"], parent=root)
 
-    # дээд самбар дээрх гэрэлтэй товчнууд (лавлах зураг дээрх баруун дээд хэсэг)
+    # цонхны дээд ирмэгийн гэрэлтэй товчны эгнээ — өрөөний доторх талд
+    zb = head + 0.22 if (CFG["room"]["h"] - head) > 0.34 else head - 0.16
+    yb = -th / 2 - 0.03 if (CFG["room"]["h"] - head) > 0.34 else -th / 2 - 0.12
     for k in range(16):
         x = -w / 2 + 1.0 + k * 0.42
-        box("HeadBtn", (0.16, 0.06, 0.10), (x, -th / 2 - 0.03, head + 0.22),
+        box("HeadBtnRim", (0.24, 0.06, 0.18), (x, yb + 0.02, zb), mat=M["dark"], parent=root)
+        box("HeadBtn", (0.16, 0.06, 0.10), (x, yb - 0.02, zb),
             mat=M["amber"] if k % 3 else M["screen"], parent=root)
-        box("HeadBtnRim", (0.24, 0.05, 0.18), (x, -th / 2 - 0.01, head + 0.22),
-            mat=M["dark"], parent=root)
     return root
 
 
@@ -574,17 +607,98 @@ def build_lights(M):
     # консолын доорх бүлээн гэрэл — шалыг гэрэлтүүлнэ
     for x in (-3.1, -1.05, 1.05, 3.1):
         area("WarmSpill_%0.0f" % x, (x, front - 0.16, 0.40),
-             (math.radians(-64), 0, 0), 1.5, CFG["warm"], 38, size_y=0.45)
+             (math.radians(-64), 0, 0), 1.5, CFG["warm"], 52, size_y=0.45)
+    for yy in (-2.4, -0.3, 1.9):               # таазны гэрлийн бодит тусгал
+        area("CeilFill_%0.0f" % (yy * 10), (0, yy, room["h"] - 0.30),
+             (math.radians(180), 0, 0), 4.2, (1.0, 0.78, 0.55), 34, size_y=0.5)
     # дэлгэцүүдийн ойлт
     area("DeskFill", (0, c["y"] - 0.1, 1.45), (math.radians(180), 0, 0), 2.4, (1.0, 0.78, 0.52), 8, size_y=1.0)
     # цонхны цаадах хүйтэн гэрэл
-    area("SpaceKey", (0, room["d"] / 2 + 2.2, 1.9), (math.radians(-90), 0, 0),
-         9.0, CFG["cool"], 520, size_y=3.4)
-    area("SpaceFill", (-2.0, room["d"] / 2 + 1.2, 2.6), (math.radians(-70), 0, math.radians(12)),
-         4.0, (0.45, 0.62, 1.0), 150, size_y=2.0)
+    ship_on = CFG["ship"]["on"]
+    if not ship_on:                            # хөлөггүй үед цонхны цаанаас хүйтэн гэрэл
+        area("SpaceKey", (0, room["d"] / 2 + 2.2, 1.9), (math.radians(-90), 0, 0),
+             9.0, CFG["cool"], 520, size_y=3.4)
+    if not ship_on:
+        area("SpaceFill", (-2.0, room["d"] / 2 + 1.2, 2.6), (math.radians(-70), 0, math.radians(12)),
+             4.0, (0.45, 0.62, 1.0), 150, size_y=2.0)
     # баруун хананы сул бүлээн
     area("WallWarm", (room["w"] / 2 - 0.5, -0.6, 2.3), (0, math.radians(75), 0), 1.6, CFG["warm"], 26)
     return out
+
+
+def world_starfield(world):
+    """Дэлхийг одон орон болгоно — дотроос цонхоор ч, гаднаас ч харагдана."""
+    if getattr(world, "node_tree", None) is None:
+        world.use_nodes = True
+    nt = world.node_tree
+    nt.nodes.clear()
+    out = nt.nodes.new("ShaderNodeOutputWorld")
+    out.location = (400, 0)
+    bg = nt.nodes.new("ShaderNodeBackground")
+    bg.location = (200, 0)
+    coord = nt.nodes.new("ShaderNodeTexCoord")
+    coord.location = (-900, 0)
+    vor = nt.nodes.new("ShaderNodeTexVoronoi")
+    vor.location = (-700, 150)
+    vor.inputs["Scale"].default_value = 130.0
+    star = nt.nodes.new("ShaderNodeValToRGB")
+    star.location = (-500, 150)
+    star.color_ramp.interpolation = "EASE"
+    star.color_ramp.elements[0].position = 0.0
+    star.color_ramp.elements[0].color = (1, 1, 1, 1)
+    star.color_ramp.elements[1].position = 0.040
+    star.color_ramp.elements[1].color = (0, 0, 0, 1)
+    boost = nt.nodes.new("ShaderNodeMixRGB")
+    boost.location = (-320, 150)
+    boost.blend_type = "MULTIPLY"
+    boost.inputs["Fac"].default_value = 1.0
+    boost.inputs["Color2"].default_value = (14.0, 14.0, 15.0, 1)
+    neb = nt.nodes.new("ShaderNodeTexNoise")
+    neb.location = (-700, -150)
+    neb.inputs["Scale"].default_value = 3.0
+    neb.inputs["Detail"].default_value = 8.0
+    nramp = nt.nodes.new("ShaderNodeValToRGB")
+    nramp.location = (-500, -150)
+    nramp.color_ramp.elements[0].position = 0.36
+    nramp.color_ramp.elements[0].color = (0.0004, 0.001, 0.004, 1)
+    nramp.color_ramp.elements[1].position = 0.80
+    nramp.color_ramp.elements[1].color = (0.009, 0.022, 0.055, 1)
+    add = nt.nodes.new("ShaderNodeMixRGB")
+    add.location = (-160, 0)
+    add.blend_type = "ADD"
+    add.inputs["Fac"].default_value = 1.0
+    nt.links.new(coord.outputs["Generated"], vor.inputs["Vector"])
+    nt.links.new(coord.outputs["Generated"], neb.inputs["Vector"])
+    nt.links.new(vor.outputs["Distance"], star.inputs["Fac"])
+    nt.links.new(star.outputs["Color"], boost.inputs["Color1"])
+    nt.links.new(neb.outputs["Fac"], nramp.inputs["Fac"])
+    nt.links.new(nramp.outputs["Color"], add.inputs["Color1"])
+    nt.links.new(boost.outputs["Color"], add.inputs["Color2"])
+    nt.links.new(add.outputs["Color"], bg.inputs["Color"])
+    bg.inputs["Strength"].default_value = 1.0
+    nt.links.new(bg.outputs["Background"], out.inputs["Surface"])
+
+
+def build_haze(M):
+    """Өрөөний доторх агаарын манан — эзэлхүүнийг зөвхөн кабинаар хязгаарлана."""
+    if not CFG["haze"]:
+        return None
+    room = CFG["room"]
+    mat = bpy.data.materials.new("cab_haze")
+    if getattr(mat, "node_tree", None) is None:
+        mat.use_nodes = True
+    nt = mat.node_tree
+    nt.nodes.clear()
+    out = nt.nodes.new("ShaderNodeOutputMaterial")
+    vol = nt.nodes.new("ShaderNodeVolumeScatter")
+    vol.inputs["Density"].default_value = CFG["haze"]
+    vol.inputs["Anisotropy"].default_value = 0.5
+    vol.inputs["Color"].default_value = (0.66, 0.78, 1.0, 1)
+    nt.links.new(vol.outputs["Volume"], out.inputs["Volume"])
+    ob = box("HAZE_VOLUME", (room["w"] - 0.4, room["d"] - 0.4, room["h"] - 0.15),
+             (0, 0, room["h"] / 2), mat=mat)
+    ob.visible_shadow = False
+    return ob
 
 
 def build_space(M):
@@ -593,6 +707,256 @@ def build_space(M):
     plane = box("SPACE_BACKDROP", (46, 0.1, 26), (0, room["d"] / 2 + 16, 6.0), mat=M["space"])
     plane.visible_shadow = False
     return plane
+
+
+# ══════════════════════════════════════════════════════════════════════
+#  Хөлгийн гадна их бие — 6602 ачааны хөлөг
+# ══════════════════════════════════════════════════════════════════════
+def plate_field(name, a0, a1, b0, b1, fixed, plane, step, mat, parent, thick=0.5, gap=0.3):
+    """Талбайг метал хавтангаар бүрхэнэ.
+    plane: 'front' (XZ, y=fixed) | 'top' (XY, z=fixed) | 'side' (YZ, x=fixed)"""
+    na = max(1, round(abs(a1 - a0) / step))
+    nb = max(1, round(abs(b1 - b0) / step))
+    da, db = (a1 - a0) / na, (b1 - b0) / nb
+    for i in range(na):
+        for j in range(nb):
+            a = a0 + da * (i + 0.5)
+            b = b0 + db * (j + 0.5)
+            sa, sb = abs(da) - gap, abs(db) - gap
+            if plane == "front":
+                size, loc = (sa, thick, sb), (a, fixed, b)
+            elif plane == "top":
+                size, loc = (sa, sb, thick), (a, b, fixed)
+            else:
+                size, loc = (thick, sa, sb), (fixed, a, b)
+            box("%s_%d_%d" % (name, i, j), size, loc, mat=mat, parent=parent, bevel=0.06)
+
+
+def loft(name, sections, mat, parent=None, col=None):
+    """Хөндлөн огтлолуудыг холбож гөлгөр их бие үүсгэнэ.
+    sections = [(y, [(x, z), ...]), ...] — бүх цагираг ижил цэгийн тоотой."""
+    n = len(sections[0][1])
+    verts = [(x, y, z) for y, ring in sections for (x, z) in ring]
+    faces = []
+    for si in range(len(sections) - 1):
+        a, b = si * n, (si + 1) * n
+        for i in range(n):
+            j = (i + 1) % n
+            faces.append((a + i, a + j, b + j, b + i))
+    faces.append(tuple(range(n - 1, -1, -1)))
+    faces.append(tuple(range((len(sections) - 1) * n, len(sections) * n)))
+    mesh = bpy.data.meshes.new(name)
+    mesh.from_pydata(verts, [], faces)
+    mesh.validate()
+    mesh.update()
+    ob = bpy.data.objects.new(name, mesh)
+    if mat:
+        ob.data.materials.append(mat)
+    _link(ob, col or bpy.data.collections[COL])
+    if parent:
+        ob.parent = parent
+    return ob
+
+
+def hull_ring(w, h, z0, top=0.70, bot=0.55, cz=0.28):
+    """Хавтгайдуу найман өнцөгт хөндлөн огтлол."""
+    ht, hb = z0 + h / 2, z0 - h / 2
+    return [(-w * top / 2, ht), (w * top / 2, ht),
+            (w / 2, ht - h * cz), (w / 2, hb + h * cz),
+            (w * bot / 2, hb), (-w * bot / 2, hb),
+            (-w / 2, hb + h * cz), (-w / 2, ht - h * cz)]
+
+
+def hull_marking(name, text, loc, size, mat, parent, rot=(math.pi / 2, 0, math.pi)):
+    """Их бие дээрх дугаар/бичиг."""
+    cu = bpy.data.curves.new(name, "FONT")
+    cu.body = text
+    cu.size = size
+    cu.align_x = "CENTER"
+    cu.align_y = "CENTER"
+    cu.extrude = 0.02
+    ob = bpy.data.objects.new(name, cu)
+    ob.location, ob.rotation_euler = loc, rot
+    ob.data.materials.append(mat)
+    _link(ob, bpy.data.collections[COL])
+    ob.parent = parent
+    return ob
+
+
+def build_ship(M):
+    """Бүтэн хөлөг: хамар, гүүрний блок, их бие, ачааны сегмент, хөдөлгүүр."""
+    cfg = CFG["ship"]
+    if not cfg["on"]:
+        return None
+    root = empty("SHIP", (0, 0, 0))
+    room = CFG["room"]
+    wall_y = room["d"] / 2
+    W, D = cfg["width"], cfg["depth"]
+    zc = -(D / 2) - 0.5                          # их биеийн төв: дээд тавцан z = -0.5
+    deck = -0.5
+    R = random.Random(CFG["seed"] + 11)
+    nose_y = wall_y + 1.35 + cfg["nose"]
+    body_end = -18.0 - cfg["segments"] * cfg["seg_len"]
+    stern_y = body_end - cfg["stern"]
+    drop = cfg["nose_drop"]
+
+    # ── 1. Их бие — хамраас хойш нэг гөлгөр лофт ──
+    # (y, өргөн, өндөр, ДЭЭД ирмэгийн z) — тавцан гүүрнээс хойш тэгш
+    secs = [
+        (nose_y,         3.0,      3.0,      deck - drop * 0.95),
+        (nose_y - 14,    12.0,     7.0,      deck - drop * 0.70),
+        (nose_y - 28,    22.0,     12.0,     deck - drop * 0.44),
+        (nose_y - 40,    30.0,     17.0,     deck - drop * 0.20),
+        (wall_y + 14,    W * 0.72, D * 0.80, deck),
+        (wall_y + 1.0,   W * 0.90, D * 0.88, deck),
+        (-18.0,          W,        D,        deck),
+        (body_end + 20,  W,        D,        deck),
+        (body_end,       W * 0.99, D * 0.99, deck),
+        (stern_y + 7,    W * 1.06, D * 1.08, deck + 0.6),
+        (stern_y,        W * 0.94, D * 0.98, deck + 0.3),
+    ]
+    loft("HullBody", [(y, hull_ring(w, h, top - h / 2)) for (y, w, h, top) in secs],
+         M["hull"], parent=root)
+
+    # ── 2. Гүүрний блок ба цонхны булан ──
+    bx = room["w"] / 2 + 1.6
+    bz0, bz1 = deck - 0.8, room["h"] + 1.4
+    by0, by1 = -room["d"] / 2 - 2.0, wall_y + 1.35
+    # хөндий бүрхүүл — урд тал нь нээлттэй, тэндээс цонх харагдана
+    rw, rd, rh = room["w"], room["d"], room["h"]
+    box("BridgeTop", (bx * 2, by1 - by0, bz1 - rh),
+        (0, (by0 + by1) / 2, (rh + bz1) / 2), mat=M["hull"], parent=root, bevel=0.3)
+    box("BridgeFloor", (bx * 2, by1 - by0, -0.15 - bz0),
+        (0, (by0 + by1) / 2, (bz0 - 0.15) / 2), mat=M["hull"], parent=root, bevel=0.3)
+    for sx in (-1, 1):
+        box("BridgeSide_%d" % sx, (bx - rw / 2, by1 - by0, bz1 - bz0),
+            (sx * (rw / 2 + (bx - rw / 2) / 2), (by0 + by1) / 2, (bz0 + bz1) / 2),
+            mat=M["hull"], parent=root, bevel=0.3)
+    box("BridgeBack", (bx * 2, 1.2, bz1 - bz0),
+        (0, by0 + 0.6, (bz0 + bz1) / 2), mat=M["hull"], parent=root, bevel=0.3)
+    bay = cfg["bay"]
+    ox = room["w"] / 2 - CFG["window"]["edge"] + 0.5
+    oz0, oz1 = -0.35, room["h"] - 0.05
+    for sx in (-1, 1):
+        box("BaySide_%d" % sx, (0.9, bay + 1.0, oz1 - oz0 + 1.5),
+            (sx * (ox + 0.45), wall_y + bay / 2 + 0.3, (oz0 + oz1) / 2),
+            mat=M["hull"], parent=root, bevel=0.1)
+    box("BayTop", (ox * 2 + 1.9, bay + 1.0, 1.1),
+        (0, wall_y + bay / 2 + 0.3, oz1 + 0.55), mat=M["hull"], parent=root, bevel=0.1)
+    box("BayBottom", (ox * 2 + 1.9, bay + 1.0, 0.9),
+        (0, wall_y + bay / 2 + 0.3, oz0 - 0.45), mat=M["hull"], parent=root, bevel=0.1)
+    for k in range(9):                           # гүүрний блокийн нарийвчлал
+        box("BridgeGreeble", (R.uniform(1.0, 3.4), R.uniform(1.0, 3.0), R.uniform(0.3, 1.1)),
+            (R.uniform(-bx * 0.8, bx * 0.8), R.uniform(by0 + 1, by1 - 3), bz1 + 0.3),
+            mat=M["hull"], parent=root, bevel=0.08)
+
+    # ── 3. Дээд тавцангийн хавтан ба нурууны блокууд ──
+    plate_field("BowDeck", -W * 0.24, W * 0.24, wall_y + 2.6, wall_y + 15.5, deck - 0.16, "top",
+                6.0, M["hull"], root, thick=0.45)
+    plate_field("AftDeck", -W * 0.30, W * 0.30, body_end + 2, -18.0, deck - 0.16, "top",
+                7.0, M["hull"], root, thick=0.45)
+    for sx in (-1, 1):                           # урд их биеийн хажуу хавтангууд
+        plate_field("FwdSide_%d" % sx, -17.0, wall_y - 2.0, zc - D * 0.24, zc + D * 0.24,
+                    sx * (W * 0.455), "side", 6.0, M["hull"], root, thick=0.5)
+    for k in range(22):                          # их биеийн нэмэлт ширхэгүүд (гүүрнээс хойш)
+        ln, wd = R.uniform(3, 9), R.uniform(2, 7)
+        box("HullGreeble", (wd, ln, R.uniform(0.4, 1.6)),
+            (R.uniform(-W * 0.30, W * 0.30), R.uniform(body_end, by0 - 4.0), deck + 0.30),
+            mat=M["hull"], parent=root, bevel=0.1)
+    for k in range(8):                           # хамрын тавцангийнх — гүүрний өмнө
+        box("BowGreeble", (R.uniform(2, 6), R.uniform(2, 6), R.uniform(0.3, 1.1)),
+            (R.uniform(-W * 0.22, W * 0.22), R.uniform(wall_y + 3.5, wall_y + 14.0), deck + 0.25),
+            mat=M["hull"], parent=root, bevel=0.1)
+    y = -20.0
+    while y > body_end + 6:
+        ln = R.uniform(7.0, 17.0)
+        hw = R.uniform(0.18, 0.34) * W
+        off = R.uniform(-0.20, 0.20) * W
+        hgt = R.uniform(1.4, 4.2)
+        box("SpineBlock", (hw, ln, hgt), (off, y - ln / 2, deck + hgt / 2),
+            mat=M["hull"], parent=root, bevel=0.2)
+        for k in range(R.randint(1, 3)):
+            box("SpineGreeble", (R.uniform(1.0, hw * 0.55), R.uniform(1.5, ln * 0.45), R.uniform(0.4, 1.5)),
+                (off + R.uniform(-hw * 0.3, hw * 0.3), y - R.uniform(1.5, ln - 1.5), deck + hgt + 0.4),
+                mat=M["hull"], parent=root, bevel=0.1)
+        y -= ln + R.uniform(1.5, 4.5)
+
+    # ── 4. Ачааны сегментүүд: цагираг, X тулаас, хажуугийн хавтан ──
+    seg_n, seg_len = cfg["segments"], cfg["seg_len"]
+    sf = W / 2 + 0.08                            # хажуу нүүрний байрлал
+    zs0, zs1 = zc - D * 0.22, zc + D * 0.22      # хажуу нүүрний өндөр
+    y = -18.0
+    for i in range(seg_n):
+        y1 = y - seg_len
+        loft("CargoRing_%02d" % i,
+             [(y1 + 0.3, hull_ring(W * 1.05, D * 1.05, zc)),
+              (y1 + 2.1, hull_ring(W * 1.05, D * 1.05, zc))], M["metal"], parent=root)
+        bh = (zs1 - zs0) * 0.92
+        diag = math.hypot(seg_len - 6.0, bh)
+        ang = math.atan2(bh, seg_len - 6.0)
+        for sx in (-1, 1):
+            for sgn in (-1, 1):
+                box("CargoBrace_%02d_%d_%d" % (i, sx, sgn), (1.7, diag, 1.7),
+                    (sx * (sf - 0.5), (y + y1) / 2, zc), rot=(sgn * ang, 0, 0),
+                    mat=M["metal"], parent=root)
+            plate_field("CargoSide_%02d_%d" % (i, sx), y1 + 2.6, y - 1.2, zs0, zs1, sx * sf,
+                        "side", 5.5, M["hull"], root, thick=0.45)
+        y = y1
+
+    # ── 5. Хойд блок ба хөдөлгүүрүүд ──
+    box("SternCap", (W * 0.80, 2.6, D * 0.82), (0, stern_y + 1.2, zc),
+        mat=M["metal"], parent=root, bevel=0.3)
+    for k in range(12):
+        box("SternGreeble", (R.uniform(3, 10), R.uniform(3, 10), R.uniform(1.5, 5.5)),
+            (R.uniform(-W * 0.33, W * 0.33), R.uniform(stern_y + 6, body_end - 4),
+             deck + R.uniform(0.5, 3.0)), mat=M["hull"], parent=root, bevel=0.15)
+    er = cfg["engine_r"]
+    for sx, r, dx, dz in ((-1, er, 0.30, 0.06), (1, er, 0.30, 0.06),
+                          (-1, er * 0.52, 0.56, 0.30), (1, er * 0.52, 0.56, 0.30)):
+        ex, ez = sx * W * dx, zc + D * dz
+        ey = stern_y - r * 0.7
+        cyl("Nacelle_%d_%02.0f" % (sx, r * 10), r, r * 2.8, (ex, ey, ez),
+            rot=(math.radians(90), 0, 0), mat=M["hull"], parent=root, verts=28)
+        cyl("NacelleRing_%d_%02.0f" % (sx, r * 10), r * 1.08, r * 0.3, (ex, ey - r * 1.2, ez),
+            rot=(math.radians(90), 0, 0), mat=M["metal"], parent=root, verts=28)
+        cyl("Exhaust_%d_%02.0f" % (sx, r * 10), r * 0.78, 0.35, (ex, ey - r * 1.42, ez),
+            rot=(math.radians(90), 0, 0), mat=M["thrust"], parent=root, verts=28)
+
+    # ── 6. Гэрэл, тэмдэглэгээ ──
+    keel = zc - D * 0.48
+    box("RunStrip", (0.6, abs(body_end - (-20.0)), 0.28),
+        (0, (body_end - 20.0) / 2, keel), mat=M["runlight"], parent=root)
+    box("BluePanel", (W * 0.16, 14.0, 0.3), (-W * 0.24, -34.0, keel + 1.2),
+        mat=M["bluepanel"], parent=root)
+    for i in range(cfg["portholes"]):
+        sx = R.choice((-1, 1))
+        box("Porthole", (0.3, R.uniform(1.0, 2.4), R.uniform(0.5, 1.0)),
+            (sx * (sf + 0.05), R.uniform(body_end + 6, -12), R.uniform(zs0 + 1, zs1 - 1)),
+            mat=M["window_lit"], parent=root)
+    num = cfg["number"]
+    hull_marking("Mark_deck", num, (-W * 0.14, wall_y + 11.0, deck + 0.16), 3.4,
+                 M["marking"], root, rot=(0, 0, math.radians(180)))
+    for sx in (-1, 1):
+        hull_marking("MarkSide_%d" % sx, num, (sx * (sf + 0.3), -150.0, zc + 2.0), 5.0,
+                     M["marking"], root,
+                     rot=(math.radians(90), 0, math.radians(90 * sx)))
+    return root
+
+
+def build_sun():
+    """Алслагдсан од — хөлгийн их биеийг гэрэлтүүлнэ."""
+    d = bpy.data.lights.new("StarSun", "SUN")
+    d.energy = CFG["sun"]["energy"]
+    d.color = CFG["sun"]["color"]
+    d.angle = math.radians(0.9)
+    ob = bpy.data.objects.new("StarSun", d)
+    ob.location = (250, -220, 240)
+    _link(ob, bpy.data.collections[COL])
+    aim = empty("SUN_AIM", (0, -80, -8))
+    con = ob.constraints.new("TRACK_TO")
+    con.target = aim
+    con.track_axis, con.up_axis = "TRACK_NEGATIVE_Z", "UP_Y"
+    return ob
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -605,6 +969,53 @@ def set_angle(cam, name):
     cam.data.lens = lens
     bpy.data.objects["CAM_AIM"].location = aim
     return cam
+
+
+# Нислэгийн зам: (фрейм, камерын байрлал, харах цэг, линз мм)
+FLIGHT = [
+    (1,   (30.0, 86.0, 34.0),  (0.0, 22.0, -4.0), 38.0),   # хол, хөлгийн хамар дээрээс
+    (45,  (12.0, 36.0, 13.5),  (0.0, 9.0, 1.4),   32.0),   # гүүр рүү дөхнө
+    (78,  (6.5, 17.5, 6.4),    (0.2, 4.6, 1.6),   30.0),   # цонхны булангийн амсар
+    (100, (-1.4, 5.0, 2.35),   (0.6, -1.0, 1.25), 26.0),   # цонхоор нэвтэрч байна
+    (125, (-2.0, 0.8, 2.05),   (1.5, -1.6, 1.05), 24.0),   # доторх орчин
+    (155, (-3.25, -3.60, 1.68), (0.55, 2.20, 1.02), 24.0),  # эцсийн өргөн кадр
+]
+
+
+def build_flythrough(cam, aim):
+    """Цонхоор нэвтэрч ордог камерын хөдөлгөөн."""
+    sc = bpy.context.scene
+    sc.frame_start, sc.frame_end = FLIGHT[0][0], FLIGHT[-1][0]
+    for f, loc, a, lens in FLIGHT:
+        cam.location = loc
+        cam.keyframe_insert("location", frame=f)
+        aim.location = a
+        aim.keyframe_insert("location", frame=f)
+        cam.data.lens = lens
+        cam.data.keyframe_insert("lens", frame=f)
+    for holder in (cam, aim, cam.data):
+        ad = holder.animation_data
+        if not ad or not ad.action:
+            continue
+        act = ad.action
+        curves = []
+        try:
+            if hasattr(act, "layers") and len(act.layers):
+                cb = act.layers[0].strips[0].channelbag(ad.action_slot)
+                if cb:
+                    curves = list(cb.fcurves)
+        except Exception:
+            pass
+        if not curves:
+            try:
+                curves = list(act.fcurves)
+            except Exception:
+                curves = []
+        for fc in curves:
+            for kp in fc.keyframe_points:
+                kp.interpolation = "BEZIER"
+                kp.handle_left_type = kp.handle_right_type = "AUTO_CLAMPED"
+    sc.frame_set(FLIGHT[0][0])
 
 
 def build_camera():
@@ -621,6 +1032,8 @@ def build_camera():
     con.target = aim
     con.track_axis, con.up_axis = "TRACK_NEGATIVE_Z", "UP_Y"
     bpy.context.scene.camera = cam
+    if CFG["flythrough"]:
+        build_flythrough(cam, aim)
     return cam
 
 
@@ -667,18 +1080,7 @@ def setup_render(samples=64, res=(960, 540)):
     sc.world = world
     if getattr(world, "node_tree", None) is None:
         world.use_nodes = True
-    bg = world.node_tree.nodes.get("Background")
-    if bg:
-        bg.inputs["Color"].default_value = (0.006, 0.010, 0.022, 1)
-        bg.inputs["Strength"].default_value = 1.0
-    if CFG["haze"]:                            # цонхноос орох гэрлийн манан
-        nt = world.node_tree
-        vol = nt.nodes.new("ShaderNodeVolumeScatter")
-        vol.inputs["Density"].default_value = CFG["haze"]
-        vol.inputs["Anisotropy"].default_value = 0.45
-        vol.inputs["Color"].default_value = (0.62, 0.74, 1.0, 1)
-        out_node = next(n for n in nt.nodes if n.type == "OUTPUT_WORLD")
-        nt.links.new(vol.outputs["Volume"], out_node.inputs["Volume"])
+    world_starfield(world)
     try:
         sc.view_settings.view_transform = "AgX"
         sc.view_settings.look = "AgX - Medium High Contrast"
@@ -717,12 +1119,19 @@ def build():
         "dark":   metal("cab_dark", (0.055, 0.055, 0.060), rough=0.62, metallic=0.30, scale=10.0),
         "seat":   metal("cab_seat", (0.016, 0.017, 0.021), rough=0.78, metallic=0.02, scale=18.0, bump=0.5, grime=0.3),
         "cable":  metal("cab_cable", (0.03, 0.03, 0.034), rough=0.80, metallic=0.0, scale=30.0),
-        "glow":   emit("cab_glow", (1.0, 0.52, 0.20), 3.2),
+        "glow":   emit("cab_glow", (1.0, 0.52, 0.20), 4.6),
         "amber":  emit("cab_amber", (1.0, 0.55, 0.15), 5.0),
         "screen": emit("cab_screen", (0.55, 0.80, 1.0), 2.0),
         "red":    emit("cab_red", (1.0, 0.13, 0.08), 4.0),
         "dim_screen": emit("cab_dimscreen", (0.10, 0.22, 0.42), 1.1),
         "space":  starfield("cab_space"),
+        "hull":     metal("shp_hull", (0.44, 0.44, 0.43), rough=0.52, metallic=0.22, scale=0.25, bump=0.14, grime=0.42),
+        "marking":  metal("shp_mark", (0.10, 0.10, 0.11), rough=0.70, metallic=0.10, scale=2.0, grime=0.2),
+        "thrust":   emit("shp_thrust", (0.32, 0.60, 1.0), 14.0),
+        "runlight": emit("shp_run", (1.0, 0.10, 0.06), 7.0),
+        "bluepanel": emit("shp_blue", (0.22, 0.52, 1.0), 4.0),
+        "window_lit": emit("shp_win", (1.0, 0.70, 0.36), 6.0),
+        "warmpanel": emit("cab_warmpanel", (1.0, 0.74, 0.46), 3.4),
         "glass":  None,
     }
     glass = bpy.data.materials.new("cab_glass")
@@ -746,7 +1155,12 @@ def build():
     build_console(M)
     build_seat(M)
     build_cables(M)
-    build_space(M)
+    build_haze(M)
+    if CFG["ship"]["on"]:
+        build_ship(M)
+        build_sun()
+    else:
+        build_space(M)
     build_lights(M)
     cam = build_camera()
     n = len(bpy.data.collections[COL].objects)
@@ -771,11 +1185,18 @@ def main():
         prep_viewport()
         bpy.ops.wm.save_as_mainfile(filepath=blend)
         print("[1st Studio] Хадгаллаа:", blend)
+    frame = opt("--frame")
+    if frame:
+        bpy.context.scene.frame_set(int(frame))
     if "--render" in argv:
         out = argv[argv.index("--render") + 1]
         bpy.context.scene.render.filepath = out
-        bpy.ops.render.render(write_still=True)
-        print("[1st Studio] Рендер:", out)
+        if "--anim" in argv:
+            bpy.ops.render.render(animation=True)
+            print("[1st Studio] Анимац рендерлэв:", out)
+        else:
+            bpy.ops.render.render(write_still=True)
+            print("[1st Studio] Рендер:", out)
 
 
 main()
