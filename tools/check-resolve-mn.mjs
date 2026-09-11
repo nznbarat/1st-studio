@@ -29,7 +29,8 @@ const guideSrc = readFileSync(join(root, "resolve-mn/js/20-guide.js"), "utf8");
 new Function("window", "RM", guideSrc)(globalThis.window, RM);
 
 /* Интерфейсийн загварын хуудсууд */
-for (const f of ["resolve-mn/js/50-sim-pages.js", "resolve-mn/js/51-sim-more.js"]) {
+for (const f of ["resolve-mn/js/50-sim-pages.js", "resolve-mn/js/51-sim-more.js",
+                 "resolve-mn/js/52-sim-menus.js"]) {
   new Function("window", "RM", readFileSync(join(root, f), "utf8"))(globalThis.window, RM);
 }
 
@@ -60,6 +61,10 @@ for (const pg of SIM_PAGES) {
   simSpots += [...new Set([...simHtml[pg].matchAll(/data-t="([^"]+)"/g)].map((m) => m[1]))].length;
 }
 console.log("Загварын хуудас: " + SIM_PAGES.length + " (" + simSpots + " товших цэг)");
+const menus = RM.sim.menus || {};
+let menuRows = 0;
+for (const m of Object.values(menus)) menuRows += m.items.filter((i) => i !== "-").length;
+console.log("Цэсний агуулга: " + Object.keys(menus).length + " цэс (" + menuRows + " мөр)");
 
 console.log("\n── Хуудас тус бүрээр ──");
 for (const p of D.pages) {
@@ -126,16 +131,28 @@ for (const pg of SIM_PAGES) {
   }
 }
 
-/* 8 · Загварын файлууд interface.html-д холбогдсон эсэх */
+/* 8 · Цэсний мөр бүр толинд байгаа эсэх */
+for (const [id, m] of Object.entries(menus)) {
+  if (!D.byId[id]) warn("Цэс өөрөө толинд алга: " + id);
+  if (!m.items.length) warn("Хоосон цэс: " + m.label);
+  for (const it of m.items) {
+    if (it === "-") continue;
+    if (!Array.isArray(it) || !it[0] || !it[1]) { warn("Цэсний мөрийн бүтэц буруу: " + m.label); continue; }
+    if (!D.byId[it[0]]) warn("Цэсний мөр толинд алга: " + m.label + " → " + it[1] + ' (' + it[0] + ")");
+  }
+}
+
+/* 9 · Загварын файлууд interface.html-д холбогдсон эсэх */
 const iface = readFileSync(join(root, "resolve-mn/interface.html"), "utf8");
 for (const f of files) {
   if (!iface.includes("js/dict/" + f)) warn("interface.html-д холбогдоогүй толь: " + f);
 }
-for (const f of ["50-sim-pages.js", "51-sim-more.js", "60-sim-ui.js", "91-sim-main.js"]) {
+for (const f of ["50-sim-pages.js", "51-sim-more.js", "52-sim-menus.js",
+                 "60-sim-ui.js", "91-sim-main.js"]) {
   if (!iface.includes("js/" + f)) warn("interface.html-д холбогдоогүй загвар: " + f);
 }
 
-/* 9 · Хайлтын эрүүл мэнд */
+/* 10 · Хайлтын эрүүл мэнд */
 const probes = ["ripple", "долгиолон", "node", "нод", "green screen", "ногоон дэлгэц",
                 "рендер", "render", "өнгө", "color", "дуу", "audio", "товчлуур"];
 for (const q of probes) {

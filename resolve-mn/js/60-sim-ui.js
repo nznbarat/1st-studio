@@ -23,6 +23,7 @@
     RM.store.set("simPage", page);
 
     const stage = $("#rsHost");
+    S.closeMenu();
     stage.innerHTML = S[page]();
 
     const win = stage.firstElementChild;
@@ -161,11 +162,72 @@
     host.appendChild(wrap);
   };
 
+  /* ── цэсний унждаг жагсаалт ── */
+
+  S.closeMenu = function () {
+    const open = $("#rsMenuPop");
+    if (open) open.remove();
+    RM.$$("#rsHost .rs-menu .mi.open").forEach((n) => n.classList.remove("open"));
+  };
+
+  S.openMenu = function (node) {
+    const id = node.getAttribute("data-t");
+    const def = (S.menus || {})[id];
+    S.closeMenu();
+    if (!def) return false;
+
+    node.classList.add("open");
+    const pop = el("div", { id: "rsMenuPop", class: "rs-menupop" });
+
+    def.items.forEach((it) => {
+      if (it === "-") { pop.appendChild(el("div", { class: "msep" })); return; }
+      const [termId, label, key, arrow] = it;
+      const row = el("button", {
+        class: "mrow", "data-t": termId,
+        onclick: (e) => {
+          e.stopPropagation();
+          S.closeMenu();
+          S.select(termId, node);
+        }
+      });
+      row.appendChild(el("span", { class: "ml", text: label }));
+      if (key)   row.appendChild(el("span", { class: "mk", text: key }));
+      if (arrow) row.appendChild(el("span", { class: "ma", text: arrow }));
+      pop.appendChild(row);
+    });
+
+    /* байрлуулах — цэсний нэрний доор, дэлгэцээс халихгүйгээр */
+    const host = $("#rsHost");
+    const hb = host.getBoundingClientRect();
+    const nb = node.getBoundingClientRect();
+    pop.style.left = Math.max(2, Math.min(nb.left - hb.left, hb.width - 300)) + "px";
+    pop.style.top  = (nb.bottom - hb.top) + "px";
+    host.appendChild(pop);
+    return true;
+  };
+
   /* ── холболт ── */
 
   S.bind = function () {
     /* товших */
     $("#rsHost").addEventListener("click", (e) => {
+      /* цэсний мөр — унждаг жагсаалт нээнэ (агуулга нь баталгаажсан бол) */
+      const mi = e.target.closest(".rs-menu .mi");
+      if (mi) {
+        e.stopPropagation();
+        const wasOpen = mi.classList.contains("open");
+        S.closeMenu();
+        if (!wasOpen && !S.openMenu(mi)) {
+          /* агуулгыг нь хараахан баталгаажуулаагүй цэс — тайлбарыг нь үзүүлнэ */
+          S.select(mi.getAttribute("data-t"), mi);
+        } else if (!wasOpen) {
+          S.select(mi.getAttribute("data-t"), mi);
+        }
+        return;
+      }
+      if (e.target.closest("#rsMenuPop")) return;
+      S.closeMenu();
+
       const go = e.target.closest("[data-go]");
       const hs = e.target.closest(".hs");
       if (!hs) return;
@@ -184,6 +246,19 @@
       }
 
       S.select(hs.getAttribute("data-t"), hs);
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest("#rsHost")) S.closeMenu();
+    });
+
+    /* Цэс нээлттэй байхад хажуугийн цэсэн дээр хулгана тултал шилжинэ —
+       бодит программын зан төлөв. */
+    $("#rsHost").addEventListener("mouseover", (e) => {
+      if (!$("#rsMenuPop")) return;
+      const mi = e.target.closest(".rs-menu .mi");
+      if (!mi || mi.classList.contains("open")) return;
+      if (S.openMenu(mi)) S.select(mi.getAttribute("data-t"), mi);
     });
 
     /* цэг харуулах */
@@ -207,7 +282,7 @@
     /* гар */
     document.addEventListener("keydown", (e) => {
       if (/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
-      if (e.key === "Escape") { S.showHint(); RM.$$("#rsHost .hs.sel").forEach((n) => n.classList.remove("sel")); }
+      if (e.key === "Escape") { S.closeMenu(); S.showHint(); RM.$$("#rsHost .hs.sel").forEach((n) => n.classList.remove("sel")); }
       else if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
         const i = ORDER.indexOf(S.state.page);
         const n = (i + (e.key === "ArrowRight" ? 1 : ORDER.length - 1)) % ORDER.length;

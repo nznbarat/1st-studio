@@ -69,7 +69,7 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
 #wrap{display:flex;height:calc(100% - 52px)}
 #stage{flex:1;min-width:0;display:flex;flex-direction:column;padding:14px;gap:10px;overflow:auto}
 /* Resolve цонх боломжит өндрийг бүтнээр эзэлнэ — агуулга богино байсан ч. */
-#rsHost{flex:1;min-height:0;display:flex}
+#rsHost{flex:1;min-height:0;display:flex;position:relative}  /* унждаг цэсний байрлалын суурь */
 #side{width:352px;flex-shrink:0;background:var(--ui-panel);border-left:1px solid var(--ui-line);
   display:flex;flex-direction:column;overflow:hidden}
 
@@ -304,6 +304,22 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
 .kf .lane{flex:1;height:12px;background:#151515;border:1px solid #2a2a2a;border-radius:2px;position:relative}
 .kf .lane::after{content:"";position:absolute;left:28%;top:2px;width:6px;height:6px;background:var(--rs-act);
   transform:rotate(45deg)}
+
+/* ── цэсний унждаг жагсаалт ── */
+.rs{position:relative}
+.rs-menu .mi.open{background:#3d3d3d;color:#f0f0f0}
+.rs-menupop{position:absolute;z-index:40;min-width:296px;max-height:calc(100% - 40px);
+  overflow-y:auto;background:#2b2b2b;border:1px solid #101010;border-radius:3px;
+  padding:4px 0;box-shadow:0 10px 30px rgba(0,0,0,.6)}
+.rs-menupop .msep{height:1px;background:#3d3d3d;margin:4px 0}
+.rs-menupop .mrow{display:flex;align-items:center;width:100%;gap:12px;
+  padding:4px 14px;font-size:11.5px;color:var(--rs-txt);text-align:left;line-height:1.5}
+.rs-menupop .mrow:hover{background:var(--rs-sel);color:#fff}
+.rs-menupop .ml{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rs-menupop .mk{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;
+  color:var(--rs-dim2);white-space:nowrap}
+.rs-menupop .mrow:hover .mk{color:#cfe0f0}
+.rs-menupop .ma{color:var(--rs-dim2);font-size:11px}
 
 /* ── Fusion хуудасны байрлал ── */
 .fu-split{flex:1;display:flex;gap:1px;background:var(--rs-line);min-height:0}
@@ -1569,6 +1585,70 @@ note:"Интерфейсийн нэр бүхий хэсгүүд — хаана �
 
 </script>
 <script>
+/* ── js/dict/r19-tses-aguulga.js ── */
+/* ═══ 19 · Цэсний доторх командууд ═══
+   Edit, Color, Fairlight цэсний агуулгыг хэрэглэгчийн бодит
+   DaVinci Resolve Studio 21 дээрээс уншиж баталсан. */
+
+RM.dict.add({ id:"tses-edit", label:"Edit цэсний командууд", icon:"✎", page:"edit",
+note:"Edit цэс доторх командууд — бодит программаас баталгаажсан.", terms:[
+["History","Түүх","Хийсэн үйлдлүүдийн жагсаалт. Хэдэн ч алхмаар буцаж болно.","","Edit → History"],
+["Ripple Cut","Долгиолон тасалж авах","Клипийг тасалж авахад үлдсэн зай хаагдаж, хойших клипүүд зөрнө.","Ctrl+Shift+X","Edit цэс"],
+["Cut Head","Толгойг таслах","Заагчаас өмнөх хэсгийг таслан авна.","","Edit цэс"],
+["Cut Tail","Сүүлийг таслах","Заагчаас хойших хэсгийг таслан авна.","","Edit цэс"],
+["Copy Head","Толгойг хуулах","Заагчаас өмнөх хэсгийг хуулна.","","Edit цэс"],
+["Copy Tail","Сүүлийг хуулах","Заагчаас хойших хэсгийг хуулна.","","Edit цэс"],
+["Paste Insert","Шигтгэж наах","Хуулсныг дарж бичихийн оронд шигтгэж, хойших клипүүдийг түлхэнэ.","Ctrl+Shift+V","Edit цэс"],
+["Paste Value","Утгыг наах","Хуулсан параметрийн зөвхөн тоон утгыг наана. Түлхүүр кадар дагахгүй.","Alt+Shift+V","Edit цэс"],
+["Remove Attributes","Шинжийг арилгах","Клипэд хийсэн хувиргалт, өнгө, хурдны тохиргоог сонгож арилгана.","","Edit цэс"],
+["Duplicate Clip","Клип хувилах","Сонгосон клипийн яг адил хуулбарыг үүсгэнэ.","","Edit цэс"],
+["Duplicate Selection","Сонголтыг хувилах","Сонгосон бүх клипийг нэг дор хувилна.","","Edit цэс"],
+["Delete Gaps","Хоосон зайг устгах","Timeline дээрх бүх хоосон зайг нэг дор хаана.","","Edit цэс"],
+["Insert Gap","Хоосон зай оруулах","Заагчийн байрлалд хоосон зай нэмж, хойших клипүүдийг түлхэнэ.","","Edit цэс"],
+["Swap Clips Towards Left","Клипийг зүүн тийш солих","Сонгосон клипийг зүүн талын хөршөөрөө солино. Дараалал өөрчлөхөд хурдан.","Ctrl+Shift+,","Edit цэс"],
+["Swap Clips Towards Right","Клипийг баруун тийш солих","Сонгосон клипийг баруун талын хөршөөрөө солино.","Ctrl+Shift+.","Edit цэс"],
+["Edit Options","Монтажийн сонголтууд","Монтажийн нарийн зан төлөвийн дэд цэс.","","Edit цэс"]
+]});
+
+RM.dict.add({ id:"tses-color", label:"Color цэсний командууд", icon:"◑", page:"color",
+note:"Color цэс доторх командууд — бодит программаас баталгаажсан.", terms:[
+["Grade Version","Засварын хувилбар","Нэг клипэд хэд хэдэн засварын хувилбар үүсгэж, хооронд нь солих дэд цэс.","","Color цэс"],
+["Apply Active Layer","Идэвхтэй давхаргыг хэрэглэх","Зөвхөн сонгосон давхаргын засварыг хуулж тавина.","","Color цэс"],
+["Append Node Graph","Нодны урсгал залгах","Хуулсан нодны бүтцийг одоогийн урсгалын ард залгана.","","Color цэс"],
+["Step Timeline Wipe","Харьцуулалт алхмаар","Timeline-ий хуваасан харьцуулалтыг клип клипээр нь алхаж харна.","","Color цэс"],
+["Preview Memory","Урьдчилан харах санах ой","Хадгалсан засварыг түр зуур тавьж харна. Товчийг суллахад буцна.","Alt+Shift+P","Color цэс"],
+["Original Memory","Анхны санах ой","Засвар ороогүй эх дүрсийг түр харуулна.","Alt+Shift+O","Color цэс"],
+["Memories","Санах ойнууд","Засварыг түр хадгалж, хурдан дуудах үүрнүүд.","","Color цэс"],
+["Apply Grade from One Clip Prior","Өмнөх клипийн засварыг авах","Нэг өмнөх клипийн засварыг одоогийн клипэд хуулна. Дараалсан кадруудыг тэнцүүлэхэд хамгийн хурдан арга.","Shift+=","Color цэс"],
+["Apply Grade from Two Clips Prior","Хоёр өмнөх клипийн засварыг авах","Хоёр өмнөх клипийн засварыг хуулна. Өнцөг ээлжилсэн ярианы кадарт тохиромжтой.","Shift+-","Color цэс"],
+["Ripple Node Changes to Selected Clips","Нодны өөрчлөлтийг тараах","Одоогийн нодонд хийсэн өөрчлөлтийг сонгосон бүх клипийн ижил нод руу тараана.","","Color цэс"],
+["Append Node to Selected Clips","Сонгосон клипүүдэд нод залгах","Сонгосон бүх клипийн урсгалын ард шинэ нод нэмнэ.","","Color цэс"],
+["Auto Color","Автомат өнгө","Resolve өнгөний тэнцвэрийг өөрөө тооцоолж тавина. Эхлэх цэг болгоход тохиромжтой.","Alt+Shift+C","Color цэс"],
+["Active Playhead","Идэвхтэй заагч","Харьцуулалтын үед аль заагчийг идэвхтэй болгохыг сонгоно.","","Color цэс"],
+["Resolve Live","Шууд холболт","Камерын дохиог шууд авч, зураг авалтын талбай дээр өнгө засах горим.","","Color цэс"],
+["Printer Light","Хэвлэлийн гэрэл","Кино хальсны лабораторийн уламжлалт нэгжээр өнгийг алхмаар өөрчлөх арга. Нэг алхам = 1/12 зогсолт.","Ctrl+Alt+`","Color цэс"],
+["MultiMaster Trim Manager","Олон мастер удирдагч","SDR, HDR зэрэг өөр өөр гаралтын хувилбаруудыг нэг дор удирдана.","","Color цэс"],
+["HDR10+","HDR10+","Кадар тус бүрийн мэдээлэл дамжуулдаг HDR стандарт. Dolby Vision-ийн нээлттэй өрсөлдөгч.","","Color цэс"],
+["HDR Vivid","HDR Vivid","Хятадын UHD World Association-ы HDR стандарт.","","Color цэс"],
+["AMF","AMF","ACES Metadata File — өнгөний засварын мэдээллийг программ хооронд дамжуулах стандарт файл.","","Color цэс"]
+]});
+
+RM.dict.add({ id:"tses-fairlight", label:"Fairlight цэсний командууд", icon:"♫", page:"fairlight",
+note:"Fairlight цэс доторх командууд — бодит программаас баталгаажсан.", terms:[
+["Bus Assign","Шугам хуваарилах","Аль зам аль шугам руу дуугаа илгээхийг тохируулна.","","Fairlight цэс"],
+["Presets Library","Бэлдэцийн сан","Эффект, холилтын хадгалсан тохиргоонуудын сан.","","Fairlight цэс"],
+["VCA Assign","VCA хуваарилах","Олон замын түвшинг нэг удирдах фадераар зэрэг барих бүлэг. Замын өөрийнх нь фадерыг хөндөхгүй.","","Fairlight цэс"],
+["Test Tones","Сорилын дуу","Чанга яригч, хэмжүүрийг тохируулахад ашиглах стандарт дохио.","","Fairlight цэс"],
+["Synchronization Settings","Нийлүүлэлтийн тохиргоо","Гадаад төхөөрөмжтэй цагийн код, дуугаар нийлэх тохиргоо.","","Fairlight цэс"],
+["Input Monitor Style","Оролт сонсох хэв маяг","Бичиж байх үед оролтын дууг хэрхэн сонсохыг заана.","","Fairlight цэс"],
+["Exclusive Solo","Ганц ганцаар","Нэг замыг solo хийхэд бусад бүх solo автоматаар унтарна.","","Fairlight цэс"],
+["Batch Fade","Багц бүдгэрүүлэлт","Сонгосон олон клипэд бүдгэрүүлэлтийг нэг дор тавина.","","Fairlight цэс"],
+["Show Clip Gain Line","Клипийн өсгөлтийн шугам","Клип дээр түвшний шугам харуулж, гараар чирж өөрчлөх боломжтой болгоно.","","Fairlight цэс"],
+["View Clip Info Display","Клипийн мэдээлэл харуулах","Timeline дээрх клип дээр ямар мэдээлэл бичигдэхийг сонгоно.","","Fairlight цэс"]
+]});
+
+</script>
+<script>
 /* ── js/50-sim-pages.js ── */
 /* ═════════════════════════════════════════════════════════════
    50 · Resolve интерфейсийн хуулбар — хуудас бүрийн бүтэц
@@ -2438,6 +2518,142 @@ note:"Интерфейсийн нэр бүхий хэсгүүд — хаана �
 
 </script>
 <script>
+/* ── js/52-sim-menus.js ── */
+/* ═════════════════════════════════════════════════════════════
+   52 · Цэсний агуулга
+
+   Edit, Color, Fairlight гурвыг хэрэглэгчийн бодит DaVinci Resolve
+   Studio 21-ийн дэлгэцээс уншиж баталсан — дараалал, тусгаарлагч,
+   товчлуур, дэд цэсний сум бүгд тэндээс авсан.
+
+   Бусад цэсийг хараахан баталгаажуулаагүй тул зохиомол агуулга бичээгүй.
+
+   Мөрийн бүтэц:  [толины id, харагдах нэр, товчлуур?, "›" бол дэд цэстэй]
+   "-" гэсэн мөр нь тусгаарлах зураас.
+   ═════════════════════════════════════════════════════════════ */
+(function (RM) {
+  "use strict";
+
+  RM.sim.menus = {
+
+    "edit-menu": { label: "Edit", verified: true, items: [
+      ["undo", "Undo", "Ctrl+Z"],
+      ["redo", "Redo", "Ctrl+Shift+Z"],
+      ["history", "History", "", "›"],
+      "-",
+      ["cut-clipboard", "Cut", "Ctrl+X"],
+      ["ripple-cut", "Ripple Cut", "Ctrl+Shift+X"],
+      ["cut-head", "Cut Head"],
+      ["cut-tail", "Cut Tail"],
+      ["copy", "Copy", "Ctrl+C"],
+      ["copy-head", "Copy Head"],
+      ["copy-tail", "Copy Tail"],
+      ["paste", "Paste", "Ctrl+V"],
+      ["paste-insert", "Paste Insert", "Ctrl+Shift+V"],
+      ["paste-attributes", "Paste Attributes…", "Alt+V"],
+      ["paste-value", "Paste Value", "Alt+Shift+V"],
+      ["remove-attributes", "Remove Attributes…"],
+      ["dolby-vision", "Dolby Vision®", "", "›"],
+      "-",
+      ["duplicate-clip", "Duplicate Clip"],
+      ["duplicate-selection", "Duplicate Selection"],
+      "-",
+      ["lift-delete", "Delete Selected", "Backspace"],
+      ["ripple-delete", "Ripple Delete", "Shift+Backspace"],
+      ["delete-gaps", "Delete Gaps"],
+      "-",
+      ["select-all", "Select All", "Ctrl+A"],
+      ["deselect-all", "Deselect All", "Ctrl+Shift+A"],
+      ["auto-select", "Select", "", "›"],
+      "-",
+      ["insert", "Insert", "F9"],
+      ["overwrite", "Overwrite", "F10"],
+      ["replace", "Replace", "F11"],
+      ["place-on-top", "Place on Top", "F12"],
+      ["ripple-overwrite", "Ripple Overwrite", "Shift+F10"],
+      ["fit-to-fill", "Fit to Fill", "Shift+F11"],
+      ["append-to-end", "Append to End of Timeline", "Shift+F12"],
+      "-",
+      ["multicam-clip", "Multicam", "", "›"],
+      "-",
+      ["insert-gap", "Insert Gap"],
+      ["swap-clips-towards-left", "Swap Clips Towards Left", "Ctrl+Shift+,"],
+      ["swap-clips-towards-right", "Swap Clips Towards Right", "Ctrl+Shift+."],
+      "-",
+      ["edit-options", "Edit Options", "", "›"]
+    ]},
+
+    "color-page": { label: "Color", verified: true, items: [
+      ["node-editor", "Nodes", "", "›"],
+      ["reset", "Reset", "", "›"],
+      ["grade-version", "Grade Version", "", "›"],
+      "-",
+      ["still", "Stills", "", "›"],
+      ["apply-grade", "Apply Grade"],
+      ["apply-active-layer", "Apply Active Layer"],
+      ["append-node-graph", "Append Node Graph"],
+      ["step-timeline-wipe", "Step Timeline Wipe", "", "›"],
+      "-",
+      ["preview-memory", "Preview Memory", "Alt+Shift+P"],
+      ["original-memory", "Original Memory", "Alt+Shift+O"],
+      ["memories", "Memories", "", "›"],
+      ["apply-grade-from-one-clip-prior", "Apply Grade from One Clip Prior", "Shift+="],
+      ["apply-grade-from-two-clips-prior", "Apply Grade from Two Clips Prior", "Shift+-"],
+      ["gallery", "Presets", "", "›"],
+      "-",
+      ["ripple-node-changes-to-selected-clips", "Ripple Node Changes to Selected Clips"],
+      ["ripple-grade", "Ripple Node Changes to Current Group"],
+      ["append-node-to-selected-clips", "Append Node to Selected Clips"],
+      "-",
+      ["auto-color", "Auto Color", "Alt+Shift+C"],
+      "-",
+      ["active-playhead", "Active Playhead", "", "›"],
+      ["window-tracker", "Tracker", "", "›"],
+      ["resolve-live", "Resolve Live", "", "›"],
+      "-",
+      ["printer-light", "Printer Light Hotkeys", "Ctrl+Alt+`"],
+      ["printer-light", "Full Printer Light", "", "›"],
+      ["printer-light", "Half Printer Light", "", "›"],
+      ["printer-light", "Quarter Printer Light", "", "›"],
+      "-",
+      ["multimaster-trim-manager", "MultiMaster Trim Manager…"],
+      "-",
+      ["dolby-vision", "Dolby Vision®", "", "›"],
+      ["hdr10-plus", "HDR10+", "", "›"],
+      ["hdr-vivid", "HDR Vivid", "", "›"],
+      "-",
+      ["amf", "Automatically Link AMF for", "", "›"]
+    ]},
+
+    "fairlight-page": { label: "Fairlight", verified: true, items: [
+      ["bus-format", "Bus Format…"],
+      ["bus-assign", "Bus Assign…"],
+      ["presets-library", "Presets Library…"],
+      ["link-group", "Link Group…"],
+      ["vca-assign", "VCA Assign…"],
+      ["patch-input-output", "Patch Input/Output…"],
+      "-",
+      ["test-tones", "Test Tones Settings…"],
+      ["synchronization-settings", "Synchronization Settings…"],
+      "-",
+      ["input-monitor-style", "Input Monitor Style", "", "›"],
+      ["monitoring", "Monitoring", "", "›"],
+      ["exclusive-solo", "Exclusive Solo"],
+      ["immersive-audio", "Immersive Audio", "", "›"],
+      ["automation", "Automation", "", "›"],
+      "-",
+      ["batch-fade", "Batch Fade Settings…"],
+      ["batch-fade", "Apply Batch Fades"],
+      "-",
+      ["view-clip-info-display", "View Clip Info Display…"],
+      ["show-clip-gain-line", "Show Clip Gain Line", "✓"]
+    ]}
+  };
+
+})(window.RM);
+
+</script>
+<script>
 /* ── js/60-sim-ui.js ── */
 /* ═════════════════════════════════════════════════════════════
    60 · Загварын харилцан үйлдэл — товших, тайлбарлах, хуудас солих
@@ -2464,6 +2680,7 @@ note:"Интерфейсийн нэр бүхий хэсгүүд — хаана �
     RM.store.set("simPage", page);
 
     const stage = $("#rsHost");
+    S.closeMenu();
     stage.innerHTML = S[page]();
 
     const win = stage.firstElementChild;
@@ -2602,11 +2819,72 @@ note:"Интерфейсийн нэр бүхий хэсгүүд — хаана �
     host.appendChild(wrap);
   };
 
+  /* ── цэсний унждаг жагсаалт ── */
+
+  S.closeMenu = function () {
+    const open = $("#rsMenuPop");
+    if (open) open.remove();
+    RM.$$("#rsHost .rs-menu .mi.open").forEach((n) => n.classList.remove("open"));
+  };
+
+  S.openMenu = function (node) {
+    const id = node.getAttribute("data-t");
+    const def = (S.menus || {})[id];
+    S.closeMenu();
+    if (!def) return false;
+
+    node.classList.add("open");
+    const pop = el("div", { id: "rsMenuPop", class: "rs-menupop" });
+
+    def.items.forEach((it) => {
+      if (it === "-") { pop.appendChild(el("div", { class: "msep" })); return; }
+      const [termId, label, key, arrow] = it;
+      const row = el("button", {
+        class: "mrow", "data-t": termId,
+        onclick: (e) => {
+          e.stopPropagation();
+          S.closeMenu();
+          S.select(termId, node);
+        }
+      });
+      row.appendChild(el("span", { class: "ml", text: label }));
+      if (key)   row.appendChild(el("span", { class: "mk", text: key }));
+      if (arrow) row.appendChild(el("span", { class: "ma", text: arrow }));
+      pop.appendChild(row);
+    });
+
+    /* байрлуулах — цэсний нэрний доор, дэлгэцээс халихгүйгээр */
+    const host = $("#rsHost");
+    const hb = host.getBoundingClientRect();
+    const nb = node.getBoundingClientRect();
+    pop.style.left = Math.max(2, Math.min(nb.left - hb.left, hb.width - 300)) + "px";
+    pop.style.top  = (nb.bottom - hb.top) + "px";
+    host.appendChild(pop);
+    return true;
+  };
+
   /* ── холболт ── */
 
   S.bind = function () {
     /* товших */
     $("#rsHost").addEventListener("click", (e) => {
+      /* цэсний мөр — унждаг жагсаалт нээнэ (агуулга нь баталгаажсан бол) */
+      const mi = e.target.closest(".rs-menu .mi");
+      if (mi) {
+        e.stopPropagation();
+        const wasOpen = mi.classList.contains("open");
+        S.closeMenu();
+        if (!wasOpen && !S.openMenu(mi)) {
+          /* агуулгыг нь хараахан баталгаажуулаагүй цэс — тайлбарыг нь үзүүлнэ */
+          S.select(mi.getAttribute("data-t"), mi);
+        } else if (!wasOpen) {
+          S.select(mi.getAttribute("data-t"), mi);
+        }
+        return;
+      }
+      if (e.target.closest("#rsMenuPop")) return;
+      S.closeMenu();
+
       const go = e.target.closest("[data-go]");
       const hs = e.target.closest(".hs");
       if (!hs) return;
@@ -2625,6 +2903,19 @@ note:"Интерфейсийн нэр бүхий хэсгүүд — хаана �
       }
 
       S.select(hs.getAttribute("data-t"), hs);
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest("#rsHost")) S.closeMenu();
+    });
+
+    /* Цэс нээлттэй байхад хажуугийн цэсэн дээр хулгана тултал шилжинэ —
+       бодит программын зан төлөв. */
+    $("#rsHost").addEventListener("mouseover", (e) => {
+      if (!$("#rsMenuPop")) return;
+      const mi = e.target.closest(".rs-menu .mi");
+      if (!mi || mi.classList.contains("open")) return;
+      if (S.openMenu(mi)) S.select(mi.getAttribute("data-t"), mi);
     });
 
     /* цэг харуулах */
@@ -2648,7 +2939,7 @@ note:"Интерфейсийн нэр бүхий хэсгүүд — хаана �
     /* гар */
     document.addEventListener("keydown", (e) => {
       if (/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
-      if (e.key === "Escape") { S.showHint(); RM.$$("#rsHost .hs.sel").forEach((n) => n.classList.remove("sel")); }
+      if (e.key === "Escape") { S.closeMenu(); S.showHint(); RM.$$("#rsHost .hs.sel").forEach((n) => n.classList.remove("sel")); }
       else if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
         const i = ORDER.indexOf(S.state.page);
         const n = (i + (e.key === "ArrowRight" ? 1 : ORDER.length - 1)) % ORDER.length;

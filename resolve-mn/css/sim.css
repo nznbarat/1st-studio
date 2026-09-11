@@ -49,7 +49,7 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
 #wrap{display:flex;height:calc(100% - 52px)}
 #stage{flex:1;min-width:0;display:flex;flex-direction:column;padding:14px;gap:10px;overflow:auto}
 /* Resolve цонх боломжит өндрийг бүтнээр эзэлнэ — агуулга богино байсан ч. */
-#rsHost{flex:1;min-height:0;display:flex}
+#rsHost{flex:1;min-height:0;display:flex;position:relative}  /* унждаг цэсний байрлалын суурь */
 #side{width:352px;flex-shrink:0;background:var(--ui-panel);border-left:1px solid var(--ui-line);
   display:flex;flex-direction:column;overflow:hidden}
 
@@ -284,6 +284,22 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
 .kf .lane{flex:1;height:12px;background:#151515;border:1px solid #2a2a2a;border-radius:2px;position:relative}
 .kf .lane::after{content:"";position:absolute;left:28%;top:2px;width:6px;height:6px;background:var(--rs-act);
   transform:rotate(45deg)}
+
+/* ── цэсний унждаг жагсаалт ── */
+.rs{position:relative}
+.rs-menu .mi.open{background:#3d3d3d;color:#f0f0f0}
+.rs-menupop{position:absolute;z-index:40;min-width:296px;max-height:calc(100% - 40px);
+  overflow-y:auto;background:#2b2b2b;border:1px solid #101010;border-radius:3px;
+  padding:4px 0;box-shadow:0 10px 30px rgba(0,0,0,.6)}
+.rs-menupop .msep{height:1px;background:#3d3d3d;margin:4px 0}
+.rs-menupop .mrow{display:flex;align-items:center;width:100%;gap:12px;
+  padding:4px 14px;font-size:11.5px;color:var(--rs-txt);text-align:left;line-height:1.5}
+.rs-menupop .mrow:hover{background:var(--rs-sel);color:#fff}
+.rs-menupop .ml{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rs-menupop .mk{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;
+  color:var(--rs-dim2);white-space:nowrap}
+.rs-menupop .mrow:hover .mk{color:#cfe0f0}
+.rs-menupop .ma{color:var(--rs-dim2);font-size:11px}
 
 /* ── Fusion хуудасны байрлал ── */
 .fu-split{flex:1;display:flex;gap:1px;background:var(--rs-line);min-height:0}
