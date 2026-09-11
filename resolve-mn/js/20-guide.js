@@ -128,7 +128,8 @@
     lead: "Гаднаас (Python, MCP, автоматжуулалт) Resolve-ийг удирдах эрх зөвхөн Studio хувилбарт нээлттэй.",
     steps: [
       { t: "Хувилбараа шалга",
-        b: "Resolve нээгээд дээд цэсний <b>DaVinci Resolve → About DaVinci Resolve</b>. \"DaVinci Resolve Studio\" гэж бичсэн байвал Studio. Зөвхөн \"DaVinci Resolve\" бол үнэгүй хувилбар." },
+        b: "Хамгийн хурдан арга: программын <b>доод зүүн буланг</b> хараарай. Тэнд <b>\"DaVinci Resolve Studio 21\"</b> гэж бичсэн байвал Studio. Зөвхөн \"DaVinci Resolve\" бол үнэгүй хувилбар.",
+        tip: "Windows дээр Help цэсэнд \"About\" гэсэн мөр байдаггүй — macOS-ийн заавартай андуурч болзошгүй. Доод булангийн бичээс хамгийн найдвартай." },
       { t: "Python суулга (Windows)",
         b: "python.org-оос Python 3.10 буюу түүнээс дээш татаж суулга. <b>Add Python to PATH</b> болон <b>Install for all users</b> хоёуланг нь заавал тэмдэглэ.",
         tip: "Resolve Python-г системийн бүртгэлээс хайдаг. Зөвхөн нэг хэрэглэгчийн доор суулгавал олохгүй." },
