@@ -310,7 +310,7 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
 .fu-tools .ft{width:23px;height:22px;border-radius:3px;display:flex;align-items:center;
   justify-content:center;font-size:12px;color:var(--rs-icon);flex-shrink:0}
 .fu-tools .div{width:1px;height:15px;background:var(--rs-line2);margin:0 5px;flex-shrink:0}
-.rs-status{height:19px;flex-shrink:0;background:var(--rs-pane);border-top:1px solid var(--rs-line);
+.rs-status{height:20px;flex-shrink:0;background:var(--rs-pane);border-top:1px solid var(--rs-line);
   display:flex;align-items:center;padding:0 10px;gap:8px;
   font-family:'JetBrains Mono',ui-monospace,monospace;font-size:9.5px;color:var(--rs-dim2)}
 .rs-status .sp{flex:1}

@@ -288,9 +288,11 @@
           </div></div>
         </div>
 
-        <div class="rs-status">
+        <div class="rs-status hs" data-t="pixel-readout">
+          <span class="hs" data-t="position-viewer">Position&nbsp; X 0.94512&nbsp; 2422&nbsp;&nbsp; Y −0.33804&nbsp; −483</span>
+          <span class="hs" data-t="canvas-rgba">Canvas&nbsp; R 0&nbsp;&nbsp; G 0&nbsp;&nbsp; B 0&nbsp;&nbsp; A 0</span>
           <span class="sp"></span>
-          <span class="hs" data-t="render-cache">8% — 2700 MB</span>
+          <span class="hs" data-t="render-cache">8% — 2625 MB</span>
         </div>
       </div>
 

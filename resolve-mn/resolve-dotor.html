@@ -330,7 +330,7 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
 .fu-tools .ft{width:23px;height:22px;border-radius:3px;display:flex;align-items:center;
   justify-content:center;font-size:12px;color:var(--rs-icon);flex-shrink:0}
 .fu-tools .div{width:1px;height:15px;background:var(--rs-line2);margin:0 5px;flex-shrink:0}
-.rs-status{height:19px;flex-shrink:0;background:var(--rs-pane);border-top:1px solid var(--rs-line);
+.rs-status{height:20px;flex-shrink:0;background:var(--rs-pane);border-top:1px solid var(--rs-line);
   display:flex;align-items:center;padding:0 10px;gap:8px;
   font-family:'JetBrains Mono',ui-monospace,monospace;font-size:9.5px;color:var(--rs-dim2)}
 .rs-status .sp{flex:1}
@@ -1576,6 +1576,9 @@ note:"Интерфейсийн нэр бүхий хэсгүүд — хаана �
 ["Loop","Давтах","Тоглуулалт төгсгөлд хүрэхэд эхнээс нь дахин эхлүүлэх. Fusion-ий MediaIn нод дээр богино клипийг үргэлжлүүлэн давтахад ч хэрэглэнэ."],
 ["Trim (Fusion)","Тайралт (Fusion)","MediaIn нод дээр эх клипийн аль хэсгийг ашиглахыг заана. Timeline дээрх клипийг хөндөхгүй."],
 ["Viewer Mode","Дэлгэцийн горим","Дэлгэцийг юу харуулахыг сонгох — эх клип, timeline, хос дэлгэц, offline, Lightbox."],
+["Pixel Readout","Пиксэлийн заалт","Fusion дэлгэцийн доорх мөр. Хулганы доорх пиксэлийн байрлал ба өнгөний утгыг шууд харуулна — өнгө шалгах, түлхүүрлэлт тааруулахад чухал.","","Fusion хуудасны доод мөр"],
+["Canvas RGBA","Canvas RGBA утга","Хулганы доорх пиксэлийн улаан, ногоон, цэнхэр, тунгалагийн утга. Ногоон дэлгэц цэвэр арилсан эсэхийг шалгахад A=0 байх ёстой."],
+["Position (Viewer)","Байрлал (дэлгэц)","Хулганы заагчийн байрлал. Эхний хос нь харьцангуй (0–1), дараах нь пиксэлээр."],
 ["Splitter","Хуваагч","Самбаруудын хоорондох шугам. Чирэхэд самбарын хэмжээ өөрчлөгдөнө."],
 ["Folder Track","Хавтас зам","Fairlight дээр олон замыг нэг хавтсанд хийж хураах боломж. Resolve 21-д нэмэгдсэн, том холилтыг эмхлэхэд."],
 ["Source Track Selector","Эх замын сонгогч","Эх клипийн аль замыг timeline-ий аль зам руу оруулахыг заах хэсэг. Resolve 20.2-оос шинэчлэгдсэн."],
@@ -2527,9 +2530,11 @@ note:"Fusion хуудсанд байхад гарч ирдэг цэс. Боги�
           </div></div>
         </div>
 
-        <div class="rs-status">
+        <div class="rs-status hs" data-t="pixel-readout">
+          <span class="hs" data-t="position-viewer">Position&nbsp; X 0.94512&nbsp; 2422&nbsp;&nbsp; Y −0.33804&nbsp; −483</span>
+          <span class="hs" data-t="canvas-rgba">Canvas&nbsp; R 0&nbsp;&nbsp; G 0&nbsp;&nbsp; B 0&nbsp;&nbsp; A 0</span>
           <span class="sp"></span>
-          <span class="hs" data-t="render-cache">8% — 2700 MB</span>
+          <span class="hs" data-t="render-cache">8% — 2625 MB</span>
         </div>
       </div>
 
