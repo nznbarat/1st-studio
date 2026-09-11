@@ -73,6 +73,9 @@ ANGLES = {
     "bow":    ((21.0, 40.0, 17.0), (0.0, 5.0, 1.4), 50.0),        # хамрын цонх рүү дээрээс
     "ship":   ((205.0, 165.0, 130.0), (0.0, -70.0, -8.0), 50.0),  # бүтэн хөлөг
     "stern":  ((-95.0, -235.0, 24.0), (0.0, -150.0, -8.0), 48.0), # хойд талаас, хөдөлгүүрүүд
+    # Ногоон дэвсгэр дээр буулгасан нисгэгчид зориулсан дэвсгэр (16:9, дунд зэргийн кадр).
+    # Камер нисгэгчийн зүүн-урд талд: нисгэгч дэлгэцийн зүүн тийш харна, консол зүүн талд.
+    "pilot":  ((-0.95, 0.75, 1.34), (1.20, -0.50, 1.18), 29.0),
 }
 
 COL = "COCKPIT"
@@ -398,6 +401,28 @@ def build_shell(M):
             box("WallBtn", (0.03, 0.07, 0.05),
                 (w / 2 - 0.45, y - ww / 2 + 0.15 + k * (ww - 0.3) / 4, z + hh / 2 - 0.12),
                 mat=M["amber"] if k % 2 else M["screen"])
+
+    # баруун хананы тоноглолын хана (нисгэгчийн ард байрлах дэвсгэр)
+    rx = w / 2 - 0.30
+    for i, yy in enumerate((-3.3, -2.15, -1.0)):
+        box("RackBody_%d" % i, (0.42, 1.02, 1.75), (rx - 0.04, yy, 0.90), mat=M["wall"], bevel=0.03)
+        box("RackFace_%d" % i, (0.06, 0.92, 1.62), (rx - 0.26, yy, 0.92), mat=M["dark"], bevel=0.02)
+        for k in range(5):                     # жижиг зүүний хэсгүүд
+            box("RackPanel_%d_%d" % (i, k), (0.05, 0.80, 0.20),
+                (rx - 0.29, yy, 1.52 - k * 0.30), mat=M["wall"], bevel=0.01)
+        for k in range(2):                     # хоёрхон бүдэг дэлгэц
+            box("RackScreen_%d_%d" % (i, k), (0.04, 0.30, 0.14),
+                (rx - 0.31, yy - 0.20, 1.48 - k * 0.61), mat=M["dim_screen"])
+        for k in range(7):                     # заагч гэрлүүд
+            box("RackBtn_%d_%d" % (i, k), (0.035, 0.05, 0.04),
+                (rx - 0.31, yy - 0.30 + k * 0.10, 0.55 + (k % 3) * 0.30),
+                mat=M["amber"] if k % 3 else M["red"])
+    box("RackTop", (0.50, 3.4, 0.14), (rx - 0.04, -2.15, 1.85), mat=M["metal"], bevel=0.02)
+    box("RackLampRim", (0.26, 3.0, 0.14), (rx - 0.36, -2.15, 1.94), mat=M["metal"], bevel=0.02)
+    box("RackLamp", (0.14, 2.8, 0.07), (rx - 0.39, -2.15, 1.89), mat=M["warmpanel"])
+    for k in range(3):                         # хананы дагуух хоолой
+        cyl("RackPipe_%d" % k, 0.05 + 0.015 * k, 5.4, (rx - 0.62, -1.2, 2.45 - k * 0.17),
+            rot=(math.radians(90), 0, 0), mat=M["metal"])
 
     # зүүн хананы хоолойнууд
     for i, z in enumerate((2.55, 2.72, 2.38)):
@@ -963,6 +988,17 @@ def build_sun():
 # ══════════════════════════════════════════════════════════════════════
 #  Камер, рендер
 # ══════════════════════════════════════════════════════════════════════
+def hide_prefix(*prefixes):
+    """Нэр нь өгсөн угтвараар эхэлсэн объектуудыг рендерээс нууна."""
+    n = 0
+    for ob in bpy.data.collections[COL].objects:
+        if any(ob.name.startswith(pfx) for pfx in prefixes):
+            ob.hide_render = ob.hide_viewport = True
+            n += 1
+    print("[1st Studio] Нуусан объект: %d (%s)" % (n, ", ".join(prefixes)))
+    return n
+
+
 def set_angle(cam, name):
     """Камерыг бэлэн өнцөгт байрлуулна."""
     loc, aim, lens = ANGLES.get(name, ANGLES["wide"])
@@ -1184,7 +1220,9 @@ def main():
     def opt(flag, default=None):
         return argv[argv.index(flag) + 1] if flag in argv else default
 
-    CFG["angle"] = opt("--angle", CFG["angle"])
+    if "--angle" in argv:                      # тодорхой өнцөг асуувал нислэгийн анимац хэрэггүй
+        CFG["angle"] = opt("--angle", CFG["angle"])
+        CFG["flythrough"] = False
     CFG["device"] = opt("--device", CFG["device"])
     build()
     res = opt("--res", "960x540")
@@ -1195,6 +1233,8 @@ def main():
         prep_viewport()
         bpy.ops.wm.save_as_mainfile(filepath=blend)
         print("[1st Studio] Хадгаллаа:", blend)
+    if "--no-seat" in argv:                    # жүжигчин өөрийн сандал дээр сууж байвал
+        hide_prefix("Seat", "SEAT")
     frame = opt("--frame")
     if frame:
         bpy.context.scene.frame_set(int(frame))
