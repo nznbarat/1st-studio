@@ -57,6 +57,7 @@ CFG = {
     },
     "sun": {"energy": 2.6, "color": (1.0, 0.97, 0.93)},
     "flythrough": True,         # цонхоор нэвтэрч ордог камерын анимац
+    "flight_pace": 1.0,         # 1.0 = 18 сек. Их болгох тусам удаан, хүнд
     "device": "AUTO",          # AUTO = GPU байвал GPU, үгүй бол CPU. "CPU" / "GPU" гэж тулгаж болно
     "grime": 0.55,              # 0 = цэвэр, 1 = маш бохир
     "warm": (1.0, 0.62, 0.26),  # консолын бүлээн гэрэл
@@ -973,20 +974,25 @@ def set_angle(cam, name):
 
 # Нислэгийн зам: (фрейм, камерын байрлал, харах цэг, линз мм)
 FLIGHT = [
-    (1,   (30.0, 86.0, 34.0),  (2.0, 26.0, -2.0), 38.0),   # хол, хамрын тавцан дээгүүр
-    (45,  (12.0, 36.0, 13.5),  (0.0, 10.0, 1.2),  34.0),   # гүүр рүү дөхнө
-    (80,  (6.0, 16.5, 5.8),    (0.4, 3.2, 1.5),   30.0),   # цонхны булангийн амсар
-    (103, (-0.6, 5.8, 2.45),   (1.2, -0.4, 1.05), 26.0),   # харах цэг суудалд тогтоно
-    (130, (-3.0, 2.2, 2.15),   (1.2, -0.4, 1.05), 25.0),   # цонхоор нэвтэрч, суудлыг тойрно
-    (175, (-3.25, -3.60, 1.72), (1.1, -0.30, 1.05), 24.0),  # эцсийн өргөн кадр
+    # (фрейм, камерын байрлал, харах цэг, линз мм)
+    # Хөлөг асар том тул камер удаан, инерцтэй хөдөлнө. Урт линз масс мэдрүүлнэ.
+    (1,   (56.0, 160.0, 62.0), (4.0, 44.0, -4.0),  50.0),   # маш хол — хөлөг бүхэлдээ
+    (120, (30.0, 92.0, 34.0),  (2.0, 24.0, -1.0),  44.0),   # их бие дагуу гулсана
+    (228, (13.0, 38.0, 13.0),  (0.5, 8.0, 1.2),    36.0),   # хамрын тавцан руу
+    (288, (5.6, 16.0, 5.4),    (0.5, 3.2, 1.5),    30.0),   # цонхны булангийн амсар
+    (336, (-0.6, 5.8, 2.45),   (1.2, -0.4, 1.05),  27.0),   # харах цэг суудалд тогтоно
+    (384, (-3.0, 2.2, 2.15),   (1.2, -0.4, 1.05),  25.0),   # цонхоор нэвтэрч, тойрч эхэлнэ
+    (432, (-3.25, -3.60, 1.72), (1.1, -0.30, 1.05), 24.0),  # эцсийн өргөн кадр
 ]
 
 
 def build_flythrough(cam, aim):
     """Цонхоор нэвтэрч ордог камерын хөдөлгөөн."""
     sc = bpy.context.scene
-    sc.frame_start, sc.frame_end = FLIGHT[0][0], FLIGHT[-1][0]
-    for f, loc, a, lens in FLIGHT:
+    pace = max(0.2, CFG["flight_pace"])
+    keys = [(int(round(1 + (f - 1) * pace)), loc, a, lens) for f, loc, a, lens in FLIGHT]
+    sc.frame_start, sc.frame_end = keys[0][0], keys[-1][0]
+    for f, loc, a, lens in keys:
         cam.location = loc
         cam.keyframe_insert("location", frame=f)
         aim.location = a
@@ -1012,10 +1018,14 @@ def build_flythrough(cam, aim):
             except Exception:
                 curves = []
         for fc in curves:
-            for kp in fc.keyframe_points:
+            pts = fc.keyframe_points
+            for kp in pts:
                 kp.interpolation = "BEZIER"
-                kp.handle_left_type = kp.handle_right_type = "AUTO_CLAMPED"
-    sc.frame_set(FLIGHT[0][0])
+                kp.handle_left_type = kp.handle_right_type = "AUTO"
+            if len(pts) > 1:
+                pts[0].handle_right_type = "VECTOR"        # эхлэхдээ аль хэдийн хөдөлж байна
+                pts[-1].handle_left_type = "AUTO_CLAMPED"  # төгсгөлд нь аажим тогтоно
+    sc.frame_set(sc.frame_start)
 
 
 def build_camera():
