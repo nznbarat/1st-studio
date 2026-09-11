@@ -41,6 +41,7 @@ CFG = {
     "seat": {"x": 1.18, "y": -0.55, "scale": 1.28},
     "exposure": -0.45,
     "angle": "wide",
+    "device": "AUTO",          # AUTO = GPU байвал GPU, үгүй бол CPU. "CPU" / "GPU" гэж тулгаж болно
     "grime": 0.55,              # 0 = цэвэр, 1 = маш бохир
     "warm": (1.0, 0.62, 0.26),  # консолын бүлээн гэрэл
     "cool": (0.32, 0.55, 1.0),  # цонхны хүйтэн гэрэл
@@ -623,10 +624,39 @@ def build_camera():
     return cam
 
 
+def pick_device():
+    """GPU байвал асаана (OptiX / CUDA / HIP / Metal / oneAPI), үгүй бол CPU."""
+    want = CFG["device"].upper()
+    if want == "CPU":
+        return "CPU"
+    addon = bpy.context.preferences.addons.get("cycles")
+    if not addon:
+        return "CPU"
+    prefs = addon.preferences
+    for kind in ("OPTIX", "CUDA", "HIP", "METAL", "ONEAPI"):
+        try:
+            prefs.compute_device_type = kind
+            for fn in ("refresh_devices", "get_devices"):
+                if hasattr(prefs, fn):
+                    getattr(prefs, fn)()
+                    break
+            found = [d for d in prefs.devices if d.type == kind]
+            if found:
+                for d in prefs.devices:
+                    d.use = d.type in (kind, "CPU")
+                print("[1st Studio] GPU:", kind, "—", ", ".join(d.name for d in found))
+                return "GPU"
+        except Exception:
+            continue
+    if want == "GPU":
+        print("[1st Studio] GPU олдсонгүй, CPU-гаар ажиллана.")
+    return "CPU"
+
+
 def setup_render(samples=64, res=(960, 540)):
     sc = bpy.context.scene
     sc.render.engine = "CYCLES"
-    sc.cycles.device = "CPU"
+    sc.cycles.device = pick_device()
     sc.cycles.samples = samples
     sc.cycles.use_denoising = True
     sc.cycles.max_bounces = 6
@@ -713,10 +743,15 @@ def main():
         return argv[argv.index(flag) + 1] if flag in argv else default
 
     CFG["angle"] = opt("--angle", CFG["angle"])
+    CFG["device"] = opt("--device", CFG["device"])
     build()
     res = opt("--res", "960x540")
     setup_render(samples=int(opt("--samples", 64)),
                  res=tuple(int(v) for v in res.lower().split("x")))
+    blend = opt("--save-blend")
+    if blend:
+        bpy.ops.wm.save_as_mainfile(filepath=blend)
+        print("[1st Studio] Хадгаллаа:", blend)
     if "--render" in argv:
         out = argv[argv.index("--render") + 1]
         bpy.context.scene.render.filepath = out
