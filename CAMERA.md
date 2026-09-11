@@ -103,12 +103,37 @@ counter-clockwise, then dolly zoom vertigo into a close-up, handheld, 12 seconds
 
 ---
 
-## 6. Файлын бүтэц
+## 6. Blender экспортыг шалгах
+
+Экспортын кодыг өөрчилсөн бол хоёр алхмаар шалгана:
 
 ```
-camera.html      UI (Blender маягийн загвар)
-app.js           бүх логик — тайз, камер, задлагч, промт, экспорт
-three.min.js     three.js r128 (MIT лиценз)
+npm run check-blender                                   # тест .py файлууд үүсгэнэ
+blender -b -P tools/blender-check.py -- .blender-check  # Blender дотор ажиллуулж шалгана
+```
+
+Тест нь `app.js` доторх жинхэнэ экспортын кодыг тасдан авч ажиллуулдаг тул
+хуулбар код байхгүй. Blender талд дараахыг шалгана:
+
+- түлхүүр кадр бүр дээр камер бай руугаа **яг** харж байгаа эсэх
+  (`world_to_camera_view` → кадрын төв 0.5, 0.5)
+- линзний мм, бай хүртэлх зай, roll (Dutch angle) хөтөч дэх утгатай таарч байгаа эсэх
+- интерполяц (BEZIER / LINEAR / CONSTANT) үнэхээр тавигдсан эсэх
+- тайзны объект, нягтрал, промтын текст блок бүрэн эсэх
+
+`blender` команд байхгүй бол `pip install bpy` хийгээд шууд ажиллуулж болно:
+`python3 tools/blender-check.py .blender-check`
+
+---
+
+## 7. Файлын бүтэц
+
+```
+camera.html             UI (Blender маягийн загвар)
+app.js                  бүх логик — тайз, камер, задлагч, промт, экспорт
+three.min.js            three.js r128 (MIT лиценз)
+tools/blender-check.mjs Blender экспортын тест — .py файлууд үүсгэнэ
+tools/blender-check.py  тэр .py-г Blender дотор ажиллуулж шалгана
 ```
 
 Хуучин `v2` төслийн JSON файлууд автоматаар хөрвөж нээгдэнэ.
