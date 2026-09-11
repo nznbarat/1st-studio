@@ -222,12 +222,14 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
 /* хуудасны мөр */
 .rs-pages{display:flex;align-items:center;justify-content:center;gap:2px;overflow:hidden;background:var(--rs-head);
   border-top:1px solid var(--rs-line);padding:3px 9px;height:34px;flex-shrink:0;position:relative}
-.rs-pages .pg{display:flex;flex-direction:column;align-items:center;gap:1px;padding:2px 13px;
-  border-radius:4px;color:var(--rs-dim2);min-width:60px}
-.rs-pages .pg .ic{font-size:13px;line-height:1}
-.rs-pages .pg .nm{font-size:9px;letter-spacing:.02em}
+.rs-pages .pg{display:flex;align-items:center;justify-content:center;padding:4px 14px;
+  border-radius:4px;color:var(--rs-dim2);position:relative}
+.rs-pages .pg .ic{font-size:15px;line-height:1}
 .rs-pages .pg.act{color:#e8e8e8;background:#3d3d3d}
-.rs-pages .pg.new .nm::after{content:"21";font-size:7px;vertical-align:super;color:var(--rs-act);margin-left:2px}
+.rs-pages .pg.new::after{content:"21";position:absolute;top:1px;right:4px;font-size:7px;
+  color:var(--rs-act);line-height:1}
+.rs-brand{position:absolute;left:10px;display:flex;align-items:center;gap:6px;
+  font-size:10.5px;color:var(--rs-dim);white-space:nowrap;pointer-events:none}
 .rs-pages .right{position:absolute;right:9px;display:flex;gap:4px;color:var(--rs-icon);font-size:12px}
 .rs-pages .right .rb{padding:4px 6px;border-radius:3px}
 
@@ -282,6 +284,21 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
 .kf .lane{flex:1;height:12px;background:#151515;border:1px solid #2a2a2a;border-radius:2px;position:relative}
 .kf .lane::after{content:"";position:absolute;left:28%;top:2px;width:6px;height:6px;background:var(--rs-act);
   transform:rotate(45deg)}
+
+/* ── Fusion хуудасны байрлал ── */
+.fu-split{flex:1;display:flex;gap:1px;background:var(--rs-line);min-height:0}
+.fu-left{flex:1;min-width:0;display:flex;flex-direction:column;min-height:0}
+.fu-tools{display:flex;align-items:center;gap:2px;background:var(--rs-pane);
+  border-top:1px solid var(--rs-line);border-bottom:1px solid var(--rs-line);
+  padding:4px 8px;height:32px;flex-shrink:0;overflow:hidden}
+.fu-tools .ft{width:23px;height:22px;border-radius:3px;display:flex;align-items:center;
+  justify-content:center;font-size:12px;color:var(--rs-icon);flex-shrink:0}
+.fu-tools .div{width:1px;height:15px;background:var(--rs-line2);margin:0 5px;flex-shrink:0}
+.rs-status{height:19px;flex-shrink:0;background:var(--rs-pane);border-top:1px solid var(--rs-line);
+  display:flex;align-items:center;padding:0 10px;gap:8px;
+  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:9.5px;color:var(--rs-dim2)}
+.rs-status .sp{flex:1}
+.rs-title{font-size:11.5px;color:var(--rs-txt);white-space:nowrap}
 
 /* ── энгийн хуудсууд ── */
 .simple{flex:1;display:flex;gap:1px;background:var(--rs-line);min-height:0}

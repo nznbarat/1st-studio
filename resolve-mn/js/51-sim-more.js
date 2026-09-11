@@ -12,28 +12,34 @@
       <span class="logo">DaVinci Resolve</span>
       <span class="mi hs" data-t="file-menu">File</span>
       <span class="mi hs" data-t="edit-menu">Edit</span>
+      <span class="mi hs" data-t="trim-menu">Trim</span>
       <span class="mi hs" data-t="timeline-menu">Timeline</span>
       <span class="mi hs" data-t="clip-menu">Clip</span>
       <span class="mi hs" data-t="mark-menu">Mark</span>
       <span class="mi hs" data-t="view-menu">View</span>
       <span class="mi hs" data-t="playback-menu">Playback</span>
+      <span class="mi hs" data-t="fusion-page">Fusion</span>
+      <span class="mi hs" data-t="color-page">Color</span>
+      <span class="mi hs" data-t="fairlight-page">Fairlight</span>
       <span class="mi hs" data-t="workspace-menu">Workspace</span>
       <span class="mi hs" data-t="help-menu">Help</span>
     </div>`;
 
   const PAGES = (active) => {
+    /* Дараалал хэрэглэгчийн Resolve Studio 21-ээс баталгаажсан. */
     const list = [
-      ["media","▤","Media","media-page"], ["cut","◨","Cut","cut-page"],
-      ["edit","✂","Edit","edit-page"], ["fusion","⬡","Fusion","fusion-page"],
-      ["color","◐","Color","color-page"], ["fairlight","♪","Fairlight","fairlight-page"],
-      ["deliver","▶","Deliver","deliver-page"], ["photo","▨","Photo","photo-page"]
+      ["media","▤","Media","media-page"], ["photo","▨","Photo","photo-page"],
+      ["cut","◨","Cut","cut-page"], ["edit","✂","Edit","edit-page"],
+      ["fusion","✧","Fusion","fusion-page"], ["color","◐","Color","color-page"],
+      ["fairlight","♪","Fairlight","fairlight-page"], ["deliver","➚","Deliver","deliver-page"]
     ];
     return `<div class="rs-pages hs" data-t="page-bar">
+      <span class="rs-brand">◈ DaVinci Resolve Studio 21</span>
       ${list.map(([id, ic, nm, term]) => `
         <span class="pg hs ${id === active ? "act" : ""} ${id === "photo" ? "new" : ""}"
-              data-t="${term}" data-go="${id}"><span class="ic">${ic}</span><span class="nm">${nm}</span></span>`).join("")}
-      <span class="right"><span class="rb hs" data-t="project-manager">⌂</span>
-        <span class="rb hs" data-t="project-settings">⚙</span></span></div>`;
+              data-t="${term}" data-go="${id}" title="${nm}"><span class="ic">${ic}</span></span>`).join("")}
+      <span class="right"><span class="rb hs" data-t="project-manager" title="Project Manager">⌂</span>
+        <span class="rb hs" data-t="project-settings" title="Project Settings">⚙</span></span></div>`;
   };
 
   const SCREEN = (warm) => `
@@ -177,55 +183,142 @@
     ${PAGES("cut")}
   </div>`;
 
-  /* ═══════════ FUSION ═══════════ */
+  /* ═══════════ FUSION ═══════════
+     Байрлалыг хэрэглэгчийн DaVinci Resolve Studio 21-ийн дэлгэцээс шалгав:
+     зүүн дээр Bins ба Media Pool, төвд ганц дэлгэц, баруунд бүрэн өндөртэй
+     Inspector, доор нь хэрэглүүрийн хэвтээ эгнээ, хамгийн доор Nodes. */
   S.fusion = () => `
   <div class="rs" data-page="fusion">
     ${MENU()}
     <div class="rs-tools hs" data-t="interface-toolbar">
-      <span class="tg hs" data-t="bins-fusion"><span class="ic">▤</span>Bins</span>
+      <span class="tg hs" data-t="panel-toggle">⌄</span>
+      <span class="tg act hs" data-t="media-pool"><span class="ic">▤</span>Media Pool</span>
+      <span class="tg hs" data-t="effects-library"><span class="ic">✦</span>Effects</span>
+      <span class="tg hs" data-t="clips-panel"><span class="ic">▥</span>Clips</span>
       <span class="tg act hs" data-t="node-graph"><span class="ic">⬡</span>Nodes</span>
+      <span class="sp"></span>
+      <span class="rs-title">Timeline 1</span>
+      <span class="sp"></span>
       <span class="tg hs" data-t="spline-editor"><span class="ic">∿</span>Spline</span>
       <span class="tg hs" data-t="keyframe-editor"><span class="ic">◆</span>Keyframes</span>
-      <span class="sp"></span>
+      <span class="tg hs" data-t="metadata"><span class="ic">ⓘ</span>Metadata</span>
       <span class="tg act hs" data-t="inspector-fusion"><span class="ic">◧</span>Inspector</span>
     </div>
-    <div class="rs-body">
-      <div class="rs-top">
-        <div class="pane vw hs" data-t="viewer-1-2"><div class="pane-h"><b>Viewer 1</b></div>
-          <div class="pane-b">${SCREEN(false)}</div></div>
-        <div class="pane vw hs" data-t="viewer-1-2"><div class="pane-h"><b>Viewer 2</b></div>
-          <div class="pane-b">${SCREEN(true)}</div></div>
-        <div class="pane insp hs" data-t="inspector-fusion">
-          <div class="pane-h"><b>Inspector</b></div>
-          <div class="pane-b">
-            <div class="insp-sec hs" data-t="delta-keyer"><div class="t">▾ DeltaKeyer1</div>
-              <div class="insp-row hs" data-t="matte"><span class="lb">Matte</span>
-                <span class="sl" style="--p:60%"></span><span class="vl">0.60</span></div>
-              <div class="insp-row hs" data-t="spill-suppression"><span class="lb">Spill</span>
-                <span class="sl" style="--p:80%"></span><span class="vl">0.80</span></div>
+
+    <div class="rs-body"><div class="fu-split">
+      <div class="fu-left">
+        <div class="rs-top">
+          <div class="pane hs" data-t="bin" style="width:120px;flex-shrink:0">
+            <div class="pane-h"><b>Bins</b></div>
+            <div class="pane-b"><div style="padding:4px 0">
+              <div class="mp-bin act hs" data-t="bin">▸ Master</div>
+              <div style="height:14px"></div>
+              <div class="mp-bin hs" data-t="smart-bin">✦ Smart Bins</div>
+              <div class="mp-bin hs" data-t="keyword">&nbsp;&nbsp;Keywords</div>
+              <div class="mp-bin hs" data-t="power-bin">&nbsp;&nbsp;Collections</div>
+            </div></div>
+          </div>
+          <div class="pane hs" data-t="media-pool" style="width:190px;flex-shrink:0">
+            <div class="pane-h"><b>Master</b></div>
+            <div class="pane-b"><div class="mp-grid">
+              <div class="mp-clip hs" data-t="clip" data-n="хөлөг.mp4"></div>
+              <div class="mp-clip b hs" data-t="timeline" data-n="Timeline 1"></div>
+            </div></div>
+          </div>
+          <div class="pane vw hs" data-t="viewer-1-2">
+            <div class="pane-h"><span class="hs" data-t="viewer-mode">100%</span><span class="sp"></span>
+              <span class="hs" data-t="mediaout">MediaOut1</span></div>
+            <div class="pane-b" style="display:flex;flex-direction:column">${SCREEN(false)}
+              <div class="vw-foot">
+                <div class="tl-ruler hs" data-t="timeline-ruler" style="padding-left:0">
+                  <div class="tk"><span>0</span></div><div class="tk"><span>30</span></div>
+                  <div class="tk"><span>60</span></div><div class="tk"><span>90</span></div>
+                  <div class="tk"><span>119</span></div></div>
+                <div class="vw-ctrl hs" data-t="transport-controls">
+                  <span class="tc hs" data-t="timecode">0.0</span>
+                  <span class="tc">119.0</span>
+                  <span>◀◀</span><span>◀</span><span>■</span><span style="font-size:14px">▶</span><span>▶▶</span>
+                  <span class="mk hs" data-t="loop">↻</span></div>
+              </div>
             </div>
-            <div class="insp-sec hs" data-t="matte-control"><div class="t">▸ Matte Control</div></div>
-            <div class="insp-sec hs" data-t="merge"><div class="t">▸ Merge1</div></div>
           </div>
         </div>
+
+        <div class="fu-tools hs" data-t="add-tool">
+          <span class="ft hs" data-t="background-node" title="Background">▦</span>
+          <span class="ft hs" data-t="mediain" title="MediaIn">▣</span>
+          <span class="ft hs" data-t="text-plus-node" title="Text+">T</span>
+          <span class="ft hs" data-t="paint" title="Paint">✎</span>
+          <span class="div"></span>
+          <span class="ft hs" data-t="particle-emitter" title="Particles">∵</span>
+          <span class="ft hs" data-t="displace" title="Displace">≋</span>
+          <span class="ft hs" data-t="brightness-contrast" title="Brightness/Contrast">◑</span>
+          <span class="ft hs" data-t="color-corrector-fusion" title="Color Corrector">◍</span>
+          <span class="div"></span>
+          <span class="ft hs" data-t="merge" title="Merge">⊕</span>
+          <span class="ft hs" data-t="transform-fusion" title="Transform">⊹</span>
+          <span class="ft hs" data-t="blur-fusion" title="Blur">◌</span>
+          <span class="ft hs" data-t="glow" title="Glow">✸</span>
+          <span class="ft hs" data-t="defocus" title="Defocus">◉</span>
+          <span class="div"></span>
+          <span class="ft hs" data-t="rectangle-mask" title="Rectangle">▭</span>
+          <span class="ft hs" data-t="ellipse-mask" title="Ellipse">◯</span>
+          <span class="ft hs" data-t="polygon-mask" title="Polygon">⬠</span>
+          <span class="ft hs" data-t="b-spline-mask" title="B-Spline">⌒</span>
+          <span class="ft hs" data-t="matte-control" title="Matte Control">◪</span>
+          <span class="div"></span>
+          <span class="ft hs" data-t="tracker" title="Tracker">⊹</span>
+          <span class="ft hs" data-t="planar-tracker" title="Planar Tracker">▱</span>
+          <span class="ft hs" data-t="delta-keyer" title="Delta Keyer">◈</span>
+          <span class="div"></span>
+          <span class="ft hs" data-t="shape-3d" title="Shape 3D">⬢</span>
+          <span class="ft hs" data-t="camera-3d" title="Camera 3D">⬡</span>
+          <span class="ft hs" data-t="renderer-3d" title="Renderer 3D">⬣</span>
+        </div>
+
+        <div class="pane hs" data-t="node-graph" style="flex:1;min-height:0;border-top:1px solid var(--rs-line)">
+          <div class="pane-h"><b>Nodes</b><span class="sp"></span>
+            <span class="hs" data-t="node-label">⋯</span></div>
+          <div class="pane-b"><div class="node-canvas">
+            <div class="wire" style="left:172px;top:46px;width:38px"></div>
+            <div class="node on hs" data-t="mediain" style="left:66px;top:25px;width:106px">
+              <span style="font-size:8.5px;color:#d8d8d8">хөлөг.mp4</span></div>
+            <div class="node hs" data-t="mediaout" style="left:210px;top:25px;width:106px">
+              <span style="font-size:8.5px;color:#d8d8d8">MediaOut1</span></div>
+          </div></div>
+        </div>
+
+        <div class="rs-status">
+          <span class="sp"></span>
+          <span class="hs" data-t="render-cache">8% — 2700 MB</span>
+        </div>
       </div>
-      <div class="pane hs" data-t="node-graph" style="height:230px;flex-shrink:0;border-top:1px solid var(--rs-line)">
-        <div class="pane-h"><b>Nodes</b><span class="sp"></span>
-          <span class="hs" data-t="add-tool">＋</span><span class="hs" data-t="group">▣</span></div>
-        <div class="pane-b"><div class="node-canvas">
-          <div class="wire" style="left:78px;top:46px;width:44px"></div>
-          <div class="wire" style="left:180px;top:46px;width:44px"></div>
-          <div class="wire" style="left:282px;top:46px;width:44px"></div>
-          <div class="wire" style="left:180px;top:130px;width:44px"></div>
-          <div class="node hs" data-t="mediain" style="left:20px;top:25px"><span class="thumb"></span><span class="lbl">MediaIn1</span></div>
-          <div class="node on hs" data-t="delta-keyer" style="left:122px;top:25px"><span class="thumb"></span><span class="lbl">DeltaKeyer1</span></div>
-          <div class="node hs" data-t="merge" style="left:224px;top:25px"><span class="thumb"></span><span class="lbl">Merge1</span></div>
-          <div class="node hs" data-t="mediaout" style="left:326px;top:25px"><span class="thumb"></span><span class="lbl">MediaOut1</span></div>
-          <div class="node hs" data-t="background-node" style="left:122px;top:110px"><span class="thumb"></span><span class="lbl">Background1</span></div>
-          <div class="node hs" data-t="text-plus-node" style="left:224px;top:110px"><span class="thumb"></span><span class="lbl">Text1</span></div>
-        </div></div>
+
+      <div class="pane insp hs" data-t="inspector-fusion" style="width:250px">
+        <div class="pane-h"><b>Inspector</b><span class="sp"></span><span>⋯</span></div>
+        <div class="pane-b">
+          <div class="insp-tabs"><div class="act">Tools</div><div>Modifiers</div></div>
+          <div class="insp-sec hs" data-t="mediain">
+            <div class="t">● MediaIn1: хөлөг.mp4</div>
+            <div class="insp-row hs" data-t="clip"><span class="lb">Clip Name</span><span class="vl">хөлөг</span></div>
+            <div class="insp-row hs" data-t="in-point"><span class="lb">In / Out</span>
+              <span class="sl" style="--p:70%"></span><span class="vl">239</span></div>
+          </div>
+          <div class="insp-tabs"><div class="act">Image</div><div>Audio</div><div>Settings</div></div>
+          <div class="insp-sec">
+            <div class="insp-row hs" data-t="clip"><span class="lb">Process</span><span class="vl">Full</span></div>
+            <div class="insp-row hs" data-t="media-pool"><span class="lb">Source</span><span class="vl">Pool</span></div>
+            <div class="insp-row hs" data-t="trim-fusion"><span class="lb">Trim</span>
+              <span class="sl" style="--p:100%"></span><span class="vl">239</span></div>
+            <div class="insp-row hs" data-t="freeze-frame"><span class="lb">Hold first</span><span class="vl">0</span></div>
+            <div class="insp-row hs" data-t="reverse-clip"><span class="lb">Reverse</span><span class="vl">☐</span></div>
+            <div class="insp-row hs" data-t="loop"><span class="lb">Loop</span><span class="vl">☐</span></div>
+          </div>
+          <div class="insp-sec hs" data-t="input-color-space"><div class="t">▸ Source Color Space</div></div>
+          <div class="insp-sec hs" data-t="gamma"><div class="t">▸ Source Gamma Space</div></div>
+        </div>
       </div>
-    </div>
+    </div></div>
     ${PAGES("fusion")}
   </div>`;
 

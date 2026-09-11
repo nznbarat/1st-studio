@@ -6,7 +6,7 @@
 
   const S = RM.sim, $ = RM.$, el = RM.el;
 
-  const ORDER = ["media", "cut", "edit", "fusion", "color", "fairlight", "deliver", "photo"];
+  const ORDER = ["media", "photo", "cut", "edit", "fusion", "color", "fairlight", "deliver"];
 
   S.state = {
     page:   RM.store.get("simPage", "edit"),
@@ -95,7 +95,14 @@
   S.showHint = function () {
     const box = $("#sideBody");
     box.innerHTML = "";
-    const n = RM.$$("#rsHost .hs").length;
+    /* Товших цэгийн тоог жагсаалттай нэг болгохын тулд өвөрмөц нэр томьёогоор тоолно
+       (нэг нэр томьёо дэлгэц дээр хэд хэдэн газар давтагдаж болно). */
+    const seen = Object.create(null);
+    RM.$$("#rsHost .hs").forEach((el) => {
+      const id = el.getAttribute("data-t");
+      if (id && RM.dict.byId[id]) seen[id] = 1;
+    });
+    const n = Object.keys(seen).length;
     box.appendChild(el("div", { class: "hint", html:
       "<b>Дэлгэц дээрх ямар ч хэсэг дээр товшино уу.</b> Тухайн хэсгийн монгол нэр, " +
       "юу хийдэг, товчлуур, хаана байдаг нь энд гарч ирнэ." +

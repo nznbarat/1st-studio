@@ -23,32 +23,37 @@
       <span class="mi hs" data-t="mark-menu">Mark</span>
       <span class="mi hs" data-t="view-menu">View</span>
       <span class="mi hs" data-t="playback-menu">Playback</span>
-      ${extra || ""}
+      <span class="mi hs" data-t="fusion-page">Fusion</span>
+      <span class="mi hs" data-t="color-page">Color</span>
+      <span class="mi hs" data-t="fairlight-page">Fairlight</span>
       <span class="mi hs" data-t="workspace-menu">Workspace</span>
       <span class="mi hs" data-t="help-menu">Help</span>
     </div>`;
 
   const PAGES = (active) => {
+    /* Дараалал ба шошгогүй харагдацыг хэрэглэгчийн Resolve Studio 21-ийн
+       дэлгэцээс шалгаж баталсан: Photo нь Media, Cut хоёрын хооронд байрлана. */
     const list = [
       ["media",     "▤", "Media",     "media-page"],
+      ["photo",     "▨", "Photo",     "photo-page"],
       ["cut",       "◨", "Cut",       "cut-page"],
       ["edit",      "✂", "Edit",      "edit-page"],
-      ["fusion",    "⬡", "Fusion",    "fusion-page"],
+      ["fusion",    "✧", "Fusion",    "fusion-page"],
       ["color",     "◐", "Color",     "color-page"],
       ["fairlight", "♪", "Fairlight", "fairlight-page"],
-      ["deliver",   "▶", "Deliver",   "deliver-page"],
-      ["photo",     "▨", "Photo",     "photo-page"]
+      ["deliver",   "➚", "Deliver",   "deliver-page"]
     ];
     return `
     <div class="rs-pages hs" data-t="page-bar">
+      <span class="rs-brand">◈ DaVinci Resolve Studio 21</span>
       ${list.map(([id, ic, nm, term]) => `
         <span class="pg hs ${id === active ? "act" : ""} ${id === "photo" ? "new" : ""}"
-              data-t="${term}" data-go="${id}">
-          <span class="ic">${ic}</span><span class="nm">${nm}</span>
+              data-t="${term}" data-go="${id}" title="${nm}">
+          <span class="ic">${ic}</span>
         </span>`).join("")}
       <span class="right">
-        <span class="rb hs" data-t="project-manager">⌂</span>
-        <span class="rb hs" data-t="project-settings">⚙</span>
+        <span class="rb hs" data-t="project-manager" title="Project Manager">⌂</span>
+        <span class="rb hs" data-t="project-settings" title="Project Settings">⚙</span>
       </span>
     </div>`;
   };
@@ -244,7 +249,7 @@
 
   S.color = () => `
   <div class="rs" data-page="color">
-    ${MENU('<span class="mi hs" data-t="color-page">Color</span>')}
+    ${MENU()}
     <div class="rs-tools hs" data-t="interface-toolbar">
       <span class="tg act hs" data-t="gallery"><span class="ic">▨</span>Gallery</span>
       <span class="tg hs" data-t="lut-browser"><span class="ic">▩</span>LUTs</span>
