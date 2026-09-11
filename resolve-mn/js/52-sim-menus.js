@@ -14,6 +14,16 @@
   RM.sim.menus = {
 
 
+
+    "fusion-page": { label: "Fusion", verified: true, items: [
+      ["show-toolbar", "Show Toolbar", "✓"],
+      ["fusion-settings", "Fusion Settings…"],
+      ["reset-composition", "Reset Composition"],
+      ["macro-editor", "Macro Editor…"],
+      ["import-fusion", "Import", "", "›"],
+      ["render-all-savers", "Render All Savers"]
+    ]},
+
     "file-menu": { label: "File", verified: true, items: [
       ["new-project", "New Project…"],
       ["open-recent-project", "Open Recent Project", "", "›"],
