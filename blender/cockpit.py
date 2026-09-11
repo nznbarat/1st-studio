@@ -687,6 +687,24 @@ def setup_render(samples=64, res=(960, 540)):
     sc.view_settings.exposure = CFG["exposure"]
 
 
+def prep_viewport():
+    """Файлыг нээмэгц камерын харцаар, материалтай харагддаг болгоно."""
+    for screen in bpy.data.screens:
+        for area in screen.areas:
+            if area.type != "VIEW_3D":
+                continue
+            for space in area.spaces:
+                if space.type != "VIEW_3D":
+                    continue
+                space.shading.type = "MATERIAL"        # хурдан, гэрэл материалтай
+                space.shading.use_scene_lights = True
+                space.shading.use_scene_world = True
+                space.clip_end = 200.0
+                space.overlay.show_overlays = False
+                if space.region_3d:
+                    space.region_3d.view_perspective = "CAMERA"
+
+
 def build():
     fresh_collection(COL)
     if CFG["clear_scene"]:
@@ -750,6 +768,7 @@ def main():
                  res=tuple(int(v) for v in res.lower().split("x")))
     blend = opt("--save-blend")
     if blend:
+        prep_viewport()
         bpy.ops.wm.save_as_mainfile(filepath=blend)
         print("[1st Studio] Хадгаллаа:", blend)
     if "--render" in argv:
