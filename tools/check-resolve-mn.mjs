@@ -28,6 +28,11 @@ for (const f of files) {
 const guideSrc = readFileSync(join(root, "resolve-mn/js/20-guide.js"), "utf8");
 new Function("window", "RM", guideSrc)(globalThis.window, RM);
 
+/* Интерфейсийн загварын хуудсууд */
+for (const f of ["resolve-mn/js/50-sim-pages.js", "resolve-mn/js/51-sim-more.js"]) {
+  new Function("window", "RM", readFileSync(join(root, f), "utf8"))(globalThis.window, RM);
+}
+
 const D = RM.dict;
 /* Монгол нэр нь зориудаар латинаар үлддэг нэрс (товчлолын задаргаа) */
 const LATIN_OK = new Set([
@@ -46,6 +51,15 @@ console.log("Товчлуур   : " + D.rows.filter((r) => r.key).length);
 console.log("Байрлалтай : " + D.rows.filter((r) => r.loc).length);
 console.log("Ажлын урсгал: " + RM.guides.length +
             " (" + RM.guides.reduce((a, g) => a + g.steps.length, 0) + " алхам)");
+
+const SIM_PAGES = ["media", "cut", "edit", "fusion", "color", "fairlight", "deliver", "photo"];
+const simHtml = {};
+let simSpots = 0;
+for (const pg of SIM_PAGES) {
+  simHtml[pg] = typeof RM.sim[pg] === "function" ? RM.sim[pg]() : "";
+  simSpots += [...new Set([...simHtml[pg].matchAll(/data-t="([^"]+)"/g)].map((m) => m[1]))].length;
+}
+console.log("Загварын хуудас: " + SIM_PAGES.length + " (" + simSpots + " товших цэг)");
 
 console.log("\n── Хуудас тус бүрээр ──");
 for (const p of D.pages) {
@@ -102,7 +116,26 @@ for (const l of linked) {
   if (!files.includes(l)) warn("index.html байхгүй файлыг холбож байна: " + l);
 }
 
-/* 7 · Хайлтын эрүүл мэнд */
+/* 7 · Загварын товших цэг бүр толинд байгаа эсэх */
+for (const pg of SIM_PAGES) {
+  if (!simHtml[pg]) { warn("Загварын хуудас алга: " + pg); continue; }
+  const ids = [...new Set([...simHtml[pg].matchAll(/data-t="([^"]+)"/g)].map((m) => m[1]))];
+  if (ids.length < 12) warn("Загварын хуудас хэт цөөн цэгтэй: " + pg + " (" + ids.length + ")");
+  for (const id of ids) {
+    if (!D.byId[id]) warn("Загварын цэг толинд алга: " + pg + " → data-t=\"" + id + "\"");
+  }
+}
+
+/* 8 · Загварын файлууд interface.html-д холбогдсон эсэх */
+const iface = readFileSync(join(root, "resolve-mn/interface.html"), "utf8");
+for (const f of files) {
+  if (!iface.includes("js/dict/" + f)) warn("interface.html-д холбогдоогүй толь: " + f);
+}
+for (const f of ["50-sim-pages.js", "51-sim-more.js", "60-sim-ui.js", "91-sim-main.js"]) {
+  if (!iface.includes("js/" + f)) warn("interface.html-д холбогдоогүй загвар: " + f);
+}
+
+/* 9 · Хайлтын эрүүл мэнд */
 const probes = ["ripple", "долгиолон", "node", "нод", "green screen", "ногоон дэлгэц",
                 "рендер", "render", "өнгө", "color", "дуу", "audio", "товчлуур"];
 for (const q of probes) {

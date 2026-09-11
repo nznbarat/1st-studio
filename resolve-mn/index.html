@@ -9,7 +9,11 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎞%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Фонтыг хаалтгүй ачаална: fonts.googleapis.com удаан эсвэл хаагдсан үед ч
+     скриптүүд хүлээхгүй, хуудас нөөц фонтоор шууд ажиллана. -->
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet" media="print" onload="this.media='all';this.onload=null">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
@@ -18,6 +22,7 @@
   <h1>Resolve <span>Монголоор</span><em>v1</em></h1>
   <div class="spacer"></div>
   <div class="pair"><b>ENGLISH</b> → <i>МОНГОЛ</i></div>
+  <a class="backlink" href="interface.html" title="Интерфейсийн загвар"><span class="bl-ico">🖥</span><span class="bl-txt">Resolve дотор</span></a>
   <a class="backlink" href="../world-builder/" title="Ертөнц Бүтээгч рүү"><span class="bl-ico">🎬</span><span class="bl-txt">Ертөнц Бүтээгч</span></a>
 </div>
 
@@ -55,8 +60,9 @@
     <section class="panel" id="p-huudas">
       <div class="pane-head">
         <span class="eyebrow">Бүтэц</span>
-        <h2>Resolve-ийн долоон хуудас</h2>
-        <p>Программын доод талын долоон таб бол ажлын урсгалын долоон үе шат.
+        <h2>Resolve-ийн хуудсууд</h2>
+        <p>Программын доод талын табууд бол ажлын урсгалын үе шатууд.
+           Resolve 21-д Photo хуудас нэмэгдэж найм болсон.
            Ангилал дээр товшвол тухайн хэсгийн бүх нэр томьёо нээгдэнэ.</p>
       </div>
       <div id="pagesBox"></div>
@@ -155,6 +161,7 @@
 <script src="js/dict/r15-tovchluur.js"></script>
 <script src="js/dict/r16-asuudal.js"></script>
 <script src="js/dict/r17-nemelt.js"></script>
+<script src="js/dict/r18-interface.js"></script>
 <script src="js/20-guide.js"></script>
 <script src="js/30-ui.js"></script>
 <script src="js/90-main.js"></script>

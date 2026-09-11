@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0d141c">
+<title>Resolve дотор — интерфейсийн монгол загвар</title>
+<meta name="description" content="DaVinci Resolve-ийн интерфейсийн хуулбар. Ямар ч хэсэг дээр товшвол монголоор тайлбарлана.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🖥%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Фонтыг хаалтгүй ачаална: fonts.googleapis.com удаан эсвэл хаагдсан үед ч
+     скриптүүд хүлээхгүй, хуудас нөөц фонтоор шууд ажиллана. -->
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet" media="print" onload="this.media='all';this.onload=null">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="css/sim.css">
+</head>
+<body>
+
+<div id="top">
+  <h1>Resolve <span>дотор</span><em>загвар</em></h1>
+  <div id="pageBtns" style="display:flex;gap:5px;flex-wrap:wrap">
+    <button class="tbtn" data-p="media">Media</button>
+    <button class="tbtn" data-p="cut">Cut</button>
+    <button class="tbtn" data-p="edit">Edit</button>
+    <button class="tbtn" data-p="fusion">Fusion</button>
+    <button class="tbtn" data-p="color">Color</button>
+    <button class="tbtn" data-p="fairlight">Fairlight</button>
+    <button class="tbtn" data-p="deliver">Deliver</button>
+    <button class="tbtn" data-p="photo">Photo</button>
+  </div>
+  <div class="spacer"></div>
+  <button class="tbtn" id="revealBtn" title="Товшиж болох бүх хэсгийг тодруулах">◌ Цэг харуулах</button>
+  <a class="tbtn" href="index.html">📖 Толь</a>
+</div>
+
+<div id="wrap">
+  <div id="stage">
+    <div class="note">
+      <b>Сурах зориулалттай хуулбар — программ өөрөө биш.</b> Байрлалыг Resolve-ийн баримтаас гаргасан,
+      пиксел нэг бүрээр адил биш. Resolve 21-ээс <b>Photo хуудас</b> нэмэгдэж найм болсон.
+      Зөрүү анзаарвал хэлээрэй.
+    </div>
+    <div id="rsHost"></div>
+  </div>
+
+  <aside id="side">
+    <div class="side-head">
+      <span class="eyebrow">Тайлбар</span>
+      <h2>Юу дээр товшив?</h2>
+    </div>
+    <div class="side-body" id="sideBody"></div>
+  </aside>
+</div>
+
+<script src="js/00-core.js"></script>
+<script src="js/10-dict.js"></script>
+<script src="js/dict/r01-erunhii.js"></script>
+<script src="js/dict/r02-media.js"></script>
+<script src="js/dict/r03-cut.js"></script>
+<script src="js/dict/r04-edit.js"></script>
+<script src="js/dict/r05-edit2.js"></script>
+<script src="js/dict/r06-fusion.js"></script>
+<script src="js/dict/r07-fusion2.js"></script>
+<script src="js/dict/r08-color.js"></script>
+<script src="js/dict/r09-color2.js"></script>
+<script src="js/dict/r10-color3.js"></script>
+<script src="js/dict/r11-fairlight.js"></script>
+<script src="js/dict/r12-fairlight2.js"></script>
+<script src="js/dict/r13-deliver.js"></script>
+<script src="js/dict/r14-tehnik.js"></script>
+<script src="js/dict/r15-tovchluur.js"></script>
+<script src="js/dict/r16-asuudal.js"></script>
+<script src="js/dict/r17-nemelt.js"></script>
+<script src="js/dict/r18-interface.js"></script>
+<script src="js/50-sim-pages.js"></script>
+<script src="js/51-sim-more.js"></script>
+<script src="js/60-sim-ui.js"></script>
+<script src="js/91-sim-main.js"></script>
+</body>
+</html>
