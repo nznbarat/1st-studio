@@ -100,6 +100,9 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
 .detail .dkbd .plus{font-size:9px;color:var(--ui-dim2)}
 .detail .dpage{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;
   text-transform:uppercase;border:1px solid var(--ui-line);border-radius:5px;padding:2px 8px;color:var(--ui-dim)}
+.detail .why{margin-top:14px;background:rgba(224,162,74,.08);border-left:2px solid var(--ui-tungsten);
+  border-radius:0 7px 7px 0;padding:10px 12px;font-size:12.5px;color:var(--ui-dim);line-height:1.75}
+.detail .why b{color:var(--ui-text)}
 .detail .more{margin-top:15px;font-size:12px;color:var(--ui-dim2);line-height:1.7}
 
 /* бүх цэгийн жагсаалт */
@@ -320,6 +323,12 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
   color:var(--rs-dim2);white-space:nowrap}
 .rs-menupop .mrow:hover .mk{color:#cfe0f0}
 .rs-menupop .ma{color:var(--rs-dim2);font-size:11px}
+/* Идэвхгүй команд — тухайн хуудсанд ажиллах боломжгүй */
+.rs-menupop .mrow.dim .ml,
+.rs-menupop .mrow.dim .mk,
+.rs-menupop .mrow.dim .ma{color:#5a5a5a}
+.rs-menupop .mrow.dim:hover{background:rgba(58,110,165,.35)}
+.rs-menupop .mrow.dim:hover .ml{color:#c0c0c0}
 
 /* ── Fusion хуудасны байрлал ── */
 .fu-split{flex:1;display:flex;gap:1px;background:var(--rs-line);min-height:0}
@@ -1472,6 +1481,7 @@ note:"Монголчуудын хамгийн олон асуудаг асууд
 ["Disk Full","Диск дүүрсэн","Кэш файл асар их зай эзэлдэг. Playback → Delete Render Cache → All сонгож цэвэрлэнэ үү."],
 ["Cache Growing","Кэш хэт томорсон","Preferences → Media Storage дотор кэшийн диск, Project Settings дотор кэшийн хугацааг тохируулна уу."],
 ["Crash on Startup","Нээх үед унана","Ихэвчлэн видео картын драйвер хуучирсан эсвэл гуравдагч талын эффект зөрчилдсөнөөс. Драйвераа шинэчилж, суулгасан нэмэлт эффектээ түр хасаж үзнэ үү."],
+["Greyed Out Menu Items","Цэсний командууд саарал болж идэвхгүй байна","Хамгийн түгээмэл шалтгаан: та буруу хуудсан дээр байна. Тухайлбал Edit цэсний Insert, Overwrite, Ripple Delete, Paste Attributes зэрэг нь timeline дээрх клип дээр ажилладаг тул Fusion, Media, Color хуудсанд саарал болно. Edit (Shift+4) эсвэл Cut (Shift+3) хуудсанд орж клипээ сонгоно уу. Хоёр дахь шалтгаан: клип сонгоогүй, эсвэл зам түгжээтэй байна."],
 ["Undo Not Working","Буцаах ажиллахгүй байна","Resolve хуудас бүрд тусдаа буцаах түүх хөтөлдөг. Color хуудасны засварыг Edit хуудсанд буцаах боломжгүй — тухайн хуудсандаа буцаана уу."]
 ]});
 
@@ -3110,51 +3120,57 @@ note:"Fusion хуудсанд байхад гарч ирдэг цэс. Боги�
       ["deactivate-license", "Deactivate License"]
     ]},
 
+    /* Мөрийн 5 дахь утга "clip" — тухайн команд timeline дээрх клип дээр
+       ажилладаг гэсэн үг. Монтаж хийдэггүй хуудсанд (Fusion, Media, Color…)
+       саарал болж идэвхгүй болно. Хэрэглэгчийн Fusion хуудсан дээрх дэлгэцээс
+       баталсан: 36 мөрөөс зөвхөн 8 нь идэвхтэй байв — Undo, Redo, Cut, Copy,
+       Paste, Delete Selected, Select All, Deselect All. Эдгээр нь Fusion-д
+       нодон дээр ажилладаг тул идэвхтэй хэвээр. */
     "edit-menu": { label: "Edit", verified: true, items: [
       ["undo", "Undo", "Ctrl+Z"],
       ["redo", "Redo", "Ctrl+Shift+Z"],
-      ["history", "History", "", "›"],
+      ["history", "History", "", "›", "clip"],
       "-",
       ["cut-clipboard", "Cut", "Ctrl+X"],
-      ["ripple-cut", "Ripple Cut", "Ctrl+Shift+X"],
-      ["cut-head", "Cut Head"],
-      ["cut-tail", "Cut Tail"],
+      ["ripple-cut", "Ripple Cut", "Ctrl+Shift+X", "", "clip"],
+      ["cut-head", "Cut Head", "", "", "clip"],
+      ["cut-tail", "Cut Tail", "", "", "clip"],
       ["copy", "Copy", "Ctrl+C"],
-      ["copy-head", "Copy Head"],
-      ["copy-tail", "Copy Tail"],
+      ["copy-head", "Copy Head", "", "", "clip"],
+      ["copy-tail", "Copy Tail", "", "", "clip"],
       ["paste", "Paste", "Ctrl+V"],
-      ["paste-insert", "Paste Insert", "Ctrl+Shift+V"],
-      ["paste-attributes", "Paste Attributes…", "Alt+V"],
-      ["paste-value", "Paste Value", "Alt+Shift+V"],
-      ["remove-attributes", "Remove Attributes…"],
-      ["dolby-vision", "Dolby Vision®", "", "›"],
+      ["paste-insert", "Paste Insert", "Ctrl+Shift+V", "", "clip"],
+      ["paste-attributes", "Paste Attributes…", "Alt+V", "", "clip"],
+      ["paste-value", "Paste Value", "Alt+Shift+V", "", "clip"],
+      ["remove-attributes", "Remove Attributes…", "", "", "clip"],
+      ["dolby-vision", "Dolby Vision®", "", "›", "clip"],
       "-",
-      ["duplicate-clip", "Duplicate Clip"],
-      ["duplicate-selection", "Duplicate Selection"],
+      ["duplicate-clip", "Duplicate Clip", "", "", "clip"],
+      ["duplicate-selection", "Duplicate Selection", "", "", "clip"],
       "-",
       ["lift-delete", "Delete Selected", "Backspace"],
-      ["ripple-delete", "Ripple Delete", "Shift+Backspace"],
-      ["delete-gaps", "Delete Gaps"],
+      ["ripple-delete", "Ripple Delete", "Shift+Backspace", "", "clip"],
+      ["delete-gaps", "Delete Gaps", "", "", "clip"],
       "-",
       ["select-all", "Select All", "Ctrl+A"],
       ["deselect-all", "Deselect All", "Ctrl+Shift+A"],
-      ["auto-select", "Select", "", "›"],
+      ["auto-select", "Select", "", "›", "clip"],
       "-",
-      ["insert", "Insert", "F9"],
-      ["overwrite", "Overwrite", "F10"],
-      ["replace", "Replace", "F11"],
-      ["place-on-top", "Place on Top", "F12"],
-      ["ripple-overwrite", "Ripple Overwrite", "Shift+F10"],
-      ["fit-to-fill", "Fit to Fill", "Shift+F11"],
-      ["append-to-end", "Append to End of Timeline", "Shift+F12"],
+      ["insert", "Insert", "F9", "", "clip"],
+      ["overwrite", "Overwrite", "F10", "", "clip"],
+      ["replace", "Replace", "F11", "", "clip"],
+      ["place-on-top", "Place on Top", "F12", "", "clip"],
+      ["ripple-overwrite", "Ripple Overwrite", "Shift+F10", "", "clip"],
+      ["fit-to-fill", "Fit to Fill", "Shift+F11", "", "clip"],
+      ["append-to-end", "Append to End of Timeline", "Shift+F12", "", "clip"],
       "-",
-      ["multicam-clip", "Multicam", "", "›"],
+      ["multicam-clip", "Multicam", "", "›", "clip"],
       "-",
-      ["insert-gap", "Insert Gap"],
-      ["swap-clips-towards-left", "Swap Clips Towards Left", "Ctrl+Shift+,"],
-      ["swap-clips-towards-right", "Swap Clips Towards Right", "Ctrl+Shift+."],
+      ["insert-gap", "Insert Gap", "", "", "clip"],
+      ["swap-clips-towards-left", "Swap Clips Towards Left", "Ctrl+Shift+,", "", "clip"],
+      ["swap-clips-towards-right", "Swap Clips Towards Right", "Ctrl+Shift+.", "", "clip"],
       "-",
-      ["edit-options", "Edit Options", "", "›"]
+      ["edit-options", "Edit Options", "", "›", "clip"]
     ]},
 
     "color-page": { label: "Color", verified: true, items: [
@@ -3266,7 +3282,7 @@ note:"Fusion хуудсанд байхад гарч ирдэг цэс. Боги�
 
   /* ── тайлбар харуулах ── */
 
-  S.select = function (id, node) {
+  S.select = function (id, node, dimmed) {
     const row = RM.dict.byId[id];
     if (!row) { RM.toast("Тайлбар олдсонгүй: " + id); return; }
 
@@ -3310,6 +3326,14 @@ note:"Fusion хуудсанд байхад гарч ирдэг цэс. Боги�
     if (cat) tags.appendChild(el("span", { class: "dpage", text: " " + cat.label, style: "margin-left:5px" }));
     r2.appendChild(tags);
     d.appendChild(r2);
+
+    if (dimmed) {
+      d.appendChild(el("div", { class: "why", html:
+        "<b>Яагаад саарал байна вэ?</b> Энэ команд <b>timeline дээрх клип</b> дээр ажилладаг. " +
+        "Одоо та <b>" + RM.esc(RM.dict.page(S.state.page).label) + "</b> хуудсанд байна — энд монтажийн " +
+        "сонголт байхгүй тул идэвхгүй. <b>Edit</b> (Shift+4) эсвэл <b>Cut</b> (Shift+3) хуудсанд " +
+        "орж клип сонговол идэвхжинэ." }));
+    }
 
     d.appendChild(el("p", { class: "more", html:
       'Бүрэн толиос энэ үгийг үзэх: <a href="resolve-toli.html?q=' +
@@ -3412,13 +3436,17 @@ note:"Fusion хуудсанд байхад гарч ирдэг цэс. Боги�
 
     def.items.forEach((it) => {
       if (it === "-") { pop.appendChild(el("div", { class: "msep" })); return; }
-      const [termId, label, key, arrow] = it;
+      const [termId, label, key, arrow, ctx] = it;
+      /* timeline-ий клип дээр ажилладаг команд нь монтажийн хуудаснаас
+         гадна саарал болж идэвхгүй болдог — бодит программын зан төлөв. */
+      const dim = ctx === "clip" && S.state.page !== "edit" && S.state.page !== "cut";
       const row = el("button", {
-        class: "mrow", "data-t": termId,
+        class: "mrow" + (dim ? " dim" : ""), "data-t": termId,
+        title: dim ? "Энэ команд timeline дээрх клип дээр ажиллана — Edit эсвэл Cut хуудсанд идэвхжинэ" : "",
         onclick: (e) => {
           e.stopPropagation();
           S.closeMenu();
-          S.select(termId, node);
+          S.select(termId, node, dim);
         }
       });
       row.appendChild(el("span", { class: "ml", text: label }));

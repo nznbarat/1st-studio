@@ -35,7 +35,7 @@
 
   /* ── тайлбар харуулах ── */
 
-  S.select = function (id, node) {
+  S.select = function (id, node, dimmed) {
     const row = RM.dict.byId[id];
     if (!row) { RM.toast("Тайлбар олдсонгүй: " + id); return; }
 
@@ -79,6 +79,14 @@
     if (cat) tags.appendChild(el("span", { class: "dpage", text: " " + cat.label, style: "margin-left:5px" }));
     r2.appendChild(tags);
     d.appendChild(r2);
+
+    if (dimmed) {
+      d.appendChild(el("div", { class: "why", html:
+        "<b>Яагаад саарал байна вэ?</b> Энэ команд <b>timeline дээрх клип</b> дээр ажилладаг. " +
+        "Одоо та <b>" + RM.esc(RM.dict.page(S.state.page).label) + "</b> хуудсанд байна — энд монтажийн " +
+        "сонголт байхгүй тул идэвхгүй. <b>Edit</b> (Shift+4) эсвэл <b>Cut</b> (Shift+3) хуудсанд " +
+        "орж клип сонговол идэвхжинэ." }));
+    }
 
     d.appendChild(el("p", { class: "more", html:
       'Бүрэн толиос энэ үгийг үзэх: <a href="index.html?q=' +
@@ -181,13 +189,17 @@
 
     def.items.forEach((it) => {
       if (it === "-") { pop.appendChild(el("div", { class: "msep" })); return; }
-      const [termId, label, key, arrow] = it;
+      const [termId, label, key, arrow, ctx] = it;
+      /* timeline-ий клип дээр ажилладаг команд нь монтажийн хуудаснаас
+         гадна саарал болж идэвхгүй болдог — бодит программын зан төлөв. */
+      const dim = ctx === "clip" && S.state.page !== "edit" && S.state.page !== "cut";
       const row = el("button", {
-        class: "mrow", "data-t": termId,
+        class: "mrow" + (dim ? " dim" : ""), "data-t": termId,
+        title: dim ? "Энэ команд timeline дээрх клип дээр ажиллана — Edit эсвэл Cut хуудсанд идэвхжинэ" : "",
         onclick: (e) => {
           e.stopPropagation();
           S.closeMenu();
-          S.select(termId, node);
+          S.select(termId, node, dim);
         }
       });
       row.appendChild(el("span", { class: "ml", text: label }));
