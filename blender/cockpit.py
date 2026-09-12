@@ -11,6 +11,7 @@
 
 import math
 import random
+import os
 import sys
 
 import bpy
@@ -26,7 +27,7 @@ CFG = {
     "glass": False,            # цонхонд шил тавих эсэх
     "room": {"w": 10.0, "d": 8.0, "h": 3.15},   # өргөн (X), гүн (Y), өндөр (Z)
     "window": {
-        "tilt_deg": -18.0,      # цонхны налуу: сөрөг = дээд тал нь ард (G-Class маягийн босоо)
+        "tilt_deg": -10.0,      # цонхны налуу: сөрөг = дээд тал нь ард. G500-ийн салхины шил шиг бараг босоо
         "sill": 0.06,           # цонхны доод ирмэг — бараг шалнаас
         "head": 3.02,           # цонхны дээд ирмэг — таазны дор
         "pillar": 0.34,         # хоёр цонхны дундах баганын хагас өргөн
@@ -1967,6 +1968,87 @@ def setup_cine(cam):
           % (round(c["shutter"] * 360), c["fstop"]))
 
 
+# ══════════════════════════════════════════════════════════════════════
+#  Нэмэлт давхаргууд (AOV) — Resolve дээр тусад нь тохируулах эрх чөлөө
+# ══════════════════════════════════════════════════════════════════════
+# Гэрлийн бүлгүүд: бүлэг бүрийн гэрлийн хувь нэмэр тусдаа pass болж гарна.
+# Combined = бусад бүх зүйл + бүлэг бүрийн pass, тиймээс Resolve дээр
+# нэг бүлгийн pass-ыг Add горимоор давхарлаж gain-ээр нь хүчийг өөрчилнө.
+LIGHT_GROUPS = {
+    "alert": ("AlertLamp",),                       # мөргөлдөөний улаан анивчлага
+    "key":   ("WarmSpill", "DeskFill", "CeilFill"),  # консолын бүлээн үндсэн гэрэл
+}
+
+
+def setup_aov(out_path):
+    """Emission ба гэрлийн бүлгүүдийг ТУСДАА нэг давхаргат EXR дараалал болгоно.
+
+    Тайзны үндсэн гаралт (Combined) хэвээр үлдэнэ. Нэмэлт pass бүр
+    File Output node-оор дараах байдлаар бичигдэнэ:
+        <гаралтын хавтас>/aov/emit####.exr
+        <гаралтын хавтас>/aov/alert####.exr
+        <гаралтын хавтас>/aov/key####.exr
+    Нэг давхаргат EXR сонгосон шалтгаан: Resolve-ийн Edit page олон давхаргат
+    EXR-ийн зөвхөн эхний давхаргыг хардаг, тусдаа дараалал бол зам бүрт
+    шууд тавигдана.
+    """
+    sc = bpy.context.scene
+    vl = bpy.context.view_layer
+    vl.use_pass_emit = True
+    for g, prefixes in LIGHT_GROUPS.items():
+        if g not in [lg.name for lg in vl.lightgroups]:
+            vl.lightgroups.add(name=g)
+        n = 0
+        for ob in bpy.data.objects:
+            if ob.type == "LIGHT" and ob.name.startswith(prefixes):
+                ob.lightgroup = g
+                n += 1
+        print("[1st Studio] Гэрлийн бүлэг '%s': %d гэрэл." % (g, n))
+
+    ng = bpy.data.node_groups.new("AOV", "CompositorNodeTree")
+    sc.compositing_node_group = ng
+    sc.render.use_compositing = True
+    rl = ng.nodes.new("CompositorNodeRLayers")
+    rl.scene, rl.layer = sc, vl.name
+    fo = ng.nodes.new("CompositorNodeOutputFile")
+    fo.location = (400, 0)
+    # Blender 5.0: base_path биш directory. Item-ийн нэр файлын угтвар болно,
+    # налуу зураас зөвшөөрөгдөхгүй тул хавтсыг directory-оор өгнө.
+    fo.directory = os.path.join(os.path.dirname(os.path.abspath(out_path)) or ".", "aov")
+    fo.file_name = ""                            # item-ийн нэр л угтвар болно
+    fo.format.media_type = "IMAGE"
+    fo.format.file_format = "OPEN_EXR"
+    fo.format.color_depth = "16"
+    fo.format.exr_codec = "ZIP"
+    # Анхдагч нэргүй оролтыг устгана — түүнд юу ч холбогдохгүй
+    for it in list(fo.file_output_items):
+        fo.file_output_items.remove(it)
+    wanted = [("Emission", "emit")] + [("Combined_%s" % g, g) for g in LIGHT_GROUPS]
+    ok = []
+    for k, (sock, name) in enumerate(wanted):
+        if sock not in rl.outputs:
+            print("[1st Studio] '%s' гаралт байхгүй — алгасав." % sock)
+            continue
+        # Pass-ууд өөрсдөө alpha-гүй (бүхэлдээ 1). Combined-ийн alpha-г хуулж
+        # өгснөөр fg давхаргын ил тод хэсэг pass-уудад ч мөн ил тод байна.
+        sa = ng.nodes.new("CompositorNodeSetAlpha")
+        # 5.0-д горим нь "Type" нэртэй цэсэн оролт болсон. "Apply Mask" бол
+        # RGB-г alpha-аар үржүүлнэ — pass-ууд аль хэдийн premultiplied тул
+        # давхар харанхуйлна; "Replace Alpha" зөвхөн alpha сувгийг солино.
+        try:
+            sa.inputs["Type"].default_value = "Replace Alpha"
+        except Exception as e:
+            print("[1st Studio] Set Alpha: 'Replace Alpha' тавьж чадсангүй:", e)
+        sa.location = (200, -120 * k)
+        ng.links.new(rl.outputs[sock], sa.inputs["Image"])
+        ng.links.new(rl.outputs["Alpha"], sa.inputs["Alpha"])
+        item = fo.file_output_items.new("RGBA", name)
+        ng.links.new(sa.outputs["Image"], fo.inputs[item.name])
+        ok.append(item.name)
+    print("[1st Studio] AOV: %s -> %s/{%s}####.exr" % (", ".join(ok), fo.directory, ",".join(ok)))
+    return fo
+
+
 def prep_viewport():
     """Файлыг нээмэгц камерын харцаар, материалтай харагддаг болгоно."""
     for screen in bpy.data.screens:
@@ -2128,12 +2210,19 @@ def main():
     if layer:
         split = opt("--split")
         render_pass(layer, float(split) if split else None)
+    frames = opt("--frames")                   # A-B: зөвхөн энэ хүрээг рендерлэнэ
+    if frames:
+        a, b = (int(v) for v in frames.split("-"))
+        bpy.context.scene.frame_start, bpy.context.scene.frame_end = a, b
+        print("[1st Studio] Фреймийн хүрээ: %d–%d" % (a, b))
     frame = opt("--frame")
     if frame:
         bpy.context.scene.frame_set(int(frame))
     if "--render" in argv:
         out = argv[argv.index("--render") + 1]
         bpy.context.scene.render.filepath = out
+        if "--aov" in argv:                    # emit + гэрлийн бүлгүүд тусдаа дараалал
+            setup_aov(out)
         if "--anim" in argv:
             bpy.ops.render.render(animation=True)
             print("[1st Studio] Анимац рендерлэв:", out)
