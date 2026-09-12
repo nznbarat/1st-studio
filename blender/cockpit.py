@@ -43,10 +43,10 @@ CFG = {
     # Удирдлагын байрлал — жүжигчний гарт таарахаар тохируулна.
     # Бүгд суудлын төвөөс хэмжсэн зай (метр), өндөр нь шалнаас.
     "controls": {
-        "yoke_fwd": 0.40,    # жолоо суудлаас урагш
+        "yoke_fwd": 0.70,    # жолоо суудлаас урагш
         "yoke_side": 0.12,   # жолоо хажуу тийш шилжих
-        "yoke_z": 0.83,      # жолооны бариулын өндөр
-        "yoke_span": 0.26,   # хоёр бариулын хоорондох хагас зай
+        "yoke_z": 0.78,      # жолооны бариулын өндөр
+        "yoke_span": 0.10,   # хоёр бариулын хоорондох хагас зай
         "side_x": -0.58,     # хажуугийн самбар: сөрөг = камерын ЦААД тал (цаад гарын тохойн харалдаа)
         "side_y": -0.22,     # хажуугийн самбар урагш/хойш
         "side_z": 0.58,      # хажуугийн самбарын өндөр — цаад гарын тохойн харалдаа
@@ -193,6 +193,8 @@ def print_shotlist():
     print("  " + "─" * 76)
     print("  Бичлэгээс: %d фрейм (%.1f сек) · Цэвэр CG: %d фрейм (%.1f сек)\n"
           % (sum(ints), sum(ints) / fps, sum(exts), sum(exts) / fps))
+
+YOKE_GRIP_RISE = 0.055   # бариулын төв хуйснаас хэр дээр (гар хүрэх цэг)
 
 COL = "COCKPIT"
 rng = random.Random(CFG["seed"])
@@ -912,17 +914,30 @@ def build_controls(M):
     up = (lean, 0, 0)                          # нисгэгч рүү харсан гадаргуу
 
     # ── Хоёр гарын жолоо ──
+    # Бариулын төв (x ± span, y, z + GRIP_RISE) нь гарын хүрэлцэх цэг —
+    # бичлэг дэх гарны төвтэй энэ цэгийг тааруулна.
     box("YokeColumn", (0.15, 0.19, z - 0.22), (x, y + 0.11, (z - 0.22) / 2 + 0.06),
         rot=back, mat=M["dark"], bevel=0.03)
-    box("YokeHub", (0.24, 0.17, 0.15), (x, y, z), rot=back, mat=M["dark"], bevel=0.03)
-    box("YokeFace", (0.14, 0.03, 0.09), (x, y - 0.09, z + 0.02), rot=back, mat=M["dim_screen"])
+    box("YokeHub", (0.22, 0.16, 0.13), (x, y, z), rot=back, mat=M["dark"], bevel=0.035)
+    box("YokeFace", (0.12, 0.03, 0.07), (x, y - 0.085, z + 0.015), rot=back, mat=M["dim_screen"])
+    gz = z + YOKE_GRIP_RISE
     for sx in (-1, 1):
-        box("YokeArm_%d" % sx, (span * 0.8, 0.09, 0.06), (x + sx * span * 0.62, y, z),
-            rot=back, mat=M["metal"], bevel=0.02)
-        box("YokeGrip_%d" % sx, (0.095, 0.13, 0.21), (x + sx * span, y - 0.01, z),
-            rot=back, mat=M["dark"], bevel=0.045)
-        box("YokeTrig_%d" % sx, (0.04, 0.04, 0.025), (x + sx * span, y - 0.08, z + 0.08),
-            rot=back, mat=M["red"])
+        # мөр: хуйсаас гадагш, бага зэрэг дээш өргөгдөнө — W хэлбэр
+        box("YokeArm_%d" % sx, (span * 0.82, 0.055, 0.045), (x + sx * span * 0.55, y, z + 0.012),
+            rot=(-lean, sx * math.radians(-7), 0), mat=M["metal"], bevel=0.015)
+        # бариул: дугуй, гадагш 9° налсан, нисгэгч рүү бас налсан
+        grot = (-lean, 0, sx * math.radians(9))
+        cyl("YokeGrip_%d" % sx, 0.0215, 0.19, (x + sx * span, y, gz), rot=grot,
+            mat=M["grip"], verts=24)
+        cyl("YokeGripRing_%d" % sx, 0.026, 0.028, (x + sx * span, y, gz - 0.07), rot=grot,
+            mat=M["metal"], verts=24)                       # доод хүзүүвч
+        cyl("YokeGripCap_%d" % sx, 0.025, 0.022, (x + sx * span, y, gz + 0.095), rot=grot,
+            mat=M["dark"], verts=24)                        # дээд бөөрөнхий таг
+        for k in range(4):                                  # хурууны ховил
+            cyl("YokeGripRidge_%d_%d" % (sx, k), 0.0235, 0.006,
+                (x + sx * span, y, gz - 0.045 + k * 0.03), rot=grot, mat=M["grip"], verts=24)
+        box("YokeTrig_%d" % sx, (0.03, 0.03, 0.02), (x + sx * (span - 0.035), y - 0.018, gz + 0.07),
+            rot=back, mat=M["red"], bevel=0.006)
 
     # ── Суудлын хажуугийн удирдлагын самбар ──
     ax, ay, az = st["x"] + c["side_x"], st["y"] + c["side_y"], c["side_z"]
@@ -2086,6 +2101,7 @@ def build():
         "dim_screen": emit("cab_dimscreen", (0.10, 0.22, 0.42), 1.1),
         "space":  starfield("cab_space"),
         "hull":     metal("shp_hull", (0.44, 0.44, 0.43), rough=0.52, metallic=0.22, scale=0.25, bump=0.14, grime=0.42),
+        "grip":     metal("cab_grip", (0.21, 0.12, 0.07), rough=0.86, metallic=0.0, grime=0.12, scale=3.0, bump=0.30, wear=0.12),
         "marking":  metal("shp_mark", (0.10, 0.10, 0.11), rough=0.70, metallic=0.10, scale=2.0, grime=0.2),
         "thrust":   emit("shp_thrust", (0.32, 0.60, 1.0), 14.0),
         "runlight": emit("shp_run", (1.0, 0.10, 0.06), 7.0),
