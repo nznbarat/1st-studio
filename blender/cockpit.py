@@ -1264,6 +1264,63 @@ def build_ship(M):
     return root
 
 
+def build_alert(frames=624, start=0.5, period=14):
+    """Мөргөлдөөний дараах түгшүүрийн гэрэлтүүлэг.
+
+    start — нислэгийн хэдэн хувиас эхлэх (0.5 = хагасаас)
+    Улаан гэрэл анивчиж, энгийн бүлээн гэрэл сулрана.
+    """
+    room = CFG["room"]
+    f0 = max(1, int(frames * start))
+    reds = []
+    for i, (x, y) in enumerate(((-3.2, -2.6), (3.2, -2.6), (-3.2, 2.2), (3.2, 2.2))):
+        d = bpy.data.lights.new("AlertLamp_%d" % i, "POINT")
+        d.color = (1.0, 0.10, 0.05)
+        d.shadow_soft_size = 0.25
+        d.energy = 0.0
+        ob = bpy.data.objects.new("AlertLamp_%d" % i, d)
+        ob.location = (x, y, room["h"] - 0.45)
+        _link(ob, bpy.data.collections[COL])
+        reds.append(d)
+    warm = [o.data for o in bpy.data.collections[COL].objects
+            if o.type == "LIGHT" and o.name.startswith(("CeilFill", "WarmSpill", "DeskFill"))]
+    for d in warm:                                  # анхны хүчийг санаж авна
+        d["base_energy"] = d.energy
+
+    f = 1
+    while f <= frames:
+        on = f >= f0 and ((f - f0) // period) % 2 == 0
+        for d in reds:
+            d.energy = 260.0 if on else 0.0
+            d.keyframe_insert("energy", frame=f)
+        for d in warm:                              # мөргөлдөөний дараа бүлээн гэрэл сулрана
+            d.energy = d["base_energy"] * (0.35 if f >= f0 else 1.0)
+            d.keyframe_insert("energy", frame=f)
+        f += period if f >= f0 else max(1, f0 - 1)
+    for d in reds + warm:                           # анивчилт хурц байх ёстой
+        ad = d.animation_data
+        act = ad.action if ad else None
+        if not act:
+            continue
+        curves = []
+        try:
+            if hasattr(act, "layers") and len(act.layers):
+                cb = act.layers[0].strips[0].channelbag(ad.action_slot)
+                if cb:
+                    curves = list(cb.fcurves)
+        except Exception:
+            pass
+        if not curves:
+            try:
+                curves = list(act.fcurves)
+            except Exception:
+                curves = []
+        for fc in curves:
+            for kp in fc.keyframe_points:
+                kp.interpolation = "CONSTANT"
+    print("[1st Studio] Түгшүүр: %d фреймээс, %d фрейм тутам анивчина" % (f0, period))
+
+
 def build_sun():
     """Алслагдсан од — хөлгийн их биеийг гэрэлтүүлнэ."""
     d = bpy.data.lights.new("StarSun", "SUN")
@@ -1642,6 +1699,7 @@ def main():
     CFG["device"] = opt("--device", CFG["device"])
     if "--cover" in argv:                      # гарыг далдлах товгор хэсгийг асаана
         CFG["controls"]["cover_on"] = True
+    alert_from = opt("--alert")                # мөргөлдөөний түгшүүрийн гэрэл
     build()
     res = opt("--res", "960x540")
     setup_render(samples=int(opt("--samples", 64)),
@@ -1661,6 +1719,8 @@ def main():
     if slide:
         slide_camera(bpy.data.objects["SET_CAM"], bpy.data.objects["CAM_AIM"],
                      float(slide), int(opt("--slide-frames", 120)))
+    if alert_from is not None:
+        build_alert(int(opt("--arc", 624)), float(alert_from))
     layer = opt("--pass")
     if layer:
         split = opt("--split")
