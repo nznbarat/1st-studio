@@ -49,6 +49,13 @@ CFG = {
         "side_x": 0.55,      # хажуугийн самбар суудлаас хажуу тийш
         "side_y": 0.02,      # хажуугийн самбар урагш/хойш
         "side_z": 0.88,      # хажуугийн самбарын өндөр
+        # Нисгэгчийг тойрсон консолын цагираг. Камерын ямар ч өнцгөөс
+        # урд талд үлдэж, жүжигчний биеийн тасарсан доод хэсгийг хаана.
+        "ring_on": True,
+        "ring_r": 1.02,      # суудлын төвөөс радиус
+        "ring_z": 0.90,      # ирмэгийн өндөр — үүнийг л ихэсгэж/багасгаж халхлалтыг тааруулна
+        "ring_span": 232.0,  # хэдэн градусыг хамрах (ард нь нээлттэй)
+        "ring_segs": 11,
     },
     "exposure": -0.45,
     "angle": "wide",
@@ -676,6 +683,47 @@ def build_console(M):
                 mat=rng.choice([M["dark"], M["amber"], M["screen"]]), parent=wtop)
 
     return top
+
+
+def build_station(M):
+    """Нисгэгчийг тойрсон консолын цагираг.
+
+    Камер тойрон хөдлөхөд ямар ч өнцгөөс урд талд үлдэх тул жүжигчний
+    кадрын ирмэгээр тасарсан доод хэсгийг байгалийн замаар хаана.
+    Өндрийг CFG["controls"]["ring_z"]-ээр тааруулна.
+    """
+    st, c = CFG["seat"], CFG["controls"]
+    if not c.get("ring_on"):
+        return
+    sx, sy = st["x"], st["y"]
+    r, top = c["ring_r"], c["ring_z"]
+    span, n = math.radians(c["ring_span"]), c["ring_segs"]
+    lean = math.radians(CFG["lean_deg"])
+    wseg = 2 * r * math.sin(span / (2 * n)) * 1.22      # хоорондоо бага зэрэг давхцана
+    for i in range(n):
+        a = -span / 2 + span * (i + 0.5) / n
+        x, y = sx + r * math.sin(a), sy + r * math.cos(a)
+        rz = -a
+        box("StationBody_%02d" % i, (wseg, 0.36, top - 0.10), (x, y, (top - 0.10) / 2 + 0.05),
+            rot=(0, 0, rz), mat=M["wall"], parent=None, bevel=0.035)
+        box("StationTop_%02d" % i, (wseg, 0.42, 0.07), (x, y, top - 0.02),
+            rot=(lean, 0, rz), mat=M["metal"], bevel=0.02)
+        box("StationLip_%02d" % i, (wseg, 0.09, 0.11), (x - 0.17 * math.sin(a), y - 0.17 * math.cos(a), top + 0.02),
+            rot=(0, 0, rz), mat=M["metal"], bevel=0.025)
+        box("StationKick_%02d" % i, (wseg * 0.9, 0.12, 0.10), (x, y, 0.05), rot=(0, 0, rz), mat=M["dark"])
+        # гадна талын гэрэлтэх зурвас — шалыг бүлээн гэрлээр тусгана
+        box("StationGlow_%02d" % i, (wseg * 0.82, 0.04, 0.13),
+            (x + 0.19 * math.sin(a), y + 0.19 * math.cos(a), top * 0.55),
+            rot=(0, 0, rz), mat=M["glow"])
+        # дээд гадаргуу дээрх удирдлагууд
+        for k in range(3):
+            u = (k - 1) * wseg * 0.28
+            box("StationKey_%02d_%d" % (i, k),
+                (rng.uniform(0.035, 0.075), rng.uniform(0.035, 0.065), 0.016),
+                (x + u * math.cos(a), y - u * math.sin(a), top + 0.035),
+                rot=(lean, 0, rz),
+                mat=rng.choice([M["dark"], M["amber"], M["screen"], M["metal"], M["red"]]))
+    return None
 
 
 def build_controls(M):
@@ -1470,6 +1518,7 @@ def build():
     build_console(M)
     build_seat(M)
     build_controls(M)
+    build_station(M)
     build_cables(M)
     build_haze(M)
     if CFG["ship"]["on"]:
