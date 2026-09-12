@@ -227,7 +227,7 @@ def _nodes(mat):
     return nt, out
 
 
-def metal(name, base, rough=0.55, metallic=0.25, grime=None, scale=6.0, bump=0.25):
+def metal(name, base, rough=0.55, metallic=0.25, grime=None, scale=6.0, bump=0.25, wear=0.55):
     """Бохирдол, зэврэлттэй будсан метал."""
     grime = CFG["grime"] if grime is None else grime
     mat = bpy.data.materials.get(name)
@@ -273,8 +273,31 @@ def metal(name, base, rough=0.55, metallic=0.25, grime=None, scale=6.0, bump=0.2
     nt.links.new(ramp.outputs["Color"], mix.inputs["Fac"])
     nt.links.new(ramp.outputs["Color"], rmix.inputs["Fac"])
     nt.links.new(fine.outputs["Fac"], bmp.inputs["Height"])
-    nt.links.new(mix.outputs["Color"], bsdf.inputs["Base Color"])
-    nt.links.new(rmix.outputs["Color"], bsdf.inputs["Roughness"])
+    # ── ирмэгийн элэгдэл: гүдгэр ирмэгүүд будаггүй, гялалзсан метал болно ──
+    geo = nt.nodes.new("ShaderNodeNewGeometry")
+    geo.location = (-800, -560)
+    pr = nt.nodes.new("ShaderNodeValToRGB")
+    pr.location = (-560, -560)
+    pr.color_ramp.elements[0].position = 0.50
+    pr.color_ramp.elements[1].position = 0.58
+    pw = nt.nodes.new("ShaderNodeMath")            # элэгдлийн хүчийг тохируулна
+    pw.location = (-360, -560)
+    pw.operation = "MULTIPLY"
+    pw.inputs[1].default_value = wear
+    ew = nt.nodes.new("ShaderNodeMixRGB")
+    ew.location = (60, 140)
+    ew.inputs["Color2"].default_value = (0.66, 0.64, 0.60, 1)
+    er = nt.nodes.new("ShaderNodeMixRGB")
+    er.location = (60, -60)
+    er.inputs["Color2"].default_value = (max(rough - 0.30, 0.08),) * 3 + (1,)
+    nt.links.new(geo.outputs["Pointiness"], pr.inputs["Fac"])
+    nt.links.new(pr.outputs["Color"], pw.inputs[0])
+    nt.links.new(pw.outputs["Value"], ew.inputs["Fac"])
+    nt.links.new(pw.outputs["Value"], er.inputs["Fac"])
+    nt.links.new(mix.outputs["Color"], ew.inputs["Color1"])
+    nt.links.new(rmix.outputs["Color"], er.inputs["Color1"])
+    nt.links.new(ew.outputs["Color"], bsdf.inputs["Base Color"])
+    nt.links.new(er.outputs["Color"], bsdf.inputs["Roughness"])
     nt.links.new(bmp.outputs["Normal"], bsdf.inputs["Normal"])
     bsdf.inputs["Metallic"].default_value = metallic
     nt.links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
@@ -364,11 +387,31 @@ def build_floor(M):
             t = 0.07 + rng.uniform(-0.004, 0.004)
             box("FloorPlate_%02d_%02d" % (i, j), (step - gap, step - gap, t),
                 (x, y, -t / 2), mat=M["floor"], bevel=0.012)
+            box("FloorInset_%02d_%02d" % (i, j), (step - gap - 0.16, step - gap - 0.16, 0.012),
+                (x, y, -0.004), mat=M["floor"], bevel=0.008)
             if rng.random() < 0.22:        # зарим хавтан дээр бэхэлгээний толгой
                 for sx, sy in ((-1, -1), (1, -1), (1, 1), (-1, 1)):
                     box("Bolt", (0.07, 0.07, 0.012),
                         (x + sx * (step / 2 - 0.13), y + sy * (step / 2 - 0.13), -0.004),
                         mat=M["dark"])
+
+
+def floor_detail(M):
+    """Шалны люк, тор, бэхэлгээний цагираг."""
+    w, d = CFG["room"]["w"], CFG["room"]["d"]
+    for (fx, fy, fw, fd) in ((-3.2, -2.6, 1.5, 1.5), (2.8, -3.0, 1.3, 1.3), (-1.0, 2.9, 1.8, 1.1)):
+        box("FloorHatch", (fw, fd, 0.05), (fx, fy, -0.025), mat=M["metal"], bevel=0.02)
+        box("HatchRim", (fw + 0.14, fd + 0.14, 0.03), (fx, fy, -0.04), mat=M["dark"])
+        for k in range(6):                     # торны хавирга
+            box("HatchBar", (fw - 0.18, 0.055, 0.035), (fx, fy - fd / 2 + 0.16 + k * (fd - 0.3) / 5, 0.005),
+                mat=M["dark"])
+        box("HatchHandle", (0.26, 0.10, 0.05), (fx + fw / 2 - 0.22, fy, 0.035), mat=M["metal"], bevel=0.015)
+    for (tx, ty) in ((-4.2, 1.8), (4.2, -1.4), (-4.2, -3.2), (4.2, 2.6)):
+        cyl("TieRing", 0.09, 0.04, (tx, ty, 0.01), mat=M["dark"], verts=12)
+        box("TiePlate", (0.30, 0.30, 0.02), (tx, ty, -0.005), mat=M["metal"], bevel=0.01)
+    for side in (-1, 1):                       # хана-шалны шилжилтийн зурвас
+        box("FloorKerb", (0.22, d - 0.3, 0.09), (side * (w / 2 - 0.24), 0, 0.02),
+            mat=M["metal"], bevel=0.02)
 
 
 def build_shell(M):
@@ -407,6 +450,35 @@ def build_shell(M):
         box("CeilVent", (0.45, 0.30, 0.035),
             (rng.uniform(-4.2, 4.2), rng.uniform(-3.4, 3.2), h - 0.19), mat=M["dark"])
 
+    # хойд хананы бүтэц — кадрын дэвсгэрт байнга ордог
+    by = -d / 2 + 0.14
+    for xx in (-3.6, -2.2, -0.8, 0.6, 2.0, 3.4):
+        box("BackSeamV", (0.06, 0.05, h - 0.25), (xx, by, h / 2 - 0.05), mat=M["dark"])
+    for zz in (0.95, 1.92, 2.78):
+        box("BackSeamH", (w - 0.5, 0.05, 0.05), (0, by, zz), mat=M["dark"])
+    box("BackRack", (2.3, 0.30, 1.65), (-2.4, by + 0.12, 0.90), mat=M["wall"], bevel=0.04)
+    box("BackRackFace", (2.05, 0.08, 1.45), (-2.4, by + 0.26, 0.92), mat=M["dark"], bevel=0.02)
+    for k in range(5):
+        box("BackShelf", (1.9, 0.06, 0.16), (-2.4, by + 0.30, 1.52 - k * 0.29), mat=M["wall"], bevel=0.01)
+    for k in range(8):
+        box("BackBtn", (0.06, 0.05, 0.045),
+            (-3.1 + (k % 4) * 0.42, by + 0.31, 1.30 - (k // 4) * 0.58),
+            mat=M["amber"] if k % 3 else M["screen"])
+    box("BackScreen", (0.62, 0.05, 0.34), (-1.5, by + 0.31, 1.24), mat=M["dim_screen"])
+    box("BackScreenRim", (0.72, 0.05, 0.44), (-1.5, by + 0.29, 1.24), mat=M["dark"], bevel=0.01)
+    for k in range(6):                          # люк ба бэхэлгээ
+        xx = rng.uniform(0.2, 4.2)
+        zz = rng.uniform(0.5, 2.5)
+        box("BackHatch", (rng.uniform(0.5, 1.0), 0.08, rng.uniform(0.4, 0.8)),
+            (xx, by + 0.04, zz), mat=M["metal"], bevel=0.02)
+        for cx, cz in ((-1, -1), (1, -1), (1, 1), (-1, 1)):
+            box("BackBolt", (0.05, 0.03, 0.05), (xx + cx * 0.18, by + 0.08, zz + cz * 0.13), mat=M["dark"])
+    for k, zz in enumerate((2.58, 2.40)):       # хойд хананы хоолой
+        cyl("BackPipe_%d" % k, 0.06 + 0.02 * k, w - 1.4, (0, by + 0.16, zz),
+            rot=(0, math.radians(90), 0), mat=M["metal"])
+    for xx in (-3.4, -1.0, 1.4, 3.8):
+        box("BackPipeClamp", (0.10, 0.30, 0.46), (xx, by + 0.16, 2.49), mat=M["dark"])
+
     # баруун хананы люк + самбар
     door = box("DoorFrame", (0.18, 1.5, 2.35), (w / 2 - 0.16, -0.9, 1.18), mat=M["metal"], bevel=0.02)
     box("DoorLeaf", (0.10, 1.25, 2.10), (w / 2 - 0.26, -0.9, 1.10), mat=M["wall"], bevel=0.015)
@@ -421,6 +493,29 @@ def build_shell(M):
             box("WallBtn", (0.03, 0.07, 0.05),
                 (w / 2 - 0.45, y - ww / 2 + 0.15 + k * (ww - 0.3) / 4, z + hh / 2 - 0.12),
                 mat=M["amber"] if k % 2 else M["screen"])
+
+    # хананы оёдол, люк, хоолойн зам — хавтгай гадаргууг эвднэ
+    for side in (-1, 1):
+        wx = side * (w / 2 - 0.13)
+        for yy in (-3.3, -2.1, -0.9, 0.3, 1.5, 2.7):
+            box("WallSeamV", (0.05, 0.06, h - 0.25), (wx, yy, h / 2 - 0.05), mat=M["dark"])
+        for zz in (0.95, 1.92, 2.78):
+            box("WallSeamH", (0.05, d - 0.5, 0.05), (wx, 0.2, zz), mat=M["dark"])
+        for k in range(7):                     # люк ба хавтангууд
+            yy = rng.uniform(-3.6, 2.9)
+            zz = rng.uniform(0.45, 2.55)
+            box("WallHatch", (0.08, rng.uniform(0.45, 1.0), rng.uniform(0.35, 0.8)),
+                (wx - side * 0.03, yy, zz), mat=M["metal"], bevel=0.02)
+            for cx, cz in ((-1, -1), (1, -1), (1, 1), (-1, 1)):
+                box("HatchBolt", (0.03, 0.05, 0.05),
+                    (wx - side * 0.07, yy + cx * 0.17, zz + cz * 0.13), mat=M["dark"])
+        for k in range(5):                     # жижиг агааржуулагч
+            box("WallVent", (0.06, 0.30, 0.22),
+                (wx - side * 0.04, rng.uniform(-3.4, 2.6), rng.uniform(0.6, 2.4)), mat=M["dark"])
+        box("WallDuct", (0.22, d - 1.2, 0.26), (wx - side * 0.14, 0.1, 2.62),
+            mat=M["metal"], bevel=0.04)
+        for yy in (-3.0, -1.2, 0.6, 2.4):      # хоолойн бэхэлгээ
+            box("DuctClamp", (0.30, 0.09, 0.34), (wx - side * 0.16, yy, 2.62), mat=M["dark"])
 
     # баруун хананы тоноглолын хана (нисгэгчийн ард байрлах дэвсгэр)
     rx = w / 2 - 0.30
@@ -1369,6 +1464,7 @@ def build():
     M["glass"] = glass
 
     build_floor(M)
+    floor_detail(M)
     build_shell(M)
     build_window(M)
     build_console(M)
