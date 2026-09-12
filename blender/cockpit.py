@@ -53,7 +53,7 @@ CFG = {
         # урд талд үлдэж, жүжигчний биеийн тасарсан доод хэсгийг хаана.
         "ring_on": True,
         "ring_r": 1.02,      # суудлын төвөөс радиус
-        "ring_z": 0.90,      # ирмэгийн өндөр — үүнийг л ихэсгэж/багасгаж халхлалтыг тааруулна
+        "ring_z": 1.00,      # ирмэгийн өндөр — үүнийг л ихэсгэж/багасгаж халхлалтыг тааруулна
         "ring_span": 232.0,  # хэдэн градусыг хамрах (ард нь нээлттэй)
         "ring_segs": 11,
     },
@@ -685,6 +685,38 @@ def build_console(M):
     return top
 
 
+def sweep_arc(name, cx, cy, r, a0, a1, steps, profile, mat, col=None):
+    """Хаалттай огтлолыг нумын дагуу шүүрдэж гөлгөр гадаргуу үүсгэнэ.
+
+    profile = [(радиус чиглэлийн хазайлт, өндөр), ...] — хаалттай контур.
+    Өнцөгтэй сегментийн оронд тасралтгүй нум гарна.
+    """
+    n = len(profile)
+    verts = []
+    for i in range(steps + 1):
+        a = a0 + (a1 - a0) * i / steps
+        sa, ca = math.sin(a), math.cos(a)
+        for (ro, z) in profile:
+            verts.append((cx + (r + ro) * sa, cy + (r + ro) * ca, z))
+    faces = []
+    for sgi in range(steps):
+        p0, p1 = sgi * n, (sgi + 1) * n
+        for i in range(n):
+            j = (i + 1) % n
+            faces.append((p0 + i, p0 + j, p1 + j, p1 + i))
+    faces.append(tuple(range(n - 1, -1, -1)))                       # эхний таг
+    faces.append(tuple(range(steps * n, (steps + 1) * n)))          # сүүлийн таг
+    mesh = bpy.data.meshes.new(name)
+    mesh.from_pydata(verts, [], faces)
+    mesh.validate()
+    mesh.update()
+    ob = bpy.data.objects.new(name, mesh)
+    if mat:
+        ob.data.materials.append(mat)
+    _link(ob, col or bpy.data.collections[COL])
+    return ob
+
+
 def build_station(M):
     """Нисгэгчийг тойрсон консолын цагираг.
 
@@ -697,32 +729,57 @@ def build_station(M):
         return
     sx, sy = st["x"], st["y"]
     r, top = c["ring_r"], c["ring_z"]
-    span, n = math.radians(c["ring_span"]), c["ring_segs"]
+    span = math.radians(c["ring_span"])
+    a0, a1 = -span / 2, span / 2
+    drop = math.tan(math.radians(CFG["lean_deg"])) * 0.28      # налуугаас үүсэх уналт
+
+    # Огтлолын контур: гаднаас дээш, налуу дээд гадаргуу, дотогш ирмэг, доош
+    body = [
+        (0.175, 0.055), (0.175, top - 0.13), (0.155, top - 0.035), (0.125, top),
+        (-0.125, top - drop), (-0.165, top - drop - 0.02), (-0.175, top - drop - 0.14),
+        (-0.115, 0.055),
+    ]
+    sweep_arc("StationRing", sx, sy, r, a0, a1, 64, body, M["wall"])
+
+    # Дотор талын өргөсөн ирмэг — гар тавих зурвас
+    lip = [(-0.19, top - drop - 0.02), (-0.19, top - drop + 0.035),
+           (-0.10, top - drop + 0.045), (-0.10, top - drop - 0.02)]
+    sweep_arc("StationLip", sx, sy, r, a0, a1, 64, lip, M["metal"])
+
+    # Гадна талын бүлээн гэрлийн зурвас
+    glow = [(0.180, top * 0.42), (0.180, top * 0.60), (0.196, top * 0.60), (0.196, top * 0.42)]
+    sweep_arc("StationGlow", sx, sy, r, a0, a1, 64, glow, M["glow"])
+    rim = [(0.178, top * 0.36), (0.178, top * 0.42), (0.206, top * 0.42), (0.206, top * 0.36)]
+    sweep_arc("StationRimLo", sx, sy, r, a0, a1, 64, rim, M["metal"])
+    rim2 = [(0.178, top * 0.60), (0.178, top * 0.66), (0.206, top * 0.66), (0.206, top * 0.60)]
+    sweep_arc("StationRimHi", sx, sy, r, a0, a1, 64, rim2, M["metal"])
+
+    # Доод хөл — шалнаас тасархай тулгуур
+    for i in range(7):
+        a = a0 + (a1 - a0) * (i + 0.5) / 7
+        box("StationFoot_%d" % i, (0.26, 0.22, 0.07),
+            (sx + r * math.sin(a), sy + r * math.cos(a), 0.035),
+            rot=(0, 0, -a), mat=M["dark"])
+
+    # Дээд гадаргуу дээрх удирдлагууд
     lean = math.radians(CFG["lean_deg"])
-    wseg = 2 * r * math.sin(span / (2 * n)) * 1.22      # хоорондоо бага зэрэг давхцана
-    for i in range(n):
-        a = -span / 2 + span * (i + 0.5) / n
-        x, y = sx + r * math.sin(a), sy + r * math.cos(a)
-        rz = -a
-        box("StationBody_%02d" % i, (wseg, 0.36, top - 0.10), (x, y, (top - 0.10) / 2 + 0.05),
-            rot=(0, 0, rz), mat=M["wall"], parent=None, bevel=0.035)
-        box("StationTop_%02d" % i, (wseg, 0.42, 0.07), (x, y, top - 0.02),
-            rot=(lean, 0, rz), mat=M["metal"], bevel=0.02)
-        box("StationLip_%02d" % i, (wseg, 0.09, 0.11), (x - 0.17 * math.sin(a), y - 0.17 * math.cos(a), top + 0.02),
-            rot=(0, 0, rz), mat=M["metal"], bevel=0.025)
-        box("StationKick_%02d" % i, (wseg * 0.9, 0.12, 0.10), (x, y, 0.05), rot=(0, 0, rz), mat=M["dark"])
-        # гадна талын гэрэлтэх зурвас — шалыг бүлээн гэрлээр тусгана
-        box("StationGlow_%02d" % i, (wseg * 0.82, 0.04, 0.13),
-            (x + 0.19 * math.sin(a), y + 0.19 * math.cos(a), top * 0.55),
-            rot=(0, 0, rz), mat=M["glow"])
-        # дээд гадаргуу дээрх удирдлагууд
-        for k in range(3):
-            u = (k - 1) * wseg * 0.28
-            box("StationKey_%02d_%d" % (i, k),
-                (rng.uniform(0.035, 0.075), rng.uniform(0.035, 0.065), 0.016),
-                (x + u * math.cos(a), y - u * math.sin(a), top + 0.035),
-                rot=(lean, 0, rz),
-                mat=rng.choice([M["dark"], M["amber"], M["screen"], M["metal"], M["red"]]))
+    for i in range(30):
+        a = a0 + (a1 - a0) * (i + 0.5) / 30
+        ro = rng.uniform(-0.08, 0.06)
+        rr = r + ro
+        zz = top - drop * (0.5 - ro / 0.28) - 0.004
+        kind = rng.random()
+        if kind < 0.18:
+            m, sz = M["dim_screen"], (0.11, 0.07, 0.012)
+        elif kind < 0.42:
+            m, sz = (M["amber"] if rng.random() < 0.6 else M["screen"]), (0.045, 0.04, 0.016)
+        elif kind < 0.52:
+            m, sz = M["red"], (0.04, 0.04, 0.018)
+        else:
+            m, sz = M["dark"], (rng.uniform(0.05, 0.11), rng.uniform(0.04, 0.08), 0.018)
+        box("StationKey_%02d" % i, sz,
+            (sx + rr * math.sin(a), sy + rr * math.cos(a), zz + sz[2] / 2),
+            rot=(lean, 0, -a), mat=m)
     return None
 
 
