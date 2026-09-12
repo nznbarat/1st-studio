@@ -1780,11 +1780,6 @@ def main():
     setup_render(samples=int(opt("--samples", 64)),
                  res=tuple(int(v) for v in res.lower().split("x")))
     set_format(opt("--format", "png"))
-    blend = opt("--save-blend")
-    if blend:
-        prep_viewport()
-        bpy.ops.wm.save_as_mainfile(filepath=blend)
-        print("[1st Studio] Хадгаллаа:", blend)
     if "--no-seat" in argv:                    # жүжигчин өөрийн сандал дээр сууж байвал
         hide_prefix("Seat", "SEAT")
     arc = opt("--arc")
@@ -1799,6 +1794,15 @@ def main():
         build_alert(int(opt("--arc", 624)), float(alert_from))
     if press_from is not None:
         animate_side_panel(int(opt("--arc", 624)), float(press_from))
+    # .blend-ийг анимацийг бүрэн угсарсны ДАРАА хадгална — эс бөгөөс нээхэд
+    # камерын нум, түгшүүрийн гэрэл, товчлуурын хөдөлгөөн байхгүй файл гарна.
+    # Харин --pass-аас ӨМНӨ: тэр нь камерын clip зайг зориуд гажуудуулдаг.
+    blend = opt("--save-blend")
+    if blend:
+        bpy.context.scene.frame_set(1)
+        prep_viewport()
+        bpy.ops.wm.save_as_mainfile(filepath=blend)
+        print("[1st Studio] Хадгаллаа:", blend)
     layer = opt("--pass")
     if layer:
         split = opt("--split")
