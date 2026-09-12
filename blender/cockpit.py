@@ -983,6 +983,14 @@ def build_controls(M):
         cyl("SideBtn_%d" % k, 0.016, 0.014, (bx_, by_, T / 2 + 0.027),
             mat=M["amber"] if k % 2 else M["screen"], parent=root_s, verts=20)
     SIDE_PRESS_LOCAL = Vector((0.0, -0.085, T / 2 + 0.027))          # бүлгийн төв
+    # дээд захаас гозгор хөшүүрэг — хуучин самбарын танигдах шинж; бугуйн
+    # дээгүүр цухуйж самбарыг илүү харагдуулна
+    cyl("SideLeverCollar", 0.022, 0.014, (-0.045, Ht / 2 - 0.02, T / 2 + 0.01), mat=M["metal"],
+        parent=root_s, verts=18)
+    box("SideLeverTall", (0.022, 0.17, 0.022), (-0.045, Ht / 2 + 0.06, T / 2 + 0.012),
+        rot=(math.radians(-12), 0, 0), mat=M["dark"], parent=root_s, bevel=0.005)
+    box("SideLeverGrip", (0.048, 0.055, 0.04), (-0.045, Ht / 2 + 0.15, T / 2 + 0.032),
+        rot=(math.radians(-12), 0, 0), mat=M["grip"], parent=root_s, bevel=0.012)
     # суурь: доош иш (ирмэгийн ард нуугдана)
     box("SidePost", (0.05, 0.05, 0.36), (0, -Ht / 2 - 0.12, -0.05), mat=M["dark"], parent=root_s, bevel=0.01)
     return None
