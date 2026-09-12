@@ -76,6 +76,9 @@ ANGLES = {
     # Ногоон дэвсгэр дээр буулгасан нисгэгчид зориулсан дэвсгэр (16:9, дунд зэргийн кадр).
     # Камер нисгэгчийн зүүн-урд талд: нисгэгч дэлгэцийн зүүн тийш харна, консол зүүн талд.
     "pilot":  ((-0.95, 0.75, 1.34), (1.20, -0.50, 1.18), 29.0),
+    # Консол УРД талд — жүжигчин консолын ард суух композитод.
+    # --pass fg / --pass bg-тэй хамт ашиглана.
+    "console": ((1.55, 3.85, 1.74), (1.15, -0.35, 1.02), 30.0),
 }
 
 COL = "COCKPIT"
@@ -988,6 +991,71 @@ def build_sun():
 # ══════════════════════════════════════════════════════════════════════
 #  Камер, рендер
 # ══════════════════════════════════════════════════════════════════════
+# Консолын бүх хэсэг — композитод урд давхарга болгон салгахад ашиглана
+CONSOLE_PARTS = ("Console", "Glow", "Desk", "Key", "CenterStack", "Monitor",
+                 "MonRow", "Wing", "Yoke", "CONSOLE_TOP", "MONITOR", "WING_")
+
+
+def render_pass(kind):
+    """Композитод зориулж тайзыг хоёр давхарга болгон салгана.
+
+    fg — зөвхөн консол, ил тод дэвсгэртэй (жүжигчний УРД тавина)
+    bg — консолгүй өрөө (жүжигчний АРД тавина)
+
+    Хоёр тохиолдолд ч нөгөө хэсэг нь гэрлээ тусгасаар байна — зөвхөн
+    камерын туяанд үл үзэгдэнэ. Ингэснээр консолын гэрэл шал, ханан дээр
+    хэвээр үлдэж, давхаргууд эвлүүлэхэд таарна.
+    """
+    scene = bpy.context.scene
+    console = False if kind == "bg" else True
+    for ob in bpy.data.collections[COL].objects:
+        is_console = any(ob.name.startswith(pfx) for pfx in CONSOLE_PARTS)
+        if ob.type in {"MESH", "CURVE", "FONT"}:
+            ob.visible_camera = (is_console == console)
+    if kind == "fg":
+        scene.render.film_transparent = True
+        scene.render.image_settings.color_mode = "RGBA"
+    print("[1st Studio] Давхарга: %s" % kind)
+
+
+def slide_camera(cam, aim, metres, frames):
+    """Камерыг харцандаа перпендикуляр хажуу тийш гулсуулна (truck)."""
+    scene = bpy.context.scene
+    scene.frame_start, scene.frame_end = 1, frames
+    base_c = Vector(cam.location)
+    base_a = Vector(aim.location)
+    fwd = (base_a - base_c)
+    lat = Vector((-fwd.y, fwd.x, 0.0)).normalized()      # хэвтээ хөндлөн тэнхлэг
+    for f, t in ((1, -0.5), (frames, 0.5)):
+        cam.location = base_c + lat * (metres * t)
+        aim.location = base_a + lat * (metres * t)
+        cam.keyframe_insert("location", frame=f)
+        aim.keyframe_insert("location", frame=f)
+    for holder in (cam, aim):                             # жигд хурдтай гулсалт
+        ad = holder.animation_data
+        act = ad.action if ad else None
+        if not act:
+            continue
+        curves = []
+        try:
+            if hasattr(act, "layers") and len(act.layers):
+                cb = act.layers[0].strips[0].channelbag(ad.action_slot)
+                if cb:
+                    curves = list(cb.fcurves)
+        except Exception:
+            pass
+        if not curves:
+            try:
+                curves = list(act.fcurves)
+            except Exception:
+                curves = []
+        for fc in curves:
+            for kp in fc.keyframe_points:
+                kp.interpolation = "LINEAR"
+    scene.frame_set(1)
+    print("[1st Studio] Хажуу гулсалт: %.2fм, %d фрейм" % (metres, frames))
+
+
 def hide_prefix(*prefixes):
     """Нэр нь өгсөн угтвараар эхэлсэн объектуудыг рендерээс нууна."""
     n = 0
@@ -1235,6 +1303,13 @@ def main():
         print("[1st Studio] Хадгаллаа:", blend)
     if "--no-seat" in argv:                    # жүжигчин өөрийн сандал дээр сууж байвал
         hide_prefix("Seat", "SEAT")
+    slide = opt("--slide")
+    if slide:
+        slide_camera(bpy.data.objects["SET_CAM"], bpy.data.objects["CAM_AIM"],
+                     float(slide), int(opt("--slide-frames", 120)))
+    layer = opt("--pass")
+    if layer:
+        render_pass(layer)
     frame = opt("--frame")
     if frame:
         bpy.context.scene.frame_set(int(frame))
