@@ -1264,6 +1264,47 @@ def build_ship(M):
     return root
 
 
+def animate_side_panel(frames=624, start=0.5, period=20):
+    """Хажуугийн самбарын товчлуурууд дараалан дарагдаж асна.
+
+    start — нислэгийн хэдэн хувиас (0.5 = 13 дахь секунд). Товч бүр
+    ээлжлэн асч, бага зэрэг доош дарагдана.
+    """
+    f0 = max(2, int(frames * start))
+    btns = sorted([o for o in bpy.data.collections[COL].objects
+                   if o.name.startswith("SideBtn")], key=lambda o: o.name)
+    lit = 0
+    for i, ob in enumerate(btns):
+        if not ob.data.materials or ob.data.materials[0] is None:
+            continue
+        mat = ob.data.materials[0].copy()               # тус бүрдээ материалтай болгоно
+        ob.data.materials[0] = mat
+        node = next((n for n in mat.node_tree.nodes if n.type == "EMISSION"), None)
+        if node is None:
+            continue
+        inp = node.inputs["Strength"]
+        base = inp.default_value
+        seq = f0 + i * period
+        steps = [(1, base * 0.22), (f0 - 1, base * 0.22), (seq, base * 0.22),
+                 (seq + 2, base * 3.4), (seq + period // 2, base * 3.4),
+                 (seq + period // 2 + 3, base * 1.1)]
+        for f, v in steps:
+            if f < 1 or f > frames:
+                continue
+            inp.default_value = v
+            inp.keyframe_insert("default_value", frame=f)
+        z0 = ob.location.z                              # дарагдах хөдөлгөөн
+        for f, dz in ((seq, 0.0), (seq + 2, -0.008), (seq + 7, -0.008), (seq + 9, 0.0)):
+            if f < 1 or f > frames:
+                continue
+            ob.location.z = z0 + dz
+            ob.keyframe_insert("location", frame=f)
+        ob.location.z = z0
+        lit += 1
+    print("[1st Studio] Товчлуур: %d ширхэг, %d фреймээс эхэлж %d фрейм тутам"
+          % (lit, f0, period))
+
+
 def build_alert(frames=624, start=0.5, period=14):
     """Мөргөлдөөний дараах түгшүүрийн гэрэлтүүлэг.
 
@@ -1700,6 +1741,7 @@ def main():
     if "--cover" in argv:                      # гарыг далдлах товгор хэсгийг асаана
         CFG["controls"]["cover_on"] = True
     alert_from = opt("--alert")                # мөргөлдөөний түгшүүрийн гэрэл
+    press_from = opt("--press")                # хажуугийн товчлуур дарагдах
     build()
     res = opt("--res", "960x540")
     setup_render(samples=int(opt("--samples", 64)),
@@ -1721,6 +1763,8 @@ def main():
                      float(slide), int(opt("--slide-frames", 120)))
     if alert_from is not None:
         build_alert(int(opt("--arc", 624)), float(alert_from))
+    if press_from is not None:
+        animate_side_panel(int(opt("--arc", 624)), float(press_from))
     layer = opt("--pass")
     if layer:
         split = opt("--split")
