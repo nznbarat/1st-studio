@@ -1062,6 +1062,51 @@ def slide_camera(cam, aim, metres, frames):
     print("[1st Studio] Хажуу гулсалт: %.2fм, %d фрейм" % (metres, frames))
 
 
+def arc_camera(cam, aim, frames=624, a0=55.0, a1=90.0, d0=1.90, d1=1.35,
+               z0=1.50, z1=1.42, lens=26.0):
+    """Нисгэгчийг тойрох нум: урд талын гуравны хоёроос хажуугийн профиль руу,
+    зэрэгцээд ойртоно. Бодит бичлэгийн хөдөлгөөнтэй тааруулахад зориулсан.
+
+    a0/a1 — нисгэгчийн харцны тэнхлэгээс хэмжсэн өнцөг (90° = яг хажуу).
+    d0/d1 — нисгэгч хүртэлх зай. Камер нисгэгчийн +X талд байх тул
+    цонх (+Y) дэлгэцийн БАРУУН тийш харагдана.
+    """
+    sx, sy = CFG["seat"]["x"], CFG["seat"]["y"]
+    scene = bpy.context.scene
+    scene.frame_start, scene.frame_end = 1, frames
+    cam.data.lens = lens
+    aim.location = (sx, sy, 1.20)
+    aim.keyframe_insert("location", frame=1)
+    aim.keyframe_insert("location", frame=frames)
+    for f, t in ((1, 0.0), (frames, 1.0)):
+        a = math.radians(a0 + (a1 - a0) * t)
+        d = d0 + (d1 - d0) * t
+        cam.location = (sx + d * math.sin(a), sy + d * math.cos(a), z0 + (z1 - z0) * t)
+        cam.keyframe_insert("location", frame=f)
+    ad = cam.animation_data
+    act = ad.action if ad else None
+    curves = []
+    if act:
+        try:
+            if hasattr(act, "layers") and len(act.layers):
+                cb = act.layers[0].strips[0].channelbag(ad.action_slot)
+                if cb:
+                    curves = list(cb.fcurves)
+        except Exception:
+            pass
+        if not curves:
+            try:
+                curves = list(act.fcurves)
+            except Exception:
+                curves = []
+    for fc in curves:
+        for kp in fc.keyframe_points:
+            kp.interpolation = "LINEAR"
+    scene.frame_set(1)
+    print("[1st Studio] Нум: %.0f°→%.0f°, %.2fм→%.2fм, %d фрейм, %.0fмм"
+          % (a0, a1, d0, d1, frames, lens))
+
+
 def hide_prefix(*prefixes):
     """Нэр нь өгсөн угтвараар эхэлсэн объектуудыг рендерээс нууна."""
     n = 0
@@ -1309,6 +1354,9 @@ def main():
         print("[1st Studio] Хадгаллаа:", blend)
     if "--no-seat" in argv:                    # жүжигчин өөрийн сандал дээр сууж байвал
         hide_prefix("Seat", "SEAT")
+    arc = opt("--arc")
+    if arc:
+        arc_camera(bpy.data.objects["SET_CAM"], bpy.data.objects["CAM_AIM"], int(arc))
     slide = opt("--slide")
     if slide:
         slide_camera(bpy.data.objects["SET_CAM"], bpy.data.objects["CAM_AIM"],
