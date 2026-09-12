@@ -94,6 +94,16 @@ CFG = {
     "cool": (0.32, 0.55, 1.0),  # цонхны хүйтэн гэрэл
     # Кино төрх — 3D мэдээллээс хамаардаг тул зөвхөн Blender дотор хийгдэнэ.
     # Өнгө засвар, ширхэг, vignette, halation зэрэг нь Resolve-ийн ажил.
+    # Солир — мөргөлдөөний эх үүсвэр. Замын төгсгөл нь цохилтын цэг.
+    # Солир. Одоогоор унтраалттай — асаахдаа --meteor туг ашиглана.
+    "meteor": {
+        "on": False,
+        "start": (-320.0, 150.0, 110.0),   # алс сансараас
+        "hit": (14.0, 14.0, -0.3),         # гүүрний урд, тэгш тавцан дээр (z=-0.5)
+        "r": 5.2,                          # радиус (264м хөлөг дээр харагдахуйц)
+        "impact_frame": 312,               # нислэгийн яг хагаст
+        "debris": 18,
+    },
     "cine": {
         "shutter": 0.5,     # 0.5 = 180° хаалт, киноны стандарт
         "fstop": 2.8,       # линзний нүх — жижиг тоо = илүү бүдгэрсэн ар тал
@@ -118,7 +128,70 @@ ANGLES = {
     # Уудам сансрыг цонхоор ажиглаж буй нисгэгч: хүн баруун талд жижиг,
     # консол доогуур, цонх ба од зүүн талд. Өргөн линз — уудмыг мэдрүүлнэ.
     "vista":  ((-3.50, -2.50, 1.50), (0.20, 0.85, 1.15), 24.0),
+    # ── Дүр солигдох дарааллын гадна өнцгүүд ──
+    # Солир ойртож байна: хамрын хэсэг ба чулуу нэг кадарт
+    # Солир дэлгэцийг дүүргэж, хөлөг ард нь холд харагдана
+    # Их биеийн ялтсууд дундах гэрэлтсэн гүүрний цонх — лавлах зургийн өнцөг.
+    # Кабин хөлөгтэйгээ уусаж, цонх нь хонхойж суусан харагдана.
+    "bridge_ext": ((35.0, 45.0, 32.0), (0.0, 3.5, 2.0), 50.0),
+    # Тавцан дээгүүр нам өнцгөөс — гүүрний блок ба хамрын чиглэл
+    "deck":       ((46.0, 30.0, 14.0), (0.0, 20.0, -1.0), 35.0),
+    # Хажуу талаас бүтэн урт — хөлгийн масс мэдрэгдэнэ
+    "flank":      ((150.0, -60.0, 34.0), (0.0, -55.0, -6.0), 40.0),
+    # ── Солир асаасан үед (--meteor) ашиглах өнцгүүд ──
+    "meteor_in": ((-85.7, 43.7, 72.5), (-127.7, 71.7, 46.5), 50.0),
+    "impact":    ((58.0, 55.0, 30.0), (14.0, 14.0, -0.3), 42.0),
+    "debris":    ((90.0, 85.0, 50.0), (14.0, 14.0, -0.3), 28.0),
 }
+
+# ══════════════════════════════════════════════════════════════════════
+#  Дүрийн дараалал — 3 секунд тутам солигдоно (24fps дээр 72 фрейм)
+#
+#  "int" дүрүүд нь ногоон дэвсгэрийн бичлэгтэй эвлүүлэгдэнэ: тэдгээр нь
+#  БҮГД нэг өнцөгтэй байх ёстой, учир нь бичлэг чинь нэг тогтмол камераас
+#  авагдсан. Зөвхөн "ext" дүрүүд өнцгөө сольдог.
+#  Камерын нум 624 фреймийн турш тасралтгүй үргэлжилнэ — бид зүгээр л
+#  түүнээс хэсэг хэсгийг таслан авч байна.
+# ══════════════════════════════════════════════════════════════════════
+SHOTS = [
+    ("drift",    1,   72, "ext", "ship",      "Хөлөг сансарт — хэмжээг таниулна"),
+    ("calm",     73,  144, "int", None,       "Нисгэгч консол дээр, тайван"),
+    ("approach", 145, 216, "ext", "deck",      "Гүүрний цонх гаднаас — кабин хөлөгт уусна"),
+    ("console",  217, 288, "int", None,       "Нисгэгч — консолын гэрэл"),
+    ("impact",   289, 360, "ext", "bridge_ext", "Гүүрний блок дээрээс (312-р фрейм)"),
+    ("alarm",    361, 432, "int", None,       "Түгшүүр, хяналтаа алдаж байна"),
+    ("tumble",   433, 504, "ext", "flank",    "Хажуугаас бүтэн урт — масс мэдрэгдэнэ"),
+    ("recover",  505, 576, "int", None,       "Гар хажуугийн самбар дээр"),
+    ("steady",   577, 624, "ext", "stern",    "Хөлөг тогтворжиж, холдоно"),
+]
+
+
+def find_shot(key):
+    """Дүрийг нэрээр нь эсвэл дугаараар нь олно."""
+    if key.isdigit():
+        i = int(key)
+        if 1 <= i <= len(SHOTS):
+            return SHOTS[i - 1]
+        return None
+    for sh in SHOTS:
+        if sh[0] == key:
+            return sh
+    return None
+
+
+def print_shotlist():
+    fps = 24
+    print("\n  №  ДҮР        ФРЕЙМ      СЕК          ТӨРӨЛ  ӨНЦӨГ       ТАЙЛБАР")
+    print("  " + "─" * 76)
+    for i, (key, a, b, kind, ang, note) in enumerate(SHOTS, 1):
+        src = "бичлэг" if kind == "int" else "CG"
+        print("  %d  %-10s %3d–%-3d  %4.1f–%-4.1f  %-6s %-11s %s"
+              % (i, key, a, b, (a - 1) / fps, b / fps, src, ang or "pilot", note))
+    ints = [b - a + 1 for _, a, b, k, _, _ in SHOTS if k == "int"]
+    exts = [b - a + 1 for _, a, b, k, _, _ in SHOTS if k == "ext"]
+    print("  " + "─" * 76)
+    print("  Бичлэгээс: %d фрейм (%.1f сек) · Цэвэр CG: %d фрейм (%.1f сек)\n"
+          % (sum(ints), sum(ints) / fps, sum(exts), sum(exts) / fps))
 
 COL = "COCKPIT"
 rng = random.Random(CFG["seed"])
@@ -1059,6 +1132,139 @@ def plate_field(name, a0, a1, b0, b1, fixed, plane, step, mat, parent, thick=0.5
             box("%s_%d_%d" % (name, i, j), size, loc, mat=mat, parent=parent, bevel=0.06)
 
 
+def rock(name, r, loc, seed, mat, parent=None, jag=0.34):
+    """Жигд бус чулуу — бөмбөрцгийн оройг санамсаргүй түлхэж гаргана."""
+    R = random.Random(seed)
+    mesh = bpy.data.meshes.new(name)
+    verts, faces = [], []
+    rings, seg = 11, 20
+    # Оройг тус тусад нь санамсаргүй түлхвэл өргөс болно. Тиймээс цөөн
+    # тооны бага давтамжтай долгионы нийлбэрээр УЯЛДААТАЙ товгор гаргана —
+    # ингэснээр том хонхор, товгортой төмс шиг хэлбэр үүснэ.
+    waves = [(R.uniform(0.45, 1.0) * jag, R.randint(1, 3), R.randint(1, 3),
+              R.uniform(0, 6.28), R.uniform(0, 6.28)) for _ in range(4)]
+    for i in range(rings + 1):                       # туйлаас туйл хүртэл
+        phi = math.pi * i / rings
+        for j in range(seg):
+            th = 2 * math.pi * j / seg
+            f = 1.0
+            for a, m, n, p1, p2 in waves:
+                f += a * math.sin(m * th + p1) * math.sin(n * phi + p2)
+            f += R.uniform(-0.025, 0.025)            # гадаргуугийн бага зэргийн барзгар
+            k = r * max(0.35, f)
+            verts.append((k * math.sin(phi) * math.cos(th),
+                          k * math.sin(phi) * math.sin(th),
+                          k * math.cos(phi)))
+    for i in range(rings):
+        for j in range(seg):
+            a = i * seg + j
+            b = i * seg + (j + 1) % seg
+            faces.append((a, b, b + seg, a + seg))
+    mesh.from_pydata(verts, [], faces)
+    mesh.update()
+    ob = bpy.data.objects.new(name, mesh)
+    ob.location = loc
+    ob.rotation_euler = (R.uniform(0, 6.28), R.uniform(0, 6.28), R.uniform(0, 6.28))
+    if mat:
+        ob.data.materials.append(mat)
+    for poly in mesh.polygons:                       # өнцөг нь хурц байх — гөлгөрүүлэхгүй
+        poly.use_smooth = False
+    _link(ob, bpy.data.collections[COL])
+    if parent:
+        ob.parent = parent
+    return ob
+
+
+def build_meteor(M):
+    """Солир ба цохилтын хэлтэрхий. Цохилт нь CFG-ийн impact_frame дээр.
+
+    Гол чулуу цохилтын цэг хүртэл шулуун нисч, тэр фрейм дээр алга болно.
+    Хэлтэрхийнүүд тэр цэгээс гадагш тарна.
+    """
+    cfg = CFG["meteor"]
+    if not cfg["on"]:
+        return None
+    root = empty("METEOR", (0, 0, 0))
+    s0, s1 = Vector(cfg["start"]), Vector(cfg["hit"])
+    f_hit = cfg["impact_frame"]
+    mat = metal("met_rock", (0.16, 0.145, 0.135), rough=0.92, metallic=0.02,
+                grime=0.75, scale=0.9, bump=0.55, wear=0.2)
+
+    # ── гол чулуу: 1-р фреймээс цохилт хүртэл шулуун, дараа нь алга ──
+    big = rock("MeteorCore", cfg["r"], s0, CFG["seed"] + 71, mat, parent=root)
+    for f, p in ((1, s0), (f_hit, s1)):
+        big.location = p
+        big.keyframe_insert("location", frame=f)
+    big.rotation_euler = (0.0, 0.0, 0.0)
+    big.keyframe_insert("rotation_euler", frame=1)
+    big.rotation_euler = (2.1, -1.4, 3.3)                 # нисэх зуураа эргэнэ
+    big.keyframe_insert("rotation_euler", frame=f_hit)
+    for f, sc in ((f_hit - 1, 1.0), (f_hit, 0.0)):        # цохилтын мөчид хэлтэрхий болно
+        big.scale = (sc, sc, sc)
+        big.keyframe_insert("scale", frame=f)
+
+    # ── хэлтэрхий: цохилтын цэгээс гадагш ──
+    R = random.Random(CFG["seed"] + 91)
+    d = (s1 - s0).normalized()
+    for i in range(cfg["debris"]):
+        r = cfg["r"] * R.uniform(0.18, 0.55)
+        ch = rock("MeteorChip_%d" % i, r, s1, CFG["seed"] + 200 + i, mat,
+                  parent=root, jag=0.45)
+        # ихэнх нь анхны чиглэлээ хадгална, зарим нь хойш үсэрнэ
+        fly = (d * R.uniform(0.2, 1.5)
+               + Vector((R.uniform(-1, 1), R.uniform(-1, 1), R.uniform(-0.3, 1.2))))
+        fly.normalize()
+        speed = R.uniform(3.5, 16.0)
+        for f, sc in ((f_hit - 1, 0.0), (f_hit, 1.0)):    # цохилт хүртэл үл үзэгдэнэ
+            ch.scale = (sc, sc, sc)
+            ch.keyframe_insert("scale", frame=f)
+        for f in (f_hit, f_hit + 312):
+            ch.location = s1 + fly * (speed * (f - f_hit) / 24.0)
+            ch.keyframe_insert("location", frame=f)
+        ch.rotation_euler = (0, 0, 0)
+        ch.keyframe_insert("rotation_euler", frame=f_hit)
+        ch.rotation_euler = tuple(R.uniform(-9, 9) for _ in range(3))
+        ch.keyframe_insert("rotation_euler", frame=f_hit + 312)
+
+    # ── цохилтын гэрэлтэлт ──
+    d_lamp = bpy.data.lights.new("ImpactFlash", "POINT")
+    d_lamp.color = (1.0, 0.55, 0.22)
+    d_lamp.shadow_soft_size = 6.0
+    ob = bpy.data.objects.new("ImpactFlash", d_lamp)
+    ob.location = s1
+    _link(ob, bpy.data.collections[COL])
+    ob.parent = root
+    # Хүч нь ваттаар: хэт өндөр байвал их бие цав цагаан болж бүх нарийвчлал алдагдана
+    for f, e in ((f_hit - 2, 0.0), (f_hit, 2.6e5), (f_hit + 10, 5.0e4), (f_hit + 34, 0.0)):
+        d_lamp.energy = e
+        d_lamp.keyframe_insert("energy", frame=f)
+
+    # Blender анхдагчаар Bezier-ээр зөөлрүүлдэг — сансарт энэ нь буруу.
+    # Солир тогтмол хурдтай нисэх ёстой тул бүх муруйг шугаман болгоно.
+    n = 0
+    for ob in list(root.children) + [root]:
+        ad = ob.animation_data
+        act = ad.action if ad else None
+        if not act:
+            continue
+        try:
+            cb = act.layers[0].strips[0].channelbag(ad.action_slot)
+            curves = list(cb.fcurves) if cb else []
+        except Exception:
+            curves = []
+        for fc in curves:
+            if not fc.data_path.endswith("location"):
+                continue
+            for kp in fc.keyframe_points:
+                kp.interpolation = "LINEAR"
+            n += 1
+    print("[1st Studio] Солир: %d байрлалын муруйг шугаман болгов." % n)
+
+    print("[1st Studio] Солир: r=%.1fм, цохилт %d-р фрейм, %d хэлтэрхий."
+          % (cfg["r"], f_hit, cfg["debris"]))
+    return root
+
+
 def loft(name, sections, mat, parent=None, col=None):
     """Хөндлөн огтлолуудыг холбож гөлгөр их бие үүсгэнэ.
     sections = [(y, [(x, z), ...]), ...] — бүх цагираг ижил цэгийн тоотой."""
@@ -1789,6 +1995,7 @@ def build():
     if CFG["ship"]["on"]:
         build_ship(M)
         build_sun()
+        build_meteor(M)
     else:
         build_space(M)
     build_lights(M)
@@ -1805,12 +2012,18 @@ def main():
     def opt(flag, default=None):
         return argv[argv.index(flag) + 1] if flag in argv else default
 
+    if "--shotlist" in argv:            # тайз барихгүйгээр зөвхөн төлөвлөгөөг хэвлэнэ
+        print_shotlist()
+        return
+
     if "--angle" in argv:                      # тодорхой өнцөг асуувал нислэгийн анимац хэрэггүй
         CFG["angle"] = opt("--angle", CFG["angle"])
         CFG["flythrough"] = False
     CFG["device"] = opt("--device", CFG["device"])
     if "--cover" in argv:                      # гарыг далдлах товгор хэсгийг асаана
         CFG["controls"]["cover_on"] = True
+    if "--meteor" in argv:                     # солир ба цохилтын хэлтэрхийг асаана
+        CFG["meteor"]["on"] = True
     alert_from = opt("--alert")                # мөргөлдөөний түгшүүрийн гэрэл
     press_from = opt("--press")                # хажуугийн товчлуур дарагдах
     build()
@@ -1835,6 +2048,29 @@ def main():
         build_alert(int(opt("--arc", 624)), float(alert_from))
     if press_from is not None:
         animate_side_panel(int(opt("--arc", 624)), float(press_from))
+
+    # ── Дүр сонгох ──────────────────────────────────────────────────
+    # Дотоод дүрүүд нумын анимацаа хэвээр хадгална (бичлэгтэй таарах ёстой).
+    # Гадна дүрүүд нь өөрийн тогтмол камертай тул нумыг нь салгана.
+    shot_key = opt("--shot")
+    if shot_key:
+        sh = find_shot(shot_key)
+        if sh is None:
+            print("[1st Studio] '%s' гэсэн дүр алга. --shotlist-ээр жагсаалтыг үз." % shot_key)
+            return
+        key, f_a, f_b, kind, ang, note = sh
+        sc = bpy.context.scene
+        sc.frame_start, sc.frame_end = f_a, f_b
+        cam = bpy.data.objects["SET_CAM"]
+        aim = bpy.data.objects["CAM_AIM"]
+        if kind == "ext":
+            for ob in (cam, aim):
+                ob.animation_data_clear()
+            set_angle(cam, ang)
+        print("[1st Studio] Дүр '%s': фрейм %d–%d (%.1f сек), %s, өнцөг %s — %s"
+              % (key, f_a, f_b, (f_b - f_a + 1) / 24.0,
+                 "бичлэгтэй эвлүүлнэ" if kind == "int" else "цэвэр CG",
+                 ang or "pilot", note))
     # .blend-ийг анимацийг бүрэн угсарсны ДАРАА хадгална — эс бөгөөс нээхэд
     # камерын нум, түгшүүрийн гэрэл, товчлуурын хөдөлгөөн байхгүй файл гарна.
     # Харин --pass-аас ӨМНӨ: тэр нь камерын clip зайг зориуд гажуудуулдаг.
