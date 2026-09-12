@@ -49,13 +49,14 @@ CFG = {
         "side_x": 0.55,      # хажуугийн самбар суудлаас хажуу тийш
         "side_y": 0.02,      # хажуугийн самбар урагш/хойш
         "side_z": 0.88,      # хажуугийн самбарын өндөр
-        # Нисгэгчийг тойрсон консолын цагираг. Камерын ямар ч өнцгөөс
-        # урд талд үлдэж, жүжигчний биеийн тасарсан доод хэсгийг хаана.
+        # Консолын ирмэг — кадрын доод зурвасыг нөхнө. Камерын координатад
+        # барих тул камер хөдлөхөд ч кадар дахь байрлал нь хэвээр үлдэнэ.
         "ring_on": True,
-        "ring_r": 1.02,      # суудлын төвөөс радиус
-        "ring_z": 1.00,      # ирмэгийн өндөр — үүнийг л ихэсгэж/багасгаж халхлалтыг тааруулна
-        "ring_span": 232.0,  # хэдэн градусыг хамрах (ард нь нээлттэй)
-        "ring_segs": 11,
+        "ledge_screen": -0.16,  # ирмэгийн байрлал. Бага (сөрөг) нь бага хаана.
+                                # -0.16 → доод 11%, -0.08 → доод 16%
+        "ledge_depth": 0.85,    # камераас хэдэн метрт
+        "ledge_width": 2.10,    # өргөн
+        "ledge_bow": 0.09,      # нумын гүнзгий (0 = шулуун)
     },
     "exposure": -0.45,
     "angle": "wide",
@@ -718,69 +719,62 @@ def sweep_arc(name, cx, cy, r, a0, a1, steps, profile, mat, col=None):
 
 
 def build_station(M):
-    """Нисгэгчийг тойрсон консолын цагираг.
+    """Кадрын доод ирмэгийг нөхөх консолын ирмэг.
 
-    Камер тойрон хөдлөхөд ямар ч өнцгөөс урд талд үлдэх тул жүжигчний
-    кадрын ирмэгээр тасарсан доод хэсгийг байгалийн замаар хаана.
-    Өндрийг CFG["controls"]["ring_z"]-ээр тааруулна.
+    Жүжигчний бие бичлэгийн доод хүрээгээр тасардаг тул тэр зурвасыг
+    халхлах хэрэгтэй. Дэлхийн координатад тавихад камер хөдлөхөд байрлал
+    нь алдагддаг учир ирмэгийг КАМЕРЫН координатад барьж, кадрын доод
+    хэдэн хувийг эзлэхийг шууд тооцоолно.
     """
-    st, c = CFG["seat"], CFG["controls"]
+    c = CFG["controls"]
     if not c.get("ring_on"):
-        return
-    sx, sy = st["x"], st["y"]
-    r, top = c["ring_r"], c["ring_z"]
-    span = math.radians(c["ring_span"])
-    a0, a1 = -span / 2, span / 2
-    drop = math.tan(math.radians(CFG["lean_deg"])) * 0.28      # налуугаас үүсэх уналт
+        return None
+    cam = bpy.data.objects.get("SET_CAM")
+    if cam is None:
+        return None
+    d, v = c["ledge_depth"], c["ledge_screen"]
+    bow, wdt = c["ledge_bow"], c["ledge_width"]
+    half_h = d * (10.125 / cam.data.lens)     # 16:9 кадрын босоо хагас өндөр
+    y_top = (2.0 * v - 1.0) * half_h
 
-    # Огтлолын контур: гаднаас дээш, налуу дээд гадаргуу, дотогш ирмэг, доош
-    body = [
-        (0.175, 0.055), (0.175, top - 0.13), (0.155, top - 0.035), (0.125, top),
-        (-0.125, top - drop), (-0.165, top - drop - 0.02), (-0.175, top - drop - 0.14),
-        (-0.115, 0.055),
-    ]
-    sweep_arc("StationRing", sx, sy, r, a0, a1, 64, body, M["wall"])
+    piv = empty("LEDGE", (0.0, 0.0, 0.0))
+    piv.parent = cam
+    piv.location = (0.0, y_top, -d)
+    piv.rotation_euler = (0.0, 0.0, 0.0)
 
-    # Дотор талын өргөсөн ирмэг — гар тавих зурвас
-    lip = [(-0.19, top - drop - 0.02), (-0.19, top - drop + 0.035),
-           (-0.10, top - drop + 0.045), (-0.10, top - drop - 0.02)]
-    sweep_arc("StationLip", sx, sy, r, a0, a1, 64, lip, M["metal"])
-
-    # Гадна талын бүлээн гэрлийн зурвас
-    glow = [(0.180, top * 0.42), (0.180, top * 0.60), (0.196, top * 0.60), (0.196, top * 0.42)]
-    sweep_arc("StationGlow", sx, sy, r, a0, a1, 64, glow, M["glow"])
-    rim = [(0.178, top * 0.36), (0.178, top * 0.42), (0.206, top * 0.42), (0.206, top * 0.36)]
-    sweep_arc("StationRimLo", sx, sy, r, a0, a1, 64, rim, M["metal"])
-    rim2 = [(0.178, top * 0.60), (0.178, top * 0.66), (0.206, top * 0.66), (0.206, top * 0.60)]
-    sweep_arc("StationRimHi", sx, sy, r, a0, a1, 64, rim2, M["metal"])
-
-    # Доод хөл — шалнаас тасархай тулгуур
-    for i in range(7):
-        a = a0 + (a1 - a0) * (i + 0.5) / 7
-        box("StationFoot_%d" % i, (0.26, 0.22, 0.07),
-            (sx + r * math.sin(a), sy + r * math.cos(a), 0.035),
-            rot=(0, 0, -a), mat=M["dark"])
-
-    # Дээд гадаргуу дээрх удирдлагууд
     lean = math.radians(CFG["lean_deg"])
-    for i in range(30):
-        a = a0 + (a1 - a0) * (i + 0.5) / 30
-        ro = rng.uniform(-0.08, 0.06)
-        rr = r + ro
-        zz = top - drop * (0.5 - ro / 0.28) - 0.004
-        kind = rng.random()
-        if kind < 0.18:
-            m, sz = M["dim_screen"], (0.11, 0.07, 0.012)
-        elif kind < 0.42:
-            m, sz = (M["amber"] if rng.random() < 0.6 else M["screen"]), (0.045, 0.04, 0.016)
-        elif kind < 0.52:
-            m, sz = M["red"], (0.04, 0.04, 0.018)
-        else:
-            m, sz = M["dark"], (rng.uniform(0.05, 0.11), rng.uniform(0.04, 0.08), 0.018)
-        box("StationKey_%02d" % i, sz,
-            (sx + rr * math.sin(a), sy + rr * math.cos(a), zz + sz[2] / 2),
-            rot=(lean, 0, -a), mat=m)
-    return None
+    n = 18
+    seg_w = wdt / n * 1.3
+    made = []
+    for i in range(n):
+        t = (i + 0.5) / n - 0.5
+        x = t * wdt
+        zc = -bow * (1.0 - math.cos(t * math.pi))
+        rz = -t * math.pi * bow * 0.5
+        made.append(box("LedgeTop_%02d" % i, (seg_w, 0.08, 0.40),
+                        (x, -0.055, zc - 0.17), rot=(lean, rz, 0), mat=M["metal"], bevel=0.02))
+        made.append(box("LedgeBody_%02d" % i, (seg_w, 0.42, 0.40),
+                        (x, -0.28, zc - 0.17), rot=(0, rz, 0), mat=M["wall"], bevel=0.03))
+        made.append(box("LedgeLip_%02d" % i, (seg_w, 0.06, 0.09),
+                        (x, -0.03, zc + 0.02), rot=(0, rz, 0), mat=M["metal"], bevel=0.025))
+        made.append(box("LedgeGlow_%02d" % i, (seg_w * 0.84, 0.10, 0.03),
+                        (x, -0.34, zc + 0.02), rot=(0, rz, 0), mat=M["glow"]))
+        for k in range(2):
+            kind = rng.random()
+            if kind < 0.22:
+                m, sz = M["dim_screen"], (0.075, 0.010, 0.055)
+            elif kind < 0.55:
+                m, sz = (M["amber"] if rng.random() < 0.6 else M["screen"]), (0.030, 0.014, 0.028)
+            elif kind < 0.65:
+                m, sz = M["red"], (0.026, 0.016, 0.026)
+            else:
+                m, sz = M["dark"], (rng.uniform(0.04, 0.08), 0.016, rng.uniform(0.03, 0.06))
+            made.append(box("LedgeKey_%02d_%d" % (i, k), sz,
+                            (x + rng.uniform(-seg_w * 0.3, seg_w * 0.3), -0.035,
+                             zc - 0.12 - k * 0.14), rot=(lean, rz, 0), mat=m))
+    for ob in made:
+        ob.parent = piv
+    return piv
 
 
 def build_controls(M):
@@ -1575,7 +1569,6 @@ def build():
     build_console(M)
     build_seat(M)
     build_controls(M)
-    build_station(M)
     build_cables(M)
     build_haze(M)
     if CFG["ship"]["on"]:
@@ -1585,6 +1578,7 @@ def build():
         build_space(M)
     build_lights(M)
     cam = build_camera()
+    build_station(M)   # камерын координатад барих тул камерын ДАРАА
     n = len(bpy.data.collections[COL].objects)
     print("[1st Studio] Кабин бэлэн: %d объект." % n)
     return cam
