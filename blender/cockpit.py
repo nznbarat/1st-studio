@@ -48,8 +48,8 @@ CFG = {
         "yoke_z": 0.78,      # жолооны бариулын өндөр
         "yoke_span": 0.10,   # хоёр бариулын хоорондох хагас зай
         "side_x": -0.58,     # хажуугийн самбар: сөрөг = камерын ЦААД тал (цаад гарын тохойн харалдаа)
-        "side_y": -0.22,     # хажуугийн самбар урагш/хойш
-        "side_z": 0.58,      # хажуугийн самбарын өндөр — цаад гарын тохойн харалдаа
+        "side_y": 0.80,     # хажуугийн самбар урагш/хойш
+        "side_z": 0.78,      # хажуугийн самбарын өндөр — цаад гарын тохойн харалдаа
         # Консолын ирмэг — кадрын доод зурвасыг нөхнө. Камерын координатад
         # барих тул камер хөдлөхөд ч кадар дахь байрлал нь хэвээр үлдэнэ.
         "ring_on": True,
@@ -93,6 +93,10 @@ CFG = {
     "grime": 0.55,              # 0 = цэвэр, 1 = маш бохир
     "warm": (1.0, 0.62, 0.26),  # консолын бүлээн гэрэл
     "cool": (0.32, 0.55, 1.0),  # цонхны хүйтэн гэрэл
+    # Нумын хоёрдугаар хагас. Бодит бичлэгт камер 13→18 с хөдөлж, 19–26 с
+    # зогсдог. settle = хөдөлгөөн дуусах хувь; aim1 = төгсгөлийн харцны
+    # шилжилт (x, y, z) — бичлэг дэх толгойн байрлалд тааруулж шийдсэн.
+    "arc": {"settle": 0.70, "aim1": (0.0, -0.267, 0.040)},
     # Кино төрх — 3D мэдээллээс хамаардаг тул зөвхөн Blender дотор хийгдэнэ.
     # Өнгө засвар, ширхэг, vignette, halation зэрэг нь Resolve-ийн ажил.
     # Солир — мөргөлдөөний эх үүсвэр. Замын төгсгөл нь цохилтын цэг.
@@ -195,6 +199,7 @@ def print_shotlist():
           % (sum(ints), sum(ints) / fps, sum(exts), sum(exts) / fps))
 
 YOKE_GRIP_RISE = 0.055   # бариулын төв хуйснаас хэр дээр (гар хүрэх цэг)
+SIDE_PRESS_LOCAL = None  # хажуугийн самбарын дарах цэг (локал) — build_controls тогтооно
 
 COL = "COCKPIT"
 rng = random.Random(CFG["seed"])
@@ -939,21 +944,47 @@ def build_controls(M):
         box("YokeTrig_%d" % sx, (0.03, 0.03, 0.02), (x + sx * (span - 0.035), y - 0.018, gz + 0.07),
             rot=back, mat=M["red"], bevel=0.006)
 
-    # ── Суудлын хажуугийн удирдлагын самбар ──
+    # ── Хажуугийн жижиг консол — шуу (тохойноос гар хүртэл) ӨНДӨРТЭЙ тавцан ──
+    # Нударга кадрын буланд, шуу нь зүүн-дээш диагоналиар өнгөрдөг тул зүүн
+    # тийш сунасан хавтан шууны ард нуугдана. Дээш сунасан нарийн тавцан л
+    # бугуйн дээгүүр харагдана: товчлуурын бүлэг доор (нударган дээр), дэлгэц
+    # ба эргүүлэг дээр. Нүүр нь камер руу (+X), нисгэгч рүү 30° эргэсэн.
+    global SIDE_PRESS_LOCAL
     ax, ay, az = st["x"] + c["side_x"], st["y"] + c["side_y"], c["side_z"]
-    box("SideConsole", (0.33, 0.60, 0.11), (ax, ay, az), rot=up, mat=M["wall"], bevel=0.03)
-    box("SideRim", (0.36, 0.63, 0.04), (ax, ay, az + 0.06), rot=up, mat=M["metal"], bevel=0.02)
-    box("SidePost", (0.11, 0.15, az - 0.18), (ax, ay - 0.18, (az - 0.18) / 2), mat=M["dark"], bevel=0.02)
-    cyl("SideKnob", 0.058, 0.10, (ax - 0.05, ay + 0.18, az + 0.11), mat=M["metal"], verts=18)
-    cyl("SideKnobCap", 0.032, 0.04, (ax - 0.05, ay + 0.18, az + 0.18), mat=M["dark"], verts=14)
-    box("SideLever", (0.05, 0.07, 0.24), (ax + 0.09, ay + 0.02, az + 0.15),
-        rot=(math.radians(-13), 0, 0), mat=M["dark"], bevel=0.02)
-    box("SideLeverKnob", (0.07, 0.09, 0.06), (ax + 0.09, ay - 0.01, az + 0.26), mat=M["metal"], bevel=0.02)
+    Ln, Ht, T = 0.17, 0.40, 0.045                        # өргөн (Y дагуу), өндөр, зузаан
+    n = Vector((math.cos(math.radians(14)) * math.cos(math.radians(30)),
+                -math.cos(math.radians(14)) * math.sin(math.radians(30)),
+                math.sin(math.radians(14))))
+    q = n.to_track_quat("Z", "Y")                        # локал Z = нормаль, локал Y ≈ дээш
+    root_s = empty("SIDE_PANEL", (ax, ay, az), q.to_euler())
+    box("SideBody", (Ln, Ht, T), (0, 0, 0), mat=M["dark"], parent=root_s, bevel=0.012)
+    box("SideBezel", (Ln + 0.02, Ht + 0.02, 0.012), (0, 0, T / 2 + 0.004), mat=M["metal"],
+        parent=root_s, bevel=0.005)
+    box("SideDeck", (Ln - 0.03, Ht - 0.03, 0.006), (0, 0, T / 2 + 0.013), mat=M["grip"],
+        parent=root_s)                                   # бор резинэн нүүр
+    # дээд: дэлгэц гурван мөртэй
+    box("SideScreen", (0.12, 0.08, 0.006), (0, 0.135, T / 2 + 0.019), mat=M["dim_screen"], parent=root_s)
+    for r_ in range(3):
+        box("SideScreenRow", (0.09, 0.012, 0.003), (0, 0.112 + r_ * 0.022, T / 2 + 0.024),
+            mat=M["screen"], parent=root_s)
+    # дунд: эргүүлэг ба хөшүүрэг
+    cyl("SideKnob", 0.024, 0.026, (-0.035, 0.045, T / 2 + 0.028), mat=M["metal"], parent=root_s, verts=20)
+    cyl("SideKnobCap", 0.014, 0.010, (-0.035, 0.045, T / 2 + 0.046), mat=M["dark"], parent=root_s, verts=16)
+    box("SideLever", (0.022, 0.06, 0.04), (0.045, 0.045, T / 2 + 0.03), mat=M["dark"], parent=root_s, bevel=0.006)
+    for k in range(3):                                   # зурвас товчлуурууд
+        box("SideStrip_%d" % k, (0.036, 0.013, 0.008), (-0.045 + k * 0.045, 0.0, T / 2 + 0.02),
+            mat=M["amber"] if k == 1 else M["dark"], parent=root_s)
+    # доод: 2×3 дугуй товчлуур — нударга дарах бүлэг
     for k in range(6):
-        box("SideBtn_%d" % k, (0.035, 0.05, 0.018),
-            (ax - 0.10 + (k % 2) * 0.10, ay - 0.20 - (k // 2) * 0.09, az + 0.075),
-            mat=M["amber"] if k % 2 else M["screen"])
-    box("SideScreen", (0.15, 0.10, 0.012), (ax, ay - 0.08, az + 0.075), mat=M["dim_screen"])
+        col_, row_ = k % 2, k // 2
+        bx_ = -0.03 + col_ * 0.06
+        by_ = -0.135 + row_ * 0.05
+        cyl("SideBtnRing_%d" % k, 0.021, 0.008, (bx_, by_, T / 2 + 0.020), mat=M["metal"], parent=root_s, verts=20)
+        cyl("SideBtn_%d" % k, 0.016, 0.014, (bx_, by_, T / 2 + 0.027),
+            mat=M["amber"] if k % 2 else M["screen"], parent=root_s, verts=20)
+    SIDE_PRESS_LOCAL = Vector((0.0, -0.085, T / 2 + 0.027))          # бүлгийн төв
+    # суурь: доош иш (ирмэгийн ард нуугдана)
+    box("SidePost", (0.05, 0.05, 0.36), (0, -Ht / 2 - 0.12, -0.05), mat=M["dark"], parent=root_s, bevel=0.01)
     return None
 
 
@@ -1499,8 +1530,9 @@ def animate_side_panel(frames=624, start=0.5, period=20):
     ээлжлэн асч, бага зэрэг доош дарагдана.
     """
     f0 = max(2, int(frames * start))
+    # Зөвхөн "SideBtn_N" — "SideBtnRing_N" цагираг орвол дараалал 6-аар хойшилно
     btns = sorted([o for o in bpy.data.collections[COL].objects
-                   if o.name.startswith("SideBtn")], key=lambda o: o.name)
+                   if o.name.startswith("SideBtn_")], key=lambda o: o.name)
     lit = 0
     for i, ob in enumerate(btns):
         if not ob.data.materials or ob.data.materials[0] is None:
@@ -1722,7 +1754,7 @@ def slide_camera(cam, aim, metres, frames):
 
 
 def arc_camera(cam, aim, frames=624, a0=55.0, a1=90.0, d0=1.90, d1=1.35,
-               z0=1.50, z1=1.42, lens=26.0, hold=0.5):
+               z0=1.50, z1=1.42, lens=26.0, hold=0.5, settle=None, aim1=None):
     """Нисгэгчийг тойрох нум: урд талын гуравны хоёроос хажуугийн профиль руу,
     зэрэгцээд ойртоно. Бодит бичлэгийн хөдөлгөөнтэй тааруулахад зориулсан.
 
@@ -1734,14 +1766,28 @@ def arc_camera(cam, aim, frames=624, a0=55.0, a1=90.0, d0=1.90, d1=1.35,
             0.5 гэдэг нь эхний хагасыг зогсоох гэсэн үг.
     """
     sx, sy = CFG["seat"]["x"], CFG["seat"]["y"]
+    settle = CFG["arc"]["settle"] if settle is None else settle
+    aim1 = CFG["arc"]["aim1"] if aim1 is None else aim1
     scene = bpy.context.scene
     scene.frame_start, scene.frame_end = 1, frames
     cam.data.lens = lens
-    aim.location = (sx, sy, 1.20)
-    aim.keyframe_insert("location", frame=1)
-    aim.keyframe_insert("location", frame=frames)
     hold_f = max(1, int(frames * max(0.0, min(0.95, hold))))
-    keys = [(1, 0.0), (hold_f, 0.0), (frames, 1.0)] if hold_f > 1 else [(1, 0.0), (frames, 1.0)]
+    settle_f = max(hold_f + 1, min(frames, int(frames * settle)))
+    # хөдөлгөөн: зогсолт → settle хүртэл шугаман → дахин зогсолт
+    keys = [(1, 0.0), (hold_f, 0.0), (settle_f, 1.0), (frames, 1.0)] if hold_f > 1 \
+        else [(1, 0.0), (settle_f, 1.0), (frames, 1.0)]
+    for f, t in keys:
+        aim.location = (sx + aim1[0] * t, sy + aim1[1] * t, 1.20 + aim1[2] * t)
+        aim.keyframe_insert("location", frame=f)
+    for holder in (aim,):                          # харцны муруй ч шугаман
+        ad_ = holder.animation_data
+        try:
+            cb_ = ad_.action.layers[0].strips[0].channelbag(ad_.action_slot)
+            for fc_ in cb_.fcurves:
+                for kp_ in fc_.keyframe_points:
+                    kp_.interpolation = "LINEAR"
+        except Exception:
+            pass
     for f, t in keys:
         a = math.radians(a0 + (a1 - a0) * t)
         d = d0 + (d1 - d0) * t
@@ -1767,8 +1813,8 @@ def arc_camera(cam, aim, frames=624, a0=55.0, a1=90.0, d0=1.90, d1=1.35,
         for kp in fc.keyframe_points:
             kp.interpolation = "LINEAR"
     scene.frame_set(1)
-    print("[1st Studio] Нум: %.0f°→%.0f°, %.2fм→%.2fм, %d фрейм (эхний %d зогсолт), %.0fмм"
-          % (a0, a1, d0, d1, frames, hold_f, lens))
+    print("[1st Studio] Нум: %.0f°→%.0f°, %.2fм→%.2fм, %d фрейм (зогсолт %d, хөдөлгөөн %d-д дуусна), %.0fмм"
+          % (a0, a1, d0, d1, frames, hold_f, settle_f, lens))
 
 
 def hide_prefix(*prefixes):
@@ -2181,7 +2227,8 @@ def main():
     arc = opt("--arc")
     if arc:
         arc_camera(bpy.data.objects["SET_CAM"], bpy.data.objects["CAM_AIM"], int(arc),
-                   hold=float(opt("--arc-hold", 0.5)))
+                   hold=float(opt("--arc-hold", 0.5)),
+                   settle=float(opt("--arc-settle", CFG["arc"]["settle"])))
     slide = opt("--slide")
     if slide:
         slide_camera(bpy.data.objects["SET_CAM"], bpy.data.objects["CAM_AIM"],

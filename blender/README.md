@@ -55,10 +55,11 @@ blender -b -P blender/cockpit.py -- --render shot.png --angle seat
 | `--split М` | хуваалтын зайг ТОГТМОЛ болгоно. Үүнгүй бол камертай хамт хөдөлнө |
 | `--arc N` | N фреймийн турш камер нум зурна |
 | `--arc-hold 0.5` | нумын эхний хэдэн хувьд камер хөдөлгөөнгүй зогсохыг тогтооно |
+| `--arc-settle 0.70` | нумын хөдөлгөөн хэдэн хувьд дуусахыг тогтооно — бичлэгт камер 13→18 с хөдөлж, дараа нь зогсдог |
 | `--slide М` | камерыг харцандаа перпендикуляр М метр гулсуулна |
 | `--slide-frames N` | гулсалтын урт |
 | `--alert 0.5` | мөргөлдөөний түгшүүрийн гэрэл хэдэн хувиас асахыг тогтооно |
-| `--press 0.5` | хажуугийн самбарын товчлуур хэдэн хувиас дарагдахыг тогтооно |
+| `--press 0.65` | хажуугийн самбарын товчлуур хэдэн хувиас дарагдахыг тогтооно. 0.65 = 405-р фрейм — бичлэгт гар самбарт хүрэх мөч (17 с) |
 | `--cover` | гарыг далдлах товгор хэсгийг нэмнэ |
 | `--cine` | киноны төрх: 180° хөдөлгөөний бүдгэрэлт + гүний талбар (фокус нь гар дээр) |
 | `--shotlist` | дүр солигдох дарааллыг хэвлэнэ (тайз барихгүй) |
@@ -106,12 +107,12 @@ blender -b -P blender/cockpit.py -- --render shot.png --angle seat
 ```bash
 # гадна дүр — цэвэр CG, эвлүүлэх шаардлагагүй
 blender -b -P blender/cockpit.py -- --angle pilot --no-seat --arc 624 \
-        --alert 0.5 --press 0.5 --cine --shot drift \
+        --alert 0.5 --press 0.65 --cine --shot drift \
         --format exr --render out/drift/f --anim --res 1920x1080 --samples 96
 
 # кабины дүр — bg/fg хоёр давхаргаар, бичлэгтэй эвлүүлнэ
 blender -b -P blender/cockpit.py -- --angle pilot --no-seat --arc 624 \
-        --alert 0.5 --press 0.5 --cine --shot calm --pass bg \
+        --alert 0.5 --press 0.65 --cine --shot calm --pass bg \
         --format exr --render out/calm-bg/f --anim --res 1920x1080 --samples 96
 ```
 
@@ -150,13 +151,13 @@ blender -b -P blender/cockpit.py -- --angle pilot --no-seat --arc 624 \
 ```bash
 # ард — сансар, цонх, хөлгийн их бие
 blender -b -P blender/cockpit.py -- --angle pilot --no-seat \
-        --arc 624 --alert 0.5 --press 0.5 \
+        --arc 624 --alert 0.5 --press 0.65 \
         --pass bg --format exr --render out/bg/f --anim \
         --res 1920x1080 --samples 96
 
 # урд — консолын ирмэг, жолоо, хажуугийн самбар
 blender -b -P blender/cockpit.py -- --angle pilot --no-seat \
-        --arc 624 --alert 0.5 --press 0.5 \
+        --arc 624 --alert 0.5 --press 0.65 \
         --pass fg --format exr --render out/fg/f --anim \
         --res 1920x1080 --samples 96
 ```
