@@ -47,10 +47,9 @@ CFG = {
         "yoke_side": 0.12,   # жолоо хажуу тийш шилжих
         "yoke_z": 0.78,      # жолооны бариулын өндөр
         "yoke_span": 0.10,   # хоёр бариулын хоорондох хагас зай
-        "far_x": -0.80, "far_y": -1.57, "far_z": 0.66,   # нэмэлт консол — хүний цаад талд
-        "side_x": -0.58,     # хажуугийн самбар: сөрөг = камерын ЦААД тал (цаад гарын тохойн харалдаа)
-        "side_y": 0.80,     # хажуугийн самбар урагш/хойш
-        "side_z": 0.78,      # хажуугийн самбарын өндөр — цаад гарын тохойн харалдаа
+        "side_x": -0.42,     # хажуугийн самбар: сөрөг = камерын ЦААД тал (цаад гарын тохойн харалдаа)
+        "side_y": 0.10,     # хажуугийн самбар урагш/хойш
+        "side_z": 0.66,      # хажуугийн самбарын өндөр — цаад гарын тохойн харалдаа
         # Консолын ирмэг — кадрын доод зурвасыг нөхнө. Камерын координатад
         # барих тул камер хөдлөхөд ч кадар дахь байрлал нь хэвээр үлдэнэ.
         "ring_on": True,
@@ -97,7 +96,7 @@ CFG = {
     # Нумын хоёрдугаар хагас. Бодит бичлэгт камер 13→18 с хөдөлж, 19–26 с
     # зогсдог. settle = хөдөлгөөн дуусах хувь; aim1 = төгсгөлийн харцны
     # шилжилт (x, y, z) — бичлэг дэх толгойн байрлалд тааруулж шийдсэн.
-    "arc": {"settle": 0.70, "aim1": (0.0, -0.267, 0.040)},
+    "arc": {"settle": 0.70, "aim1": (0.0, -0.440, -0.120), "a1": 61.60, "d1": 1.754},
     # Кино төрх — 3D мэдээллээс хамаардаг тул зөвхөн Blender дотор хийгдэнэ.
     # Өнгө засвар, ширхэг, vignette, halation зэрэг нь Resolve-ийн ажил.
     # Солир — мөргөлдөөний эх үүсвэр. Замын төгсгөл нь цохилтын цэг.
@@ -945,86 +944,44 @@ def build_controls(M):
         box("YokeTrig_%d" % sx, (0.03, 0.03, 0.02), (x + sx * (span - 0.035), y - 0.018, gz + 0.07),
             rot=back, mat=M["red"], bevel=0.006)
 
-    # ── Хажуугийн жижиг консол — шуу (тохойноос гар хүртэл) ӨНДӨРТЭЙ тавцан ──
-    # Нударга кадрын буланд, шуу нь зүүн-дээш диагоналиар өнгөрдөг тул зүүн
-    # тийш сунасан хавтан шууны ард нуугдана. Дээш сунасан нарийн тавцан л
-    # бугуйн дээгүүр харагдана: товчлуурын бүлэг доор (нударган дээр), дэлгэц
-    # ба эргүүлэг дээр. Нүүр нь камер руу (+X), нисгэгч рүү 30° эргэсэн.
+    # ── Хажуугийн жижиг консол — ЗҮҮН гарны талд, машины дунд консол шиг ──
+    # Нисгэгчийн зүүн (−X, камераас цаад) талд, тохойны түвшинд. Тохойноос
+    # урагш шууны дагуу сунана; хойд хэсэгт тохойн дэр, дунд нь унтраалга,
+    # эргүүлэг, урд үзүүрт товчлуурын бүлэг — 13 с-ээс зүүн гар очиж дарна.
+    # Дээд гадаргуу нисгэгч рүү (+X) 15° налсан тул камерт ч илүү харагдана.
     global SIDE_PRESS_LOCAL
     ax, ay, az = st["x"] + c["side_x"], st["y"] + c["side_y"], c["side_z"]
-    Ln, Ht, T = 0.17, 0.40, 0.045                        # өргөн (Y дагуу), өндөр, зузаан
-    n = Vector((math.cos(math.radians(14)) * math.cos(math.radians(30)),
-                -math.cos(math.radians(14)) * math.sin(math.radians(30)),
-                math.sin(math.radians(14))))
-    q = n.to_track_quat("Z", "Y")                        # локал Z = нормаль, локал Y ≈ дээш
-    root_s = empty("SIDE_PANEL", (ax, ay, az), q.to_euler())
-    box("SideBody", (Ln, Ht, T), (0, 0, 0), mat=M["dark"], parent=root_s, bevel=0.012)
-    box("SideBezel", (Ln + 0.02, Ht + 0.02, 0.012), (0, 0, T / 2 + 0.004), mat=M["metal"],
+    SL, SW, SH = 0.46, 0.20, 0.15                        # урт (Y), өргөн (X), өндөр
+    root_s = empty("SIDE_PANEL", (ax, ay, az), (0, math.radians(15), 0))
+    box("SideBody", (SW, SL, SH), (0, 0, 0), mat=M["dark"], parent=root_s, bevel=0.025)
+    box("SideBezel", (SW + 0.02, SL + 0.02, 0.012), (0, 0, SH / 2 + 0.004), mat=M["metal"],
         parent=root_s, bevel=0.005)
-    box("SideDeck", (Ln - 0.03, Ht - 0.03, 0.006), (0, 0, T / 2 + 0.013), mat=M["grip"],
-        parent=root_s)                                   # бор резинэн нүүр
-    # дээд: дэлгэц гурван мөртэй
-    box("SideScreen", (0.12, 0.08, 0.006), (0, 0.135, T / 2 + 0.019), mat=M["dim_screen"], parent=root_s)
-    for r_ in range(3):
-        box("SideScreenRow", (0.09, 0.012, 0.003), (0, 0.112 + r_ * 0.022, T / 2 + 0.024),
-            mat=M["screen"], parent=root_s)
-    # дунд: эргүүлэг ба хөшүүрэг
-    cyl("SideKnob", 0.024, 0.026, (-0.035, 0.045, T / 2 + 0.028), mat=M["metal"], parent=root_s, verts=20)
-    cyl("SideKnobCap", 0.014, 0.010, (-0.035, 0.045, T / 2 + 0.046), mat=M["dark"], parent=root_s, verts=16)
-    box("SideLever", (0.022, 0.06, 0.04), (0.045, 0.045, T / 2 + 0.03), mat=M["dark"], parent=root_s, bevel=0.006)
-    for k in range(3):                                   # зурвас товчлуурууд
-        box("SideStrip_%d" % k, (0.036, 0.013, 0.008), (-0.045 + k * 0.045, 0.0, T / 2 + 0.02),
-            mat=M["amber"] if k == 1 else M["dark"], parent=root_s)
-    # доод: 2×3 дугуй товчлуур — нударга дарах бүлэг
+    box("SideDeck", (SW - 0.03, SL - 0.03, 0.006), (0, 0, SH / 2 + 0.013), mat=M["grip"], parent=root_s)
+    # камер талын хажуу нүүр: нимгэн гэрэлт зурвас
+    box("SideEdgeGlow", (0.006, SL - 0.08, 0.012), (SW / 2 + 0.004, 0, SH / 2 - 0.03), mat=M["glow"], parent=root_s)
+    # хойд: тохойн дэр
+    box("SideArmPad", (SW - 0.05, 0.13, 0.03), (0, -SL * 0.34, SH / 2 + 0.03), mat=M["grip"],
+        parent=root_s, bevel=0.012)
+    # дунд: 4 унтраалга ба эргүүлэг
+    for k in range(4):
+        box("SideSwitch_%d" % k, (0.014, 0.022, 0.03), (-0.06 + k * 0.04, -SL * 0.10, SH / 2 + 0.03),
+            rot=(math.radians(-20 if k % 2 else 20), 0, 0), mat=M["metal"], parent=root_s, bevel=0.003)
+    cyl("SideKnob", 0.028, 0.028, (0.04, 0.02, SH / 2 + 0.03), mat=M["metal"], parent=root_s, verts=22)
+    cyl("SideKnobCap", 0.016, 0.010, (0.04, 0.02, SH / 2 + 0.048), mat=M["dark"], parent=root_s, verts=16)
+    cyl("SideStart", 0.019, 0.016, (-0.05, 0.03, SH / 2 + 0.026), mat=M["red"], parent=root_s, verts=20)
+    # урд: 2×3 дугуй товчлуурын бүлэг — зүүн гар дарах цэг
     for k in range(6):
         col_, row_ = k % 2, k // 2
-        bx_ = -0.03 + col_ * 0.06
-        by_ = -0.135 + row_ * 0.05
-        cyl("SideBtnRing_%d" % k, 0.021, 0.008, (bx_, by_, T / 2 + 0.020), mat=M["metal"], parent=root_s, verts=20)
-        cyl("SideBtn_%d" % k, 0.016, 0.014, (bx_, by_, T / 2 + 0.027),
+        bx_, by_ = -0.035 + col_ * 0.07, SL * 0.14 + row_ * 0.05
+        cyl("SideBtnRing_%d" % k, 0.021, 0.008, (bx_, by_, SH / 2 + 0.020), mat=M["metal"], parent=root_s, verts=20)
+        cyl("SideBtn_%d" % k, 0.016, 0.014, (bx_, by_, SH / 2 + 0.027),
             mat=M["amber"] if k % 2 else M["screen"], parent=root_s, verts=20)
-    SIDE_PRESS_LOCAL = Vector((0.0, -0.085, T / 2 + 0.027))          # бүлгийн төв
-    # дээд захаас гозгор хөшүүрэг — хуучин самбарын танигдах шинж; бугуйн
-    # дээгүүр цухуйж самбарыг илүү харагдуулна
-    cyl("SideLeverCollar", 0.022, 0.014, (-0.045, Ht / 2 - 0.02, T / 2 + 0.01), mat=M["metal"],
-        parent=root_s, verts=18)
-    box("SideLeverTall", (0.022, 0.17, 0.022), (-0.045, Ht / 2 + 0.06, T / 2 + 0.012),
-        rot=(math.radians(-12), 0, 0), mat=M["dark"], parent=root_s, bevel=0.005)
-    box("SideLeverGrip", (0.048, 0.055, 0.04), (-0.045, Ht / 2 + 0.15, T / 2 + 0.032),
-        rot=(math.radians(-12), 0, 0), mat=M["grip"], parent=root_s, bevel=0.012)
-    # суурь: доош иш (ирмэгийн ард нуугдана)
-    box("SidePost", (0.05, 0.05, 0.36), (0, -Ht / 2 - 0.12, -0.05), mat=M["dark"], parent=root_s, bevel=0.01)
-
-    # ── Нэмэлт консол — сууж буй хүний ЦААД талд, тавцангаас тусдаа ──
-    # Хуучин "6 товчлууртай гозгор бор самбар": дээшээ харсан налуу хавтан,
-    # эргүүлэг, гозгор хөшүүрэг, дэлгэц, 6 дугуй товчлуур, шалны иш.
-    fx, fy, fz = st["x"] + c["far_x"], st["y"] + c["far_y"], c["far_z"]
-    root_f = empty("FAR_CONSOLE", (fx, fy, fz), (math.radians(CFG["lean_deg"]), 0, 0))
-    FL, FW, FT = 0.50, 0.36, 0.10                        # урт (Y), өргөн (X), зузаан
-    box("FarBody", (FW, FL, FT), (0, 0, 0), mat=M["dark"], parent=root_f, bevel=0.02)
-    box("FarBezel", (FW + 0.02, FL + 0.02, 0.012), (0, 0, FT / 2 + 0.004), mat=M["metal"],
-        parent=root_f, bevel=0.005)
-    box("FarDeck", (FW - 0.03, FL - 0.03, 0.006), (0, 0, FT / 2 + 0.013), mat=M["grip"], parent=root_f)
-    box("FarScreen", (0.16, 0.10, 0.006), (0, -0.15, FT / 2 + 0.019), mat=M["dim_screen"], parent=root_f)
-    for r_ in range(3):
-        box("FarScreenRow", (0.12, 0.014, 0.003), (0, -0.18 + r_ * 0.03, FT / 2 + 0.024),
-            mat=M["screen"], parent=root_f)
-    cyl("FarKnob", 0.032, 0.030, (-0.10, 0.0, FT / 2 + 0.03), mat=M["metal"], parent=root_f, verts=22)
-    cyl("FarKnobCap", 0.018, 0.012, (-0.10, 0.0, FT / 2 + 0.05), mat=M["dark"], parent=root_f, verts=16)
-    cyl("FarLeverCollar", 0.026, 0.016, (0.10, 0.0, FT / 2 + 0.02), mat=M["metal"], parent=root_f, verts=18)
-    box("FarLeverTall", (0.024, 0.024, 0.20), (0.10, 0.02, FT / 2 + 0.12),
-        rot=(math.radians(-14), 0, 0), mat=M["dark"], parent=root_f, bevel=0.005)
-    box("FarLeverGrip", (0.052, 0.046, 0.06), (0.10, 0.045, FT / 2 + 0.235),
-        rot=(math.radians(-14), 0, 0), mat=M["grip"], parent=root_f, bevel=0.014)
-    for k in range(6):
-        col_, row_ = k % 2, k // 2
-        bx_, by_ = -0.05 + col_ * 0.10, 0.08 + row_ * 0.065
-        cyl("FarBtnRing_%d" % k, 0.023, 0.008, (bx_, by_, FT / 2 + 0.020), mat=M["metal"],
-            parent=root_f, verts=20)
-        cyl("FarBtn_%d" % k, 0.017, 0.014, (bx_, by_, FT / 2 + 0.027),
-            mat=M["amber"] if k % 2 else M["screen"], parent=root_f, verts=20)
-    box("FarPost", (0.07, 0.07, fz - 0.06), (fx, fy - 0.12, (fz - 0.06) / 2), mat=M["dark"], bevel=0.01)
-    box("FarFoot", (0.22, 0.22, 0.025), (fx, fy - 0.12, 0.0125), mat=M["dark"], bevel=0.006)
+    SIDE_PRESS_LOCAL = Vector((0.0, SL * 0.14 + 0.05, SH / 2 + 0.027))
+    # урд үзүүр: жижиг дэлгэц
+    box("SideScreen", (0.11, 0.03, 0.006), (0, SL / 2 - 0.035, SH / 2 + 0.019), mat=M["dim_screen"], parent=root_s)
+    box("SideScreenRow", (0.08, 0.012, 0.003), (0, SL / 2 - 0.035, SH / 2 + 0.024), mat=M["screen"], parent=root_s)
+    # суурь: шал хүртэл иш (хойд хэсэгт)
+    box("SidePost", (0.07, 0.09, az - SH / 2), (ax, ay - SL * 0.25, (az - SH / 2) / 2), mat=M["dark"], bevel=0.01)
     return None
 
 
@@ -1793,7 +1750,7 @@ def slide_camera(cam, aim, metres, frames):
     print("[1st Studio] Хажуу гулсалт: %.2fм, %d фрейм" % (metres, frames))
 
 
-def arc_camera(cam, aim, frames=624, a0=55.0, a1=90.0, d0=1.90, d1=1.35,
+def arc_camera(cam, aim, frames=624, a0=55.0, a1=None, d0=1.90, d1=None,
                z0=1.50, z1=1.42, lens=26.0, hold=0.5, settle=None, aim1=None):
     """Нисгэгчийг тойрох нум: урд талын гуравны хоёроос хажуугийн профиль руу,
     зэрэгцээд ойртоно. Бодит бичлэгийн хөдөлгөөнтэй тааруулахад зориулсан.
@@ -1808,6 +1765,8 @@ def arc_camera(cam, aim, frames=624, a0=55.0, a1=90.0, d0=1.90, d1=1.35,
     sx, sy = CFG["seat"]["x"], CFG["seat"]["y"]
     settle = CFG["arc"]["settle"] if settle is None else settle
     aim1 = CFG["arc"]["aim1"] if aim1 is None else aim1
+    a1 = CFG["arc"].get("a1", 90.0) if a1 is None else a1
+    d1 = CFG["arc"].get("d1", 1.35) if d1 is None else d1
     scene = bpy.context.scene
     scene.frame_start, scene.frame_end = 1, frames
     cam.data.lens = lens
