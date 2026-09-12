@@ -1646,6 +1646,39 @@ def setup_render(samples=64, res=(960, 540)):
     sc.view_settings.exposure = CFG["exposure"]
 
 
+# DaVinci Resolve Studio-д зориулсан гаралтын хэлбэрүүд.
+#   png    — хурдан харах, эвлүүлгийн ноорогт (8 бит, sRGB, AgX шингэсэн)
+#   png16  — 16 бит, бага зэрэг илүү зай өнгө засварт
+#   exr    — scene-linear хагас нарийвчлал: Blender өнгөний хувиргалтыг
+#            ШИНГЭЭХГҮЙ тул бүх өнгө засвар Resolve дээр хийгдэнэ (зөвлөмж)
+#   exr32  — бүтэн нарийвчлал, маш хүнд, ихэвчлэн шаардлагагүй
+OUTPUT_FORMATS = {
+    "png":   {"file_format": "PNG", "color_depth": "8"},
+    "png16": {"file_format": "PNG", "color_depth": "16"},
+    "exr":   {"file_format": "OPEN_EXR", "color_depth": "16", "exr_codec": "ZIP"},
+    "exr32": {"file_format": "OPEN_EXR", "color_depth": "32", "exr_codec": "ZIP"},
+}
+
+
+def set_format(name):
+    """Гаралтын файлын хэлбэрийг тохируулна."""
+    spec = OUTPUT_FORMATS.get(name)
+    if spec is None:
+        print("[1st Studio] Үл мэдэгдэх хэлбэр '%s', png хэвээр." % name)
+        return
+    im = bpy.context.scene.render.image_settings
+    for key, val in spec.items():
+        try:
+            setattr(im, key, val)
+        except Exception:
+            pass
+    if spec["file_format"] == "OPEN_EXR":
+        # EXR нь шугаман өгөгдөл хадгалдаг тул AgX-ийг гаралтад ШИНГЭЭХГҮЙ.
+        # Гэрлийн хүчийг Blender дотор харахад л AgX хэрэгтэй.
+        print("[1st Studio] EXR: scene-linear, өнгө засвар Resolve дээр.")
+    print("[1st Studio] Гаралт: %s %s бит." % (spec["file_format"], spec["color_depth"]))
+
+
 def prep_viewport():
     """Файлыг нээмэгц камерын харцаар, материалтай харагддаг болгоно."""
     for screen in bpy.data.screens:
@@ -1746,6 +1779,7 @@ def main():
     res = opt("--res", "960x540")
     setup_render(samples=int(opt("--samples", 64)),
                  res=tuple(int(v) for v in res.lower().split("x")))
+    set_format(opt("--format", "png"))
     blend = opt("--save-blend")
     if blend:
         prep_viewport()
