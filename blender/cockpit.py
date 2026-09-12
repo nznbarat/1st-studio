@@ -57,6 +57,14 @@ CFG = {
         "ledge_depth": 0.85,    # камераас хэдэн метрт
         "ledge_width": 2.10,    # өргөн
         "ledge_bow": 0.09,      # нумын гүнзгий (0 = шулуун)
+        # Гарыг далдлах консолын товгор хэсэг. Кадрын координатаар өгнө
+        # (0..1). Гар нь CG жолоотой таарахгүй мөчид үүнийг асаана.
+        "cover_on": False,
+        "cover_x": 0.86,        # төвийн байрлал кадрын өргөнөөр
+        "cover_y": 0.20,        # төв, кадрын доороос дээш
+        "cover_w": 0.34,        # өргөн (кадрын хувиар)
+        "cover_h": 0.30,        # өндөр (кадрын хувиар)
+        "cover_depth": 0.72,    # камераас хэдэн метрт
     },
     "exposure": -0.45,
     "angle": "wide",
@@ -772,6 +780,39 @@ def build_station(M):
             made.append(box("LedgeKey_%02d_%d" % (i, k), sz,
                             (x + rng.uniform(-seg_w * 0.3, seg_w * 0.3), -0.035,
                              zc - 0.12 - k * 0.14), rot=(lean, rz, 0), mat=m))
+    # ── Гарыг далдлах товгор хэсэг (сонголтоор) ──
+    if c.get("cover_on"):
+        dc = c["cover_depth"]
+        hh = dc * (10.125 / cam.data.lens)          # босоо хагас өндөр
+        hw = hh * 16.0 / 9.0                        # хэвтээ хагас өргөн
+        cxs = (2.0 * c["cover_x"] - 1.0) * hw
+        cys = (2.0 * c["cover_y"] - 1.0) * hh
+        cw, ch = c["cover_w"] * 2 * hw, c["cover_h"] * 2 * hh
+        cov = empty("HAND_COVER", (0.0, 0.0, 0.0))
+        cov.parent = cam
+        cov.location = (cxs, cys, -dc)
+        parts = [
+            box("CoverBody", (cw, ch, 0.30), (0, 0, -0.15), mat=M["wall"], bevel=0.03),
+            box("CoverFace", (cw * 0.92, ch * 0.86, 0.05), (0, 0, 0.02),
+                rot=(math.radians(CFG["lean_deg"]), 0, 0), mat=M["metal"], bevel=0.02),
+            box("CoverRim", (cw * 1.04, ch * 0.10, 0.09), (0, ch * 0.46, 0.01), mat=M["metal"], bevel=0.02),
+            box("CoverGlow", (cw * 0.70, 0.02, 0.02), (0, -ch * 0.44, 0.03), mat=M["glow"]),
+        ]
+        for k in range(7):                          # гадаргуугийн удирдлагууд
+            kind = rng.random()
+            if kind < 0.3:
+                m, sz = (M["amber"] if rng.random() < 0.5 else M["screen"]), (0.022, 0.020, 0.020)
+            elif kind < 0.42:
+                m, sz = M["red"], (0.020, 0.018, 0.020)
+            elif kind < 0.58:
+                m, sz = M["dim_screen"], (0.070, 0.045, 0.008)
+            else:
+                m, sz = M["dark"], (rng.uniform(0.03, 0.07), rng.uniform(0.02, 0.05), 0.014)
+            parts.append(box("CoverKey_%d" % k, sz,
+                             (rng.uniform(-cw * 0.34, cw * 0.34), rng.uniform(-ch * 0.28, ch * 0.28), 0.05),
+                             rot=(math.radians(CFG["lean_deg"]), 0, 0), mat=m))
+        for ob in parts:
+            ob.parent = cov
     for ob in made:
         ob.parent = piv
     return piv
@@ -1311,13 +1352,16 @@ def slide_camera(cam, aim, metres, frames):
 
 
 def arc_camera(cam, aim, frames=624, a0=55.0, a1=90.0, d0=1.90, d1=1.35,
-               z0=1.50, z1=1.42, lens=26.0):
+               z0=1.50, z1=1.42, lens=26.0, hold=0.5):
     """Нисгэгчийг тойрох нум: урд талын гуравны хоёроос хажуугийн профиль руу,
     зэрэгцээд ойртоно. Бодит бичлэгийн хөдөлгөөнтэй тааруулахад зориулсан.
 
     a0/a1 — нисгэгчийн харцны тэнхлэгээс хэмжсэн өнцөг (90° = яг хажуу).
     d0/d1 — нисгэгч хүртэлх зай. Камер нисгэгчийн +X талд байх тул
     цонх (+Y) дэлгэцийн БАРУУН тийш харагдана.
+    hold  — эхэнд хэдэн хувийг ХӨДӨЛГӨӨНГҮЙ барих. Бодит бичлэгт камер
+            эхний 13 секундэд бараг зогсож байгаад дараа нь хөдөлдөг тул
+            0.5 гэдэг нь эхний хагасыг зогсоох гэсэн үг.
     """
     sx, sy = CFG["seat"]["x"], CFG["seat"]["y"]
     scene = bpy.context.scene
@@ -1326,7 +1370,9 @@ def arc_camera(cam, aim, frames=624, a0=55.0, a1=90.0, d0=1.90, d1=1.35,
     aim.location = (sx, sy, 1.20)
     aim.keyframe_insert("location", frame=1)
     aim.keyframe_insert("location", frame=frames)
-    for f, t in ((1, 0.0), (frames, 1.0)):
+    hold_f = max(1, int(frames * max(0.0, min(0.95, hold))))
+    keys = [(1, 0.0), (hold_f, 0.0), (frames, 1.0)] if hold_f > 1 else [(1, 0.0), (frames, 1.0)]
+    for f, t in keys:
         a = math.radians(a0 + (a1 - a0) * t)
         d = d0 + (d1 - d0) * t
         cam.location = (sx + d * math.sin(a), sy + d * math.cos(a), z0 + (z1 - z0) * t)
@@ -1351,8 +1397,8 @@ def arc_camera(cam, aim, frames=624, a0=55.0, a1=90.0, d0=1.90, d1=1.35,
         for kp in fc.keyframe_points:
             kp.interpolation = "LINEAR"
     scene.frame_set(1)
-    print("[1st Studio] Нум: %.0f°→%.0f°, %.2fм→%.2fм, %d фрейм, %.0fмм"
-          % (a0, a1, d0, d1, frames, lens))
+    print("[1st Studio] Нум: %.0f°→%.0f°, %.2fм→%.2fм, %d фрейм (эхний %d зогсолт), %.0fмм"
+          % (a0, a1, d0, d1, frames, hold_f, lens))
 
 
 def hide_prefix(*prefixes):
@@ -1594,6 +1640,8 @@ def main():
         CFG["angle"] = opt("--angle", CFG["angle"])
         CFG["flythrough"] = False
     CFG["device"] = opt("--device", CFG["device"])
+    if "--cover" in argv:                      # гарыг далдлах товгор хэсгийг асаана
+        CFG["controls"]["cover_on"] = True
     build()
     res = opt("--res", "960x540")
     setup_render(samples=int(opt("--samples", 64)),
@@ -1607,7 +1655,8 @@ def main():
         hide_prefix("Seat", "SEAT")
     arc = opt("--arc")
     if arc:
-        arc_camera(bpy.data.objects["SET_CAM"], bpy.data.objects["CAM_AIM"], int(arc))
+        arc_camera(bpy.data.objects["SET_CAM"], bpy.data.objects["CAM_AIM"], int(arc),
+                   hold=float(opt("--arc-hold", 0.5)))
     slide = opt("--slide")
     if slide:
         slide_camera(bpy.data.objects["SET_CAM"], bpy.data.objects["CAM_AIM"],
