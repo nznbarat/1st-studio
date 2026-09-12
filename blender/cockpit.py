@@ -15,7 +15,7 @@ import os
 import sys
 
 import bpy
-from mathutils import Vector
+from mathutils import Matrix, Euler, Vector
 
 # ══════════════════════════════════════════════════════════════════════
 #  Тохиргоо
@@ -944,44 +944,58 @@ def build_controls(M):
         box("YokeTrig_%d" % sx, (0.03, 0.03, 0.02), (x + sx * (span - 0.035), y - 0.018, gz + 0.07),
             rot=back, mat=M["red"], bevel=0.006)
 
-    # ── Хажуугийн жижиг консол — ЗҮҮН гарны талд, машины дунд консол шиг ──
+    # ── Хажуугийн консол — ЗҮҮН гарны талд, машины дунд консол шиг ──
     # Нисгэгчийн зүүн (−X, камераас цаад) талд, тохойны түвшинд. Тохойноос
-    # урагш шууны дагуу сунана; хойд хэсэгт тохойн дэр, дунд нь унтраалга,
-    # эргүүлэг, урд үзүүрт товчлуурын бүлэг — 13 с-ээс зүүн гар очиж дарна.
-    # Дээд гадаргуу нисгэгч рүү (+X) 15° налсан тул камерт ч илүү харагдана.
+    # урагш шууны дагуу сунана. Лавлагаа: спорт машины дунд консол — өргөн
+    # карбон их бие, хажуу хавирга, хойно арьсан тохойн дэр, урд нисгэгч рүү
+    # дээш өргөгдсөн налуу товчлуурын тавцан, хамгаалалттай улаан асаагч,
+    # дэлгэц. Бүхэлдээ нисгэгч рүү 18° налсан — дарахад эвтэй, камерт ч ил.
     global SIDE_PRESS_LOCAL
     ax, ay, az = st["x"] + c["side_x"], st["y"] + c["side_y"], c["side_z"]
-    SL, SW, SH = 0.46, 0.20, 0.15                        # урт (Y), өргөн (X), өндөр
-    root_s = empty("SIDE_PANEL", (ax, ay, az), (0, math.radians(15), 0))
-    box("SideBody", (SW, SL, SH), (0, 0, 0), mat=M["dark"], parent=root_s, bevel=0.025)
-    box("SideBezel", (SW + 0.02, SL + 0.02, 0.012), (0, 0, SH / 2 + 0.004), mat=M["metal"],
-        parent=root_s, bevel=0.005)
-    box("SideDeck", (SW - 0.03, SL - 0.03, 0.006), (0, 0, SH / 2 + 0.013), mat=M["grip"], parent=root_s)
-    # камер талын хажуу нүүр: нимгэн гэрэлт зурвас
-    box("SideEdgeGlow", (0.006, SL - 0.08, 0.012), (SW / 2 + 0.004, 0, SH / 2 - 0.03), mat=M["glow"], parent=root_s)
-    # хойд: тохойн дэр
-    box("SideArmPad", (SW - 0.05, 0.13, 0.03), (0, -SL * 0.34, SH / 2 + 0.03), mat=M["grip"],
-        parent=root_s, bevel=0.012)
-    # дунд: 4 унтраалга ба эргүүлэг
+    SL, SW, SH = 0.48, 0.28, 0.18                        # урт (Y), өргөн (X), өндөр
+    root_s = empty("SIDE_PANEL", (ax, ay, az), (0, math.radians(18), 0))
+    carbon = M["carbon"]
+    box("SideBody", (SW, SL, SH), (0, 0, 0), mat=carbon, parent=root_s, bevel=0.035)
+    for sx in (-1, 1):                                    # хажуугийн хавирга — бат бөх
+        box("SideFlank_%d" % sx, (0.035, SL - 0.04, SH * 0.55), (sx * (SW / 2 + 0.012), 0, -SH * 0.12),
+            mat=M["metal"], parent=root_s, bevel=0.008)
+    box("SideLip", (SW + 0.03, 0.04, SH * 0.5), (0, SL / 2 + 0.01, -SH * 0.15), mat=M["metal"],
+        parent=root_s, bevel=0.008)                       # урд зузаан уруул
+    box("SideEdgeGlow", (0.006, SL - 0.10, 0.012), (SW / 2 + 0.03, 0, SH * 0.10), mat=M["glow"], parent=root_s)
+    # хойд тавцан: арьсан тохойн дэр, эргүүлэг, 4 унтраалга
+    box("SideDeckRear", (SW - 0.04, SL * 0.50, 0.012), (0, -SL * 0.24, SH / 2 + 0.006),
+        mat=M["dark"], parent=root_s, bevel=0.004)
+    box("SideArmPad", (SW - 0.08, 0.16, 0.035), (0, -SL * 0.34, SH / 2 + 0.028), mat=M["grip"],
+        parent=root_s, bevel=0.014)
+    cyl("SideKnob", 0.030, 0.030, (0.065, -SL * 0.08, SH / 2 + 0.03), mat=M["metal"], parent=root_s, verts=22)
+    cyl("SideKnobCap", 0.017, 0.010, (0.065, -SL * 0.08, SH / 2 + 0.05), mat=M["dark"], parent=root_s, verts=16)
     for k in range(4):
-        box("SideSwitch_%d" % k, (0.014, 0.022, 0.03), (-0.06 + k * 0.04, -SL * 0.10, SH / 2 + 0.03),
+        box("SideSwitch_%d" % k, (0.016, 0.024, 0.03), (-0.095 + k * 0.042, -SL * 0.08, SH / 2 + 0.03),
             rot=(math.radians(-20 if k % 2 else 20), 0, 0), mat=M["metal"], parent=root_s, bevel=0.003)
-    cyl("SideKnob", 0.028, 0.028, (0.04, 0.02, SH / 2 + 0.03), mat=M["metal"], parent=root_s, verts=22)
-    cyl("SideKnobCap", 0.016, 0.010, (0.04, 0.02, SH / 2 + 0.048), mat=M["dark"], parent=root_s, verts=16)
-    cyl("SideStart", 0.019, 0.016, (-0.05, 0.03, SH / 2 + 0.026), mat=M["red"], parent=root_s, verts=20)
-    # урд: 2×3 дугуй товчлуурын бүлэг — зүүн гар дарах цэг
-    for k in range(6):
+    # урд: нисгэгч рүү дээш өргөгдсөн налуу товчлуурын тавцан (шаантаг)
+    d_loc, d_rot = Vector((0, SL * 0.22, SH / 2)), Euler((math.radians(-22), 0, 0), "XYZ")
+    deck = empty("SIDE_DECK", tuple(d_loc), tuple(d_rot))
+    deck.parent = root_s
+    box("SideDeckFront", (SW - 0.03, SL * 0.46, 0.05), (0, 0, 0), mat=carbon, parent=deck, bevel=0.012)
+    box("SideDeckFace", (SW - 0.06, SL * 0.40, 0.006), (0, 0, 0.028), mat=M["dark"], parent=deck)
+    box("SideScreen", (0.15, 0.065, 0.006), (0, SL * 0.13, 0.034), mat=M["dim_screen"], parent=deck)
+    for r_ in range(3):
+        box("SideScreenRow", (0.11, 0.010, 0.003), (0, SL * 0.13 - 0.018 + r_ * 0.018, 0.039),
+            mat=M["screen"], parent=deck)
+    cyl("SideStartGuard", 0.032, 0.014, (-0.075, -0.02, 0.035), mat=M["metal"], parent=deck, verts=22)
+    cyl("SideStart", 0.021, 0.016, (-0.075, -0.02, 0.045), mat=M["red"], parent=deck, verts=20)
+    for k in range(6):                                    # 2×3 товчлуур — зүүн гар дарах бүлэг
         col_, row_ = k % 2, k // 2
-        bx_, by_ = -0.035 + col_ * 0.07, SL * 0.14 + row_ * 0.05
-        cyl("SideBtnRing_%d" % k, 0.021, 0.008, (bx_, by_, SH / 2 + 0.020), mat=M["metal"], parent=root_s, verts=20)
-        cyl("SideBtn_%d" % k, 0.016, 0.014, (bx_, by_, SH / 2 + 0.027),
-            mat=M["amber"] if k % 2 else M["screen"], parent=root_s, verts=20)
-    SIDE_PRESS_LOCAL = Vector((0.0, SL * 0.14 + 0.05, SH / 2 + 0.027))
-    # урд үзүүр: жижиг дэлгэц
-    box("SideScreen", (0.11, 0.03, 0.006), (0, SL / 2 - 0.035, SH / 2 + 0.019), mat=M["dim_screen"], parent=root_s)
-    box("SideScreenRow", (0.08, 0.012, 0.003), (0, SL / 2 - 0.035, SH / 2 + 0.024), mat=M["screen"], parent=root_s)
-    # суурь: шал хүртэл иш (хойд хэсэгт)
-    box("SidePost", (0.07, 0.09, az - SH / 2), (ax, ay - SL * 0.25, (az - SH / 2) / 2), mat=M["dark"], bevel=0.01)
+        bx_, by_ = 0.005 + col_ * 0.06, -0.075 + row_ * 0.05
+        cyl("SideBtnRing_%d" % k, 0.021, 0.008, (bx_, by_, 0.031), mat=M["metal"], parent=deck, verts=20)
+        cyl("SideBtn_%d" % k, 0.016, 0.014, (bx_, by_, 0.038), mat=M["amber"] if k % 2 else M["screen"],
+            parent=deck, verts=20)
+    m_deck = Matrix.Translation(d_loc) @ d_rot.to_matrix().to_4x4()
+    SIDE_PRESS_LOCAL = m_deck @ Vector((0.035, -0.025, 0.038))
+    # суурь: бат бөх карбон тавцан шалнаас (дэлхийн координатад, эргэлтгүй)
+    ph = az - SH / 2 - 0.01
+    box("SidePedestal", (SW * 0.72, SL * 0.66, ph), (ax, ay - 0.02, ph / 2), mat=carbon, bevel=0.02)
+    box("SidePedestalFoot", (SW * 0.9, SL * 0.8, 0.03), (ax, ay - 0.02, 0.015), mat=M["dark"], bevel=0.008)
     return None
 
 
@@ -2147,6 +2161,7 @@ def build():
         "space":  starfield("cab_space"),
         "hull":     metal("shp_hull", (0.44, 0.44, 0.43), rough=0.52, metallic=0.22, scale=0.25, bump=0.14, grime=0.42),
         "grip":     metal("cab_grip", (0.21, 0.12, 0.07), rough=0.86, metallic=0.0, grime=0.12, scale=3.0, bump=0.30, wear=0.12),
+        "carbon":   metal("cab_carbon", (0.045, 0.047, 0.052), rough=0.32, metallic=0.35, grime=0.05, scale=14.0, bump=0.22, wear=0.05),
         "marking":  metal("shp_mark", (0.10, 0.10, 0.11), rough=0.70, metallic=0.10, scale=2.0, grime=0.2),
         "thrust":   emit("shp_thrust", (0.32, 0.60, 1.0), 14.0),
         "runlight": emit("shp_run", (1.0, 0.10, 0.06), 7.0),
