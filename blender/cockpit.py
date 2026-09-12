@@ -39,6 +39,17 @@ CFG = {
         "glow_panels": 5,       # урд талын гэрэлтэх хавтангийн тоо
     },
     "seat": {"x": 1.18, "y": 0.50, "scale": 1.28},
+    # Удирдлагын байрлал — жүжигчний гарт таарахаар тохируулна.
+    # Бүгд суудлын төвөөс хэмжсэн зай (метр), өндөр нь шалнаас.
+    "controls": {
+        "yoke_fwd": 0.40,    # жолоо суудлаас урагш
+        "yoke_side": 0.12,   # жолоо хажуу тийш шилжих
+        "yoke_z": 0.83,      # жолооны бариулын өндөр
+        "yoke_span": 0.26,   # хоёр бариулын хоорондох хагас зай
+        "side_x": 0.55,      # хажуугийн самбар суудлаас хажуу тийш
+        "side_y": 0.02,      # хажуугийн самбар урагш/хойш
+        "side_z": 0.88,      # хажуугийн самбарын өндөр
+    },
     "exposure": -0.45,
     "angle": "wide",
     "ship": {                   # хөлгийн гадна их бие — 0110 ачааны хөлөг
@@ -566,11 +577,48 @@ def build_console(M):
                 (rng.uniform(-0.8, 0.8), rng.uniform(-0.4, 0.4), 0.06),
                 mat=rng.choice([M["dark"], M["amber"], M["screen"]]), parent=wtop)
 
-    # жолооны хүрд маягийн удирдлага
-    ctrl = cyl("YokeStem", 0.05, 0.42, (0.95, y - dep / 2 - 0.12, hgt + 0.02),
-               rot=(math.radians(62), 0, 0), mat=M["dark"])
-    box("YokeBar", (0.52, 0.09, 0.09), (0.95, y - dep / 2 - 0.28, hgt + 0.20), mat=M["dark"], bevel=0.02)
     return top
+
+
+def build_controls(M):
+    """Нисгэгчийн удирдлага — жүжигчний гарын байрлалд тааруулсан.
+
+    Хэмжээг CFG["controls"]-оос авна. Композитод гар нь бариул дээр
+    яг таарахгүй байвал тэндхийн тоог өөрчилнө.
+    """
+    st, c = CFG["seat"], CFG["controls"]
+    x, y = st["x"] + c["yoke_side"], st["y"] + c["yoke_fwd"]
+    z, span = c["yoke_z"], c["yoke_span"]
+
+    # ── Хоёр гарын жолоо ──
+    box("YokeColumn", (0.15, 0.19, z - 0.22), (x, y + 0.11, (z - 0.22) / 2 + 0.06),
+        rot=(math.radians(-15), 0, 0), mat=M["dark"], bevel=0.03)
+    box("YokeHub", (0.24, 0.17, 0.15), (x, y, z), mat=M["dark"], bevel=0.03)
+    box("YokeFace", (0.14, 0.03, 0.09), (x, y - 0.09, z + 0.02), mat=M["dim_screen"])
+    for sx in (-1, 1):
+        box("YokeArm_%d" % sx, (span * 0.8, 0.09, 0.06), (x + sx * span * 0.62, y, z),
+            mat=M["metal"], bevel=0.02)
+        box("YokeGrip_%d" % sx, (0.095, 0.13, 0.21), (x + sx * span, y - 0.01, z),
+            mat=M["dark"], bevel=0.045)
+        box("YokeTrig_%d" % sx, (0.04, 0.04, 0.025), (x + sx * span, y - 0.08, z + 0.08),
+            mat=M["red"])
+
+    # ── Суудлын хажуугийн удирдлагын самбар ──
+    ax, ay, az = st["x"] + c["side_x"], st["y"] + c["side_y"], c["side_z"]
+    box("SideConsole", (0.33, 0.60, 0.11), (ax, ay, az), mat=M["wall"], bevel=0.03)
+    box("SideRim", (0.36, 0.63, 0.04), (ax, ay, az + 0.06), mat=M["metal"], bevel=0.02)
+    box("SidePost", (0.11, 0.15, az - 0.18), (ax, ay - 0.18, (az - 0.18) / 2), mat=M["dark"], bevel=0.02)
+    cyl("SideKnob", 0.058, 0.10, (ax - 0.05, ay + 0.18, az + 0.11), mat=M["metal"], verts=18)
+    cyl("SideKnobCap", 0.032, 0.04, (ax - 0.05, ay + 0.18, az + 0.18), mat=M["dark"], verts=14)
+    box("SideLever", (0.05, 0.07, 0.24), (ax + 0.09, ay + 0.02, az + 0.15),
+        rot=(math.radians(-13), 0, 0), mat=M["dark"], bevel=0.02)
+    box("SideLeverKnob", (0.07, 0.09, 0.06), (ax + 0.09, ay - 0.01, az + 0.26), mat=M["metal"], bevel=0.02)
+    for k in range(6):
+        box("SideBtn_%d" % k, (0.035, 0.05, 0.018),
+            (ax - 0.10 + (k % 2) * 0.10, ay - 0.20 - (k // 2) * 0.09, az + 0.075),
+            mat=M["amber"] if k % 2 else M["screen"])
+    box("SideScreen", (0.15, 0.10, 0.012), (ax, ay - 0.08, az + 0.075), mat=M["dim_screen"])
+    return None
 
 
 def build_seat(M):
@@ -1319,6 +1367,7 @@ def build():
     build_window(M)
     build_console(M)
     build_seat(M)
+    build_controls(M)
     build_cables(M)
     build_haze(M)
     if CFG["ship"]["on"]:
