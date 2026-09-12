@@ -1610,17 +1610,61 @@ def render_pass(kind, dist=None):
     """
     scene = bpy.context.scene
     cam = scene.camera
-    if dist is None:
-        bpy.context.view_layer.update()            # камерын матриц шинэчлэгдсэн байх ёстой
-        seat = Vector((CFG["seat"]["x"], CFG["seat"]["y"], 1.10))
-        dist = (seat - Vector(cam.matrix_world.translation)).length
+    prop = "clip_end" if kind == "fg" else "clip_start"
     if kind == "fg":
-        cam.data.clip_end = dist
         scene.render.film_transparent = True
         scene.render.image_settings.color_mode = "RGBA"
-    else:
-        cam.data.clip_start = max(0.05, dist)
-    print("[1st Studio] Давхарга: %s (хуваалтын зай %.2fм)" % (kind, dist))
+
+    if dist is not None:                           # --split-ээр гараар өгсөн бол тогтмол
+        setattr(cam.data, prop, max(0.05, dist))
+        print("[1st Studio] Давхарга: %s (тогтмол хуваалт %.2fм)" % (kind, dist))
+        return
+
+    # Камер хөдөлдөг тул жүжигчин хүртэлх зай фрейм бүрт өөр байна.
+    # Тогтмол хуваалт өгвөл камер ойртох үед жүжигчний АРД байгаа эд ангиуд
+    # урд давхаргад орж биеийг нь халхалдаг. Тиймээс хуваалтыг фреймүүдэд
+    # түлхүүрлэж камертай хамт хөдөлгөнө.
+    seat = Vector((CFG["seat"]["x"], CFG["seat"]["y"], 1.10))
+
+    def gap():
+        bpy.context.view_layer.update()
+        return (seat - Vector(cam.matrix_world.translation)).length
+
+    f0, f1 = scene.frame_start, scene.frame_end
+    cur = scene.frame_current
+    if f1 <= f0:                                   # ганц фрейм — түлхүүрлэх шаардлагагүй
+        scene.frame_set(f0)
+        d = gap()
+        setattr(cam.data, prop, max(0.05, d))
+        print("[1st Studio] Давхарга: %s (хуваалтын зай %.2fм)" % (kind, d))
+        return
+
+    step = max(1, (f1 - f0) // 80)                 # муруй жигд тул 80 цэг хангалттай
+    frames = list(range(f0, f1 + 1, step))
+    if frames[-1] != f1:
+        frames.append(f1)
+    lo = hi = None
+    for f in frames:
+        scene.frame_set(f)
+        d = max(0.05, gap())
+        lo = d if lo is None else min(lo, d)
+        hi = d if hi is None else max(hi, d)
+        setattr(cam.data, prop, d)
+        cam.data.keyframe_insert(prop, frame=f)
+    scene.frame_set(cur)
+
+    ad = cam.data.animation_data                   # шулуун интерполяци — зөөлрөлт хэрэггүй
+    act = ad.action if ad else None
+    if act:
+        try:
+            cb = act.layers[0].strips[0].channelbag(ad.action_slot)
+            for fc in (cb.fcurves if cb else []):
+                for kp in fc.keyframe_points:
+                    kp.interpolation = "LINEAR"
+        except Exception:
+            pass
+    print("[1st Studio] Давхарга: %s (хуваалт %.2f–%.2fм, %d түлхүүр, фрейм %d–%d)"
+          % (kind, lo, hi, len(frames), f0, f1))
 
 
 def slide_camera(cam, aim, metres, frames):
