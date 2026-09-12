@@ -47,6 +47,7 @@ CFG = {
         "yoke_side": 0.12,   # жолоо хажуу тийш шилжих
         "yoke_z": 0.78,      # жолооны бариулын өндөр
         "yoke_span": 0.10,   # хоёр бариулын хоорондох хагас зай
+        "far_x": -0.80, "far_y": -1.57, "far_z": 0.66,   # нэмэлт консол — хүний цаад талд
         "side_x": -0.58,     # хажуугийн самбар: сөрөг = камерын ЦААД тал (цаад гарын тохойн харалдаа)
         "side_y": 0.80,     # хажуугийн самбар урагш/хойш
         "side_z": 0.78,      # хажуугийн самбарын өндөр — цаад гарын тохойн харалдаа
@@ -993,6 +994,37 @@ def build_controls(M):
         rot=(math.radians(-12), 0, 0), mat=M["grip"], parent=root_s, bevel=0.012)
     # суурь: доош иш (ирмэгийн ард нуугдана)
     box("SidePost", (0.05, 0.05, 0.36), (0, -Ht / 2 - 0.12, -0.05), mat=M["dark"], parent=root_s, bevel=0.01)
+
+    # ── Нэмэлт консол — сууж буй хүний ЦААД талд, тавцангаас тусдаа ──
+    # Хуучин "6 товчлууртай гозгор бор самбар": дээшээ харсан налуу хавтан,
+    # эргүүлэг, гозгор хөшүүрэг, дэлгэц, 6 дугуй товчлуур, шалны иш.
+    fx, fy, fz = st["x"] + c["far_x"], st["y"] + c["far_y"], c["far_z"]
+    root_f = empty("FAR_CONSOLE", (fx, fy, fz), (math.radians(CFG["lean_deg"]), 0, 0))
+    FL, FW, FT = 0.50, 0.36, 0.10                        # урт (Y), өргөн (X), зузаан
+    box("FarBody", (FW, FL, FT), (0, 0, 0), mat=M["dark"], parent=root_f, bevel=0.02)
+    box("FarBezel", (FW + 0.02, FL + 0.02, 0.012), (0, 0, FT / 2 + 0.004), mat=M["metal"],
+        parent=root_f, bevel=0.005)
+    box("FarDeck", (FW - 0.03, FL - 0.03, 0.006), (0, 0, FT / 2 + 0.013), mat=M["grip"], parent=root_f)
+    box("FarScreen", (0.16, 0.10, 0.006), (0, -0.15, FT / 2 + 0.019), mat=M["dim_screen"], parent=root_f)
+    for r_ in range(3):
+        box("FarScreenRow", (0.12, 0.014, 0.003), (0, -0.18 + r_ * 0.03, FT / 2 + 0.024),
+            mat=M["screen"], parent=root_f)
+    cyl("FarKnob", 0.032, 0.030, (-0.10, 0.0, FT / 2 + 0.03), mat=M["metal"], parent=root_f, verts=22)
+    cyl("FarKnobCap", 0.018, 0.012, (-0.10, 0.0, FT / 2 + 0.05), mat=M["dark"], parent=root_f, verts=16)
+    cyl("FarLeverCollar", 0.026, 0.016, (0.10, 0.0, FT / 2 + 0.02), mat=M["metal"], parent=root_f, verts=18)
+    box("FarLeverTall", (0.024, 0.024, 0.20), (0.10, 0.02, FT / 2 + 0.12),
+        rot=(math.radians(-14), 0, 0), mat=M["dark"], parent=root_f, bevel=0.005)
+    box("FarLeverGrip", (0.052, 0.046, 0.06), (0.10, 0.045, FT / 2 + 0.235),
+        rot=(math.radians(-14), 0, 0), mat=M["grip"], parent=root_f, bevel=0.014)
+    for k in range(6):
+        col_, row_ = k % 2, k // 2
+        bx_, by_ = -0.05 + col_ * 0.10, 0.08 + row_ * 0.065
+        cyl("FarBtnRing_%d" % k, 0.023, 0.008, (bx_, by_, FT / 2 + 0.020), mat=M["metal"],
+            parent=root_f, verts=20)
+        cyl("FarBtn_%d" % k, 0.017, 0.014, (bx_, by_, FT / 2 + 0.027),
+            mat=M["amber"] if k % 2 else M["screen"], parent=root_f, verts=20)
+    box("FarPost", (0.07, 0.07, fz - 0.06), (fx, fy - 0.12, (fz - 0.06) / 2), mat=M["dark"], bevel=0.01)
+    box("FarFoot", (0.22, 0.22, 0.025), (fx, fy - 0.12, 0.0125), mat=M["dark"], bevel=0.006)
     return None
 
 
