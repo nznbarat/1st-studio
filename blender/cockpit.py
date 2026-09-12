@@ -92,6 +92,12 @@ CFG = {
     "grime": 0.55,              # 0 = цэвэр, 1 = маш бохир
     "warm": (1.0, 0.62, 0.26),  # консолын бүлээн гэрэл
     "cool": (0.32, 0.55, 1.0),  # цонхны хүйтэн гэрэл
+    # Кино төрх — 3D мэдээллээс хамаардаг тул зөвхөн Blender дотор хийгдэнэ.
+    # Өнгө засвар, ширхэг, vignette, halation зэрэг нь Resolve-ийн ажил.
+    "cine": {
+        "shutter": 0.5,     # 0.5 = 180° хаалт, киноны стандарт
+        "fstop": 2.8,       # линзний нүх — жижиг тоо = илүү бүдгэрсэн ар тал
+    },
 }
 
 # Камерын бэлэн өнцгүүд: (байрлал), (харах цэг), линз мм
@@ -1679,6 +1685,38 @@ def set_format(name):
     print("[1st Studio] Гаралт: %s %s бит." % (spec["file_format"], spec["color_depth"]))
 
 
+def setup_cine(cam):
+    """Киноны төрх — зөвхөн Blender-т хийж болох зүйлс.
+
+    Хөдөлгөөний бүдгэрэлт, гүний талбар хоёр нь тайзны 3D мэдээлэл
+    шаарддаг тул энд хийнэ. Харин ширхэг, өнгө, vignette, halation бол
+    эсрэгээрээ — эцсийн зурган дээр, Resolve дээр хийх нь үргэлж дээр.
+    """
+    sc = bpy.context.scene
+    c = CFG["cine"]
+
+    # 1. Хөдөлгөөний бүдгэрэлт — CG-г киноноос ялгадаг хамгийн том шинж
+    sc.render.use_motion_blur = True
+    sc.render.motion_blur_position = "CENTER"
+    sc.render.motion_blur_shutter = c["shutter"]
+
+    # 2. Гүний талбар — фокус нь CAM_AIM дээр, өөрөөр хэлбэл гар дээр.
+    #    CAM_AIM нь нумын анимацид хамт хөдөлдөг тул фокус өөрөө дагана.
+    d = cam.data
+    d.dof.use_dof = True
+    d.dof.focus_object = bpy.data.objects["CAM_AIM"]
+    d.dof.aperture_fstop = c["fstop"]
+    d.dof.aperture_blades = 6          # зургаан талт бокэ — жинхэнэ линзний хэлбэр
+
+    # 3. Z гүний суваг — Resolve дээр бүдгэрэлтийг ДАРАА нь тохируулах боломж.
+    #    Дахин рендерлэхгүйгээр фокусыг өөрчлөх цорын ганц арга.
+    # Анхаар: фокус рендерт ШИНГЭНЭ. Z гүний сувгийг тусад нь гаргах нь
+    # олон давхаргат EXR шаарддаг бөгөөд энэ хувилбарт байхгүй. Фокусыг
+    # дараа нь өөрчлөх бол --fstop-оо сольж дахин рендерлэнэ.
+    print("[1st Studio] Кино: %d° хаалт, f/%.1f, фокус CAM_AIM дээр (гар дээр)."
+          % (round(c["shutter"] * 360), c["fstop"]))
+
+
 def prep_viewport():
     """Файлыг нээмэгц камерын харцаар, материалтай харагддаг болгоно."""
     for screen in bpy.data.screens:
@@ -1780,6 +1818,9 @@ def main():
     setup_render(samples=int(opt("--samples", 64)),
                  res=tuple(int(v) for v in res.lower().split("x")))
     set_format(opt("--format", "png"))
+    if "--cine" in argv:
+        CFG["cine"]["fstop"] = float(opt("--fstop", CFG["cine"]["fstop"]))
+        setup_cine(bpy.data.objects["SET_CAM"])
     if "--no-seat" in argv:                    # жүжигчин өөрийн сандал дээр сууж байвал
         hide_prefix("Seat", "SEAT")
     arc = opt("--arc")
