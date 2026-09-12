@@ -38,7 +38,7 @@ CFG = {
         "tilt_deg": 16.0,       # дээд гадаргуугийн налуу
         "glow_panels": 5,       # урд талын гэрэлтэх хавтангийн тоо
     },
-    "seat": {"x": 1.18, "y": -0.55, "scale": 1.28},
+    "seat": {"x": 1.18, "y": 0.50, "scale": 1.28},
     "exposure": -0.45,
     "angle": "wide",
     "ship": {                   # хөлгийн гадна их бие — 0110 ачааны хөлөг
@@ -79,6 +79,9 @@ ANGLES = {
     # Консол УРД талд — жүжигчин консолын ард суух композитод.
     # --pass fg / --pass bg-тэй хамт ашиглана.
     "console": ((1.55, 3.85, 1.74), (1.15, -0.35, 1.02), 30.0),
+    # Уудам сансрыг цонхоор ажиглаж буй нисгэгч: хүн баруун талд жижиг,
+    # консол доогуур, цонх ба од зүүн талд. Өргөн линз — уудмыг мэдрүүлнэ.
+    "vista":  ((-3.50, -2.50, 1.50), (0.20, 0.85, 1.15), 24.0),
 }
 
 COL = "COCKPIT"
@@ -996,26 +999,29 @@ CONSOLE_PARTS = ("Console", "Glow", "Desk", "Key", "CenterStack", "Monitor",
                  "MonRow", "Wing", "Yoke", "CONSOLE_TOP", "MONITOR", "WING_")
 
 
-def render_pass(kind):
-    """Композитод зориулж тайзыг хоёр давхарга болгон салгана.
+def render_pass(kind, dist=None):
+    """Тайзыг ГҮНЭЭР хоёр давхарга болгон хуваана.
 
-    fg — зөвхөн консол, ил тод дэвсгэртэй (жүжигчний УРД тавина)
-    bg — консолгүй өрөө (жүжигчний АРД тавина)
+    fg — жүжигчнээс ОЙР бүх зүйл, ил тод дэвсгэртэй (жүжигчний УРД тавина)
+    bg — жүжигчнээс ХОЛ бүх зүйл (жүжигчний АРД тавина)
 
-    Хоёр тохиолдолд ч нөгөө хэсэг нь гэрлээ тусгасаар байна — зөвхөн
-    камерын туяанд үл үзэгдэнэ. Ингэснээр консолын гэрэл шал, ханан дээр
-    хэвээр үлдэж, давхаргууд эвлүүлэхэд таарна.
+    Эд ангиар нь хуваах нь буруу: консолын ард байгаа хэсгүүд ч урд
+    давхаргад орж жүжигчнийг халхалдаг. Камерын clip зайгаар хуваавал
+    ямар ч өнцөгт зөв ажиллана.
     """
     scene = bpy.context.scene
-    console = False if kind == "bg" else True
-    for ob in bpy.data.collections[COL].objects:
-        is_console = any(ob.name.startswith(pfx) for pfx in CONSOLE_PARTS)
-        if ob.type in {"MESH", "CURVE", "FONT"}:
-            ob.visible_camera = (is_console == console)
+    cam = scene.camera
+    if dist is None:
+        bpy.context.view_layer.update()            # камерын матриц шинэчлэгдсэн байх ёстой
+        seat = Vector((CFG["seat"]["x"], CFG["seat"]["y"], 1.10))
+        dist = (seat - Vector(cam.matrix_world.translation)).length
     if kind == "fg":
+        cam.data.clip_end = dist
         scene.render.film_transparent = True
         scene.render.image_settings.color_mode = "RGBA"
-    print("[1st Studio] Давхарга: %s" % kind)
+    else:
+        cam.data.clip_start = max(0.05, dist)
+    print("[1st Studio] Давхарга: %s (хуваалтын зай %.2fм)" % (kind, dist))
 
 
 def slide_camera(cam, aim, metres, frames):
@@ -1084,9 +1090,9 @@ FLIGHT = [
     (120, (30.0, 92.0, 34.0),  (2.0, 24.0, -1.0),  44.0),   # их бие дагуу гулсана
     (228, (13.0, 38.0, 13.0),  (0.5, 8.0, 1.2),    36.0),   # хамрын тавцан руу
     (288, (5.6, 16.0, 5.4),    (0.5, 3.2, 1.5),    30.0),   # цонхны булангийн амсар
-    (336, (-0.6, 5.8, 2.45),   (1.2, -0.4, 1.05),  27.0),   # харах цэг суудалд тогтоно
-    (384, (-3.0, 2.2, 2.15),   (1.2, -0.4, 1.05),  25.0),   # цонхоор нэвтэрч, тойрч эхэлнэ
-    (432, (-3.25, -3.60, 1.72), (1.1, -0.30, 1.05), 24.0),  # эцсийн өргөн кадр
+    (336, (-0.6, 5.8, 2.45),   (1.2, 0.55, 1.05),  27.0),   # харах цэг суудалд тогтоно
+    (384, (-3.0, 2.2, 2.15),   (1.2, 0.55, 1.05),  25.0),   # цонхоор нэвтэрч, тойрч эхэлнэ
+    (432, (-3.25, -3.60, 1.72), (1.1, 0.55, 1.05), 24.0),   # эцсийн өргөн кадр
 ]
 
 
@@ -1309,7 +1315,8 @@ def main():
                      float(slide), int(opt("--slide-frames", 120)))
     layer = opt("--pass")
     if layer:
-        render_pass(layer)
+        split = opt("--split")
+        render_pass(layer, float(split) if split else None)
     frame = opt("--frame")
     if frame:
         bpy.context.scene.frame_set(int(frame))
