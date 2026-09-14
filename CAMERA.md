@@ -69,6 +69,21 @@ counter-clockwise, then dolly zoom vertigo into a close-up, handheld, 12 seconds
 > `sensor_height = 24mm` дээр тооцогдсон тул хөтөч дэх кадрын хүрээ Blender дээр яг таарна.
 > Blender 4.x болон 5.x (slotted actions) хоёуланд ажиллана.
 
+**Шалгасан:** Blender **5.2.0 LTS** дээр экспортын скриптийг ажиллуулж баталгаажуулсан —
+камер, бай, 6 F-curve (байрлал+эргэлт), линзний анимаци, layout collection, промтын текст
+блок бүгд зөв үүсдэг. Дахин ажиллуулахад давхардал үүсгэхгүй (`clear_old()` цэвэрлэнэ).
+
+Blender 5.0 дээр хуучин `action.fcurves` API устсан ч экспортын скрипт **slotted actions**
+(`layers[0].strips[0].channelbag(...)`) замаар явдаг тул интерполяци, бариул хэвийн тохирдог.
+
+Холбох 3 арга байна:
+
+| Арга | Хэзээ тохиромжтой |
+|---|---|
+| **Гараар** (§3) | Хааяа нэг шот — Scripting → Open → Run Script |
+| **PowerShell** (§7) | Цонх нээхгүй render, багц ажил, автоматжуулалт |
+| **Live Link** (§8) | Нээлттэй Blender өөрөө шинэчлэгдэнэ — давтаж засварлахад |
+
 ---
 
 ## 4. Товчлуурууд
@@ -106,9 +121,103 @@ counter-clockwise, then dolly zoom vertigo into a close-up, handheld, 12 seconds
 ## 6. Файлын бүтэц
 
 ```
-camera.html      UI (Blender маягийн загвар)
-app.js           бүх логик — тайз, камер, задлагч, промт, экспорт
-three.min.js     three.js r128 (MIT лиценз)
+camera.html                  UI (Blender маягийн загвар)
+app.js                       бүх логик — тайз, камер, задлагч, промт, экспорт
+three.min.js                 three.js r128 (MIT лиценз)
+tools/blender-link.ps1       PowerShell холбогч (§7)
+tools/blender-live-link.py   Blender талын амьд холбоо (§8)
 ```
 
 Хуучин `v2` төслийн JSON файлууд автоматаар хөрвөж нээгдэнэ.
+
+---
+
+## 7. PowerShell-ээр холбох
+
+`tools/blender-link.ps1` — Windows дээрээс Blender рүү шууд дамжуулах холбогч.
+`blender.exe`-г өөрөө хайж олно (PATH → Program Files → Steam → реестр), олон
+хувилбар байвал хамгийн шинийг нь (5.2) сонгоно.
+
+```powershell
+cd <репогийн зам>\tools
+
+# 1) Downloads доторх сүүлийн экспортыг Blender-ийн цонхонд нээх
+.\blender-link.ps1
+
+# 2) Цонх нээхгүйгээр нэг фрейм PNG болгох (хурдан шалгалт)
+.\blender-link.ps1 -Render -Frame 60
+
+# 3) Бүтэн дараалллыг MP4 (H.264) болгох
+.\blender-link.ps1 -Render -Anim
+
+# 4) Downloads-ыг ажиглаж, шинэ экспорт татагдмагц автоматаар render хийх
+.\blender-link.ps1 -Watch
+
+# 5) Байгаа төсөл дотор камерыг суулгаад шинэ .blend болгож хадгалах
+.\blender-link.ps1 -Blend "D:\proj\shot.blend" -Save "D:\proj\shot_cam.blend"
+```
+
+### Параметрүүд
+
+| Параметр | Утга |
+|---|---|
+| `-Script` | Ажиллуулах .py (заагаагүй бол Downloads доторх сүүлийнх) |
+| `-Blend` | Нээх .blend төсөл |
+| `-BlenderPath` | blender.exe-ийн зам (автомат хайлт бүтэхгүй бол) |
+| `-WatchDir` | Экспорт хайх хавтас (анхдагч: `Downloads`) |
+| `-Out` | Render-ийн гаралт (анхдагч: `Desktop\1st-studio-render`) |
+| `-Frame` | Render хийх фрейм (анхдагч: тайзны эхний фрейм) |
+| `-Engine` | `EEVEE` (анхдагч) · `WORKBENCH` · `CYCLES` |
+| `-Save` | Үр дүнг .blend болгож хадгалах зам |
+| `-Render` `-Anim` `-Watch` | Горим сонгох тугнууд |
+
+> Эхний удаа ажиллуулахад Windows скрипт хориглож магадгүй. Тухайн цонхны хувьд:
+> `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`
+
+### Түүхий команд (скриптгүйгээр)
+
+```powershell
+& "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" `
+  --background --factory-startup --python "$HOME\Downloads\1st-studio-camera-....py"
+```
+
+Аргументууд **дарааллаараа** биелдэг тул .blend-ээ эхэлж ачаалж, дараа нь `--python`,
+хамгийн сүүлд render-ийн тохиргоог өгнө.
+
+---
+
+## 8. Live Link — нээлттэй Blender өөрөө шинэчлэгдэх
+
+`tools/blender-live-link.py` — Blender дотор **нэг удаа** ажиллуулахад Downloads хавтсыг
+тогтмол ажиглаж, шинэ экспорт татагдмагц өөрөө оруулж ирнэ. Хөтөч дээр камераа засаад
+экспорт дарахад Blender 1–2 секундын дотор шинэчлэгдэнэ.
+
+1. Blender → **Scripting** таб → **Open** → `tools/blender-live-link.py`
+2. **Run Script** (Alt+P) — консольд `▶ Live Link аслаа` гэж гарна
+3. Зогсоох: дахин **Run Script**
+
+| Тохиргоо (файлын эхэнд) | Анхдагч |
+|---|---|
+| `WATCH_DIR` | хоосон = Downloads-ыг автоматаар олно |
+| `PATTERN` | `1st-studio-camera-*.py` |
+| `INTERVAL` | 1.5 секунд |
+| `APPLY_ON_START` | `True` — асмагц сүүлийн экспортыг оруулна |
+
+`bpy.app.timers` дээр суурилсан тул Blender-ийн хариу үйлдлийг удаашруулахгүй, нэмэлт
+суулгац (add-on) шаардахгүй.
+
+---
+
+## 9. Blender 5.x дээр анзаарах зүйлс
+
+Хуучин (4.x) скриптүүд 5.x дээр ихэвчлэн эдгээрээс болж унадаг:
+
+| Юу өөрчлөгдсөн | 4.2–4.5 | 5.0+ |
+|---|---|---|
+| EEVEE-ийн нэр | `BLENDER_EEVEE_NEXT` | `BLENDER_EEVEE` |
+| F-curve авах | `action.fcurves` | `channelbag.fcurves` (slotted actions) |
+| Видео формат | шууд `file_format = "FFMPEG"` | эхлээд `image_settings.media_type = "VIDEO"` |
+| AVI гаралт | `AVI_JPEG` / `AVI_RAW` | устсан — зөвхөн FFMPEG |
+
+Эдгээрийг `blender-link.ps1` болон экспортын скрипт аль аль нь аль хэдийн зөв
+боловсруулдаг (4.x дээр ч буцаж ажиллахаар `hasattr` шалгалттай).
