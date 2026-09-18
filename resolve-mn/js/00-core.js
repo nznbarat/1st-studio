@@ -48,6 +48,42 @@
     } catch (e) { return safe; }
   };
 
+  /* ── Гарын авлагын бичвэр → HTML (мини-markdown) ──
+     хоосон мөр — догол;  ## — дэд гарчиг;  - / 1. — жагсаалт;  > — анхааруулга;
+     **тод**;  [k:Ctrl+S] — товчлуур;  [[id]] / [[id|нэр]] — толины холбоос. */
+  RM.md = function (src) {
+    const xref = (id, label) => {
+      const r = RM.dict && RM.dict.byId ? RM.dict.byId[id] : null;
+      return '<a class="xref" href="#" data-id="' + id + '">' +
+             (label != null ? label : (r ? RM.esc(r.en) : id)) + "</a>";
+    };
+    const inline = (s) => RM.esc(s)
+      .replace(/\[k:((?:[^\]]|\](?=\]))+)\]/g, (m, k) => "<kbd>" + k + "</kbd>")
+      .replace(/\[\[([a-z0-9-]+)\|([^\]]+)\]\]/g, (m, id, lb) => xref(id, lb))
+      .replace(/\[\[([a-z0-9-]+)\]\]/g, (m, id) => xref(id))
+      .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+
+    const lines = String(src == null ? "" : src).replace(/\r/g, "").split("\n");
+    let out = "", para = [], list = null, tag = "", note = [];
+    const flushP = () => { if (para.length) { out += "<p>" + inline(para.join(" ")) + "</p>"; para = []; } };
+    const flushL = () => { if (list) { out += "<" + tag + ">" + list.map((x) => "<li>" + inline(x) + "</li>").join("") + "</" + tag + ">"; list = null; } };
+    const flushN = () => { if (note.length) { out += '<div class="note">' + inline(note.join(" ")) + "</div>"; note = []; } };
+    const flush = () => { flushP(); flushL(); flushN(); };
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      let m;
+      if (!line) { flush(); continue; }
+      if ((m = /^##\s+(.+)$/.exec(line)))       { flush(); out += "<h4>" + inline(m[1]) + "</h4>"; continue; }
+      if ((m = /^[-•]\s+(.+)$/.exec(line)))     { flushP(); flushN(); if (!list || tag !== "ul") { flushL(); list = []; tag = "ul"; } list.push(m[1]); continue; }
+      if ((m = /^\d+[.)]\s+(.+)$/.exec(line)))  { flushP(); flushN(); if (!list || tag !== "ol") { flushL(); list = []; tag = "ol"; } list.push(m[1]); continue; }
+      if ((m = /^>\s?(.*)$/.exec(line)))        { flushP(); flushL(); note.push(m[1]); continue; }
+      flushL(); flushN(); para.push(line);
+    }
+    flush();
+    return '<div class="md">' + out + "</div>";
+  };
+
   /* Кирилл/латин ялгаагүй жижигрүүлэлт */
   RM.norm = function (s) {
     return String(s == null ? "" : s).toLowerCase().replace(/ё/g, "е").trim();

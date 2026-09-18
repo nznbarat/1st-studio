@@ -89,6 +89,26 @@ mark{background:rgba(245,168,60,.28);color:#ffd79a;border-radius:3px;padding:0 2
 .term-foot .pg{color:hsl(var(--hue) 50% 65%);border-color:hsl(var(--hue) 40% 40% / .5)}
 .term-foot .loc{text-transform:none;letter-spacing:0;font-family:'Inter';font-size:10.5px;color:var(--dim)}
 
+
+/* ── гарын авлагын дэлгэрэнгүй тайлбар ── */
+.term details.long{margin-top:9px;border-top:1px dashed var(--line);padding-top:7px}
+.term details.long summary{cursor:pointer;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--tungsten);list-style:none;display:flex;align-items:center;gap:6px;user-select:none}
+.term details.long summary::-webkit-details-marker{display:none}
+.term details.long summary::before{content:"▸";display:inline-block;transition:transform .15s}
+.term details.long[open] summary::before{transform:rotate(90deg)}
+.term details.long .long-body{margin-top:8px}
+.md{font-size:12.8px;color:var(--dim);line-height:1.75}
+.md h4{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--tungsten);margin:12px 0 4px;font-weight:600}
+.md h4:first-child{margin-top:0}
+.md p{margin:0 0 7px}
+.md ul,.md ol{margin:0 0 7px;padding-left:18px}
+.md li{margin-bottom:3px}
+.md b{color:var(--text);font-weight:600}
+.md kbd{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10.5px;background:var(--ink);border:1px solid #3a4c5e;border-bottom-width:2px;border-radius:4px;padding:1px 5px;color:var(--text);white-space:nowrap}
+.md .note{margin:7px 0;background:rgba(224,162,74,.08);border-left:2px solid var(--tungsten);border-radius:0 7px 7px 0;padding:7px 10px}
+.md a.xref{color:var(--daylight);text-decoration:none;border-bottom:1px dotted currentColor}
+.md a.xref:hover{color:var(--tungsten)}
+
 /* ── товчлуурын харагдац ── */
 .kbd{display:inline-flex;align-items:center;gap:3px;flex-shrink:0;background:none;border:0;padding:0}
 .kbd kbd{font-family:'JetBrains Mono',ui-monospace,'Cascadia Mono',Consolas,monospace;font-size:10.5px;background:var(--ink);border:1px solid #3a4c5e;border-bottom-width:2px;border-radius:5px;padding:3px 7px;color:var(--text);white-space:nowrap}

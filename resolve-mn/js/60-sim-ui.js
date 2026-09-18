@@ -53,6 +53,8 @@
     d.appendChild(el("div", { class: "dmn", text: row.mn }));
     if (row.desc) d.appendChild(el("p", { class: "ddesc", text: row.desc }));
 
+    if (dimmed) d.appendChild(S.whyBox());
+
     if (row.key) {
       const r = el("div", { class: "drow" });
       r.appendChild(el("span", { class: "lb", text: "Товчлуур" }));
@@ -80,12 +82,12 @@
     r2.appendChild(tags);
     d.appendChild(r2);
 
-    if (dimmed) {
-      d.appendChild(el("div", { class: "why", html:
-        "<b>Яагаад саарал байна вэ?</b> Энэ команд <b>timeline дээрх клип</b> дээр ажилладаг. " +
-        "Одоо та <b>" + RM.esc(RM.dict.page(S.state.page).label) + "</b> хуудсанд байна — энд монтажийн " +
-        "сонголт байхгүй тул идэвхгүй. <b>Edit</b> (Shift+4) эсвэл <b>Cut</b> (Shift+3) хуудсанд " +
-        "орж клип сонговол идэвхжинэ." }));
+    if (row.long) {
+      const L = el("section", { class: "dlong" });
+      L.appendChild(el("div", { class: "dlh", html:
+        "<span>Гарын авлага</span><small>дэлгэрэнгүй тайлбар</small>" }));
+      L.appendChild(el("div", { class: "dlb", html: RM.md(row.long) }));
+      d.appendChild(L);
     }
 
     d.appendChild(el("p", { class: "more", html:
@@ -93,12 +95,32 @@
       encodeURIComponent(row.en) + '">' + RM.esc(row.en) + ' →</a>' }));
 
     box.appendChild(d);
+    box.scrollTop = 0;
+
+    /* гарын авлага доторх холбоос → тэр нэр томьёог сонгоно */
+    RM.$$("a.xref", d).forEach((a) => a.addEventListener("click", (e) => {
+      e.preventDefault();
+      const tid = a.getAttribute("data-id");
+      if (!RM.dict.byId[tid]) return;
+      const node = $('#rsHost .hs[data-t="' + tid + '"]');
+      S.select(tid, node, false);
+      if (node) node.scrollIntoView({ block: "nearest", inline: "nearest" });
+    }));
 
     /* жагсаалтад тэмдэглэх */
     RM.$$("#sideBody .spotlist button").forEach((b) =>
       b.classList.toggle("on", b.getAttribute("data-id") === id));
 
     S.buildList(id);
+  };
+
+  /* Саарал (идэвхгүй) цэсний мөрийн тайлбар */
+  S.whyBox = function () {
+    return el("div", { class: "why", html:
+      "<b>Яагаад саарал байна вэ?</b> Энэ команд <b>timeline дээрх клип</b> дээр ажилладаг. " +
+      "Одоо та <b>" + RM.esc(RM.dict.page(S.state.page).label) + "</b> хуудсанд байна — энд монтажийн " +
+      "сонголт байхгүй тул идэвхгүй. <b>Edit</b> (Shift+4) эсвэл <b>Cut</b> (Shift+3) хуудсанд " +
+      "орж клип сонговол идэвхжинэ." });
   };
 
   S.showHint = function () {

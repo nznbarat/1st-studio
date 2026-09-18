@@ -97,6 +97,26 @@
 
   D.size = function () { return D.rows.length; };
 
+  /* ── Гарын авлагын дэлгэрэнгүй тайлбар ──
+     long/*.js файлууд RM.dict.long({ id: "бичвэр", ... }) дуудаж
+     аль хэдийн бүртгэгдсэн нэр томьёонд урт тайлбар хавсаргана. */
+  D.longMissing = [];
+  D.long = function (map) {
+    let n = 0;
+    for (const id in map) {
+      const row = D.byId[id];
+      if (!row) { D.longMissing.push(id); continue; }
+      row.long = String(map[id]).trim();
+      n++;
+    }
+    return n;
+  };
+  D.longCount = function () {
+    let n = 0;
+    for (let i = 0; i < D.rows.length; i++) if (D.rows[i].long) n++;
+    return n;
+  };
+
   D.page = function (id) { return D.pages.find((p) => p.id === id) || D.pages[0]; };
   D.cat  = function (id) { return D.cats.find((c) => c.id === id) || null; };
 

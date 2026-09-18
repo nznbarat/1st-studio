@@ -2,7 +2,7 @@
    resolve-mn толины шалгалт
    Ажиллуулах: node tools/check-resolve-mn.mjs
    ═══════════════════════════════════════════════════════════ */
-import { readdirSync, readFileSync } from "node:fs";
+import { readdirSync, readFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
@@ -23,6 +23,13 @@ const files = readdirSync(dictDir).filter((f) => f.endsWith(".js")).sort();
 for (const f of files) {
   const src = readFileSync(join(dictDir, f), "utf8");
   new Function("RM", src)(RM);
+}
+
+/* Гарын авлагын дэлгэрэнгүй тайлбар */
+const longDir = join(root, "resolve-mn/js/long");
+const longFiles = existsSync(longDir) ? readdirSync(longDir).filter((f) => f.endsWith(".js")).sort() : [];
+for (const f of longFiles) {
+  new Function("RM", readFileSync(join(longDir, f), "utf8"))(RM);
 }
 
 const guideSrc = readFileSync(join(root, "resolve-mn/js/20-guide.js"), "utf8");
@@ -50,6 +57,7 @@ console.log("Ангилал    : " + D.cats.length);
 console.log("Файл       : " + files.length);
 console.log("Товчлуур   : " + D.rows.filter((r) => r.key).length);
 console.log("Байрлалтай : " + D.rows.filter((r) => r.loc).length);
+console.log("Гарын авлага: " + D.longCount() + " нэр томьёо (" + longFiles.length + " файл)");
 console.log("Ажлын урсгал: " + RM.guides.length +
             " (" + RM.guides.reduce((a, g) => a + g.steps.length, 0) + " алхам)");
 
@@ -152,7 +160,33 @@ for (const f of ["50-sim-pages.js", "51-sim-more.js", "52-sim-menus.js",
   if (!iface.includes("js/" + f)) warn("interface.html-д холбогдоогүй загвар: " + f);
 }
 
-/* 10 · Хайлтын эрүүл мэнд */
+/* 10 · Гарын авлагын дэлгэрэнгүй тайлбар */
+for (const id of D.longMissing) warn("Гарын авлага толинд байхгүй id-д бичигдсэн: " + id);
+for (const f of longFiles) {
+  if (!html.includes("js/long/" + f))  warn("index.html-д холбогдоогүй гарын авлага: " + f);
+  if (!iface.includes("js/long/" + f)) warn("interface.html-д холбогдоогүй гарын авлага: " + f);
+}
+const KBD = /\[k:((?:[^\]]|\](?=\]))+)\]/g;
+for (const r of D.rows) {
+  if (!r.long) continue;
+  const t = r.long;
+  if (t.length < 250) warn("Гарын авлага хэт богино: " + r.en + " (" + t.length + " тэмдэгт)");
+  if ((t.match(/\*\*/g) || []).length % 2) warn("Гарын авлагад ** хаагдаагүй: " + r.en);
+  const kOpen = (t.match(/\[k:/g) || []).length, kOk = (t.match(KBD) || []).length;
+  if (kOpen !== kOk) warn("Гарын авлагад [k:…] хаагдаагүй: " + r.en);
+  for (const m of t.matchAll(/\[\[([a-z0-9-]+)(?:\|[^\]]+)?\]\]/g)) {
+    if (!D.byId[m[1]]) warn("Гарын авлагын холбоос толинд алга: " + r.en + " → [[" + m[1] + "]]");
+  }
+  if (/`|\$\{/.test(t)) warn("Гарын авлагад ` эсвэл ${ тэмдэг байна: " + r.en);
+}
+{
+  const spotIds = new Set();
+  for (const pg of SIM_PAGES) for (const m of simHtml[pg].matchAll(/data-t="([^"]+)"/g)) spotIds.add(m[1]);
+  const withLong = [...spotIds].filter((id) => D.byId[id] && D.byId[id].long).length;
+  console.log("  Загварын цэгүүдийн гарын авлага: " + withLong + " / " + spotIds.size);
+}
+
+/* 11 · Хайлтын эрүүл мэнд */
 const probes = ["ripple", "долгиолон", "node", "нод", "green screen", "ногоон дэлгэц",
                 "рендер", "render", "өнгө", "color", "дуу", "audio", "товчлуур"];
 for (const q of probes) {

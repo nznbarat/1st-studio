@@ -46,6 +46,7 @@
     sec.appendChild(el("div", { class: "railstat", html:
       "<b>" + RM.dict.size() + "</b> нэр томьёо<br>" +
       "<b>" + RM.dict.cats.length + "</b> ангилал<br>" +
+      "<b>" + RM.dict.longCount() + "</b> гарын авлагын тайлбар<br>" +
       "<b>" + RM.guides.length + "</b> ажлын урсгал" }));
     rail.appendChild(sec);
   };
@@ -158,6 +159,13 @@
 
     c.appendChild(el("p", { class: "mn", html: RM.mark(row.mn, q) }));
     if (row.desc) c.appendChild(el("p", { class: "desc", html: RM.mark(row.desc, q) }));
+
+    if (row.long) {
+      const det = el("details", { class: "long" });
+      det.appendChild(el("summary", { text: "Гарын авлага" }));
+      det.appendChild(el("div", { class: "long-body", html: RM.md(row.long) }));
+      c.appendChild(det);
+    }
 
     const foot = el("div", { class: "term-foot" });
     foot.appendChild(el("span", { class: "pg", text: page.icon + " " + page.label }));
@@ -306,6 +314,24 @@
     }, 110);
 
     input.addEventListener("input", run);
+
+    /* гарын авлага доторх холбоос → тэр нэр томьёог хайна */
+    document.addEventListener("click", (e) => {
+      const a = e.target.closest("a.xref");
+      if (!a) return;
+      e.preventDefault();
+      const row = RM.dict.byId[a.getAttribute("data-id")];
+      if (!row) return;
+      UI.state.page = "all"; UI.state.cat = "all";
+      UI.buildFilters();
+      RM.$$("#pageFilter .chip").forEach((x) => x.classList.toggle("on", x.getAttribute("data-id") === "all"));
+      UI.buildCatFilter();
+      UI.go("hailt");
+      input.value = row.en; UI.state.q = row.en;
+      $("#qclear").classList.add("on");
+      UI.renderResults();
+      window.scrollTo(0, 0);
+    });
 
     $("#qclear").addEventListener("click", () => {
       input.value = ""; UI.state.q = "";
