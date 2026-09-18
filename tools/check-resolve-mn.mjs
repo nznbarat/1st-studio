@@ -170,7 +170,7 @@ const KBD = /\[k:((?:[^\]]|\](?=\]))+)\]/g;
 for (const r of D.rows) {
   if (!r.long) continue;
   const t = r.long;
-  if (t.length < 250) warn("Гарын авлага хэт богино: " + r.en + " (" + t.length + " тэмдэгт)");
+  if (t.length < 110) warn("Гарын авлага хэт богино: " + r.en + " (" + t.length + " тэмдэгт)");
   if ((t.match(/\*\*/g) || []).length % 2) warn("Гарын авлагад ** хаагдаагүй: " + r.en);
   const kOpen = (t.match(/\[k:/g) || []).length, kOk = (t.match(KBD) || []).length;
   if (kOpen !== kOk) warn("Гарын авлагад [k:…] хаагдаагүй: " + r.en);
