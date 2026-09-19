@@ -35,7 +35,7 @@ CFG = {
                "uzemchin": (3.97, 21.56)},
     "seed": 11,
     # Харьцуулах стандарт хүн. 2260 оны орчин үе — энгийн битүү хослол.
-    "human": {"on": True, "height": 1.70, "at": (-1.18, 9.75), "rot": -24.0},
+    "human": {"on": True, "height": 1.70, "at": (-0.10, 7.00), "rot": -24.0},
     # Цуваа эгнээ: --queue тугаар асаана. Гүн рүү жигд алслана.
     # Диагональ эгнээ: гүн рүү 29 / 50 / 70 м. Хажуу тийш ч шилжинэ —
     # эс бөгөөс урт линз дээр бие биенээ бүрэн халхална.
@@ -914,6 +914,47 @@ ANGLES = {
 }
 
 
+# ══════════════════════════════════════════════════════════════════════
+#  Камерын хөдөлгөөн
+# ══════════════════════════════════════════════════════════════════════
+# Тус бүр нь (эхний камер, эхний харц, төгсгөлийн камер, төгсгөлийн харц, линз).
+# Линз нь хөдөлгөөний турш ТОГТМОЛ — зум нь камерын хөдөлгөөнийг хуурамч
+# болгодог. Хүрээ өөрчлөгдөх нь зөвхөн камер өөрөө явснаас.
+MOVES = {
+    # Хүнээс эхэлж, ухарч өргөгдөн аврагуудыг илчилнэ — хэмжээний цохилт.
+    "reveal": ((1.40, 3.00, 1.45), (-0.10, 7.00, 1.05),
+               (2.30, -8.60, 4.30), (-1.40, 9.60, 3.10), 40.0),
+    # Эхний аврагыг тойрон нум зурна.
+    "orbit":  ((-19.5, 1.50, 3.40), (-2.69, 10.62, 3.00),
+               (13.5, -3.50, 3.40), (-2.69, 10.62, 3.00), 55.0),
+    # Эгнээний дагуу удаан түрэх (--queue-тэй хамт).
+    "push":   ((0.00, -30.0, 3.10), (0.20, 30.0, 3.10),
+               (0.00, -12.0, 3.10), (0.20, 30.0, 3.10), 85.0),
+}
+
+
+def animate_camera(cam, aim, move, frames):
+    """Камер ба харцыг шугаман замаар хөдөлгөнө.
+
+    Blender анхдагчаар Bezier-ээр зөөлрүүлдэг — эхлэл, төгсгөлд удааширч
+    дундуураа хурдасна. Энэ нь кран/долли хөдөлгөөнд яг тохирно тул
+    интерполяцийг хэвээр үлдээв (нисдэг камерын үед шугаман болгодог).
+    """
+    c0, a0, c1, a1, lens = MOVES[move]
+    sc = bpy.context.scene
+    sc.frame_start, sc.frame_end = 1, frames
+    cam.data.lens = lens
+    for f, c, a in ((1, c0, a0), (frames, c1, a1)):
+        cam.location = c
+        aim.location = a
+        cam.keyframe_insert("location", frame=f)
+        aim.keyframe_insert("location", frame=f)
+    print("[1st Studio] Хөдөлгөөн '%s': %d фрейм, %.0f мм" % (move, frames, lens))
+    d0 = math.dist(c0, a0)
+    d1 = math.dist(c1, a1)
+    print("   зай %.1f м -> %.1f м, өндөр %.2f -> %.2f м" % (d0, d1, c0[2], c1[2]))
+
+
 def build_camera(name="hero"):
     loc, aim_loc, lens = ANGLES.get(name, ANGLES["hero"])
     aim = empty("CAM_AIM", aim_loc)
@@ -990,6 +1031,17 @@ def main():
     res = opt("--res", "960x540")
     setup_render(samples=int(opt("--samples", 64)),
                  res=tuple(int(v) for v in res.lower().split("x")))
+    move = opt("--move")
+    if move:
+        if move not in MOVES:
+            print("[1st Studio] '%s' хөдөлгөөн алга. Байгаа нь: %s"
+                  % (move, ", ".join(MOVES)))
+            return
+        animate_camera(bpy.context.scene.camera, bpy.data.objects["CAM_AIM"],
+                       move, int(opt("--frames", 96)))
+    frame = opt("--frame")
+    if frame:
+        bpy.context.scene.frame_set(int(frame))
     blend = opt("--save-blend")
     if blend:
         bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(blend))
@@ -997,8 +1049,15 @@ def main():
     if "--render" in argv:
         out = argv[argv.index("--render") + 1]
         bpy.context.scene.render.filepath = os.path.abspath(out)
-        bpy.ops.render.render(write_still=True)
-        print("[1st Studio] Рендер:", out)
+        # --frames = хөдөлгөөний урт, --anim = дарааллыг рендерлэ гэсэн туг.
+        # Нэг тугт нийлүүлбэл --frame-тэй зөрчилдөж, ганц кадар хүсэхэд
+        # бүтэн дараалал рендерлэдэг байв.
+        if move and "--anim" in argv and not frame:
+            bpy.ops.render.render(animation=True)
+            print("[1st Studio] Анимац рендерлэв:", out)
+        else:
+            bpy.ops.render.render(write_still=True)
+            print("[1st Studio] Рендер:", out)
 
 
 main()
