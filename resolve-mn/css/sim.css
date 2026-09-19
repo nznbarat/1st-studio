@@ -391,6 +391,17 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
 .cut-tools .sp{flex:1}
 .cut-tools .thead{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--rs-dim)}
 .cut-tools .thead .nm{margin-left:auto;font-size:11px;color:var(--rs-txt)}
+/* Cut хуудасны Keyframes самбар — Keyframes товчоор нээгдэж хаагдана (2026-09-19-ний зураг) */
+.kf-panel{display:none;flex:0 0 118px;border-top:1px solid var(--rs-line);background:var(--rs-pane)}
+.kf-panel.open{display:flex}
+.kf-side{width:290px;flex-shrink:0;border-right:1px solid var(--rs-line);display:flex;flex-direction:column}
+.kf-head{display:flex;align-items:center;gap:12px;height:30px;padding:0 10px;flex-shrink:0;
+  border-bottom:1px solid var(--rs-line);font-size:13px;color:var(--rs-icon)}
+.kf-head .lbl{color:var(--rs-txt);font-size:12.5px}
+.kf-head .dots{font-size:14px;letter-spacing:1px;padding:0 4px}
+.kf-row{padding:6px 10px;font-size:12px;color:var(--rs-txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kf-main{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--rs-sub)}
+.kf-lane{flex:1;position:relative}
 
 /* ── Fusion ── */
 .fu-split{flex:1;display:flex;gap:1px;background:var(--rs-line);min-height:0}

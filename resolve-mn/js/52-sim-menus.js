@@ -490,6 +490,26 @@
       ["add-transition-to-all-edits", "Add Transition to All Edits"]
     ]},
 
+    /* Cut хуудасны Keyframes самбар — Parameters толгойн "…" товч (2026-09-19-ний зураг).
+       "✓" = зурагт чагттай байсан (одоогийн горим). */
+    "keyframe-parameters-menu": { label: "Parameters …", verified: true, items: [
+      ["display-parameters-with-keyframes", "Display Parameters with Keyframes", "✓"],
+      ["display-all-parameters", "Display All Parameters"],
+      ["display-selected-parameters", "Display Selected Parameters", "", "›"],
+      "-",
+      ["expand-all-parameters", "Expand All Parameters"],
+      ["collapse-all-parameters", "Collapse All Parameters"],
+      "-",
+      ["reset-keyframe-ui", "Reset Keyframe UI"]
+    ]},
+
+    /* Keyframes самбарын баруун дээд "…" товч (2026-09-19-ний зураг). */
+    "keyframe-timeline-menu": { label: "Keyframe timeline …", verified: true, items: [
+      ["enables-snapping", "Enables Snapping", "✓"],
+      ["loop-type", "Loop Type", "", "›"],
+      ["legacy-speed-mode", "Legacy Speed Mode"]
+    ]},
+
     /* Cut хуудас — дээд timeline-ийн зүүн булангийн 3 дахь товч (tooltip нэр баталгаажаагүй). */
     "trim-resync-menu-cut": { label: "Trim / Resync", verified: true, items: [
       ["trim-start", "Trim Start to Playhead"],

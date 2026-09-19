@@ -411,6 +411,17 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
 .cut-tools .sp{flex:1}
 .cut-tools .thead{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--rs-dim)}
 .cut-tools .thead .nm{margin-left:auto;font-size:11px;color:var(--rs-txt)}
+/* Cut хуудасны Keyframes самбар — Keyframes товчоор нээгдэж хаагдана (2026-09-19-ний зураг) */
+.kf-panel{display:none;flex:0 0 118px;border-top:1px solid var(--rs-line);background:var(--rs-pane)}
+.kf-panel.open{display:flex}
+.kf-side{width:290px;flex-shrink:0;border-right:1px solid var(--rs-line);display:flex;flex-direction:column}
+.kf-head{display:flex;align-items:center;gap:12px;height:30px;padding:0 10px;flex-shrink:0;
+  border-bottom:1px solid var(--rs-line);font-size:13px;color:var(--rs-icon)}
+.kf-head .lbl{color:var(--rs-txt);font-size:12.5px}
+.kf-head .dots{font-size:14px;letter-spacing:1px;padding:0 4px}
+.kf-row{padding:6px 10px;font-size:12px;color:var(--rs-txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kf-main{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--rs-sub)}
+.kf-lane{flex:1;position:relative}
 
 /* ── Fusion ── */
 .fu-split{flex:1;display:flex;gap:1px;background:var(--rs-line);min-height:0}
@@ -2282,7 +2293,8 @@ note:"Effects → Library → Resolve FX Blur бүлгийн зургаар ба
 /* ── Ангилал 26 · Cut хуудас — timeline-ийн товч, цэс ──
    Resolve Studio 21-ийн Cut хуудасны дээд timeline-ийн зүүн булангийн "Timeline Options" (⚌)
    товчны жагсаалт, гурав дахь товчны тайрах/дахин синк цэс, транспорт мөрийн зүүн захын
-   Insert Video/Audio Only товч, доод timeline-ийн 5 хэрэгсэл, замын толгойн 5 товч.
+   Insert Video/Audio Only товч, доод timeline-ийн 5 хэрэгсэл, замын толгойн 5 товч,
+   Keyframes самбарын товч, хоёр … цэс.
    2026-09-19-ний дэлгэцийн зургууд (унждаг жагсаалт, tooltip) -аас мөр бүрээр нь баталгаажсан. */
 
 RM.dict.add({ id:"cut-tses", label:"Cut — timeline-ийн товч, цэс", icon:"⚌", page:"cut",
@@ -2308,7 +2320,21 @@ note:"Cut хуудасны timeline-ийн зүүн талын товчнууд 
 ["Lock Track","Замыг түгжих","Замын толгойн цоожны товч — замыг түгжвэл түүн дээрх клипүүд сонгогдохгүй, зөөгдөхгүй, тайрагдахгүй. Edit хуудасны Track Lock-той ижил.","","Cut → доод timeline → замын толгой, 2"],
 ["Solo Track On","Замыг соло болгох","Замын толгойн чихэвчний товч — зөвхөн энэ замын дууг сонсгож бусдыг түр дуугүй болгоно. Tooltip одоогийн үйлдлийг заана (зурагт: Solo Track On).","","Cut → доод timeline → замын толгой, 3"],
 ["Mute Track","Замыг дуугүй болгох","Замын толгойн чанга яригчийн товч — энэ замын дууг түр хаана; экспортод мөн дуугүй гарна.","","Cut → доод timeline → замын толгой, 4"],
-["Disable Track","Замыг идэвхгүй болгох","Замын толгойн сүүлийн товч (▤) — видео замыг унтраавал түүн дээрх клипүүд viewer-т харагдахгүй, рендерт орохгүй. Timeline → Video → Enable/Disable-тай ижил.","","Cut → доод timeline → замын толгой, 5"]
+["Disable Track","Замыг идэвхгүй болгох","Замын толгойн сүүлийн товч (▤) — видео замыг унтраавал түүн дээрх клипүүд viewer-т харагдахгүй, рендерт орохгүй. Timeline → Video → Enable/Disable-тай ижил.","","Cut → доод timeline → замын толгой, 5"],
+["Keyframe Curves","Түлхүүр кадрын муруй","Keyframes самбарын толгойн эхний товч (tooltip-оор баталгаажсан). Параметрийн утгыг цаг хугацааны муруйгаар харуулж, муруйг чирж хурдасгах, удаашруулах (ease) хэлбэрийг засна.","","Cut → Keyframes самбар → толгой, 1"],
+["Keyframe Lanes","Түлхүүр кадрын эгнээ","Keyframes самбарын толгойн хоёр дахь товч. Параметр бүрийг эгнээ болгож, түлхүүр кадруудыг очир хэлбэрээр харуулна; зөөх, устгах, хуулахад.","","Cut → Keyframes самбар → толгой, 2"],
+["Parameters (Keyframes)","Параметрүүд (Keyframes самбар)","Keyframes самбарын зүүн баганын гарчиг. Доор нь клип, түүний түлхүүр кадартай параметрүүд (Zoom, Position, Opacity…) задарна.","","Cut → Keyframes самбар → зүүн багана"],
+["Keyframe Parameters Menu","Параметрийн … цэс","Parameters гарчгийн баруун талын … товч. Аль параметрийг харуулах, бүгдийг задлах/хумих, самбарыг анхны байдалд оруулах 6 команд.","","Cut → Keyframes самбар → Parameters → …"],
+["Display Parameters with Keyframes","Түлхүүр кадартай параметрийг харуулах","Зөвхөн түлхүүр кадартай параметрүүдийг жагсаана. Анхдагч төлөв — зурагт чагттай.","","Parameters … цэс"],
+["Display All Parameters","Бүх параметрийг харуулах","Түлхүүр кадартай эсэхээс үл хамааран клипийн анимацлагдах бүх параметрийг жагсаана.","","Parameters … цэс"],
+["Display Selected Parameters","Сонгосон параметрийг харуулах","Аль параметрүүдийг харуулахаа сонгох дэд цэс. Дэд цэсний мөрүүд зурагт задраагүй.","","Parameters … цэс → ›"],
+["Expand All Parameters","Бүх параметрийг задлах","Жагсаалт дахь бүх клип, бүлгийг задалж параметр бүрийн эгнээг харуулна.","","Parameters … цэс"],
+["Collapse All Parameters","Бүх параметрийг хумих","Бүх бүлгийг хумьж зөвхөн клипийн нэрийг үлдээнэ.","","Parameters … цэс"],
+["Reset Keyframe UI","Keyframe самбарыг анхны байдалд","Самбарын харагдац (задлалт, багануудын өргөн, томруулалт)-ыг анхны байдалд оруулна. Түлхүүр кадрын өгөгдлийг устгахгүй гэж ойлгогдоно.","","Parameters … цэс"],
+["Keyframe Timeline Menu","Түлхүүр кадрын timeline-ийн … цэс","Keyframes самбарын баруун дээд … товч: Enables Snapping, Loop Type, Legacy Speed Mode.","","Cut → Keyframes самбар → баруун дээд …"],
+["Enables Snapping","Наалдуулалтыг асаах","Түлхүүр кадрыг чирэхэд заагч, бусад түлхүүр кадарт наалдана. Зурагт чагттай (асаалттай).","","Keyframe timeline … цэс"],
+["Loop Type","Давталтын төрөл","Түлхүүр кадрын анимацийг давтах хэлбэрийн дэд цэс. Мөрүүд зурагт задраагүй — Resolve дээрээ шалгана уу.","","Keyframe timeline … цэс → ›"],
+["Legacy Speed Mode","Хуучин хурдны горим","Хурдны (retime) түлхүүр кадрыг Resolve-ийн өмнөх хувилбаруудын аргаар боловсруулах горим гэж ойлгогдоно. Яг үйлдэл баталгаажаагүй.","","Keyframe timeline … цэс"]
 ]});
 
 </script>
@@ -11993,6 +12019,126 @@ Cut хуудасны транспорт мөрийн зүүн захын **эх�
 > Идэвхгүй зам нь Lock-оос ялгаатай — клипүүдийг засаж болно, зөвхөн харагдахгүй. Timeline цэс → Video → Enable/Disable-тай ижил. Экспортын өмнө шалгана. [[video-track-enable]].
 
 Холбоотой: [[lock-track]], [[track]].
+`,
+
+
+"keyframe-curves": `
+## Зориулалт
+Keyframes самбарын толгойн **эхний товч** (tooltip: **Keyframe Curves**) нь самбарыг **муруйн харагдац** руу шилжүүлнэ: параметр бүрийн утга цаг хугацааны дагуу муруй болж харагдана. Түлхүүр кадрын хоорондох хөдөлгөөний **хурдасгал, удаашрал** (ease in / ease out) -ыг муруйг чирж засна — Zoom, Position-ийн хөдөлгөөнийг байгалийн болгоход.
+
+## Хэрэглэх алхам
+1. Клип сонгоод Inspector-т параметрийн ◆ товчоор түлхүүр кадр нэмнэ.
+2. Keyframes товчоор самбарыг нээж, Keyframe Curves-ийг сонгоно.
+3. Муруйн цэг дээр баруун товч → Ease In / Ease Out / Linear; эсвэл бариулыг чирнэ.
+
+> Утгын муруйг харахын тулд параметр түлхүүр кадартай байх ёстой (Display Parameters with Keyframes). Edit хуудасны Keyframe Editor-той ижил зарчим.
+
+Холбоотой: [[keyframe-lanes]], [[keyframe-editor]], [[keyframe]].
+`,
+
+"keyframe-lanes": `
+## Зориулалт
+Keyframes самбарын **хоёр дахь товч** (tooltip: **Keyframe Lanes**) нь **эгнээний харагдац**: параметр бүр нэг эгнээ, түлхүүр кадрууд очир (◆) хэлбэрээр. Түлхүүр кадрыг зөөх, устгах, хуулах, олныг нэг дор сонгоход муруйгаас илүү тохиромжтой.
+
+## Хэрэглэх алхам
+1. Keyframes самбар → Keyframe Lanes.
+2. Очирыг чирж хугацааг өөрчилнө; [k:Delete] — устгана; хайрцаглаж олныг сонгоно.
+3. Утгыг өөрчлөх бол Inspector-т заагчийг тэр кадарт тавиад утгыг засна.
+
+> Enables Snapping асаалттай бол очир заагч, бусад очирт наалдана. [[enables-snapping]].
+
+Холбоотой: [[keyframe-curves]], [[keyframe-editor]].
+`,
+
+"parameters-keyframes": `
+## Зориулалт
+Keyframes самбарын зүүн баганын **Parameters** гарчгийн доор сонгосон клип (таны зурагт dreamina-2026-09-17-3642-Pho…) болон түүний **түлхүүр кадартай параметрүүд** мод хэлбэрээр задарна. Мөр дээр товшвол баруун талд тэр параметрийн эгнээ/муруй тодорно.
+
+> Юуг жагсаахыг баруун талын **…** цэсээр (Display Parameters with Keyframes / All / Selected) сонгоно. [[keyframe-parameters-menu]].
+`,
+
+"keyframe-parameters-menu": `
+## Зориулалт
+Parameters гарчгийн баруун талын **…** товч нь Keyframes самбарын **зүүн баганыг** удирдах жагсаалт нээнэ (таны зурагт 6 мөр, 2 тусгаарлагч):
+- **Display Parameters with Keyframes** (✓ анхдагч), **Display All Parameters**, **Display Selected Parameters ›** — юуг жагсаах.
+- **Expand All Parameters**, **Collapse All Parameters** — модыг задлах, хумих.
+- **Reset Keyframe UI** — самбарын харагдацыг анхны байдалд.
+
+> Загвар дээр … товч дээр товшиход энэ жагсаалт нээгдэнэ; мөр бүр дээр товшвол тайлбар гарна.
+
+Холбоотой: [[keyframe-timeline-menu]], [[parameters-keyframes]].
+`,
+
+"display-parameters-with-keyframes": `
+## Зориулалт
+**Display Parameters with Keyframes** нь зүүн баганад зөвхөн **түлхүүр кадартай** параметрүүдийг жагсаана — анхдагч, зурагт чагттай. Олон параметртэй клипт зөвхөн анимацлагдсаныг л харж эмх цэгцтэй ажиллана.
+
+> Түлхүүр кадр нэмээгүй параметр энд харагдахгүй; бүгдийг харах бол Display All Parameters. [[display-all-parameters]].
+`,
+
+"display-all-parameters": `
+## Зориулалт
+**Display All Parameters** нь клипийн **анимацлагдах бүх параметрийг** (Transform, Crop, Composite, Speed, Audio…) түлхүүр кадартай эсэхээс үл хамааран жагсаана. Аль параметрт анимац нэмж болохыг харах, самбараас шууд түлхүүр кадр эхлүүлэхэд.
+
+> Жагсаалт урт болдог тул ажил дуусаад Display Parameters with Keyframes руу буцаах нь тохиромжтой.
+`,
+
+"display-selected-parameters": `
+## Зориулалт
+**Display Selected Parameters ›** дэд цэс нь харуулах параметрүүдийг **өөрөө сонгох** боломж олгоно гэж ойлгогдоно — жишээ нь зөвхөн Zoom, Opacity.
+
+> Дэд цэсний мөрүүд таны зурагт задраагүй тул энд нэрлээгүй; Resolve дээрээ нээж үзнэ үү.
+`,
+
+"expand-all-parameters": `
+## Зориулалт
+**Expand All Parameters** нь зүүн баганын бүх клип, бүлгийг **задалж** параметр бүрийн эгнээг харуулна. Олон параметрийн түлхүүр кадрыг зэрэг харьцуулж зөөхөд.
+
+Холбоотой: [[collapse-all-parameters]].
+`,
+
+"collapse-all-parameters": `
+## Зориулалт
+**Collapse All Parameters** нь бүх бүлгийг **хумьж** зөвхөн клипийн нэрийг үлдээнэ. Самбарыг цэвэрлэж дараагийн клип рүү шилжихэд.
+
+Холбоотой: [[expand-all-parameters]].
+`,
+
+"reset-keyframe-ui": `
+## Зориулалт
+**Reset Keyframe UI** нь Keyframes самбарын **харагдацыг** (задлалт, баганын өргөн, томруулалт, харагдацын горим) анхны байдалд оруулна. Самбар эмх замбараагүй болсон үед.
+
+> Нэр нь UI (интерфейс) гэсэн тул түлхүүр кадрын **өгөгдлийг устгахгүй** гэж ойлгогдоно; гэхдээ чухал ажлын өмнө [k:Ctrl+S] хадгалаад туршина уу — зурагт зөвхөн нэр харагдсан.
+`,
+
+"keyframe-timeline-menu": `
+## Зориулалт
+Keyframes самбарын **баруун дээд … товч** нь түлхүүр кадрын timeline-ийн тохиргоог нээнэ (таны зурагт 3 мөр): **Enables Snapping** (✓), **Loop Type ›**, **Legacy Speed Mode**.
+
+> Загвар дээр … дээр товшиход энэ жагсаалт нээгдэнэ. Зүүн талын Parameters … цэс нь баганыг, энэ нь timeline-ийн зан төлөвийг удирдана. [[keyframe-parameters-menu]].
+`,
+
+"enables-snapping": `
+## Зориулалт
+**Enables Snapping** нь Keyframes самбарт түлхүүр кадрыг чирэхэд **заагч, бусад түлхүүр кадар, клипийн ирмэгт наалдуулна**; зурагт чагттай (асаалттай). Хоёр параметрийн түлхүүр кадрыг яг нэг кадарт зэрэгцүүлэхэд.
+
+> Нарийн, чөлөөт зөөлт хэрэгтэй бол унтраана. Timeline-ийн Snapping [k:N] -ээс тусдаа тохиргоо. [[snapping]].
+`,
+
+"loop-type": `
+## Зориулалт
+**Loop Type ›** дэд цэс нь түлхүүр кадрын анимацийг **давтах хэлбэрийг** (жишээ нь давтахгүй, давтах, буцаж давтах) сонгоно гэж ойлгогдоно — эргэлдэх лого, лугшилттай гэрэл зэрэг давтагдах хөдөлгөөнд.
+
+> Дэд цэсний мөрүүд зурагт задраагүй тул яг сонголтуудыг энд бичээгүй; Resolve дээрээ нээж шалгана уу.
+`,
+
+"legacy-speed-mode": `
+## Зориулалт
+**Legacy Speed Mode** нь хурдны (retime, Speed) түлхүүр кадрыг Resolve-ийн **өмнөх хувилбаруудын аргаар** тооцоолох горим гэж ойлгогдоно — хуучин төслийн хурдны анимац шинэ хувилбарт өөрөөр харагдвал асааж туршина.
+
+> Яг үйлдэл, ямар ялгаа гарах нь баталгаажаагүй — зурагт зөвхөн нэр харагдсан. Шинэ төсөлд асаах шаардлагагүй байх магадлалтай.
+
+Холбоотой: [[retime-controls]], [[speed-ramp]].
 `
 
 });
@@ -12254,7 +12400,7 @@ Cut хуудасны транспорт мөрийн зүүн захын **эх�
        ${H.TG("transition", "◫", "Transitions")}
        ${H.TG("titles", "T", "Titles")}
        ${H.TG("effects-library", "✦", "Effects")}
-       ${H.TG("keyframe-editor", "◆", "Keyframes")}`,
+       <span class="tg hs" data-t="keyframe-editor" data-toggle="keyframes"><span class="ic">◆</span>Keyframes</span>`,
       `${H.TG("quick-export", "⇧", "Quick Export")}
        ${H.TG("full-screen-window", "⛶", "Full Screen")}
        ${H.TG("mixer", "⇅", "Mixer")}
@@ -12324,7 +12470,7 @@ Cut хуудасны транспорт мөрийн зүүн захын **эх�
              Ripple On · Dynamic Trim Mode (Slip) · Split Clip · Add Marker · Keyframes -->
         <div class="cut-tools">
           <div class="row"><span class="hs on" data-t="ripple-on">▣</span><span class="hs" data-t="dynamic-trim-mode-slip">⇹</span>
-            <span class="hs" data-t="split-clip">✂</span><span class="hs mk" data-t="marker">⬟</span><span class="hs" data-t="keyframe-editor">◈</span></div>
+            <span class="hs" data-t="split-clip">✂</span><span class="hs mk" data-t="marker">⬟</span><span class="hs" data-t="keyframe-editor" data-toggle="keyframes">◈</span></div>
           <div class="sp"></div>
           <!-- Замын толгойн 5 товч, tooltip бүр баталгаажсан: Enlarge · Lock · Solo Track On · Mute · Disable Track -->
           <div class="thead"><span class="hs" data-t="enlarge-track">⇕</span><span class="hs" data-t="lock-track">🔒</span><span class="hs" data-t="solo-track-on">🎧</span><span class="hs" data-t="mute-track">🔊</span><span class="hs" data-t="disable-track">▤</span><span class="nm hs" data-t="track">V1</span></div>
@@ -12342,6 +12488,23 @@ Cut хуудасны транспорт мөрийн зүүн захын **эх�
             <div class="tl-row aud" style="height:34%;border:0"><div class="tl-lane" style="padding-left:50%;background:none">
               <div class="clip a hs" data-t="clip" style="width:100%"><span class="cn">◌ 30:01</span><span class="wf"></span></div></div></div>
           </div>
+        </div>
+      </div>
+      <!-- Keyframes самбар (2026-09-19-ний зураг): Keyframes товчоор нээгдэнэ.
+           Толгойн Keyframe Curves / Keyframe Lanes tooltip, хоёр "…" цэс баталгаажсан. -->
+      <div class="kf-panel hs" data-t="keyframe-editor" data-panel="keyframes">
+        <div class="kf-side">
+          <div class="kf-head"><span class="hs" data-t="keyframe-curves">↝</span><span class="hs" data-t="keyframe-lanes">≣</span>
+            <span class="lbl hs" data-t="parameters-keyframes">Parameters</span><span class="sp"></span>
+            <span class="dots hs mi" data-t="keyframe-parameters-menu">…</span></div>
+          <div class="kf-row hs" data-t="clip">⌄ dreamina-2026-09-17-3642-Pho…</div>
+        </div>
+        <div class="kf-main">
+          <div class="kf-head"><span class="sp"></span><span class="dots hs mi" data-t="keyframe-timeline-menu">…</span></div>
+          <div class="tl-ruler hs" data-t="timeline-ruler" style="padding-left:0;background:var(--rs-sub)">
+            <div class="tk"><span></span></div><div class="tk"><span></span></div><div class="tk red"><span></span></div><div class="tk"><span></span></div>
+          </div>
+          <div class="kf-lane"><div class="tl-play" style="left:50%"></div></div>
         </div>
       </div>
     </div>
@@ -13477,6 +13640,26 @@ Cut хуудасны транспорт мөрийн зүүн захын **эх�
       ["add-transition-to-all-edits", "Add Transition to All Edits"]
     ]},
 
+    /* Cut хуудасны Keyframes самбар — Parameters толгойн "…" товч (2026-09-19-ний зураг).
+       "✓" = зурагт чагттай байсан (одоогийн горим). */
+    "keyframe-parameters-menu": { label: "Parameters …", verified: true, items: [
+      ["display-parameters-with-keyframes", "Display Parameters with Keyframes", "✓"],
+      ["display-all-parameters", "Display All Parameters"],
+      ["display-selected-parameters", "Display Selected Parameters", "", "›"],
+      "-",
+      ["expand-all-parameters", "Expand All Parameters"],
+      ["collapse-all-parameters", "Collapse All Parameters"],
+      "-",
+      ["reset-keyframe-ui", "Reset Keyframe UI"]
+    ]},
+
+    /* Keyframes самбарын баруун дээд "…" товч (2026-09-19-ний зураг). */
+    "keyframe-timeline-menu": { label: "Keyframe timeline …", verified: true, items: [
+      ["enables-snapping", "Enables Snapping", "✓"],
+      ["loop-type", "Loop Type", "", "›"],
+      ["legacy-speed-mode", "Legacy Speed Mode"]
+    ]},
+
     /* Cut хуудас — дээд timeline-ийн зүүн булангийн 3 дахь товч (tooltip нэр баталгаажаагүй). */
     "trim-resync-menu-cut": { label: "Trim / Resync", verified: true, items: [
       ["trim-start", "Trim Start to Playhead"],
@@ -13884,6 +14067,18 @@ Cut хуудасны транспорт мөрийн зүүн захын **эх�
         const node = $('#rsHost .hs[data-t="' + id + '"]');
         S.select(id, node);
         return;
+      }
+
+      /* data-toggle="нэр" — тухайн data-panel="нэр" самбарыг нээж/хаана
+         (Cut хуудасны Keyframes самбар гэх мэт), дараа нь тайлбарыг үзүүлнэ */
+      const tg = e.target.closest("[data-toggle]");
+      if (tg) {
+        const panel = $('#rsHost [data-panel="' + tg.getAttribute("data-toggle") + '"]');
+        if (panel) {
+          const open = panel.classList.toggle("open");
+          RM.$$('#rsHost [data-toggle="' + tg.getAttribute("data-toggle") + '"]')
+            .forEach((b) => b.classList.toggle("act", open));
+        }
       }
 
       S.select(hs.getAttribute("data-t"), hs);

@@ -251,7 +251,7 @@
        ${H.TG("transition", "◫", "Transitions")}
        ${H.TG("titles", "T", "Titles")}
        ${H.TG("effects-library", "✦", "Effects")}
-       ${H.TG("keyframe-editor", "◆", "Keyframes")}`,
+       <span class="tg hs" data-t="keyframe-editor" data-toggle="keyframes"><span class="ic">◆</span>Keyframes</span>`,
       `${H.TG("quick-export", "⇧", "Quick Export")}
        ${H.TG("full-screen-window", "⛶", "Full Screen")}
        ${H.TG("mixer", "⇅", "Mixer")}
@@ -321,7 +321,7 @@
              Ripple On · Dynamic Trim Mode (Slip) · Split Clip · Add Marker · Keyframes -->
         <div class="cut-tools">
           <div class="row"><span class="hs on" data-t="ripple-on">▣</span><span class="hs" data-t="dynamic-trim-mode-slip">⇹</span>
-            <span class="hs" data-t="split-clip">✂</span><span class="hs mk" data-t="marker">⬟</span><span class="hs" data-t="keyframe-editor">◈</span></div>
+            <span class="hs" data-t="split-clip">✂</span><span class="hs mk" data-t="marker">⬟</span><span class="hs" data-t="keyframe-editor" data-toggle="keyframes">◈</span></div>
           <div class="sp"></div>
           <!-- Замын толгойн 5 товч, tooltip бүр баталгаажсан: Enlarge · Lock · Solo Track On · Mute · Disable Track -->
           <div class="thead"><span class="hs" data-t="enlarge-track">⇕</span><span class="hs" data-t="lock-track">🔒</span><span class="hs" data-t="solo-track-on">🎧</span><span class="hs" data-t="mute-track">🔊</span><span class="hs" data-t="disable-track">▤</span><span class="nm hs" data-t="track">V1</span></div>
@@ -339,6 +339,23 @@
             <div class="tl-row aud" style="height:34%;border:0"><div class="tl-lane" style="padding-left:50%;background:none">
               <div class="clip a hs" data-t="clip" style="width:100%"><span class="cn">◌ 30:01</span><span class="wf"></span></div></div></div>
           </div>
+        </div>
+      </div>
+      <!-- Keyframes самбар (2026-09-19-ний зураг): Keyframes товчоор нээгдэнэ.
+           Толгойн Keyframe Curves / Keyframe Lanes tooltip, хоёр "…" цэс баталгаажсан. -->
+      <div class="kf-panel hs" data-t="keyframe-editor" data-panel="keyframes">
+        <div class="kf-side">
+          <div class="kf-head"><span class="hs" data-t="keyframe-curves">↝</span><span class="hs" data-t="keyframe-lanes">≣</span>
+            <span class="lbl hs" data-t="parameters-keyframes">Parameters</span><span class="sp"></span>
+            <span class="dots hs mi" data-t="keyframe-parameters-menu">…</span></div>
+          <div class="kf-row hs" data-t="clip">⌄ dreamina-2026-09-17-3642-Pho…</div>
+        </div>
+        <div class="kf-main">
+          <div class="kf-head"><span class="sp"></span><span class="dots hs mi" data-t="keyframe-timeline-menu">…</span></div>
+          <div class="tl-ruler hs" data-t="timeline-ruler" style="padding-left:0;background:var(--rs-sub)">
+            <div class="tk"><span></span></div><div class="tk"><span></span></div><div class="tk red"><span></span></div><div class="tk"><span></span></div>
+          </div>
+          <div class="kf-lane"><div class="tl-play" style="left:50%"></div></div>
         </div>
       </div>
     </div>

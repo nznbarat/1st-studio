@@ -327,6 +327,18 @@
         return;
       }
 
+      /* data-toggle="нэр" — тухайн data-panel="нэр" самбарыг нээж/хаана
+         (Cut хуудасны Keyframes самбар гэх мэт), дараа нь тайлбарыг үзүүлнэ */
+      const tg = e.target.closest("[data-toggle]");
+      if (tg) {
+        const panel = $('#rsHost [data-panel="' + tg.getAttribute("data-toggle") + '"]');
+        if (panel) {
+          const open = panel.classList.toggle("open");
+          RM.$$('#rsHost [data-toggle="' + tg.getAttribute("data-toggle") + '"]')
+            .forEach((b) => b.classList.toggle("act", open));
+        }
+      }
+
       S.select(hs.getAttribute("data-t"), hs);
     });
 
