@@ -3,7 +3,7 @@
 DaVinci Resolve-ийн интерфейсийн монгол хэл дээрх лавлах.
 Программын цэс, самбар, товчлуур, тохиргоо бүрийн монгол нэр, тайлбар, хаана байдгийг цуглуулсан.
 
-**1005 нэр томьёо · 47 ангилал · 133 товчлуур · 605 гарын авлагын дэлгэрэнгүй тайлбар · 6 ажлын урсгал · 8 хуудасны загвар · 19 нээгддэг цэс**
+**1022 нэр томьёо · 47 ангилал · 133 товчлуур · 622 гарын авлагын дэлгэрэнгүй тайлбар · 6 ажлын урсгал · 8 хуудасны загвар · 20 нээгддэг цэс**
 
 ---
 
@@ -105,8 +105,9 @@ Fairlight, Deliver) хуулбарлан харуулна. Нийт **640 тов
   үед; Single/Multiple User — Local төслийн санд саарал. Тайлбар нь шалтгааныг нэрлэнэ.
 - **Color → Effects → Library** таб дээр товшиход Resolve FX Blur бүлгийн бодит жагсаалт
   (Box Blur, CineFocus, Directional Blur, Gaussian Blur, Lens Blur, Mosaic Blur) нээгдэнэ.
-- **Cut хуудасны ⚌ "Timeline Options" товч** 15 командын бодит жагсаалт нээнэ (Create Subtitles
-  from Audio … Add Transition to All Edits; Voice Convert саарал). Хажуугийн 3 дахь товч
+- **Cut хуудасны ⚌ "Timeline Options" товч** 18 тохиргооны бодит жагсаалт нээнэ (Ripple On, Snap,
+  Display Clip…, Edit Using Ch…, Fixed Playhead, Boring Detector); хажуугийн ⇤≡ товч 15 командын
+  жагсаалт (Create Subtitles from Audio … Add Transition to All Edits; Voice Convert саарал). 3 дахь товч
   Trim Start/End to Playhead, Resync Clip цэс нээнэ. Доод timeline-ийн 5 товч (Ripple On,
   Dynamic Trim Mode (Slip), Split Clip, Add Marker, Keyframes), замын толгойн 5 товч
   (Enlarge, Lock, Solo, Mute, Disable Track), Insert Video/Audio Only — tooltip-оор баталгаажсан.
@@ -134,7 +135,7 @@ Blackmagic-ийн албан ёсны гарын авлагын хэв маяг�
 - Толинд: карт бүрийн **▸ Гарын авлага** мөрөөр нээгдэнэ; холбоос хайлт руу үсэрнэ.
 - Хамрах хүрээ: загварын бүх товших цэг (290), 13 цэсний бүх команд (225),
   AI (Neural Engine) ба сэргээн засварын 36 хэрэглүүр, Photo Album, Resolve FX Blur,
-  Cut хуудасны Timeline Options цэс, товчнууд, Keyframes самбар — нийт 605.
+  Cut хуудасны Timeline Options ба командын цэс, товчнууд, Keyframes самбар — нийт 622.
   Үлдсэн 400 нэр томьёо богино тайлбартай; дараагийн шатанд.
 - Бичлэгийн хэлбэр: `js/long/*.js` файлд `RM.dict.long({ id: "бичвэр" })`.
   Мини-markdown: хоосон мөр — догол, `## ` — дэд гарчиг, `- ` / `1. ` — жагсаалт,
@@ -299,11 +300,12 @@ Color хуудасны нодны хөдөлгүүр дээр засварлан
 - **Resolve FX Blur** — Color → Effects → Library-ийн 6 эффект (2026-09-19).
 - **Photo Album ⌄ цэс** — Photo хуудасны шүүлтүүрийн 18 мөр (Photos in Bin саарал байсан).
 - **Remote Grading** `Ctrl+G` — "Remote Grading Client" цонх: Remote Machine, Port 15000.
-- **Cut хуудасны Timeline Options цэс** — 15 мөр, 5 тусгаарлагч (Voice Convert саарал байсан);
+- **Cut хуудасны ⚌ Timeline Options цэс** — 18 мөр, 7 тусгаарлагч, 6 чагт; **⇤≡ командын цэс** — 15 мөр,
+  5 тусгаарлагч (Voice Convert саарал байсан);
   тайрах/дахин синк цэсний 3 мөр; 14 товчны tooltip; Keyframes самбарын хоёр … цэс (2026-09-19).
 
-Хараахан баталгаажуулаагүй: Cut хуудасны дээд timeline-ийн дунд товч (⇤≡) ба 3 дахь товчны
-tooltip нэр; транспорт мөрийн 6 засварын товч, тэдгээрийн баруун талын 3 + 5 товчны нэр;
+Хараахан баталгаажуулаагүй: Cut хуудасны дээд timeline-ийн ⇤≡ ба 3 дахь товчны tooltip нэр
+(цэсний агуулга нь баталгаажсан); транспорт мөрийн 6 засварын товч, тэдгээрийн баруун талын 3 + 5 товчны нэр;
 Resync Clip-ийн яг үйлдэл; цэсний дэд цэснүүдийн (AI Tools, Audio Operations,
 Edit Options, Go To, Sort by…) доторх мөрүүд; Resolve 20–21-д нэмэгдсэн AI хэрэглүүрийн
 яг байрлал; Edit цэсний төлөв Media хуудсанд, File цэсний төлөв Media-аас бусад

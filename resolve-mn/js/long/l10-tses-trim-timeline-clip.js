@@ -280,7 +280,7 @@ Timeline → Split Clip [k:Ctrl+\\] нь заагчийн байрлалд кл�
 
 Холбоотой: [[join-clips]], [[blade]], [[razor]].
 
-> Cut хуудсанд: доод timeline-ийн хайчны товч (tooltip: **Split Clip**) заагч дээр хуваана; Timeline Options ⚌ жагсаалтад **Split Clips** нэрээр. Хуваасны дараа төслийн нэрний хажууд Edited гарна. [[timeline-options]].
+> Cut хуудсанд: доод timeline-ийн хайчны товч (tooltip: **Split Clip**) заагч дээр хуваана; дээд timeline-ийн ⇤≡ командын цэсэнд **Split Clips** нэрээр. Хуваасны дараа төслийн нэрний хажууд Edited гарна. [[timeline-commands-menu-cut]].
 `,
 
 "join-clips": `

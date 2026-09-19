@@ -543,7 +543,7 @@ Marker нь timeline эсвэл клипийн **тодорхой кадарт**
 
 Холбоотой: [[flag]] — кадарт биш клипэд хамаарах тэмдэг.
 
-> Cut хуудсанд: доод timeline-ийн зүүн булангийн цэнхэр товч (tooltip: **Add Marker**) заагчийн байрлалд тэмдэг нэмнэ; viewer дээр Time / Name (Marker 1) хүснэгт гарна. Timeline Options ⚌ жагсаалтад мөн Add Marker, Set Color and Add Marker байна. [[set-color-and-add-marker]].
+> Cut хуудсанд: доод timeline-ийн зүүн булангийн цэнхэр товч (tooltip: **Add Marker**) заагчийн байрлалд тэмдэг нэмнэ; viewer дээр Time / Name (Marker 1) хүснэгт гарна. дээд timeline-ийн ⇤≡ командын цэсэнд мөн Add Marker, Set Color and Add Marker байна. [[set-color-and-add-marker]].
 `,
 
 "media-pool": `

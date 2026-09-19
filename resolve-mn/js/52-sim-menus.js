@@ -464,10 +464,40 @@
       ["create-smart-filter", "Create Smart Filter…"]
     ]},
 
-    /* Cut хуудас — дээд timeline-ийн зүүн булангийн ⚌ "Timeline Options" товч
-       (2026-09-19-ний зураг: 15 мөр, 5 тусгаарлагч). Voice Convert саарал байсан —
-       нөхцөл тодорхойгүй. */
+    /* Cut хуудас — дээд timeline-ийн зүүн булангийн эхний товч ⚌ "Timeline Options"
+       (2026-09-19-ний зураг: 18 мөр, 7 тусгаарлагч; "✓" = зурагт чагттай байсан). */
     "timeline-options": { label: "Timeline Options", verified: true, items: [
+      ["ripple-on", "Ripple On"],
+      "-",
+      ["snap", "Snap", "✓"],
+      ["trim-to-audio", "Trim to Audio"],
+      ["trim-with-safe-edit", "Trim with Safe Edit"],
+      "-",
+      ["display-clip-names", "Display Clip Names"],
+      ["display-clip-status", "Display Clip Status", "✓"],
+      ["display-clip-duration", "Display Clip Duration", "✓"],
+      ["display-speed-keyframes", "Display Speed Keyframes", "✓"],
+      ["viewer-background", "Viewer Background", "", "›"],
+      "-",
+      ["set-default-transition", "Set Default Transition"],
+      "-",
+      ["edit-using-all-channels", "Edit Using All Channels", "✓"],
+      ["edit-using-ch-1-2", "Edit Using Ch 1&2"],
+      ["edit-using-ch-3-4", "Edit Using Ch 3&4"],
+      ["edit-using-ch-5-6", "Edit Using Ch 5&6"],
+      ["edit-using-ch-7-8", "Edit Using Ch 7&8"],
+      "-",
+      ["minimize-subtitle-track", "Minimize Subtitle Track"],
+      "-",
+      ["fixed-playhead", "Fixed Playhead", "✓"],
+      "-",
+      ["boring-detector", "Boring Detector"]
+    ]},
+
+    /* Cut хуудас — дээд timeline-ийн зүүн булангийн хоёр дахь товч ⇤≡ (tooltip нэр баталгаажаагүй;
+       2026-09-19-ний хоёр зургаас цэс энэ товчных гэдэг нь тодорхой болсон:
+       15 мөр, 5 тусгаарлагч). Voice Convert саарал байсан — нөхцөл тодорхойгүй. */
+    "timeline-commands-menu-cut": { label: "Timeline — командууд", verified: true, items: [
       ["create-subtitles-from-audio", "Create Subtitles from Audio"],
       ["scene-cut-detection", "Detect Scene Cuts"],
       "-",

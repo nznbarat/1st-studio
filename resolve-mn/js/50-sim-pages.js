@@ -301,10 +301,11 @@
         <span class="tc hs" data-t="timecode">TCG 01:00:00:00</span><span class="hs" data-t="timeline-menu">≡</span>
       </div>
       <div class="cut-upper hs" data-t="dual-timeline">
-        <!-- Дээд timeline-ийн зүүн булан (2026-09-19-ний зураг): ⚌ Timeline Options (tooltip баталгаажсан),
-             дунд товчны нэр тодорхойгүй, 3 дахь товч Trim Start/End to Playhead, Resync Clip цэс нээнэ. -->
+        <!-- Дээд timeline-ийн зүүн булан (2026-09-19-ний зургууд): ⚌ Timeline Options (tooltip баталгаажсан,
+             18 тохиргооны мөр), ⇤≡ командын цэс (15 мөр, tooltip нэр тодорхойгүй),
+             3 дахь товч Trim Start/End to Playhead, Resync Clip цэс нээнэ. -->
         <div class="cut-tools up">
-          <div class="row"><span class="hs mi" data-t="timeline-options">⚌</span><span title="Нэр нь баталгаажаагүй">⇤≡</span><span class="hs mi" data-t="trim-resync-menu-cut">⇥≡</span></div>
+          <div class="row"><span class="hs mi" data-t="timeline-options">⚌</span><span class="hs mi" data-t="timeline-commands-menu-cut">⇤≡</span><span class="hs mi" data-t="trim-resync-menu-cut">⇥≡</span></div>
         </div>
         <div class="tl-col">
           <div class="tl-ruler hs" data-t="timeline-ruler" style="padding-left:34px">

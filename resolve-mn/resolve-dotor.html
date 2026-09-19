@@ -2292,24 +2292,25 @@ note:"Effects → Library → Resolve FX Blur бүлгийн зургаар ба
 /* ── js/dict/r26-cut-tses.js ── */
 /* ── Ангилал 26 · Cut хуудас — timeline-ийн товч, цэс ──
    Resolve Studio 21-ийн Cut хуудасны дээд timeline-ийн зүүн булангийн "Timeline Options" (⚌)
-   товчны жагсаалт, гурав дахь товчны тайрах/дахин синк цэс, транспорт мөрийн зүүн захын
+   тохиргооны цэс (18 мөр), хоёр дахь товчны командын цэс (15 мөр), гурав дахь товчны тайрах/дахин синк цэс, транспорт мөрийн зүүн захын
    Insert Video/Audio Only товч, доод timeline-ийн 5 хэрэгсэл, замын толгойн 5 товч,
    Keyframes самбарын товч, хоёр … цэс.
    2026-09-19-ний дэлгэцийн зургууд (унждаг жагсаалт, tooltip) -аас мөр бүрээр нь баталгаажсан. */
 
 RM.dict.add({ id:"cut-tses", label:"Cut — timeline-ийн товч, цэс", icon:"⚌", page:"cut",
 note:"Cut хуудасны timeline-ийн зүүн талын товчнууд ба тэдгээрийн унждаг жагсаалт. Tooltip, жагсаалтын мөр бүр дэлгэцийн зургаас баталгаажсан.", terms:[
-["Timeline Options","Timeline-ийн сонголт (Cut)","Cut хуудасны дээд timeline-ийн зүүн булангийн ⚌ товч (tooltip: Timeline Options). Хадмал үүсгэх, огтлолт илрүүлэх, AI дууны хэрэгсэл, зам нэмэх/устгах, клип хуваах/нийлүүлэх, тэмдэг, бүх огтлолтод шилжилт нэмэх/арилгах — 15 командын жагсаалт нээнэ.","","Cut → дээд timeline → зүүн булан ⚌"],
-["Create Subtitles from Audio","Дуунаас хадмал үүсгэх","Timeline-ийн яриаг DaVinci Neural Engine-ээр таньж хадмалын зам дээр хадмалыг автоматаар үүсгэнэ (Studio). Хэл, мөрийн тэмдэгтийн тоо, хадмалын уртыг цонхонд сонгоно.","","Timeline Options ⚌ · Timeline цэс"],
-["Add Video Track","Видео зам нэмэх","Timeline-д шинэ видео зам (V2, V3…) нэмнэ. Гарчиг, давхар дүрс, дээд давхаргын клипт зориулна.","","Timeline Options ⚌"],
-["Add Audio Track","Дууны зам нэмэх","Timeline-д шинэ дууны зам (A2, A3…) нэмнэ. Хөгжим, эффект, яриаг тусдаа замд байрлуулахад.","","Timeline Options ⚌"],
-["Add Subtitle Track","Хадмалын зам нэмэх","Timeline-д хадмалын зам нэмнэ. Нэг зам — нэг хэл; экспортод тусдаа файл (SRT) эсвэл дүрсэнд шатааж гаргана.","","Timeline Options ⚌"],
-["Delete Empty Tracks","Хоосон замуудыг устгах","Клипгүй бүх видео, дууны замыг нэг дор устгаж timeline-ийг цэгцэлнэ. Клиптэй замд нөлөөлөхгүй.","","Timeline Options ⚌"],
-["Join Match Edit Clips","Залгаа огтлолттой клипүүдийг нийлүүлэх","Нэг эх файлын залгаа (match edit / through edit) хэсгүүдийг буцаан нэг клип болгоно. Edit хуудасны Join Clips (Alt+\\) -тэй ижил үйлдэл.","","Timeline Options ⚌"],
-["Set Color and Add Marker","Өнгө сонгож тэмдэг нэмэх","Тэмдгийн өнгийг сонгоод заагчийн байрлалд тэмдэг нэмнэ. Ангиллаар (өнгөөр) тэмдэглэхэд.","","Timeline Options ⚌"],
-["Clear Transition from All Edits","Бүх огтлолтоос шилжилт арилгах","Timeline-ийн бүх огтлолтын цэг дээрх шилжилтийг устгаж энгийн огтлолт болгоно.","","Timeline Options ⚌"],
-["Add Dissolve to All Edits","Бүх огтлолтод уусалт нэмэх","Timeline-ийн бүх огтлолтын цэг дээр Cross Dissolve (уусалт) нэмнэ. Урт нь Preferences → Editing дахь стандарт уртаар.","","Timeline Options ⚌"],
-["Add Transition to All Edits","Бүх огтлолтод шилжилт нэмэх","Timeline-ийн бүх огтлолтын цэг дээр стандарт шилжилтийг (Set as Standard Transition гэж заасан) нэмнэ.","","Timeline Options ⚌"],
+["Timeline Options","Timeline-ийн тохиргоо (Cut)","Cut хуудасны дээд timeline-ийн зүүн булангийн ⚌ товч (tooltip: Timeline Options). Timeline-ийн ажиллагаа, харагдацын 18 тохиргоо: Ripple, Snap, Trim to Audio, клипийн нэр/төлөв/урт харуулах, Viewer Background, анхдагч шилжилт, дууны суваг сонголт, Fixed Playhead, Boring Detector.","","Cut → дээд timeline → зүүн булан, 1 дэх товч ⚌"],
+["Timeline Commands Menu (Cut)","Timeline-ийн командын цэс (Cut)","Дээд timeline-ийн зүүн булангийн хоёр дахь товч (⇤≡). Хадмал үүсгэх, огтлолт илрүүлэх, AI дууны хэрэгсэл, зам нэмэх/устгах, клип хуваах/нийлүүлэх, тэмдэг, бүх огтлолтод шилжилт — 15 командын жагсаалт. Товчны tooltip нэр баталгаажаагүй.","","Cut → дээд timeline → зүүн булан, 2 дахь товч ⇤≡"],
+["Create Subtitles from Audio","Дуунаас хадмал үүсгэх","Timeline-ийн яриаг DaVinci Neural Engine-ээр таньж хадмалын зам дээр хадмалыг автоматаар үүсгэнэ (Studio). Хэл, мөрийн тэмдэгтийн тоо, хадмалын уртыг цонхонд сонгоно.","","Cut → ⇤≡ командын цэс · Timeline цэс"],
+["Add Video Track","Видео зам нэмэх","Timeline-д шинэ видео зам (V2, V3…) нэмнэ. Гарчиг, давхар дүрс, дээд давхаргын клипт зориулна.","","Cut → ⇤≡ командын цэс"],
+["Add Audio Track","Дууны зам нэмэх","Timeline-д шинэ дууны зам (A2, A3…) нэмнэ. Хөгжим, эффект, яриаг тусдаа замд байрлуулахад.","","Cut → ⇤≡ командын цэс"],
+["Add Subtitle Track","Хадмалын зам нэмэх","Timeline-д хадмалын зам нэмнэ. Нэг зам — нэг хэл; экспортод тусдаа файл (SRT) эсвэл дүрсэнд шатааж гаргана.","","Cut → ⇤≡ командын цэс"],
+["Delete Empty Tracks","Хоосон замуудыг устгах","Клипгүй бүх видео, дууны замыг нэг дор устгаж timeline-ийг цэгцэлнэ. Клиптэй замд нөлөөлөхгүй.","","Cut → ⇤≡ командын цэс"],
+["Join Match Edit Clips","Залгаа огтлолттой клипүүдийг нийлүүлэх","Нэг эх файлын залгаа (match edit / through edit) хэсгүүдийг буцаан нэг клип болгоно. Edit хуудасны Join Clips (Alt+\\) -тэй ижил үйлдэл.","","Cut → ⇤≡ командын цэс"],
+["Set Color and Add Marker","Өнгө сонгож тэмдэг нэмэх","Тэмдгийн өнгийг сонгоод заагчийн байрлалд тэмдэг нэмнэ. Ангиллаар (өнгөөр) тэмдэглэхэд.","","Cut → ⇤≡ командын цэс"],
+["Clear Transition from All Edits","Бүх огтлолтоос шилжилт арилгах","Timeline-ийн бүх огтлолтын цэг дээрх шилжилтийг устгаж энгийн огтлолт болгоно.","","Cut → ⇤≡ командын цэс"],
+["Add Dissolve to All Edits","Бүх огтлолтод уусалт нэмэх","Timeline-ийн бүх огтлолтын цэг дээр Cross Dissolve (уусалт) нэмнэ. Урт нь Preferences → Editing дахь стандарт уртаар.","","Cut → ⇤≡ командын цэс"],
+["Add Transition to All Edits","Бүх огтлолтод шилжилт нэмэх","Timeline-ийн бүх огтлолтын цэг дээр стандарт шилжилтийг (Set as Standard Transition гэж заасан) нэмнэ.","","Cut → ⇤≡ командын цэс"],
 ["Trim / Resync Menu (Cut)","Тайрах / дахин синк цэс (Cut)","Дээд timeline-ийн зүүн булангийн гурав дахь товч. Trim Start to Playhead, Trim End to Playhead, Resync Clip гурван команд нээнэ. Товчны tooltip нэр дэлгэцийн зурагт хараагүй — баталгаажаагүй.","","Cut → дээд timeline → зүүн булан, 3 дахь товч"],
 ["Resync Clip","Клипийг дахин синк болгох","Дуу, дүрс нь хоорондоо зөрсөн (out of sync) клипийг буцааж синк болгоно гэж ойлгогдоно. Яг үйлдлийг Resolve дээрээ шалгана уу — зурагт зөвхөн нэр харагдсан.","","Cut → 3 дахь товч → Resync Clip"],
 ["Insert Video Only","Зөвхөн видео шигтгэх","Эх клипийн зөвхөн видео хэсгийг timeline-д оруулна; дууг орхино. Cut хуудасны транспорт мөрийн зүүн захын эхний товч (tooltip-оор баталгаажсан).","","Cut → транспорт мөр → зүүн зах, 1"],
@@ -2334,6 +2335,22 @@ note:"Cut хуудасны timeline-ийн зүүн талын товчнууд 
 ["Keyframe Timeline Menu","Түлхүүр кадрын timeline-ийн … цэс","Keyframes самбарын баруун дээд … товч: Enables Snapping, Loop Type, Legacy Speed Mode.","","Cut → Keyframes самбар → баруун дээд …"],
 ["Enables Snapping","Наалдуулалтыг асаах","Түлхүүр кадрыг чирэхэд заагч, бусад түлхүүр кадарт наалдана. Зурагт чагттай (асаалттай).","","Keyframe timeline … цэс"],
 ["Loop Type","Давталтын төрөл","Түлхүүр кадрын анимацийг давтах хэлбэрийн дэд цэс. Мөрүүд зурагт задраагүй — Resolve дээрээ шалгана уу.","","Keyframe timeline … цэс → ›"],
+["Snap","Наалдуулах (Cut)","Timeline Options ⚌ цэсний мөр — клип, заагчийг чирэхэд огтлолт, тэмдэг, заагчид наалдана. Зурагт чагттай. Edit хуудасны Snapping-тэй ижил.","","Cut → Timeline Options ⚌"],
+["Trim to Audio","Дуугаар тайрах","Timeline Options ⚌ цэсний мөр — тайрахдаа дууны долгионыг томруулж, дууны цохилтоор нарийн тайрах горим гэж ойлгогдоно. Яг үйлдэл баталгаажаагүй.","","Cut → Timeline Options ⚌"],
+["Trim with Safe Edit","Хамгаалалттай тайралт","Timeline Options ⚌ цэсний мөр — тайрахдаа бусад замын клип, дуу-дүрсийн синкийг хамгаалах горим гэж ойлгогдоно. Яг үйлдэл баталгаажаагүй.","","Cut → Timeline Options ⚌"],
+["Display Clip Names","Клипийн нэрийг харуулах","Timeline дээрх клип бүр дээр файлын нэрийг харуулна. Зурагт чагтгүй (унтраалттай).","","Cut → Timeline Options ⚌"],
+["Display Clip Status","Клипийн төлөвийг харуулах","Клип дээр төлөвийн тэмдэг (эффект, хурд, зөрүү, өөрчлөлт) харуулна. Зурагт чагттай.","","Cut → Timeline Options ⚌"],
+["Display Clip Duration","Клипийн уртыг харуулах","Клип дээр уртыг (жишээ нь 30:01) харуулна. Зурагт чагттай.","","Cut → Timeline Options ⚌"],
+["Display Speed Keyframes","Хурдны түлхүүр кадрыг харуулах","Хурд өөрчилсөн клип дээр хурдны түлхүүр кадрын тэмдгийг харуулна. Зурагт чагттай.","","Cut → Timeline Options ⚌"],
+["Viewer Background","Viewer-ийн дэвсгэр","Viewer-ийн дүрсний гадуурх хоосон хэсгийн өнгийг сонгох дэд цэс. Мөрүүд зурагт задраагүй.","","Cut → Timeline Options ⚌ → ›"],
+["Set Default Transition","Анхдагч шилжилтийг тогтоох","Add Transition, Add Transition to All Edits-д ашиглах анхдагч шилжилтийг сонгоно гэж ойлгогдоно.","","Cut → Timeline Options ⚌"],
+["Edit Using All Channels","Бүх сувгаар засварлах","Эх клипийн бүх дууны сувгийг timeline-д оруулна. Зурагт чагттай (анхдагч).","","Cut → Timeline Options ⚌"],
+["Edit Using Ch 1&2","1–2-р сувгаар засварлах","Эх клипийн зөвхөн 1, 2-р дууны сувгийг timeline-д оруулна.","","Cut → Timeline Options ⚌"],
+["Edit Using Ch 3&4","3–4-р сувгаар засварлах","Эх клипийн зөвхөн 3, 4-р дууны сувгийг timeline-д оруулна.","","Cut → Timeline Options ⚌"],
+["Edit Using Ch 5&6","5–6-р сувгаар засварлах","Эх клипийн зөвхөн 5, 6-р дууны сувгийг timeline-д оруулна.","","Cut → Timeline Options ⚌"],
+["Edit Using Ch 7&8","7–8-р сувгаар засварлах","Эх клипийн зөвхөн 7, 8-р дууны сувгийг timeline-д оруулна.","","Cut → Timeline Options ⚌"],
+["Minimize Subtitle Track","Хадмалын замыг багасгах","Хадмалын замын өндрийг хамгийн бага болгож timeline-д зай гаргана.","","Cut → Timeline Options ⚌"],
+["Fixed Playhead","Тогтмол заагч","Заагч дэлгэцийн голд тогтож, timeline нь заагчийн доогуур гүйнэ. Зурагт чагттай — Cut хуудасны анхдагч.","","Cut → Timeline Options ⚌"],
 ["Legacy Speed Mode","Хуучин хурдны горим","Хурдны (retime) түлхүүр кадрыг Resolve-ийн өмнөх хувилбаруудын аргаар боловсруулах горим гэж ойлгогдоно. Яг үйлдэл баталгаажаагүй.","","Keyframe timeline … цэс"]
 ]});
 
@@ -2886,7 +2903,7 @@ Marker нь timeline эсвэл клипийн **тодорхой кадарт**
 
 Холбоотой: [[flag]] — кадарт биш клипэд хамаарах тэмдэг.
 
-> Cut хуудсанд: доод timeline-ийн зүүн булангийн цэнхэр товч (tooltip: **Add Marker**) заагчийн байрлалд тэмдэг нэмнэ; viewer дээр Time / Name (Marker 1) хүснэгт гарна. Timeline Options ⚌ жагсаалтад мөн Add Marker, Set Color and Add Marker байна. [[set-color-and-add-marker]].
+> Cut хуудсанд: доод timeline-ийн зүүн булангийн цэнхэр товч (tooltip: **Add Marker**) заагчийн байрлалд тэмдэг нэмнэ; viewer дээр Time / Name (Marker 1) хүснэгт гарна. дээд timeline-ийн ⇤≡ командын цэсэнд мөн Add Marker, Set Color and Add Marker байна. [[set-color-and-add-marker]].
 `,
 
 "media-pool": `
@@ -10100,7 +10117,7 @@ Timeline → Split Clip [k:Ctrl+\\] нь заагчийн байрлалд кл�
 
 Холбоотой: [[join-clips]], [[blade]], [[razor]].
 
-> Cut хуудсанд: доод timeline-ийн хайчны товч (tooltip: **Split Clip**) заагч дээр хуваана; Timeline Options ⚌ жагсаалтад **Split Clips** нэрээр. Хуваасны дараа төслийн нэрний хажууд Edited гарна. [[timeline-options]].
+> Cut хуудсанд: доод timeline-ийн хайчны товч (tooltip: **Split Clip**) заагч дээр хуваана; дээд timeline-ийн ⇤≡ командын цэсэнд **Split Clips** нэрээр. Хуваасны дараа төслийн нэрний хажууд Edited гарна. [[timeline-commands-menu-cut]].
 `,
 
 "join-clips": `
@@ -11740,14 +11757,33 @@ Mosaic Blur (Pixelate) нь дүрсийг **том пиксэлийн моза�
 /* ── js/long/l15-cut-tses.js ── */
 /* ═════════════════════════════════════════════════════════════
    Гарын авлагын дэлгэрэнгүй тайлбар · Cut хуудасны timeline-ийн товч, цэс
-   (2026-09-19-ний дэлгэцийн зургууд: Timeline Options жагсаалт, тайрах/дахин синк цэс,
+   (2026-09-19-ний дэлгэцийн зургууд: Timeline Options тохиргоо, ⇤≡ командын цэс, тайрах/дахин синк цэс,
     Insert Video/Audio Only, доод timeline-ийн 5 хэрэгсэл, замын толгойн 5 товч)
    ═════════════════════════════════════════════════════════════ */
 RM.dict.long({
 
 "timeline-options": `
 ## Зориулалт
-Cut хуудасны **дээд timeline**-ийн зүүн булангийн эхний товч (⚌, tooltip: **Timeline Options**) нь timeline-тэй ажиллах хамгийн түгээмэл командуудыг **нэг жагсаалтад** цуглуулсан. Cut хуудас цэсний мөрөөр бус, дэлгэц дээрх товчоор хурдан ажиллах зориулалттай тул Timeline, Mark цэсний зарим команд энд давхардана.
+Cut хуудасны **дээд timeline**-ийн зүүн булангийн эхний товч (⚌, tooltip: **Timeline Options**) нь timeline-ийн **ажиллагаа, харагдацын тохиргоог** нэг жагсаалтад цуглуулсан (таны зурагт 18 мөр, 7 тусгаарлагч). Чагттай мөр — одоо асаалттай.
+
+## Мөрүүд (Resolve Studio 21 — таны зурагт)
+- **Ripple On** — тайралт, устгалтын дараа хойших клип зөрөх. [[ripple-on]].
+- **Snap** (✓), **Trim to Audio**, **Trim with Safe Edit** — наалдуулалт, тайралтын горим. [[snap]], [[trim-to-audio]], [[trim-with-safe-edit]].
+- **Display Clip Names**, **Display Clip Status** (✓), **Display Clip Duration** (✓), **Display Speed Keyframes** (✓), **Viewer Background ›** — клип дээр юу харуулах, viewer-ийн дэвсгэр.
+- **Set Default Transition** — анхдагч шилжилт. [[set-default-transition]].
+- **Edit Using All Channels** (✓), **Edit Using Ch 1&2 / 3&4 / 5&6 / 7&8** — эх клипийн аль дууны сувгийг оруулах. [[edit-using-all-channels]].
+- **Minimize Subtitle Track**, **Fixed Playhead** (✓), **Boring Detector**. [[fixed-playhead]], [[boring-detector]].
+
+> Зүүн булангийн **хоёр дахь товч** (⇤≡) нь командын цэс — Create Subtitles from Audio, Add Video Track, Split Clips гэх мэт. Хоёрыг андуурахгүй: ⚌ = тохиргоо, ⇤≡ = үйлдэл. [[timeline-commands-menu-cut]].
+
+> Загвар дээр ⚌ товч дээр товшиход энэ жагсаалт нээгдэнэ; мөр бүр дээр товшвол тайлбар гарна.
+
+Холбоотой: [[dual-timeline]], [[trim-resync-menu-cut]].
+`,
+
+"timeline-commands-menu-cut": `
+## Зориулалт
+Дээд timeline-ийн зүүн булангийн **хоёр дахь товч** (⇤≡) нь timeline-тэй ажиллах хамгийн түгээмэл **командуудыг** нэг жагсаалтад цуглуулсан (таны зурагт 15 мөр, 5 тусгаарлагч). Cut хуудас цэсний мөрөөр бус, дэлгэц дээрх товчоор хурдан ажиллах зориулалттай тул Timeline, Mark цэсний зарим команд энд давхардана.
 
 ## Мөрүүд (Resolve Studio 21 — таны зурагт)
 - **Create Subtitles from Audio**, **Detect Scene Cuts** — AI-д суурилсан шинжилгээ. [[create-subtitles-from-audio]], [[scene-cut-detection]].
@@ -11759,12 +11795,12 @@ Cut хуудасны **дээд timeline**-ийн зүүн булангийн э
 
 ## Хэрэглэх алхам
 1. Заагчийг хэрэгтэй байрлалд тавина (Split, Add Marker заагч дээр ажиллана).
-2. ⚌ товч → командыг сонгоно. Дэлгэцэнд багтахгүй урт жагсаалт тул Resolve үүнийг дээш шилжүүлж харуулна.
+2. ⇤≡ товч → командыг сонгоно. Дэлгэцэнд багтахгүй урт жагсаалт тул Resolve үүнийг дээш шилжүүлж харуулна.
 3. Үр дүнг доод timeline дээр шалгана; буцаах — [k:Ctrl+Z].
 
-> Загвар дээр энэ товчийг дарахад бодит жагсаалт нээгдэнэ; мөр бүр дээр товшвол тайлбар гарна. Voice Convert яагаад саарал байсныг зургаас тогтоох боломжгүй — Resolve дээрээ клип сонгоод дахин шалгана уу.
+> Товчны **tooltip нэр** таны зурагт хараагүй — хулганаа дээр нь тавьж нэрийг илгээвэл энд засна. Voice Convert яагаад саарал байсныг зургаас тогтоох боломжгүй.
 
-Холбоотой: [[dual-timeline]], [[trim-resync-menu-cut]], [[timeline-menu]].
+Холбоотой: [[timeline-options]], [[trim-resync-menu-cut]], [[timeline-menu]].
 `,
 
 "create-subtitles-from-audio": `
@@ -11772,7 +11808,7 @@ Cut хуудасны **дээд timeline**-ийн зүүн булангийн э
 **Create Subtitles from Audio** нь timeline-ийн ярианы дууг DaVinci Neural Engine-ээр (Studio) таньж, **хадмалын зам** дээр хадмалын клипүүдийг автоматаар үүсгэнэ. Гараар бичихээс хэд дахин хурдан; дараа нь текстийг засаж, загварыг Inspector-оос тохируулна.
 
 ## Хэрэглэх алхам
-1. Timeline Options ⚌ → **Create Subtitles from Audio** (эсвэл Timeline цэс → AI Tools).
+1. ⇤≡ командын цэс → **Create Subtitles from Audio** (эсвэл Timeline цэс → AI Tools).
 2. Цонхонд: **хэл**, хадмал бүрийн **тэмдэгтийн дээд тоо**, **мөрийн тоо**, хадмалын үргэлжлэх хугацаа.
 3. Create. Шинэ Subtitle зам (ST1) дээр хадмалууд гарна.
 4. Хадмал дээр давхар товшиж текстийг засна; Inspector → Subtitle → фонт, хэмжээ, дэвсгэр.
@@ -11788,7 +11824,7 @@ Cut хуудасны **дээд timeline**-ийн зүүн булангийн э
 **Add Video Track** нь timeline-д **шинэ видео зам** (V2, V3…) нэмнэ. Дээд замын клип доод замын клипийг дардаг тул гарчиг, лого, давхар дүрс (picture-in-picture), Adjustment Clip зэргийг тусдаа замд байрлуулна.
 
 ## Хэрэглэх алхам
-1. Timeline Options ⚌ → Add Video Track. Замын толгойд V2 гарна.
+1. ⇤≡ командын цэс → Add Video Track. Замын толгойд V2 гарна.
 2. Клипийг тэр зам руу чирнэ, эсвэл Place on Top товчоор шууд дээд зам руу тавина. [[place-on-top]].
 
 > Edit хуудсанд замын толгой дээр баруун товч → Add Track, Add Tracks… (тоо, төрлөө сонгох) илүү уян хатан. Хоосон болсон замыг Delete Empty Tracks-аар цэвэрлэнэ.
@@ -11801,7 +11837,7 @@ Cut хуудасны **дээд timeline**-ийн зүүн булангийн э
 **Add Audio Track** нь timeline-д **шинэ дууны зам** (A2, A3…) нэмнэ. Яриа, хөгжим, эффект, орчны дууг тусдаа замд байрлуулбал түвшин, EQ, Fairlight-ийн боловсруулалтыг замаар нь удирдахад хялбар.
 
 ## Хэрэглэх алхам
-1. Timeline Options ⚌ → Add Audio Track.
+1. ⇤≡ командын цэс → Add Audio Track.
 2. Дууны клипийг тэр зам руу чирнэ, эсвэл Insert Audio Only-оор оруулна. [[insert-audio-only]].
 
 > Cut хуудсанд замын форматыг (Mono, Stereo, 5.1) сонгох цонх гарахгүй байж болно — Fairlight эсвэл Edit хуудасны Add Tracks… цонхонд форматыг заана.
@@ -11814,7 +11850,7 @@ Cut хуудасны **дээд timeline**-ийн зүүн булангийн э
 **Add Subtitle Track** нь timeline-д **хадмалын зам** нэмнэ. Хадмал видео, дууны замаас тусдаа хадгалагдаж, нэг зам — нэг хэл гэсэн зарчмаар олон хэлний хадмалыг нэг timeline-д байлгана.
 
 ## Хэрэглэх алхам
-1. Timeline Options ⚌ → Add Subtitle Track.
+1. ⇤≡ командын цэс → Add Subtitle Track.
 2. Заагчийг байрлуулаад баруун товч → Add Subtitle, эсвэл Create Subtitles from Audio-оор автоматаар дүүргэнэ.
 3. Inspector → Subtitle → загвар (фонт, өнгө, байрлал) — замын бүх хадмалд нэг загвар.
 4. Deliver → Subtitle Settings → шатаах эсвэл тусдаа файл.
@@ -11839,7 +11875,7 @@ Cut хуудасны **дээд timeline**-ийн зүүн булангийн э
 
 ## Хэрэглэх алхам
 1. Залгаа огтлолттой клипүүдийг (эсвэл огтлолтыг) сонгоно; сонголтгүй бол заагчийн доорх.
-2. Timeline Options ⚌ → Join Match Edit Clips.
+2. ⇤≡ командын цэс → Join Match Edit Clips.
 
 > Хооронд нь өөр клип орсон, кадар хасагдсан, хурд нь өөр огтлолтод үйлчлэхгүй. Edit хуудсанд Timeline → Join Clips [k:Alt+\\] ижил үйлдэл. [[join-clips]].
 
@@ -11852,7 +11888,7 @@ Cut хуудасны **дээд timeline**-ийн зүүн булангийн э
 
 ## Хэрэглэх алхам
 1. Заагчийг байрлуулна.
-2. Timeline Options ⚌ → Set Color and Add Marker → өнгийг сонгоно.
+2. ⇤≡ командын цэс → Set Color and Add Marker → өнгийг сонгоно.
 3. Тэмдгийг давхар товшиж нэр, тэмдэглэл бичнэ. [[add-and-modify-marker]].
 
 > Энгийн Add Marker [k:M] сүүлд сонгосон өнгөөр нэмдэг; өнгөө нэг удаа тогтоовол дараа нь M дарахад л хангалттай. Edit Index → Markers -оор бүх тэмдгийг жагсааж өнгөөр шүүнэ.
@@ -11875,7 +11911,7 @@ Cut хуудасны **дээд timeline**-ийн зүүн булангийн э
 
 ## Хэрэглэх алхам
 1. Бүх timeline-д бол сонголтгүй, хэсэгт бол клипүүдийг сонгоно.
-2. Timeline Options ⚌ → Add Dissolve to All Edits.
+2. ⇤≡ командын цэс → Add Dissolve to All Edits.
 3. Уусалтын урт — Preferences → User → Editing → Standard transition duration (анхдагч 1 секунд). Тус тусыг timeline дээр чирж өөрчилнө.
 
 > Шилжилт нэмэгдэхийн тулд огтлолтын хоёр талд **handle** (эх файлын нөөц кадар) байх ёстой; нөөцгүй огтлолт алгасагдана.
@@ -11889,7 +11925,7 @@ Cut хуудасны **дээд timeline**-ийн зүүн булангийн э
 
 ## Хэрэглэх алхам
 1. Effects → Transitions → хүссэн шилжилтээ Set as Standard Transition.
-2. Timeline Options ⚌ → Add Transition to All Edits.
+2. ⇤≡ командын цэс → Add Transition to All Edits.
 3. Урт, параметрийг Inspector → Transition-оос.
 
 > Add Dissolve to All Edits нь стандартаас үл хамааран **уусалт** нэмдэг; энэ команд **стандарт** шилжилтийг нэмдэг — ялгаа нь энэ.
@@ -11906,7 +11942,7 @@ Cut хуудасны **дээд timeline**-ийн зүүн булангийн э
 2. Товч → Trim Start to Playhead (эхлэлээс заагч хүртэлх хэсгийг хаях) эсвэл Trim End to Playhead (заагчаас төгсгөл хүртэлх).
 3. Ripple асаалттай бол хойших клипүүд зөрж хоосон зай үлдэхгүй. [[ripple-on]].
 
-> Товчны **tooltip нэр** таны зурагт хараагүй — Resolve дээр хулганаа дээр нь тавьж нэрийг илгээвэл энд засна. Дунд товчны (⇤≡) нэр мөн баталгаажаагүй.
+> Товчны **tooltip нэр** таны зурагт хараагүй — Resolve дээр хулганаа дээр нь тавьж нэрийг илгээвэл энд засна. Дунд товчны (⇤≡) нэр мөн баталгаажаагүй; агуулга нь [[timeline-commands-menu-cut]].
 `,
 
 "resync-clip": `
@@ -12139,8 +12175,114 @@ Keyframes самбарын **баруун дээд … товч** нь түлх�
 > Яг үйлдэл, ямар ялгаа гарах нь баталгаажаагүй — зурагт зөвхөн нэр харагдсан. Шинэ төсөлд асаах шаардлагагүй байх магадлалтай.
 
 Холбоотой: [[retime-controls]], [[speed-ramp]].
-`
+`,
 
+
+"snap": `
+## Зориулалт
+Timeline Options ⚌ → **Snap** нь клип, заагч, тэмдгийг чирэхэд **огтлолтын цэг, тэмдэг, заагчид наалдуулна** — клипүүд хооронд нэг кадрын зай үлдэхээс сэргийлнэ. Таны зурагт чагттай (асаалттай).
+
+> Нарийн, чөлөөт зөөлт хэрэгтэй бол унтраана; Edit хуудсанд ижил тохиргоо Snapping [k:N]. [[snapping]].
+`,
+
+"trim-to-audio": `
+## Зориулалт
+Timeline Options ⚌ → **Trim to Audio** нь тайрах үед **дууны долгионыг** томруулж харуулан дууны цохилт, ярианы завсраар нарийн тайрах горим гэж ойлгогдоно.
+
+> Яг үйлдлийг зурагт шалгаагүй — Resolve дээрээ асаагаад огтлолтыг чирж үр дүнг үзнэ үү. [[trim-editor]].
+`,
+
+"trim-with-safe-edit": `
+## Зориулалт
+Timeline Options ⚌ → **Trim with Safe Edit** нь тайрахдаа **бусад замын клип, дуу-дүрсийн синкийг** хамгаалах горим гэж ойлгогдоно — нэг замыг тайрахад хөрш замын клип зөрөхгүй.
+
+> Яг үйлдэл баталгаажаагүй; Resolve дээрээ туршаад илгээвэл энд нарийвчилна.
+`,
+
+"display-clip-names": `
+## Зориулалт
+Timeline Options ⚌ → **Display Clip Names** нь timeline дээрх клип бүр дээр **файлын нэрийг** харуулна. Олон ижил төстэй клипийг ялгахад; таны зурагт унтраалттай тул клип дээр зөвхөн thumbnail, урт харагдсан.
+
+Холбоотой: [[display-clip-duration]], [[display-clip-status]].
+`,
+
+"display-clip-status": `
+## Зориулалт
+Timeline Options ⚌ → **Display Clip Status** нь клип дээр **төлөвийн тэмдгүүдийг** (эффект, хурд өөрчлөлт, зөрүү, засвар) харуулна. Таны зурагт чагттай.
+
+> Клип дээрх жижиг тэмдэг юу гэсэн үг болохыг мэдэхгүй бол энэ мөр асаалттай эсэхийг шалгаад тэмдэг дээр хулганаа тавина.
+`,
+
+"display-clip-duration": `
+## Зориулалт
+Timeline Options ⚌ → **Display Clip Duration** нь клип дээр **уртыг** харуулна — таны зурагт дууны клип дээрх 30:01 нь энэ тохиргооны үр дүн. Чагттай.
+
+Холбоотой: [[display-clip-names]], [[duration]].
+`,
+
+"display-speed-keyframes": `
+## Зориулалт
+Timeline Options ⚌ → **Display Speed Keyframes** нь хурд өөрчилсөн (Speed Ramp, Retime) клип дээр **хурдны түлхүүр кадрын тэмдгийг** харуулна. Чагттай.
+
+Холбоотой: [[speed-ramp]], [[retime-controls]].
+`,
+
+"viewer-background": `
+## Зориулалт
+Timeline Options ⚌ → **Viewer Background ›** дэд цэс нь viewer-ийн дүрсний гадуурх **хоосон хэсгийн өнгийг** (хар, саарал гэх мэт) сонгоно. Дүрсийн ирмэг, шалгуулаг (checkerboard) тод харагдах эсэхэд нөлөөлнө.
+
+> Дэд цэсний мөрүүд зурагт задраагүй тул энд нэрлээгүй.
+`,
+
+"set-default-transition": `
+## Зориулалт
+Timeline Options ⚌ → **Set Default Transition** нь Add Transition, Add Transition to All Edits командад ашиглах **анхдагч шилжилтийг** сонгоно гэж ойлгогдоно (Edit хуудсанд Effects → Transitions → баруун товч → Set as Standard Transition).
+
+> Цонх, дэд цэсний хэлбэр нь зурагт задраагүй. [[add-transition-to-all-edits]].
+`,
+
+"edit-using-all-channels": `
+## Зориулалт
+Timeline Options ⚌ → **Edit Using All Channels** нь эх клипийг timeline-д оруулахад **бүх дууны сувгийг** оруулна (анхдагч, чагттай). Олон сувагтай бичлэгээс зөвхөн тодорхой хосыг оруулах бол **Edit Using Ch 1&2 / 3&4 / 5&6 / 7&8** мөрийг сонгоно.
+
+> Ярилцлагын 1-р сувагт lav, 2-т boom микрофон байвал Ch 1&2 сонгож бусад хоосон сувгаас зайлсхийнэ.
+
+Холбоотой: [[edit-using-ch-1-2]], [[add-audio-track]].
+`,
+
+"edit-using-ch-1-2": `
+## Зориулалт
+Timeline Options ⚌ → **Edit Using Ch 1&2** нь эх клипийг оруулахад зөвхөн **1, 2-р дууны сувгийг** оруулна; бусад суваг орхигдоно. Ch 3&4, 5&6, 7&8 мөрүүд ижил зарчмаар. [[edit-using-all-channels]].
+`,
+
+"edit-using-ch-3-4": `
+## Зориулалт
+Timeline Options ⚌ → **Edit Using Ch 3&4** нь эх клипийн зөвхөн **3, 4-р дууны сувгийг** оруулна. [[edit-using-all-channels]].
+`,
+
+"edit-using-ch-5-6": `
+## Зориулалт
+Timeline Options ⚌ → **Edit Using Ch 5&6** нь эх клипийн зөвхөн **5, 6-р дууны сувгийг** оруулна. [[edit-using-all-channels]].
+`,
+
+"edit-using-ch-7-8": `
+## Зориулалт
+Timeline Options ⚌ → **Edit Using Ch 7&8** нь эх клипийн зөвхөн **7, 8-р дууны сувгийг** оруулна. [[edit-using-all-channels]].
+`,
+
+"minimize-subtitle-track": `
+## Зориулалт
+Timeline Options ⚌ → **Minimize Subtitle Track** нь хадмалын замын **өндрийг хамгийн бага** болгож видео, дууны замд зай гаргана. Хадмал бэлэн болсны дараа timeline-ийг цэгцлэхэд.
+
+Холбоотой: [[add-subtitle-track]], [[enlarge-track]].
+`,
+
+"fixed-playhead": `
+## Зориулалт
+Timeline Options ⚌ → **Fixed Playhead** нь заагчийг **дэлгэцийн голд тогтоож**, timeline нь заагчийн доогуур гүйдэг болгоно — Cut хуудасны доод timeline-ийн анхдагч зан төлөв (чагттай). Унтраавал Edit хуудас шиг заагч timeline дээгүүр хөдөлнө.
+
+Холбоотой: [[dual-timeline]], [[playhead]].
+`
 });
 
 </script>
@@ -12450,10 +12592,11 @@ Keyframes самбарын **баруун дээд … товч** нь түлх�
         <span class="tc hs" data-t="timecode">TCG 01:00:00:00</span><span class="hs" data-t="timeline-menu">≡</span>
       </div>
       <div class="cut-upper hs" data-t="dual-timeline">
-        <!-- Дээд timeline-ийн зүүн булан (2026-09-19-ний зураг): ⚌ Timeline Options (tooltip баталгаажсан),
-             дунд товчны нэр тодорхойгүй, 3 дахь товч Trim Start/End to Playhead, Resync Clip цэс нээнэ. -->
+        <!-- Дээд timeline-ийн зүүн булан (2026-09-19-ний зургууд): ⚌ Timeline Options (tooltip баталгаажсан,
+             18 тохиргооны мөр), ⇤≡ командын цэс (15 мөр, tooltip нэр тодорхойгүй),
+             3 дахь товч Trim Start/End to Playhead, Resync Clip цэс нээнэ. -->
         <div class="cut-tools up">
-          <div class="row"><span class="hs mi" data-t="timeline-options">⚌</span><span title="Нэр нь баталгаажаагүй">⇤≡</span><span class="hs mi" data-t="trim-resync-menu-cut">⇥≡</span></div>
+          <div class="row"><span class="hs mi" data-t="timeline-options">⚌</span><span class="hs mi" data-t="timeline-commands-menu-cut">⇤≡</span><span class="hs mi" data-t="trim-resync-menu-cut">⇥≡</span></div>
         </div>
         <div class="tl-col">
           <div class="tl-ruler hs" data-t="timeline-ruler" style="padding-left:34px">
@@ -13614,10 +13757,40 @@ Keyframes самбарын **баруун дээд … товч** нь түлх�
       ["create-smart-filter", "Create Smart Filter…"]
     ]},
 
-    /* Cut хуудас — дээд timeline-ийн зүүн булангийн ⚌ "Timeline Options" товч
-       (2026-09-19-ний зураг: 15 мөр, 5 тусгаарлагч). Voice Convert саарал байсан —
-       нөхцөл тодорхойгүй. */
+    /* Cut хуудас — дээд timeline-ийн зүүн булангийн эхний товч ⚌ "Timeline Options"
+       (2026-09-19-ний зураг: 18 мөр, 7 тусгаарлагч; "✓" = зурагт чагттай байсан). */
     "timeline-options": { label: "Timeline Options", verified: true, items: [
+      ["ripple-on", "Ripple On"],
+      "-",
+      ["snap", "Snap", "✓"],
+      ["trim-to-audio", "Trim to Audio"],
+      ["trim-with-safe-edit", "Trim with Safe Edit"],
+      "-",
+      ["display-clip-names", "Display Clip Names"],
+      ["display-clip-status", "Display Clip Status", "✓"],
+      ["display-clip-duration", "Display Clip Duration", "✓"],
+      ["display-speed-keyframes", "Display Speed Keyframes", "✓"],
+      ["viewer-background", "Viewer Background", "", "›"],
+      "-",
+      ["set-default-transition", "Set Default Transition"],
+      "-",
+      ["edit-using-all-channels", "Edit Using All Channels", "✓"],
+      ["edit-using-ch-1-2", "Edit Using Ch 1&2"],
+      ["edit-using-ch-3-4", "Edit Using Ch 3&4"],
+      ["edit-using-ch-5-6", "Edit Using Ch 5&6"],
+      ["edit-using-ch-7-8", "Edit Using Ch 7&8"],
+      "-",
+      ["minimize-subtitle-track", "Minimize Subtitle Track"],
+      "-",
+      ["fixed-playhead", "Fixed Playhead", "✓"],
+      "-",
+      ["boring-detector", "Boring Detector"]
+    ]},
+
+    /* Cut хуудас — дээд timeline-ийн зүүн булангийн хоёр дахь товч ⇤≡ (tooltip нэр баталгаажаагүй;
+       2026-09-19-ний хоёр зургаас цэс энэ товчных гэдэг нь тодорхой болсон:
+       15 мөр, 5 тусгаарлагч). Voice Convert саарал байсан — нөхцөл тодорхойгүй. */
+    "timeline-commands-menu-cut": { label: "Timeline — командууд", verified: true, items: [
       ["create-subtitles-from-audio", "Create Subtitles from Audio"],
       ["scene-cut-detection", "Detect Scene Cuts"],
       "-",
