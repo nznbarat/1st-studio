@@ -15,12 +15,11 @@
   D.byId  = Object.create(null);   /* id → мөр */
   D.dupes = [];                    /* давхардсан англи нэр (хөгжүүлэлтийн шалгалт) */
 
-  /* Resolve-ийн хуудсууд — өнгө, дараалал.
-     Resolve 21-д Photo хуудас нэмэгдсэн боловч энд ангиллын бүлэглэлт л явагддаг тул
-     Photo-гийн нэр томьёо "Ерөнхий" бүлэгт орсон. */
+  /* Resolve-ийн хуудсууд — өнгө, дараалал (Resolve 21: Photo хуудас Media, Cut хоёрын хооронд). */
   D.pages = [
     { id: "erunhii",   label: "Ерөнхий",   icon: "◈", hue: 200 },
     { id: "media",     label: "Media",     icon: "▤", hue: 150 },
+    { id: "photo",     label: "Photo",     icon: "◎", hue: 280 },
     { id: "cut",       label: "Cut",       icon: "◨", hue:  35 },
     { id: "edit",      label: "Edit",      icon: "✂", hue:  35 },
     { id: "fusion",    label: "Fusion",    icon: "⬡", hue: 265 },

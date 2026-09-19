@@ -101,6 +101,8 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
 .detail .more{margin-top:15px;font-size:12px;color:var(--ui-dim2);line-height:1.7}
 
 
+.rs-tools .tg.mi.open{background:#3a3a42;color:#fff}
+
 /* ── гарын авлагын дэлгэрэнгүй тайлбар ── */
 .detail .dlong{margin-top:16px;padding-top:14px;border-top:1px solid var(--ui-line)}
 .detail .dlh{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}

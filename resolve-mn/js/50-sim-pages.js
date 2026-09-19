@@ -188,7 +188,7 @@
     ${H.TOOLS(
       `${H.TG("media-pool", "▤", "Media Pool", true)}
        ${H.TG("effects-library", "✦", "Effects")}
-       ${H.TG("photo-album", "▨", "Photo Album ⌄", true)}`,
+       <span class="tg act hs mi" data-t="photo-album-menu"><span class="ic">▨</span>Photo Album ⌄</span>`,
       `${H.TG("quick-export", "⇧", "Quick Export")}
        ${H.TG("metadata", "ⓘ", "Metadata")}
        ${H.TG("capture", "◉", "Capture")}

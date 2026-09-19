@@ -465,7 +465,20 @@ Workspace → Timecode Window нь заагчийн **цагийн кодыг т
 ## Зориулалт
 Workspace → Remote Grading [k:Ctrl+G] нь интернэтээр **өөр байршлын Resolve-тэй** холбогдож, колорист засвар хийхэд захиалагчийн (ижил медиатай) Resolve дээр бодит цагт тусгагдах горим. Хоёр тал ижил төсөл, медиатай; нэг нь сервер, нөгөө нь клиент.
 
-> Studio; сүлжээний тохиргоо (порт нээх) шаардана. Ердийн хамтын ажиллагаанд Blackmagic Cloud Presentations, эсвэл Frame.io илүү хялбар.
+## Ctrl+G дарахад гарах цонх — "Remote Grading Client"
+- **Remote Machine** — холбогдох нөгөө компьютерийн IP хаяг эсвэл нэр.
+- **Port** — 15000 (анхны утга; нөгөө талын Resolve ижил портоор хүлээж авна).
+- **Disconnected / Connected** — холболтын төлөв.
+- **Connect** — холбогдох; **Cancel** — хаах.
+Санамсаргүй дарсан бол **Cancel** — юу ч өөрчлөгдөхгүй.
+
+## Хэрхэн ажилладаг
+1. Хоёр компьютерт ижил төсөл (Export/Import .drp), ижил медиа (ижил зам эсвэл Path Mapping).
+2. Захиалагчийн тал (сервер) — Resolve нээгээд Project Settings → General Options → Remote Grading server-ийг зөвшөөрнө; сүлжээний 15000 портыг нээнэ.
+3. Колористын тал — [k:Ctrl+G] → Remote Machine-д серверийн IP → Connect.
+4. Колористын засвар бүр (нод, дугуй, маск) нөгөө талд шууд тусна; захиалагч өөрийн мониторт харна.
+
+> Studio; сүлжээний тохиргоо (порт нээх, VPN) шаардана. Ердийн хамтын ажиллагаанд Blackmagic Cloud Presentations, Remote Monitoring эсвэл Frame.io илүү хялбар. [[remote-monitoring]].
 `,
 
 "remote-monitoring": `

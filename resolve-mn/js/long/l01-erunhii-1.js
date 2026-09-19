@@ -172,7 +172,12 @@ Edit цэс нь **ерөнхий засварын командууд**: Undo, R
 ## Анхаарах
 > Paste Attributes-ийн дараа гарч ирэх цонхонд ямар шинж чанар наахаа сонгоно. Дуу, видеог хамт сонгосон бол хоёуланд нь тус тусын шинж чанар хуулагдана.
 
-Цэсний ихэнх мөр Edit болон Cut хуудсанд бүрэн идэвхтэй. Бусад хуудсанд зөвхөн Undo, Redo, Keyboard Customization зэрэг ерөнхий мөр л ажиллана.
+## Хуудас бүрд юу идэвхтэй вэ (2026-09-19-ний дэлгэцийн зургаас)
+- **Fusion** — Undo, Redo, History, Select All, Deselect All. (Нодны талбар идэвхтэй үед Cut, Copy, Paste, Delete нод дээр ажиллаж идэвхжсэн тохиолдол ч ажиглагдсан.)
+- **Color** — Undo, Redo, Copy, Paste, Paste Attributes, Paste Value, Dolby Vision, Delete Selected, Ripple Delete, Select All, Deselect All. Copy/Paste энд өнгөний засвар (grade) хуулна.
+- **Fairlight** — Undo, Redo, History, Cut, Ripple Cut, Cut Head/Tail, Copy, Copy Head/Tail, Paste, Paste Insert, Paste Attributes, Remove Attributes, Duplicate Selection ([k:Ctrl+Shift+D] — зөвхөн энд товчлууртай), Delete Selected, Ripple Delete, Select All, Deselect All.
+- **Edit, Cut** — клип сонгосон үед бүгд.
+Загвар дээр цэсийг тухайн хуудсанд нээхэд яг ийм мөрүүд саарал болно; саарал мөр дээр товшвол шалтгааныг тайлбарлана.
 `,
 
 "edited-indicator": `

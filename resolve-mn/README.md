@@ -93,11 +93,14 @@ Fairlight, Deliver) хуулбарлан харуулна. Нийт **640 тов
 - Баруун талын жагсаалт нь тухайн хуудасны бүх цэгийг ангиллаар нь харуулна.
 - Доод талын хуудасны мөр нь бодит Resolve шиг ажиллана.
 - **13 цэс дарахад үнэхээр нээгдэнэ** — 323 мөр, товчлууртайгаа.
-- **Едит цэсний командууд хуудаснаас хамаарч саарал болно** — бодит программ шиг.
-  Fusion хуудсанд Edit цэсний 36 мөрөөс зөвхөн 8 нь идэвхтэй (Undo, Redo, Cut,
-  Copy, Paste, Delete Selected, Select All, Deselect All) — эдгээр нь тэнд
-  нодон дээр ажилладаг. Саарал мөр дээр товшвол яагаад идэвхгүй байгааг
-  тайлбарлана.
+- **Edit цэсний командууд хуудаснаас хамаарч саарал болно** — бодит программ шиг,
+  Fusion, Color, Fairlight хуудсан дээр цэсийг нээсэн зургаас мөр бүрээр:
+  Fusion — 5 мөр идэвхтэй (Undo, Redo, History, Select All, Deselect All);
+  Color — 11 (Copy, Paste, Paste Attributes/Value, Dolby Vision, Delete, Ripple Delete…);
+  Fairlight — 19 (Cut/Copy/Paste бүх хувилбар, Remove Attributes, Duplicate Selection
+  `Ctrl+Shift+D`…). Саарал мөр дээр товшвол аль хуудсанд идэвхтэйг тайлбарлана.
+- **Photo хуудасны "Photo Album ⌄" товч** бодит шүүлтүүрийн жагсаалт нээнэ
+  (Sort by, All/Selected/Graded/Ungraded Photos, People, Magic Mask … Create Smart Filter).
   Цэс нээлттэй байхад хажуугийн цэсэн дээр хулгана тултал шилжинэ.
   Мөр дээр товшвол тухайн командын монгол тайлбар гарна.
 - URL-аар шууд нээж болно: `interface.html?p=color&t=qualifier`
@@ -169,7 +172,8 @@ resolve-mn/
         ├── r20-tses-2.js       File, Trim, Timeline, Clip, Mark цэс
         ├── r21-tses-3.js       View, Playback, Workspace, Help, Fusion цэс
         ├── r22-interface-3.js  дэлгэцийн эд анги — 2 (Photo, Deliver, Edited…)
-        └── r23-ai-sergeen.js   AI (Neural Engine), сэргээн засварын хэрэглүүр
+        ├── r23-ai-sergeen.js   AI (Neural Engine), сэргээн засварын хэрэглүүр
+        └── r24-photo.js        Photo — цомгийн шүүлтүүрийн цэс
     └── long/                   гарын авлагын дэлгэрэнгүй тайлбар (RM.dict.long)
         ├── l01–l08             загварын товших цэгүүд, хуудас, самбарууд
         ├── l07-ai-sergeen.js   AI ба сэргээн засварын хэрэглүүр
@@ -196,8 +200,8 @@ note:"Энэ ангилал юуны тухай вэ.", terms:[
 ]});
 ```
 
-`page` талбар нь `erunhii`, `media`, `cut`, `edit`, `fusion`, `color`, `fairlight`,
-`deliver`, `tehnik` гэсэн утгуудын аль нэг байна.
+`page` талбар нь `erunhii`, `media`, `photo`, `cut`, `edit`, `fusion`, `color`,
+`fairlight`, `deliver`, `tehnik` гэсэн утгуудын аль нэг байна.
 
 Шинэ файл нэмбэл `index.html`-д `<script>` мөрийг нь бичихээ мартуузай —
 шалгагч холбогдоогүй файлыг илрүүлж хэлнэ.
@@ -271,10 +275,15 @@ Color хуудасны нодны хөдөлгүүр дээр засварлан
   Нийт **323 мөр**.
 - **134 товчлуур** — бүгд цэснээс шууд уншсан.
 
+- **Edit цэсний саарал болох дүрэм** — Fusion, Color, Fairlight хуудсан дээр
+  цэсийг нээсэн зургаас мөр бүрээр (2026-09-19). Edit, Cut хуудсанд бүгд идэвхтэй гэж үзэв.
+- **Photo Album ⌄ цэс** — Photo хуудасны шүүлтүүрийн 18 мөр (Photos in Bin саарал байсан).
+- **Remote Grading** `Ctrl+G` — "Remote Grading Client" цонх: Remote Machine, Port 15000.
+
 Хараахан баталгаажуулаагүй: цэсний дэд цэснүүдийн (AI Tools, Audio Operations,
-Edit Options, Go To…) доторх мөрүүд; Resolve 20–21-д нэмэгдсэн AI хэрэглүүрийн
-яг байрлал; Edit цэсний саарал болох дүрэм Fairlight, Color хуудсанд (Fusion дээр
-л ажиглагдсан). Зохиомол агуулга бичээгүй — эргэлзээтэйг тайлбарт тэмдэглэсэн.
+Edit Options, Go To, Sort by…) доторх мөрүүд; Resolve 20–21-д нэмэгдсэн AI хэрэглүүрийн
+яг байрлал; Edit цэсний төлөв Media, Photo, Deliver хуудсанд. Зохиомол агуулга
+бичээгүй — эргэлзээтэйг тайлбарт тэмдэглэсэн.
 
 ### Баталгаажуулалтаар илэрсэн алдаанууд
 

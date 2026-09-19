@@ -53,7 +53,7 @@
     d.appendChild(el("div", { class: "dmn", text: row.mn }));
     if (row.desc) d.appendChild(el("p", { class: "ddesc", text: row.desc }));
 
-    if (dimmed) d.appendChild(S.whyBox());
+    if (dimmed) d.appendChild(S.whyBox(dimmed === true ? "clip" : dimmed));
 
     if (row.key) {
       const r = el("div", { class: "drow" });
@@ -114,13 +114,33 @@
     S.buildList(id);
   };
 
-  /* Саарал (идэвхгүй) цэсний мөрийн тайлбар */
-  S.whyBox = function () {
-    return el("div", { class: "why", html:
-      "<b>Яагаад саарал байна вэ?</b> Энэ команд <b>timeline дээрх клип</b> дээр ажилладаг. " +
-      "Одоо та <b>" + RM.esc(RM.dict.page(S.state.page).label) + "</b> хуудсанд байна — энд монтажийн " +
-      "сонголт байхгүй тул идэвхгүй. <b>Edit</b> (Shift+4) эсвэл <b>Cut</b> (Shift+3) хуудсанд " +
-      "орж клип сонговол идэвхжинэ." });
+  /* Саарал (идэвхгүй) цэсний мөрийн тайлбар — хуудас бүрийн бодит ажиглалтаас */
+  S.whyBox = function (ctx) {
+    const NAMES = { media: "Media", photo: "Photo", cut: "Cut", edit: "Edit", fusion: "Fusion",
+                    color: "Color", fairlight: "Fairlight", deliver: "Deliver" };
+    const KEYS  = { media: "Shift+2", cut: "Shift+3", edit: "Shift+4", fusion: "Shift+5",
+                    color: "Shift+6", fairlight: "Shift+7", deliver: "Shift+8" };
+    const here  = NAMES[S.state.page] || S.state.page;
+    const pages = S.pagesOf(ctx) || [];
+    let html;
+    if (!pages.length) {
+      html = "<b>Яагаад саарал байна вэ?</b> Таны Resolve-ийн дэлгэцийн зурагт энэ мөр саарал байсан. " +
+             "Ямар нөхцөлд идэвхждэгийг (сан, зураг сонгосон эсэх) Resolve дээрээ шалгана уу.";
+    } else {
+      const list = pages.map((p) => "<b>" + (NAMES[p] || p) + "</b>" + (KEYS[p] ? " (" + KEYS[p] + ")" : "")).join(", ");
+      html = "<b>Яагаад саарал байна вэ?</b> Энэ команд " + list + " хуудсанд идэвхтэй. " +
+             "Одоо та <b>" + RM.esc(here) + "</b> хуудсанд байна — энд тухайн команд ажиллах сонголт " +
+             "(timeline дээрх клип, засвар) байхгүй тул идэвхгүй.";
+      if (pages.indexOf("edit") !== -1 && pages.indexOf("cut") !== -1) {
+        html += " Edit, Cut хуудсанд клип сонгосон үед идэвхжинэ.";
+      }
+      if (S.state.page === "fusion") {
+        html += " <i>Тэмдэглэл:</i> Fusion хуудсанд нодны талбар идэвхтэй үед Cut, Copy, Paste, " +
+                "Delete Selected нь нод дээр ажиллаж идэвхжсэн тохиолдол ажиглагдсан (2026-09-11).";
+      }
+      html += " Media, Photo, Deliver хуудасны төлөв зургаар баталгаажаагүй.";
+    }
+    return el("div", { class: "why", html: html });
   };
 
   S.showHint = function () {
@@ -198,7 +218,19 @@
   S.closeMenu = function () {
     const open = $("#rsMenuPop");
     if (open) open.remove();
-    RM.$$("#rsHost .rs-menu .mi.open").forEach((n) => n.classList.remove("open"));
+    RM.$$("#rsHost .mi.open").forEach((n) => n.classList.remove("open"));
+  };
+
+  /* Цэсний мөрийн идэвхтэй хуудсуудыг задлана */
+  S.pagesOf = function (ctx) {
+    if (!ctx) return null;
+    if (ctx === "clip") return ["edit", "cut"];
+    if (ctx === "none") return [];
+    return ctx.split(",").map((x) => x.trim()).filter(Boolean);
+  };
+  S.isDim = function (ctx) {
+    const pages = S.pagesOf(ctx);
+    return !!pages && pages.indexOf(S.state.page) === -1;
   };
 
   S.openMenu = function (node) {
@@ -213,16 +245,17 @@
     def.items.forEach((it) => {
       if (it === "-") { pop.appendChild(el("div", { class: "msep" })); return; }
       const [termId, label, key, arrow, ctx] = it;
-      /* timeline-ий клип дээр ажилладаг команд нь монтажийн хуудаснаас
-         гадна саарал болж идэвхгүй болдог — бодит программын зан төлөв. */
-      const dim = ctx === "clip" && S.state.page !== "edit" && S.state.page !== "cut";
+      /* 5 дахь утга — команд идэвхтэй байх хуудсууд ("edit,cut,fairlight").
+         "clip" = "edit,cut"; "none" = зурагт саарал байсан, нөхцөл тодорхойгүй.
+         Бусад хуудсанд саарал болно — бодит программын зан төлөв (дэлгэцийн зургаас). */
+      const dim = S.isDim(ctx);
       const row = el("button", {
         class: "mrow" + (dim ? " dim" : ""), "data-t": termId,
-        title: dim ? "Энэ команд timeline дээрх клип дээр ажиллана — Edit эсвэл Cut хуудсанд идэвхжинэ" : "",
+        title: dim ? "Энэ команд одоогийн хуудсанд идэвхгүй — товшиж шалтгааныг үзнэ үү" : "",
         onclick: (e) => {
           e.stopPropagation();
           S.closeMenu();
-          S.select(termId, node, dim);
+          S.select(termId, node, dim ? (ctx || "clip") : false);
         }
       });
       row.appendChild(el("span", { class: "ml", text: label }));
@@ -247,7 +280,7 @@
     /* товших */
     $("#rsHost").addEventListener("click", (e) => {
       /* цэсний мөр — унждаг жагсаалт нээнэ (агуулга нь баталгаажсан бол) */
-      const mi = e.target.closest(".rs-menu .mi");
+      const mi = e.target.closest(".mi");
       if (mi) {
         e.stopPropagation();
         const wasOpen = mi.classList.contains("open");
