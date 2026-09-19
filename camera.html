@@ -8,17 +8,93 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ═══ Blender-style палитр ═══ */
+/* ═══════════════════════════════════════════════════════════════════════
+   BLENDER 5.2 DEFAULT DARK — яг албан ёсны палитр
+   Эх сурвалж: blender/blender @ blender-v5.2-release
+   release/datafiles/userdef/userdef_default_theme.c  (U_theme_default)
+   Бүх утга тэр файлаас үсэг үсгээрээ хуулагдсан.
+   ═══════════════════════════════════════════════════════════════════════ */
 :root{
-  --win:#1d1d1d; --hdr:#181818; --edit:#303030; --panel:#282828; --sub:#232323;
-  --line:#3b3b3b; --line2:#4a4a4a;
-  --wid:#545454; --wid-h:#656565; --wid-in:#1f1f1f;
-  --txt:#e5e5e5; --dim:#9a9a9a; --dim2:#767676;
-  --acc:#4772b3; --acc-h:#5a86c9;
-  --sel:#ed9e5c; --act:#ffaf4d;
-  --key:#e8b12b; --key-sel:#ffe066; --key-dim:#8e8e8e;
-  --x:#e2696b; --y:#8fcf5b; --z:#5b8fd6;
-  --ok:#5bbf6a; --warn:#d9a441; --err:#d95b5b;
+  /* — цонх ба засварлагчийн суурь (space_*.back / header) — */
+  --win:#161616;          /* tui.editor_border — засварлагч хоорондын зай */
+  --topbar:#181818;       /* space_topbar.back / space_statusbar.header */
+  --editor:#303030;       /* space_properties / space_action .back */
+  --view:#3d3d3d;         /* space_view3d.back — 3D харагдацын дэвсгэр */
+  --outliner:#282828;     /* space_outliner.back */
+  --region:#1d1d1d;       /* regions.channels.back / regions.scrubbing.back */
+  --rim:rgba(255,255,255,.082);        /* tui.editor_outline  #ffffff15 */
+  --rim-act:rgba(255,255,255,.165);    /* tui.editor_outline_active #ffffff2a */
+  --hdr-view:rgba(48,48,48,.7);        /* space_view3d.header  #303030b3 */
+
+  /* — виджет (tui.wcol_regular / wcol_tool) — */
+  --wid:#545454;          /* wcol_regular.inner */
+  --wid-h:#636363;        /* Blender ажиллах үедээ +15 сүүдэрлэдэг */
+  --wid-in:#1d1d1d;       /* wcol_text.inner — текст талбар */
+  --wid-in-f:#181818;     /* wcol_text.inner_sel */
+  --wid-out:#3d3d3d;      /* wcol_regular.outline */
+  --toolbar:#282828;      /* wcol_toolbar_item.inner */
+  --emboss:rgba(0,0,0,.149); /* tui.widget_emboss #00000026 */
+
+  /* — текст — */
+  --txt:#e6e6e6;          /* wcol_*.text */
+  --txt-hi:#ffffff;       /* text_sel / text_hi */
+  --txt-title:#eeeeee;    /* header_text */
+  --dim:#c3c3c3;          /* space_outliner.text */
+  --dim2:#a6a6a6;         /* space_action.text */
+  --mute:#838383;         /* space_statusbar.text */
+  --mute2:#888888;        /* space_statusbar.header_text */
+  --link:#6fa9e6;         /* tui.link */
+
+  /* — цэс ба сэмжлэг цонх — */
+  --menu:#181818;         /* wcol_menu_back.inner */
+  --menu-out:#242424;     /* wcol_menu_back.outline */
+  --menu-txt:#dddddd;     /* wcol_menu_item.text */
+  --menu-hov:rgba(255,255,255,.1);  /* wcol_pulldown.inner_sel #ffffff1a */
+  --tip:#1d1d1d;          /* wcol_tooltip.inner */
+
+  /* — самбар (tui.panel_*) — */
+  --panel:#3d3d3d;        /* panel_back */
+  --panel-hdr:#3d3d3d;    /* panel_header */
+  --panel-out:rgba(255,255,255,.067); /* panel_outline #ffffff11 */
+  --panel-sub:rgba(0,0,0,.122);       /* panel_sub_back #0000001f */
+
+  /* — онцлох өнгө — */
+  --acc:#4772b3;          /* бүх сонголт, идэвх, playhead — ЯГ энэ цэнхэр */
+  --acc-h:#5681c2;
+  --acc-70:rgba(71,114,179,.7);       /* wcol_menu.inner_sel #4772b3b3 */
+  --sel:#ed5700;          /* space_view3d.select — сонгосон объект */
+  --act:#ffa028;          /* space_view3d.active — идэвхтэй объект */
+  --ol-sel:#e96a00;       /* space_outliner.selected_object */
+  --ol-act:#ffaf29;       /* space_outliner.active_object */
+  --ol-act-bg:#334d80;    /* space_outliner.active */
+  --ol-sel-bg:#1d314d;    /* space_outliner.selected_highlight */
+  --ol-alt:rgba(255,255,255,.016);    /* row_alternate */
+
+  /* — анимаци (common.anim) — */
+  --key:#bfbfbf;          /* keyframe */
+  --key-sel:#ffbe33;      /* keyframe_selected */
+  --key-bd:#000000;       /* space_action.keyborder */
+  --key-dim:#585858;      /* keyframe_generated */
+  --chan:rgba(25,78,128,.5);          /* channels #194e8080 */
+  --chan-sub:rgba(15,44,77,.5);       /* channels_sub */
+  --play:#4772b3;         /* playhead */
+  --scrub-txt:#808080;    /* regions.scrubbing.text */
+  --grid-anim:#161616;    /* space_action.grid */
+
+  /* — тэнхлэг (tui.xaxis / yaxis / zaxis) — */
+  --x:#ff3352; --y:#8bdc00; --z:#2890ff; --w:#edba18;
+
+  /* — төлөв (tui.wcol_state) — */
+  --err:#991616; --warn:#ac8737; --info:#28487d; --ok:#188625;
+  --err-t:#e98a8a; --warn-t:#e8c98a; --ok-t:#8fd39a;
+  --anim-key:#b3ae36;     /* inner_key — түлхүүрлэсэн талбар */
+
+  /* — хэмжээс (Blender-ийн бодит тоонууд) — */
+  --r-wid:4px;            /* wcol roundness 0.2 × 20px виджет */
+  --r-panel:8px;          /* panel_roundness 0.4 */
+  --r-editor:6px;         /* EDITORRADIUS = 6.0 * UI_SCALE_FAC */
+  --gap:2px;              /* userdef border_width = 2 */
+  --shadow:0 2px 12px rgba(0,0,0,.34);  /* menu_shadow_fac .2 / width 6 */
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden}
@@ -30,191 +106,320 @@ body{
 button,select,input,textarea{font-family:inherit;color:inherit}
 button{cursor:pointer;border:none;background:none}
 .mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+::selection{background:var(--acc);color:#fff}
+/* wcol_scroll: суваг тунгалаг, бариул #545454, roundness 0.5 */
 ::-webkit-scrollbar{width:11px;height:11px}
-::-webkit-scrollbar-track{background:var(--sub)}
-::-webkit-scrollbar-thumb{background:#4a4a4a;border-radius:6px;border:2px solid var(--sub)}
-::-webkit-scrollbar-thumb:hover{background:#5c5c5c}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--wid);border-radius:6px;border:3px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:var(--wid-h);background-clip:padding-box;border:3px solid transparent}
+*{scrollbar-width:thin;scrollbar-color:var(--wid) transparent}
 :focus-visible{outline:1px solid var(--acc);outline-offset:1px}
 
-/* ═══ Widget суурь ═══ */
-.w{background:var(--wid);border:none;border-radius:4px;padding:5px 9px;font-size:11.5px;font-weight:500;transition:background .1s}
+/* ═══ Виджет суурь — Blender-ийн товч ═══ */
+.w{background:var(--wid);border:none;border-radius:var(--r-wid);padding:5px 9px;font-size:11.5px;font-weight:400;
+   color:var(--txt);box-shadow:inset 0 -1px 0 var(--emboss);transition:background .08s}
 .w:hover{background:var(--wid-h)}
 .w:active{background:var(--acc)}
-.w.on{background:var(--acc);color:#fff}
+.w.on{background:var(--acc);color:var(--txt-hi)}
 .w.on:hover{background:var(--acc-h)}
-.w:disabled{opacity:.38;cursor:default;background:var(--wid)}
-select.w{padding:5px 7px;cursor:pointer;appearance:none;background-image:linear-gradient(45deg,transparent 50%,#cfcfcf 50%),linear-gradient(135deg,#cfcfcf 50%,transparent 50%);background-position:calc(100% - 13px) 52%,calc(100% - 9px) 52%;background-size:4px 4px;background-repeat:no-repeat;padding-right:22px}
-select.w option{background:var(--edit)}
-input.w,textarea.w{background:var(--wid-in);border:1px solid #131313;cursor:text}
-input.w:focus,textarea.w:focus{border-color:var(--acc);background:#141414}
+.w:disabled{opacity:.4;cursor:default;background:var(--wid)}
+select.w{padding:5px 7px;cursor:pointer;appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,#cfcfcf 50%),linear-gradient(135deg,#cfcfcf 50%,transparent 50%);
+  background-position:calc(100% - 13px) 52%,calc(100% - 9px) 52%;background-size:4px 4px;background-repeat:no-repeat;padding-right:22px}
+select.w option{background:var(--menu);color:var(--menu-txt)}
+input.w,textarea.w{background:var(--wid-in);border:1px solid var(--wid-out);cursor:text;box-shadow:none}
+input.w:focus,textarea.w:focus{border-color:var(--acc);background:var(--wid-in-f)}
 textarea.w{width:100%;resize:vertical;line-height:1.5;padding:8px 9px}
+/* wcol_numslider: суурь #545454, дүүргэлт нь онцлох цэнхэр */
 input[type=range]{-webkit-appearance:none;appearance:none;height:18px;background:transparent;cursor:ew-resize}
-input[type=range]::-webkit-slider-runnable-track{height:18px;background:var(--wid-in);border-radius:4px}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:18px;background:var(--acc);border-radius:3px;border:1px solid #1a1a1a}
-input[type=range]::-moz-range-track{height:18px;background:var(--wid-in);border-radius:4px}
-input[type=range]::-moz-range-thumb{width:10px;height:18px;background:var(--acc);border-radius:3px;border:1px solid #1a1a1a}
+input[type=range]::-webkit-slider-runnable-track{height:18px;background:var(--wid);border-radius:var(--r-wid);box-shadow:inset 0 -1px 0 var(--emboss)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:9px;height:18px;background:var(--acc);border-radius:3px;border:1px solid #1a1a1a}
+input[type=range]::-moz-range-track{height:18px;background:var(--wid);border-radius:var(--r-wid)}
+input[type=range]::-moz-range-thumb{width:9px;height:18px;background:var(--acc);border-radius:3px;border:1px solid #1a1a1a}
 input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:pointer}
 
-/* ═══ Байрлал ═══ */
-#root{display:flex;flex-direction:column;height:100%}
-#topbar{height:30px;flex:none;display:flex;align-items:center;gap:2px;padding:0 8px;background:var(--hdr);border-bottom:1px solid #0f0f0f}
-.logo{font-weight:700;font-size:12.5px;letter-spacing:.5px;margin-right:8px;white-space:nowrap}
-.logo b{color:var(--sel)}
-.mnu{padding:4px 9px;border-radius:3px;font-size:11.5px;color:#d2d2d2;position:relative}
-.mnu:hover{background:#2e2e2e}
-.mnu.open{background:var(--acc);color:#fff}
-.pop{position:absolute;top:100%;left:0;min-width:230px;background:var(--panel);border:1px solid #101010;border-radius:5px;box-shadow:0 10px 30px rgba(0,0,0,.6);padding:4px;z-index:400;display:none;text-align:left}
+/* ═══ Байрлал — Blender-ийн засварлагчийн сараалж ═══ */
+#root{display:flex;flex-direction:column;height:100%;background:var(--win)}
+#topbar{height:30px;flex:none;display:flex;align-items:center;gap:2px;padding:0 8px;background:var(--topbar)}
+.logo{font-weight:600;font-size:12.5px;letter-spacing:.5px;margin-right:8px;white-space:nowrap;color:var(--txt-title)}
+.logo b{color:var(--act)}
+.mnu{padding:4px 9px;border-radius:var(--r-wid);font-size:11.5px;color:var(--txt);position:relative}
+.mnu:hover{background:var(--menu-hov)}
+.mnu.open{background:var(--acc);color:var(--txt-hi)}
+/* wcol_menu_back: дэвсгэр #181818, хүрээ #242424, зөөлөн өргөн сүүдэр */
+.pop{position:absolute;top:100%;left:0;min-width:240px;background:var(--menu);border:1px solid var(--menu-out);
+     border-radius:var(--r-wid);box-shadow:var(--shadow);padding:4px;z-index:400;display:none;text-align:left}
 .pop.show{display:block}
-.pop button{display:flex;width:100%;justify-content:space-between;gap:18px;align-items:center;padding:5px 9px;border-radius:3px;font-size:11.5px;color:#dcdcdc}
-.pop button:hover{background:var(--acc);color:#fff}
-.pop button i{font-style:normal;font-family:'JetBrains Mono';font-size:10px;color:var(--dim2)}
+.pop button{display:flex;width:100%;justify-content:space-between;gap:18px;align-items:center;
+            padding:5px 9px;border-radius:3px;font-size:11.5px;color:var(--menu-txt)}
+.pop button:hover{background:var(--acc);color:var(--txt-hi)}
+.pop button i{font-style:normal;font-family:'JetBrains Mono';font-size:10px;color:#8f8f8f}
 .pop button:hover i{color:#dfe8f7}
-.pop hr{border:none;border-top:1px solid var(--line);margin:4px 6px}
-.pop .lbl{padding:5px 9px 2px;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim2)}
+.pop hr{border:none;border-top:1px solid var(--menu-out);margin:4px 6px}
+.pop .lbl{padding:6px 9px 2px;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#999999}
 .spacer{flex:1}
-.tabs{display:flex;gap:1px;background:#111;border-radius:5px;padding:2px}
-.tabs button{padding:4px 12px;border-radius:4px;font-size:11px;font-weight:500;color:var(--dim)}
-.tabs button:hover{background:#2e2e2e;color:var(--txt)}
-.tabs button.on{background:var(--acc);color:#fff}
-.cnt{display:flex;align-items:center;background:var(--wid-in);border-radius:4px;overflow:hidden;height:22px}
-.cnt button{width:22px;height:22px;background:var(--wid);font-size:14px;line-height:1;font-weight:600;color:#d5d5d5}
+.tabs{display:flex;gap:1px;background:var(--region);border-radius:var(--r-wid);padding:2px}
+.tabs button{padding:4px 12px;border-radius:3px;font-size:11px;color:#989898}
+.tabs button:hover{background:var(--menu-hov);color:var(--txt)}
+.tabs button.on{background:var(--acc);color:var(--txt-hi)}
+.cnt{display:flex;align-items:center;background:var(--wid-in);border-radius:var(--r-wid);overflow:hidden;height:22px}
+.cnt button{width:22px;height:22px;background:var(--wid);font-size:14px;line-height:1;font-weight:600;color:var(--txt)}
 .cnt button:hover{background:var(--wid-h)}
-.cnt button:disabled{opacity:.3}
-.cnt span{min-width:66px;text-align:center;font-size:11px;font-weight:600;font-family:'JetBrains Mono'}
+.cnt button:disabled{opacity:.35}
+.cnt span{min-width:66px;text-align:center;font-size:11px;font-weight:500;font-family:'JetBrains Mono'}
 
-#main{flex:1;display:flex;min-height:0}
-#tools{width:38px;flex:none;background:var(--hdr);border-right:1px solid #0f0f0f;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0}
-#tools button{width:28px;height:28px;border-radius:5px;font-size:14px;color:#c4c4c4;display:flex;align-items:center;justify-content:center;background:var(--wid)}
-#tools button:hover{background:var(--wid-h)}
-#tools button.on{background:var(--acc);color:#fff}
+#main{flex:1;display:flex;min-height:0;gap:var(--gap);padding:var(--gap) var(--gap) 0}
+/* Blender 4.5+ : засварлагч булан 6px мушгиралттай, 8% цагаан хүрээтэй */
+.area{border-radius:var(--r-editor);overflow:hidden;box-shadow:0 0 0 1px var(--rim)}
+#tools{width:38px;flex:none;background:var(--toolbar);display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0}
+#tools button{width:28px;height:28px;border-radius:var(--r-wid);font-size:14px;color:var(--txt);
+  display:flex;align-items:center;justify-content:center;background:transparent;filter:saturate(.5)}
+#tools button:hover{background:var(--wid)}
+#tools button.on{background:var(--acc);color:var(--txt-hi);filter:saturate(.8)}
 #tools .gap{height:8px}
 
-#stage{flex:1;position:relative;min-width:0;background:#1a1a1a}
+#stage{flex:1;position:relative;min-width:0;background:var(--view)}
 #vp{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:default}
 #ovl{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-#vphdr{position:absolute;top:0;left:0;right:0;height:26px;display:flex;align-items:center;gap:4px;padding:0 6px;background:rgba(24,24,24,.86);backdrop-filter:blur(6px);border-bottom:1px solid #0f0f0f;z-index:5;overflow-x:auto;scrollbar-width:none}
+/* space_view3d.header = #303030 @ 70% — жинхэнэ Blender-т толбо тунгалаг */
+#vphdr{position:absolute;top:0;left:0;right:0;height:26px;display:flex;align-items:center;gap:4px;padding:0 6px;
+  background:var(--hdr-view);backdrop-filter:blur(6px);z-index:5;overflow-x:auto;scrollbar-width:none}
 #vphdr::-webkit-scrollbar{display:none}
-#vphdr .vb{padding:3px 8px;border-radius:4px;font-size:10.5px;color:#cdcdcd;white-space:nowrap;background:var(--wid)}
+#vphdr .vb{padding:3px 8px;border-radius:var(--r-wid);font-size:10.5px;color:var(--txt);white-space:nowrap;
+  background:var(--wid);box-shadow:inset 0 -1px 0 var(--emboss)}
 #vphdr .vb:hover{background:var(--wid-h)}
-#vphdr .vb.on{background:var(--acc);color:#fff}
-#vphdr .sep{width:1px;height:15px;background:var(--line);margin:0 3px;flex:none}
-#vphdr .grp{display:flex;gap:2px;background:#141414;padding:2px;border-radius:5px}
-#hud{position:absolute;top:32px;left:10px;font-family:'JetBrains Mono';font-size:10.5px;line-height:1.75;color:var(--dim);text-shadow:0 1px 3px #000;pointer-events:none;z-index:4}
-#hud b{color:#f0f0f0;font-weight:500}
-#hud .a{color:var(--sel)}
-#hud .g{color:var(--ok)}
-#npanel{position:absolute;top:32px;right:8px;width:190px;background:rgba(40,40,40,.94);backdrop-filter:blur(8px);border:1px solid #101010;border-radius:6px;padding:7px;z-index:6;font-size:10.5px;box-shadow:0 6px 20px rgba(0,0,0,.5)}
-#npanel h4{font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--dim2);margin:6px 0 4px;font-weight:600}
+#vphdr .vb.on{background:var(--acc);color:var(--txt-hi)}
+#vphdr .sep{width:1px;height:15px;background:var(--rim);margin:0 3px;flex:none}
+#vphdr .grp{display:flex;gap:2px;background:rgba(29,29,29,.55);padding:2px;border-radius:5px}
+#hud{position:absolute;top:32px;left:10px;font-family:'JetBrains Mono';font-size:10.5px;line-height:1.75;
+  color:var(--dim);text-shadow:0 1px 3px #000;pointer-events:none;z-index:4}
+#hud b{color:var(--txt-hi);font-weight:500}
+#hud .a{color:var(--act)}
+#hud .g{color:#8fd39a}
+#npanel{position:absolute;top:32px;right:8px;width:192px;background:rgba(48,48,48,.94);backdrop-filter:blur(8px);
+  border:1px solid var(--panel-out);border-radius:var(--r-panel);padding:8px;z-index:6;font-size:10.5px;box-shadow:var(--shadow)}
+#npanel h4{font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--dim2);margin:7px 0 4px;font-weight:600}
 #npanel h4:first-child{margin-top:0}
 .nrow{display:flex;align-items:center;gap:5px;margin-bottom:3px}
 .nrow label{width:16px;font-family:'JetBrains Mono';font-size:10px;font-weight:600;text-align:center;border-radius:3px}
 .nrow .lx{color:var(--x)}.nrow .ly{color:var(--y)}.nrow .lz{color:var(--z)}
-.nrow input{flex:1;background:var(--wid-in);border:1px solid #131313;border-radius:3px;padding:3px 5px;font-family:'JetBrains Mono';font-size:10px;min-width:0}
-.nrow span{flex:1;font-family:'JetBrains Mono';font-size:10px;color:#d0d0d0;text-align:right}
-#xhint{position:absolute;left:50%;top:34px;transform:translateX(-50%);background:rgba(237,158,92,.94);color:#1a1206;font-size:11px;font-weight:600;padding:4px 12px;border-radius:4px;z-index:8;display:none;box-shadow:0 4px 14px rgba(0,0,0,.5)}
-#pip{position:absolute;right:10px;bottom:34px;border:1px solid var(--acc);border-radius:4px;z-index:4;display:none;box-shadow:0 6px 22px rgba(0,0,0,.6);pointer-events:none}
-#pip span{position:absolute;top:-1px;left:-1px;background:var(--acc);color:#fff;font:600 8.5px 'JetBrains Mono';padding:2px 6px;border-radius:3px 0 4px 0;letter-spacing:.1em}
-#toast{position:absolute;left:50%;bottom:44px;transform:translateX(-50%);background:rgba(24,24,24,.95);border:1px solid var(--line2);border-radius:5px;padding:7px 15px;font-size:11.5px;z-index:20;opacity:0;transition:opacity .2s;pointer-events:none;box-shadow:0 6px 20px rgba(0,0,0,.6);max-width:80%;text-align:center}
+.nrow input{flex:1;background:var(--wid-in);border:1px solid var(--wid-out);border-radius:var(--r-wid);
+  padding:3px 5px;font-family:'JetBrains Mono';font-size:10px;min-width:0}
+.nrow input:focus{border-color:var(--acc);background:var(--wid-in-f)}
+.nrow span{flex:1;font-family:'JetBrains Mono';font-size:10px;color:var(--dim);text-align:right}
+#xhint{position:absolute;left:50%;top:34px;transform:translateX(-50%);background:var(--act);color:#1a1206;
+  font-size:11px;font-weight:600;padding:4px 12px;border-radius:var(--r-wid);z-index:8;display:none;box-shadow:var(--shadow)}
+#pip{position:absolute;right:10px;bottom:34px;border:1px solid var(--acc);border-radius:var(--r-wid);z-index:4;
+  display:none;box-shadow:var(--shadow);pointer-events:none}
+#pip span{position:absolute;top:-1px;left:-1px;background:var(--acc);color:#fff;font:600 8.5px 'JetBrains Mono';
+  padding:2px 6px;border-radius:3px 0 4px 0;letter-spacing:.1em}
+#toast{position:absolute;left:50%;bottom:44px;transform:translateX(-50%);background:var(--tip);
+  border:1px solid var(--menu-out);border-radius:var(--r-wid);padding:7px 15px;font-size:11.5px;z-index:20;
+  opacity:0;transition:opacity .2s;pointer-events:none;box-shadow:var(--shadow);max-width:80%;text-align:center;color:var(--menu-txt)}
 #toast.show{opacity:1}
-#toast.ok{border-color:var(--ok);color:#c9f0d0}
-#toast.err{border-color:var(--err);color:#f2cfcf}
+#toast.ok{border-color:var(--ok);color:var(--ok-t)}
+#toast.err{border-color:var(--err);color:var(--err-t)}
+
+/* ── Сэргээлтийн зурвас (File ▸ Recover Last Session) ── */
+#recbar{position:absolute;top:32px;left:50%;transform:translateX(-50%);display:none;align-items:center;gap:10px;
+  background:var(--menu);border:1px solid var(--warn);border-left:3px solid var(--warn);border-radius:var(--r-wid);
+  padding:7px 10px 7px 12px;font-size:11.5px;z-index:9;box-shadow:var(--shadow);max-width:92%}
+#recbar.show{display:flex}
+#recbar b{color:var(--warn-t);font-weight:600}
+#recbar button{padding:4px 10px;font-size:11px}
 
 /* ═══ Баруун док ═══ */
-#dock{width:352px;flex:none;background:var(--edit);border-left:1px solid #0f0f0f;display:flex;flex-direction:column;min-height:0}
-#outl{height:172px;flex:none;display:flex;flex-direction:column;border-bottom:1px solid #0f0f0f;background:var(--sub)}
-.ehdr{height:24px;flex:none;display:flex;align-items:center;gap:6px;padding:0 8px;background:var(--hdr);font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--dim);font-weight:600}
-#otree{flex:1;overflow:auto;padding:3px 0;font-size:11.5px}
+#dock{width:352px;flex:none;display:flex;flex-direction:column;min-height:0;gap:var(--gap)}
+#outl{height:176px;flex:none;display:flex;flex-direction:column;background:var(--outliner)}
+.ehdr{height:24px;flex:none;display:flex;align-items:center;gap:6px;padding:0 8px;background:var(--outliner);
+  font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--txt-title);font-weight:500}
+#otree{flex:1;overflow:auto;padding:2px 0;font-size:11.5px;color:var(--dim)}
 .orow{display:flex;align-items:center;gap:5px;padding:2px 8px;cursor:pointer;white-space:nowrap}
-.orow:hover{background:#2c2c2c}
-.orow.sel{background:var(--acc);color:#fff}
-.orow.act{background:var(--sel);color:#231704;font-weight:600}
-.orow .ico{width:14px;text-align:center;font-size:10.5px;flex:none}
+.orow:nth-child(even){background:var(--ol-alt)}
+.orow:hover{background:rgba(255,255,255,.05)}
+.orow.sel{background:var(--ol-sel-bg);color:var(--ol-sel)}
+.orow.act{background:var(--ol-act-bg);color:var(--ol-act);font-weight:500}
+.orow .ico{width:14px;text-align:center;font-size:10.5px;flex:none;filter:saturate(.5)}
 .orow .nm{flex:1;overflow:hidden;text-overflow:ellipsis}
-.orow .eye{opacity:.5;font-size:10px;padding:0 2px}
+.orow .eye{opacity:.45;font-size:10px;padding:0 2px}
 .orow .eye:hover{opacity:1}
 .orow.hid .nm{opacity:.4;text-decoration:line-through}
 .orow.d1{padding-left:20px}.orow.d2{padding-left:34px}
 
-#props{flex:1;display:flex;min-height:0}
-#ptabs{width:34px;flex:none;background:var(--sub);border-right:1px solid #0f0f0f;padding-top:5px;display:flex;flex-direction:column;align-items:center;gap:3px}
-#ptabs button{width:26px;height:26px;border-radius:5px;font-size:13px;display:flex;align-items:center;justify-content:center;color:#b8b8b8}
-#ptabs button:hover{background:#333}
-#ptabs button.on{background:var(--edit);color:var(--sel);box-shadow:inset 2px 0 0 var(--sel)}
+#props{flex:1;display:flex;min-height:0;background:var(--editor)}
+/* wcol_tab: идэвхгүй #1d1d1d, идэвхтэй нь ГЭРЭЛ #303030 (цэнхэр биш!) */
+#ptabs{width:34px;flex:none;background:var(--region);padding-top:4px;display:flex;flex-direction:column;align-items:center;gap:2px}
+#ptabs button{width:30px;height:28px;border-radius:5px 0 0 5px;font-size:13px;display:flex;align-items:center;
+  justify-content:center;color:#989898;filter:saturate(.5)}
+#ptabs button:hover{background:rgba(255,255,255,.06)}
+#ptabs button.on{background:var(--editor);color:var(--txt-hi);filter:saturate(.9)}
 #pbody{flex:1;overflow-y:auto;padding:8px;min-width:0}
 .page{display:none;flex-direction:column;gap:8px}
 .page.on{display:flex}
-.box{background:var(--panel);border:1px solid #1b1b1b;border-radius:6px;overflow:hidden}
-.box>h3{display:flex;align-items:center;gap:6px;padding:6px 9px;background:#2f2f2f;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:#c8c8c8;cursor:pointer}
+/* tui.panel_* : #3d3d3d, 7% цагаан хүрээ, 0.4 мушгиралт */
+.box{background:var(--panel);border:1px solid var(--panel-out);border-radius:var(--r-panel);overflow:hidden}
+.box>h3{display:flex;align-items:center;gap:6px;padding:6px 9px;background:var(--panel-hdr);font-size:10.5px;
+  font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--txt);cursor:pointer}
 .box>h3::before{content:"▼";font-size:7px;color:var(--dim2);transition:transform .15s}
 .box.fold>h3::before{transform:rotate(-90deg)}
 .box.fold>.bd{display:none}
-.box .bd{padding:9px}
+.box .bd{padding:9px;background:var(--panel-sub)}
 .r{display:flex;align-items:center;gap:7px;margin-bottom:6px}
 .r:last-child{margin-bottom:0}
-.r>label{width:82px;flex:none;font-size:11px;color:var(--dim);text-align:right}
+.r>label{width:82px;flex:none;font-size:11px;color:var(--txt);text-align:right}
 .r>input[type=range]{flex:1;min-width:0}
 .r>select,.r>input.w{flex:1;min-width:0}
-.r .v{width:52px;flex:none;text-align:right;font-family:'JetBrains Mono';font-size:10.5px;color:#dadada}
+.r .v{width:52px;flex:none;text-align:right;font-family:'JetBrains Mono';font-size:10.5px;color:var(--txt)}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:5px}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
-.pbtn{background:var(--wid);border-radius:5px;padding:7px 8px;text-align:left;font-size:11.5px;font-weight:500;line-height:1.25}
+.pbtn{background:var(--wid);border-radius:var(--r-wid);padding:7px 8px;text-align:left;font-size:11.5px;
+  line-height:1.25;color:var(--txt);box-shadow:inset 0 -1px 0 var(--emboss)}
 .pbtn:hover{background:var(--wid-h)}
-.pbtn small{display:block;font-family:'JetBrains Mono';font-size:8.5px;color:var(--dim2);font-weight:400;margin-top:2px;text-transform:lowercase}
-.pbtn:hover small{color:#b6b6b6}
-.hint{font-size:10.5px;color:var(--dim2);line-height:1.5;margin-top:7px}
-.hint b{color:var(--dim)}
+.pbtn small{display:block;font-family:'JetBrains Mono';font-size:8.5px;color:#b0b0b0;font-weight:400;margin-top:2px;text-transform:lowercase}
+.pbtn:hover small{color:#d4d4d4}
+.hint{font-size:10.5px;color:var(--dim2);line-height:1.55;margin-top:7px}
+.hint b{color:var(--txt)}
 .chips{display:flex;flex-wrap:wrap;gap:4px}
-.chip{background:var(--wid-in);border:1px solid var(--line);border-radius:11px;padding:3px 9px;font-size:10.5px;color:#cfcfcf}
-.chip:hover{border-color:var(--acc);color:#fff}
-.chip.tag{border-color:#3a5a2f;background:rgba(91,191,106,.12);color:#a8dfae;cursor:default}
-.chip.tag:hover{border-color:#3a5a2f;color:#a8dfae}
-.kbox{background:var(--wid-in);border:1px solid #131313;border-radius:5px;padding:9px;font-family:'JetBrains Mono';font-size:11px;line-height:1.6;color:#cfd8e2;white-space:pre-wrap;word-break:break-word;min-height:70px;max-height:260px;overflow:auto;user-select:text;cursor:text}
-.sum{background:rgba(71,114,179,.09);border:1px solid #2c4468;border-left:2px solid var(--acc);border-radius:5px;padding:8px 10px;font-size:11.5px;line-height:1.55;margin-bottom:8px}
-.sum b{color:#9dbdec}
-.styles{display:flex;flex-wrap:wrap;gap:5px 12px;font-size:11px;color:#c4c4c4}
+.chip{background:var(--wid-in);border:1px solid var(--wid-out);border-radius:11px;padding:3px 9px;font-size:10.5px;color:var(--dim)}
+.chip:hover{border-color:var(--acc);color:var(--txt-hi)}
+.chip.tag{border-color:rgba(24,134,37,.55);background:rgba(24,134,37,.16);color:var(--ok-t);cursor:default}
+.chip.tag:hover{border-color:rgba(24,134,37,.55);color:var(--ok-t)}
+.kbox{background:var(--wid-in);border:1px solid var(--wid-out);border-radius:var(--r-wid);padding:9px;
+  font-family:'JetBrains Mono';font-size:11px;line-height:1.6;color:var(--dim);white-space:pre-wrap;word-break:break-word;
+  min-height:70px;max-height:260px;overflow:auto;user-select:text;cursor:text}
+.sum{background:rgba(71,114,179,.14);border:1px solid rgba(71,114,179,.4);border-left:2px solid var(--acc);
+  border-radius:var(--r-wid);padding:8px 10px;font-size:11.5px;line-height:1.55;margin-bottom:8px;color:var(--txt)}
+.sum b{color:var(--link)}
+.styles{display:flex;flex-wrap:wrap;gap:5px 12px;font-size:11px;color:var(--txt)}
 .styles label{display:flex;align-items:center;gap:5px;cursor:pointer}
-.big{width:100%;padding:9px;border-radius:5px;background:var(--acc);color:#fff;font-weight:600;font-size:12px}
+.big{width:100%;padding:9px;border-radius:var(--r-wid);background:var(--acc);color:var(--txt-hi);font-weight:500;
+  font-size:12px;box-shadow:inset 0 -1px 0 var(--emboss)}
 .big:hover{background:var(--acc-h)}
-.big:disabled{background:var(--wid);color:var(--dim2);cursor:default}
-.big.gr{background:#4a7c4e}.big.gr:hover{background:#57905c}
+.big:disabled{background:var(--wid);color:var(--mute);cursor:default}
+.big.gr{background:var(--ok)}.big.gr:hover{background:#1ea02e}
 .big.ok{background:var(--ok)}
 .kfl{display:flex;flex-direction:column;gap:3px;max-height:180px;overflow:auto}
-.kfr{display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:4px;background:var(--wid-in);font-size:10.5px;cursor:pointer}
-.kfr:hover{background:#2a2a2a}
-.kfr.on{background:var(--acc);color:#fff}
-.kfr .n{width:16px;height:16px;flex:none;border-radius:3px;background:var(--key);color:#231704;font:700 9.5px/16px 'JetBrains Mono';text-align:center}
-.kfr .f{width:38px;flex:none;font-family:'JetBrains Mono';color:var(--dim)}
+.kfr{display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:var(--r-wid);background:var(--wid-in);font-size:10.5px;cursor:pointer}
+.kfr:hover{background:#252525}
+.kfr.on{background:var(--acc);color:var(--txt-hi)}
+.kfr .n{width:16px;height:16px;flex:none;border-radius:3px;background:var(--key-sel);color:#1a1205;
+  font:700 9.5px/16px 'JetBrains Mono';text-align:center}
+.kfr .f{width:38px;flex:none;font-family:'JetBrains Mono';color:var(--dim2)}
 .kfr.on .f{color:#d5e2f5}
 .kfr .d{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px}
 .kfr .rm{opacity:.5;padding:0 3px}
-.kfr .rm:hover{opacity:1;color:var(--err)}
+.kfr .rm:hover{opacity:1;color:var(--err-t)}
 
-/* ═══ Цагийн шугам ═══ */
-#tl{height:104px;flex:none;background:var(--sub);border-top:1px solid #0f0f0f;display:flex;flex-direction:column;overflow:hidden}
-#tlbar{height:28px;flex:none;display:flex;align-items:center;gap:5px;padding:0 8px;background:var(--hdr);border-bottom:1px solid #0f0f0f;overflow-x:auto;scrollbar-width:none}
+/* ═══ Сэргээх ба засах самбар ═══ */
+.iss{display:flex;align-items:flex-start;gap:7px;padding:6px 8px;border-radius:var(--r-wid);
+  background:var(--panel-sub);border-left:2px solid var(--wid);margin-bottom:4px}
+.iss.err{border-left-color:var(--err);background:rgba(153,22,22,.13)}
+.iss.warn{border-left-color:var(--warn);background:rgba(172,135,55,.12)}
+.iss.tip{border-left-color:var(--info);background:rgba(40,72,125,.16)}
+.iss .dot{width:7px;height:7px;border-radius:50%;flex:none;margin-top:4px;background:var(--wid)}
+.iss.err .dot{background:#d34a4a}.iss.warn .dot{background:var(--warn)}.iss.tip .dot{background:#6f9ede}
+.iss .txt{flex:1;min-width:0;font-size:11px;line-height:1.45}
+.iss .txt b{font-weight:500;color:var(--txt)}
+.iss .txt small{display:block;color:var(--dim2);font-size:10px;margin-top:2px;line-height:1.45}
+.iss .fixb{flex:none;padding:3px 9px;font-size:10.5px;align-self:center}
+.iss .nofix{flex:none;font-size:9.5px;color:var(--mute);align-self:center}
+.okline{padding:8px;text-align:center;font-size:11px;color:var(--ok-t);background:rgba(24,134,37,.1);border-radius:var(--r-wid)}
+.okline.dim{color:var(--mute);background:var(--panel-sub)}
+.hist,.aslist{display:flex;flex-direction:column;gap:2px;max-height:190px;overflow:auto;margin-top:2px}
+.hrow{display:flex;align-items:center;gap:7px;padding:3px 7px;border-radius:3px;font-size:10.5px;cursor:pointer;color:var(--dim)}
+.hrow:hover{background:rgba(255,255,255,.06)}
+.hrow.on{background:var(--acc);color:var(--txt-hi)}
+.hrow.dim{opacity:.42}
+.hrow .n{width:20px;flex:none;font-family:'JetBrains Mono';font-size:9px;color:var(--mute);text-align:right}
+.hrow.on .n{color:#cddcf2}
+.hrow .d{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hrow .t{flex:none;font-family:'JetBrains Mono';font-size:9px;color:var(--mute)}
+.hrow.on .t{color:#cddcf2}
+.arow{display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:var(--r-wid);background:var(--panel-sub);font-size:10.5px}
+.arow .ic{flex:none;filter:saturate(.5)}
+.arow .d{flex:1;min-width:0;color:var(--txt)}
+.arow .d small{display:block;color:var(--mute);font-size:9px;font-family:'JetBrains Mono'}
+.arow button{flex:none;padding:3px 8px;font-size:10px}
+.arow .xb{padding:3px 6px;background:transparent;color:var(--mute)}
+.arow .xb:hover{background:var(--err);color:#fff}
+
+/* ═══ Цагийн шугам (Dope Sheet) ═══ */
+#tl{height:108px;flex:none;background:var(--editor);display:flex;flex-direction:column;overflow:hidden;margin:var(--gap)}
+#tlbar{height:28px;flex:none;display:flex;align-items:center;gap:5px;padding:0 8px;background:var(--editor);
+  overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--win)}
 #tlbar::-webkit-scrollbar{display:none}
-#tlbar .tb{width:26px;height:20px;border-radius:4px;background:var(--wid);font-size:11px;display:flex;align-items:center;justify-content:center;color:#d2d2d2;flex:none}
+#tlbar .tb{width:26px;height:20px;border-radius:var(--r-wid);background:var(--wid);font-size:11px;display:flex;
+  align-items:center;justify-content:center;color:var(--txt);flex:none;box-shadow:inset 0 -1px 0 var(--emboss)}
 #tlbar .tb:hover{background:var(--wid-h)}
-#tlbar .tb.on{background:var(--acc);color:#fff}
+#tlbar .tb.on{background:var(--acc);color:var(--txt-hi)}
 #tlbar .fld{display:flex;align-items:center;gap:4px;flex:none}
-#tlbar .fld label{font-size:10px;color:var(--dim)}
-#tlbar .fld input{width:52px;background:var(--wid-in);border:1px solid #131313;border-radius:4px;padding:3px 5px;font-family:'JetBrains Mono';font-size:10.5px;text-align:center}
+#tlbar .fld label{font-size:10px;color:var(--dim2)}
+#tlbar .fld input{width:52px;background:var(--wid-in);border:1px solid var(--wid-out);border-radius:var(--r-wid);
+  padding:3px 5px;font-family:'JetBrains Mono';font-size:10.5px;text-align:center;color:var(--txt)}
+#tlbar .fld input:focus{border-color:var(--acc);background:var(--wid-in-f)}
 #tlc{flex:1;min-height:0;display:block;width:100%;cursor:pointer;touch-action:none}
-#sbar{height:22px;flex:none;display:flex;align-items:center;gap:12px;padding:0 10px;background:var(--hdr);border-top:1px solid #0f0f0f;font-size:10px;color:var(--dim2);overflow:hidden;white-space:nowrap}
-#sbar b{color:#bfbfbf;font-weight:500}
-#sbar .k{font-family:'JetBrains Mono';background:#2c2c2c;border:1px solid var(--line);border-radius:3px;padding:0 4px;color:#cfcfcf}
+#sbar{height:26px;flex:none;display:flex;align-items:center;gap:12px;padding:0 10px;background:var(--topbar);
+  font-size:10px;color:var(--mute2);overflow:hidden;white-space:nowrap}
+#sbar b{color:var(--txt);font-weight:400}
+#sbar .k{font-family:'JetBrains Mono';background:var(--wid);border-radius:3px;padding:0 4px;color:var(--txt)}
 
-@media (max-width:1080px){#dock{width:300px}}
+/* ═══ Гарын авлага (F1) ═══ */
+#manual{position:fixed;inset:0;z-index:900;display:none;background:rgba(0,0,0,.55);backdrop-filter:blur(2px)}
+#manual.show{display:flex;align-items:center;justify-content:center;padding:18px}
+#manwin{width:min(1180px,100%);height:100%;max-height:92vh;background:var(--editor);border-radius:var(--r-editor);
+  box-shadow:0 0 0 1px var(--rim),0 18px 60px rgba(0,0,0,.6);display:flex;flex-direction:column;overflow:hidden}
+#manhdr{height:34px;flex:none;display:flex;align-items:center;gap:10px;padding:0 10px;background:var(--topbar)}
+#manhdr .t{font-size:12.5px;font-weight:600;color:var(--txt-title)}
+#manhdr .v{font-size:10px;color:var(--mute);font-family:'JetBrains Mono'}
+#manQ{width:250px;background:var(--wid-in);border:1px solid var(--wid-out);border-radius:var(--r-wid);
+  padding:4px 9px;font-size:11px;color:var(--txt)}
+#manQ:focus{border-color:var(--acc);background:var(--wid-in-f);outline:none}
+#manbody{flex:1;display:flex;min-height:0}
+#mannav{width:250px;flex:none;background:var(--region);overflow-y:auto;padding:6px 0}
+#mannav .ng{padding:9px 12px 3px;font-size:9px;letter-spacing:.11em;text-transform:uppercase;color:var(--mute)}
+#mannav button{display:flex;gap:7px;align-items:center;width:100%;text-align:left;padding:5px 12px;
+  font-size:11.5px;color:var(--dim)}
+#mannav button:hover{background:rgba(255,255,255,.06);color:var(--txt)}
+#mannav button.on{background:var(--acc);color:var(--txt-hi)}
+#mannav button .i{width:15px;flex:none;filter:saturate(.5);text-align:center}
+#mantxt{flex:1;overflow-y:auto;padding:22px 34px 60px;user-select:text;max-width:100%}
+#mantxt .mh1{font-size:21px;font-weight:700;color:var(--txt-hi);margin:0 0 14px;padding-bottom:9px;border-bottom:1px solid var(--rim)}
+#mantxt .mh2{font-size:15px;font-weight:600;color:var(--act);margin:24px 0 8px}
+#mantxt .mh3{font-size:12.5px;font-weight:600;color:var(--txt-hi);margin:16px 0 6px}
+#mantxt p{font-size:12.5px;line-height:1.75;color:var(--txt);margin:0 0 9px;max-width:78ch}
+#mantxt ul,#mantxt ol{margin:0 0 10px 20px;max-width:78ch}
+#mantxt li{font-size:12.5px;line-height:1.7;color:var(--txt);margin-bottom:3px}
+#mantxt b{color:var(--txt-hi);font-weight:600}
+#mantxt em{color:var(--dim);font-style:italic}
+#mantxt kbd{font-family:'JetBrains Mono';font-size:10.5px;background:var(--wid);border:1px solid var(--wid-out);
+  border-bottom-width:2px;border-radius:3px;padding:1px 5px;color:var(--txt-hi);white-space:nowrap}
+#mantxt table{border-collapse:collapse;margin:4px 0 14px;font-size:12px;width:100%;max-width:900px}
+#mantxt th{background:var(--panel-hdr);color:var(--txt-hi);text-align:left;padding:6px 9px;font-weight:600;font-size:11px;
+  text-transform:uppercase;letter-spacing:.05em}
+#mantxt td{padding:5px 9px;border-top:1px solid var(--rim);color:var(--txt);vertical-align:top;line-height:1.55}
+#mantxt tr:nth-child(even) td{background:var(--ol-alt)}
+#mantxt .note{background:rgba(71,114,179,.14);border-left:2px solid var(--acc);border-radius:0 var(--r-wid) var(--r-wid) 0;
+  padding:9px 12px;margin:0 0 12px;font-size:12px;line-height:1.7;max-width:78ch;color:var(--txt)}
+#mantxt .warnbox{background:rgba(172,135,55,.13);border-left:2px solid var(--warn)}
+#mantxt .step{counter-reset:none}
+#mantxt hr{border:none;border-top:1px solid var(--rim);margin:26px 0}
+#mantxt mark{background:var(--act);color:#1a1206;border-radius:2px;padding:0 2px}
+#mantxt .hit{font-size:11.5px;color:var(--dim2);padding:5px 0}
+
+@media (max-width:1080px){#dock{width:310px}#mannav{width:210px}}
 @media (max-width:860px){
   #main{flex-direction:column}
-  #dock{width:100%;flex:1;border-left:0;border-top:1px solid #0f0f0f}
+  #dock{width:100%;flex:1}
   #stage{flex:none;height:42vh}
-  #tools{width:100%;height:34px;flex-direction:row;justify-content:flex-start;padding:0 6px;border-right:0;border-bottom:1px solid #0f0f0f;overflow-x:auto}
+  #tools{width:100%;height:34px;flex-direction:row;justify-content:flex-start;padding:0 6px;overflow-x:auto}
   #tools .gap{height:auto;width:8px}
   #outl{height:120px}
   #npanel{display:none!important}
-  #tl{height:92px}
+  #tl{height:96px}
+  #manbody{flex-direction:column}
+  #mannav{width:100%;height:132px;flex:none}
+  #mantxt{padding:16px 18px 40px}
 }
 </style>
 </head>
@@ -229,6 +434,11 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
       <button data-act="new">Шинэ төсөл<i>Ctrl N</i></button>
       <button data-act="open">Нээх (.json)<i>Ctrl O</i></button>
       <button data-act="save">Хадгалах (.json)<i>Ctrl S</i></button>
+      <button data-act="incsave">Дугаартай хадгалах<i>Ctrl Alt S</i></button>
+      <hr>
+      <div class="lbl">Сэргээх</div>
+      <button data-act="recover">Сүүлийн ажлыг сэргээх<i>авто</i></button>
+      <button data-act="asnow">Авто хадгалалт хийх<i>одоо</i></button>
       <hr>
       <div class="lbl">Экспорт</div>
       <button data-act="png">Одоогийн кадр → PNG<i>E</i></button>
@@ -236,6 +446,19 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
       <button data-act="py">Blender скрипт → .py<i></i></button>
       <button data-act="csv">Кадрын өгөгдөл → .csv<i></i></button>
       <button data-act="txt">Промт → .txt<i></i></button>
+    </div>
+  </div>
+  <div style="position:relative"><button class="mnu" data-pop="popEdit">Засвар</button>
+    <div class="pop" id="popEdit">
+      <button data-act="undo">↶ Буцаах<i>Ctrl Z</i></button>
+      <button data-act="redo">↷ Дахих<i>Ctrl Shift Z</i></button>
+      <hr>
+      <div class="lbl">Сэргээн засварлах</div>
+      <button data-act="diag">🩺 Шалгах (оношилгоо)</button>
+      <button data-act="fixall">🩹 Олдсон алдааг бүгдийг засах</button>
+      <button data-act="enhauto">⚡ Автоматаар сайжруулах</button>
+      <hr>
+      <button data-act="fixtab">Засварын самбарыг нээх<i>🩹</i></button>
     </div>
   </div>
   <div style="position:relative"><button class="mnu" data-pop="popAdd">Нэмэх</button>
@@ -277,6 +500,8 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
   </div>
   <div style="position:relative"><button class="mnu" data-pop="popHelp">Тусламж</button>
     <div class="pop" id="popHelp" style="min-width:300px">
+      <button data-act="manual">📖 Бүрэн гарын авлага<i>F1</i></button>
+      <hr>
       <div class="lbl">Харагдац</div>
       <button>Урд / Хажуу / Дээр<i>1 / 3 / 7</i></button>
       <button>Ар / Зүүн / Доор<i>Ctrl 1 / 3 / 7</i></button>
@@ -295,6 +520,9 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
       <button>Кадр урагш / хойш<i>← / →</i></button>
       <button>Эхэнд / Төгсгөлд<i>Shift ← / →</i></button>
       <button>Хажуугийн самбар<i>N</i></button>
+      <hr><div class="lbl">Сэргээн засварлах</div>
+      <button>Буцаах / Дахих<i>Ctrl Z / Ctrl Shift Z</i></button>
+      <button>Гарын авлага<i>F1</i></button>
     </div>
   </div>
   <div class="spacer"></div>
@@ -305,7 +533,7 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
 
 <div id="main">
   <!-- ═══ Багажны багана ═══ -->
-  <div id="tools">
+  <div id="tools" class="area">
     <button data-tool="sel" class="on" title="Сонгох (Esc)">⬚</button>
     <button data-tool="move" title="Зөөх (G)">✥</button>
     <button data-tool="rot" title="Эргүүлэх (R)">⟳</button>
@@ -317,10 +545,13 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
     <div class="gap"></div>
     <button data-act="key" title="Түлхүүр кадр (I)">◆</button>
     <button data-act="camview" title="Камерын харц (0)">🎥</button>
+    <div class="gap"></div>
+    <button data-act="diag" title="Шалгах — оношилгоо">🩺</button>
+    <button data-act="manual" title="Гарын авлага (F1)">📖</button>
   </div>
 
   <!-- ═══ Харагдац ═══ -->
-  <div id="stage">
+  <div id="stage" class="area">
     <canvas id="vp"></canvas>
     <canvas id="ovl"></canvas>
     <div id="vphdr">
@@ -365,6 +596,11 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
       <div class="nrow"><label style="width:34px;color:var(--dim2)">Хэмж</label><span id="nSize">—</span></div>
       <div class="nrow"><label style="width:34px;color:var(--dim2)">Өнцөг</label><span id="nAng">—</span></div>
     </div>
+    <div id="recbar">
+      <span id="recTxt"></span>
+      <button class="w on" id="recYes">⟲ Сэргээх</button>
+      <button class="w" id="recNo">Үгүй</button>
+    </div>
     <div id="xhint"></div>
     <div id="pip"><span>SHOT</span></div>
     <div id="toast"></div>
@@ -372,16 +608,17 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
 
   <!-- ═══ Баруун док ═══ -->
   <div id="dock">
-    <div id="outl">
+    <div id="outl" class="area">
       <div class="ehdr">⌗ Outliner <span class="spacer"></span><span id="oCount" class="mono" style="font-size:9.5px"></span></div>
       <div id="otree"></div>
     </div>
-    <div id="props">
+    <div id="props" class="area">
       <div id="ptabs">
         <button data-page="pgCam" class="on" title="Камер ба хөдөлгөөн">🎥</button>
         <button data-page="pgScene" title="Тайз ба дүрүүд">🧍</button>
         <button data-page="pgPrompt" title="Промт (AI)">✨</button>
         <button data-page="pgOut" title="Экспорт">📦</button>
+        <button data-page="pgFix" title="Сэргээх ба засах (оношилгоо, түүх, авто хадгалалт)">🩹</button>
       </div>
       <div id="pbody"></div>
     </div>
@@ -389,7 +626,7 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
 </div>
 
 <!-- ═══════════ ЦАГИЙН ШУГАМ ═══════════ -->
-<div id="tl">
+<div id="tl" class="area">
   <div id="tlbar">
     <button class="tb" data-tr="start" title="Эхэнд (Shift+←)">⏮</button>
     <button class="tb" data-tr="prevk" title="Өмнөх кадр (↑)">◂◆</button>
@@ -429,9 +666,27 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
 </div>
 </div>
 
+<!-- ═══════════ ГАРЫН АВЛАГА (F1) ═══════════ -->
+<div id="manual">
+  <div id="manwin">
+    <div id="manhdr">
+      <span class="t">📖 Гарын авлага</span>
+      <span class="v">1st Studio · Camera Director</span>
+      <span class="spacer"></span>
+      <input id="manQ" placeholder="Хайх…  ( / )" autocomplete="off">
+      <button class="w" id="manClose">✕ Хаах (Esc)</button>
+    </div>
+    <div id="manbody">
+      <div id="mannav"></div>
+      <div id="mantxt"></div>
+    </div>
+  </div>
+</div>
+
 <input type="file" id="fileIn" accept=".json,application/json" hidden>
 <!-- three.js r128 (MIT) — репо дотор суулгасан тул интернэтгүй ч ажиллана -->
 <script src="three.min.js"></script>
+<script src="manual.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
