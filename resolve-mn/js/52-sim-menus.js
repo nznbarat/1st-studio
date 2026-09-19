@@ -24,20 +24,23 @@
       ["render-all-savers", "Render All Savers"]
     ]},
 
+    /* File цэс — Media хуудсан дээр нээсэн 2026-09-19-ний зургаас: timeline-тэй холбоотой
+       мөрүүд (New/Close Timeline, Timeline Backup, Quick Export, Reconform) Media дээр саарал;
+       Revert — хадгалаагүй өөрчлөлт байхгүй үед; Single/Multiple User — Local төслийн санд. */
     "file-menu": { label: "File", verified: true, items: [
       ["new-project", "New Project…"],
       ["open-recent-project", "Open Recent Project", "", "›"],
       ["new-bin", "New Bin", "Ctrl+Shift+N"],
       ["new-smart-bin", "New Smart Bin…"],
-      ["new-timeline", "New Timeline…", "Ctrl+N"],
-      ["close-timeline", "Close Timeline"],
+      ["new-timeline", "New Timeline…", "Ctrl+N", "", "photo,cut,edit,fusion,color,fairlight,deliver"],
+      ["close-timeline", "Close Timeline", "", "", "photo,cut,edit,fusion,color,fairlight,deliver"],
       ["close-project", "Close Project"],
       "-",
       ["save-project", "Save Project", "Ctrl+S"],
       ["save-as", "Save Project As…", "Ctrl+Shift+S"],
-      ["create-timeline-backup", "Create Timeline Backup…", "Ctrl+Alt+S"],
+      ["create-timeline-backup", "Create Timeline Backup…", "Ctrl+Alt+S", "", "photo,cut,edit,fusion,color,fairlight,deliver"],
       "-",
-      ["revert-to-last-saved-version", "Revert to Last Saved Version…"],
+      ["revert-to-last-saved-version", "Revert to Last Saved Version…", "", "", "state:unsaved"],
       "-",
       ["import-media", "Import", "", "›"],
       ["import-project", "Import Project…"],
@@ -47,18 +50,18 @@
       ["export-project", "Export Project…", "Ctrl+E"],
       ["export-metadata-from", "Export Metadata From", "", "›"],
       "-",
-      ["quick-export", "Quick Export…"],
+      ["quick-export", "Quick Export…", "", "", "photo,cut,edit,fusion,color,fairlight,deliver"],
       "-",
       ["project-manager", "Project Manager…", "Shift+0"],
       ["project-settings", "Project Settings…", "Shift+9"],
       ["project-notes", "Project Notes…"],
       "-",
-      ["single-user-project", "Single User Project", "✓"],
-      ["multiple-user-collaboration", "Multiple User Collaboration"],
+      ["single-user-project", "Single User Project", "✓", "", "state:collab"],
+      ["multiple-user-collaboration", "Multiple User Collaboration", "", "", "state:collab"],
       "-",
       ["media-management", "Media Management…"],
-      ["reconform-from-bins", "Reconform from Bins…"],
-      ["reconform-from-media-storage", "Reconform from Media Storage…"],
+      ["reconform-from-bins", "Reconform from Bins…", "", "", "photo,cut,edit,fusion,color,fairlight,deliver"],
+      ["reconform-from-media-storage", "Reconform from Media Storage…", "", "", "photo,cut,edit,fusion,color,fairlight,deliver"],
       "-",
       ["setup-ai-assistants", "Setup AI Assistants…"],
       "-",
@@ -373,9 +376,10 @@
        Paste, Delete Selected, Select All, Deselect All. Эдгээр нь Fusion-д
        нодон дээр ажилладаг тул идэвхтэй хэвээр. */
     /* Edit цэс — мөр бүрийн 5 дахь утга нь тухайн команд ИДЭВХТЭЙ байх хуудсууд.
-       Fusion, Color, Fairlight хуудсан дээр цэсийг нээсэн 2026-09-19-ний дэлгэцийн зургаас;
-       Edit, Cut хуудсанд клип сонгосон үед бүгд идэвхтэй гэж үзэв. Media, Photo, Deliver
-       хуудсанд зургаар баталгаажаагүй тул Edit/Cut-аас гадна идэвхгүй гэж тооцов. */
+       Fusion, Color, Fairlight, Photo, Deliver хуудсан дээр цэсийг нээсэн 2026-09-19-ний
+       дэлгэцийн зургаас (Photo: Paste Attributes, Insert идэвхтэй; Deliver: Delete Selected,
+       Ripple Delete идэвхтэй); Edit, Cut хуудсанд клип сонгосон үед бүгд идэвхтэй гэж үзэв.
+       Media хуудсанд зургаар баталгаажаагүй. */
     "edit-menu": { label: "Edit", verified: true, items: [
       ["undo", "Undo", "Ctrl+Z"],
       ["redo", "Redo", "Ctrl+Shift+Z"],
@@ -390,7 +394,7 @@
       ["copy-tail", "Copy Tail", "", "", "edit,cut,fairlight"],
       ["paste", "Paste", "Ctrl+V", "", "edit,cut,color,fairlight"],
       ["paste-insert", "Paste Insert", "Ctrl+Shift+V", "", "edit,cut,fairlight"],
-      ["paste-attributes", "Paste Attributes…", "Alt+V", "", "edit,cut,color,fairlight"],
+      ["paste-attributes", "Paste Attributes…", "Alt+V", "", "edit,cut,color,fairlight,photo"],
       ["paste-value", "Paste Value", "Alt+Shift+V", "", "edit,cut,color"],
       ["remove-attributes", "Remove Attributes…", "", "", "edit,cut,fairlight"],
       ["dolby-vision", "Dolby Vision®", "", "›", "edit,color"],
@@ -398,15 +402,15 @@
       ["duplicate-clip", "Duplicate Clip", "", "", "edit,cut"],
       ["duplicate-selection", "Duplicate Selection", "", "", "edit,cut,fairlight"],
       "-",
-      ["lift-delete", "Delete Selected", "Backspace", "", "edit,cut,color,fairlight"],
-      ["ripple-delete", "Ripple Delete", "Shift+Backspace", "", "edit,cut,color,fairlight"],
+      ["lift-delete", "Delete Selected", "Backspace", "", "edit,cut,color,fairlight,deliver"],
+      ["ripple-delete", "Ripple Delete", "Shift+Backspace", "", "edit,cut,color,fairlight,deliver"],
       ["delete-gaps", "Delete Gaps", "", "", "edit,cut"],
       "-",
       ["select-all", "Select All", "Ctrl+A"],
       ["deselect-all", "Deselect All", "Ctrl+Shift+A"],
       ["auto-select", "Select", "", "›", "edit,cut"],
       "-",
-      ["insert", "Insert", "F9", "", "edit,cut"],
+      ["insert", "Insert", "F9", "", "edit,cut,photo"],
       ["overwrite", "Overwrite", "F10", "", "edit,cut"],
       ["replace", "Replace", "F11", "", "edit,cut"],
       ["place-on-top", "Place on Top", "F12", "", "edit,cut"],
@@ -421,6 +425,16 @@
       ["swap-clips-towards-right", "Swap Clips Towards Right", "Ctrl+Shift+.", "", "edit,cut"],
       "-",
       ["edit-options", "Edit Options", "", "›", "edit,cut"]
+    ]},
+
+    /* Color → Effects → Library таб: Resolve FX Blur бүлэг — 2026-09-19-ний зургаас */
+    "resolve-fx-blur": { label: "Library — Resolve FX Blur", verified: true, items: [
+      ["box-blur", "Box Blur"],
+      ["cinefocus", "CineFocus"],
+      ["directional-blur", "Directional Blur"],
+      ["gaussian-blur", "Gaussian Blur"],
+      ["lens-blur", "Lens Blur"],
+      ["mosaic-blur", "Mosaic Blur"]
     ]},
 
     /* Photo хуудасны хэрэгслийн мөрийн "Photo Album ⌄" — 2026-09-19-ний зургаас */

@@ -138,7 +138,7 @@
       <b class="hs" data-t="corrector-node">Clip ⌄</b>
       <span class="hs" data-t="node-editor">⬡ ⌄</span><span>…</span>
       <span class="sp"></span>
-      <span class="hs" data-t="openfx">Library</span><b class="hs" data-t="openfx" style="border-bottom:2px solid var(--rs-red);padding-bottom:2px">Settings</b>
+      <span class="hs mi" data-t="resolve-fx-blur">Library</span><b class="hs" data-t="openfx" style="border-bottom:2px solid var(--rs-red);padding-bottom:2px">Settings</b>
       <span class="hs" data-t="help-search">⌕</span><span>…</span>
     </div>
     <div class="rs-body">

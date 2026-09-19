@@ -98,7 +98,13 @@ Fairlight, Deliver) хуулбарлан харуулна. Нийт **640 тов
   Fusion — 5 мөр идэвхтэй (Undo, Redo, History, Select All, Deselect All);
   Color — 11 (Copy, Paste, Paste Attributes/Value, Dolby Vision, Delete, Ripple Delete…);
   Fairlight — 19 (Cut/Copy/Paste бүх хувилбар, Remove Attributes, Duplicate Selection
-  `Ctrl+Shift+D`…). Саарал мөр дээр товшвол аль хуудсанд идэвхтэйг тайлбарлана.
+  `Ctrl+Shift+D`…); Photo — 7 (Paste Attributes, Insert…); Deliver — 7 (Delete Selected,
+  Ripple Delete…). Саарал мөр дээр товшвол аль хуудсанд идэвхтэйг тайлбарлана.
+- **File цэс Media хуудсанд** — timeline-тэй холбоотой мөрүүд (New/Close Timeline,
+  Timeline Backup, Quick Export, Reconform) саарал; Revert — хадгалаагүй өөрчлөлт байхгүй
+  үед; Single/Multiple User — Local төслийн санд саарал. Тайлбар нь шалтгааныг нэрлэнэ.
+- **Color → Effects → Library** таб дээр товшиход Resolve FX Blur бүлгийн бодит жагсаалт
+  (Box Blur, CineFocus, Directional Blur, Gaussian Blur, Lens Blur, Mosaic Blur) нээгдэнэ.
 - **Photo хуудасны "Photo Album ⌄" товч** бодит шүүлтүүрийн жагсаалт нээнэ
   (Sort by, All/Selected/Graded/Ungraded Photos, People, Magic Mask … Create Smart Filter).
   Цэс нээлттэй байхад хажуугийн цэсэн дээр хулгана тултал шилжинэ.
@@ -173,7 +179,8 @@ resolve-mn/
         ├── r21-tses-3.js       View, Playback, Workspace, Help, Fusion цэс
         ├── r22-interface-3.js  дэлгэцийн эд анги — 2 (Photo, Deliver, Edited…)
         ├── r23-ai-sergeen.js   AI (Neural Engine), сэргээн засварын хэрэглүүр
-        └── r24-photo.js        Photo — цомгийн шүүлтүүрийн цэс
+        ├── r24-photo.js        Photo — цомгийн шүүлтүүрийн цэс
+        └── r25-resolvefx-blur.js Resolve FX Blur (Color → Effects → Library)
     └── long/                   гарын авлагын дэлгэрэнгүй тайлбар (RM.dict.long)
         ├── l01–l08             загварын товших цэгүүд, хуудас, самбарууд
         ├── l07-ai-sergeen.js   AI ба сэргээн засварын хэрэглүүр
@@ -275,14 +282,17 @@ Color хуудасны нодны хөдөлгүүр дээр засварлан
   Нийт **323 мөр**.
 - **134 товчлуур** — бүгд цэснээс шууд уншсан.
 
-- **Edit цэсний саарал болох дүрэм** — Fusion, Color, Fairlight хуудсан дээр
-  цэсийг нээсэн зургаас мөр бүрээр (2026-09-19). Edit, Cut хуудсанд бүгд идэвхтэй гэж үзэв.
+- **Edit цэсний саарал болох дүрэм** — Fusion, Color, Fairlight, Photo, Deliver хуудсан
+  дээр цэсийг нээсэн зургаас мөр бүрээр (2026-09-19). Edit, Cut хуудсанд бүгд идэвхтэй гэж үзэв.
+- **File цэсний саарал болох дүрэм** — Media хуудсан дээр нээсэн зургаас (2026-09-19).
+- **Resolve FX Blur** — Color → Effects → Library-ийн 6 эффект (2026-09-19).
 - **Photo Album ⌄ цэс** — Photo хуудасны шүүлтүүрийн 18 мөр (Photos in Bin саарал байсан).
 - **Remote Grading** `Ctrl+G` — "Remote Grading Client" цонх: Remote Machine, Port 15000.
 
 Хараахан баталгаажуулаагүй: цэсний дэд цэснүүдийн (AI Tools, Audio Operations,
 Edit Options, Go To, Sort by…) доторх мөрүүд; Resolve 20–21-д нэмэгдсэн AI хэрэглүүрийн
-яг байрлал; Edit цэсний төлөв Media, Photo, Deliver хуудсанд. Зохиомол агуулга
+яг байрлал; Edit цэсний төлөв Media хуудсанд, File цэсний төлөв Media-аас бусад
+хуудсанд. Зохиомол агуулга
 бичээгүй — эргэлзээтэйг тайлбарт тэмдэглэсэн.
 
 ### Баталгаажуулалтаар илэрсэн алдаанууд

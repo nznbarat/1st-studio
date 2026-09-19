@@ -122,8 +122,18 @@
                     color: "Shift+6", fairlight: "Shift+7", deliver: "Shift+8" };
     const here  = NAMES[S.state.page] || S.state.page;
     const pages = S.pagesOf(ctx) || [];
+    const STATES = {
+      unsaved: "Энэ команд <b>хадгалаагүй өөрчлөлт</b> байгаа үед л идэвхжинэ — таны зурагт төслийн " +
+               "нэрний ард улбар шар <b>Edited</b> тэмдэг байгаагүй тул саарал байсан. Өөрчлөлт хийсний " +
+               "дараа (Edited гарч ирэхэд) идэвхжинэ.",
+      collab:  "Энэ хоёр мөр төслийн сан <b>Local</b> (нэг компьютерийн) үед саарал байдаг — " +
+               "Single User Project чагттай боловч солих боломжгүй. Олон хэрэглэгчийн горим " +
+               "<b>PostgreSQL сүлжээний сан</b> эсвэл <b>Blackmagic Cloud</b> сангийн төсөлд л идэвхжинэ."
+    };
     let html;
-    if (!pages.length) {
+    if (ctx && ctx.indexOf("state:") === 0 && STATES[ctx.slice(6)]) {
+      html = "<b>Яагаад саарал байна вэ?</b> " + STATES[ctx.slice(6)];
+    } else if (!pages.length) {
       html = "<b>Яагаад саарал байна вэ?</b> Таны Resolve-ийн дэлгэцийн зурагт энэ мөр саарал байсан. " +
              "Ямар нөхцөлд идэвхждэгийг (сан, зураг сонгосон эсэх) Resolve дээрээ шалгана уу.";
     } else {
@@ -138,7 +148,7 @@
         html += " <i>Тэмдэглэл:</i> Fusion хуудсанд нодны талбар идэвхтэй үед Cut, Copy, Paste, " +
                 "Delete Selected нь нод дээр ажиллаж идэвхжсэн тохиолдол ажиглагдсан (2026-09-11).";
       }
-      html += " Media, Photo, Deliver хуудасны төлөв зургаар баталгаажаагүй.";
+      if (ctx === "clip" || pages.indexOf("media") === -1) html += " Media хуудасны төлөв зургаар баталгаажаагүй.";
     }
     return el("div", { class: "why", html: html });
   };
@@ -225,7 +235,7 @@
   S.pagesOf = function (ctx) {
     if (!ctx) return null;
     if (ctx === "clip") return ["edit", "cut"];
-    if (ctx === "none") return [];
+    if (ctx === "none" || ctx.indexOf("state:") === 0) return [];
     return ctx.split(",").map((x) => x.trim()).filter(Boolean);
   };
   S.isDim = function (ctx) {
