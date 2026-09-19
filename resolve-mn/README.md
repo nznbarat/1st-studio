@@ -3,7 +3,7 @@
 DaVinci Resolve-ийн интерфейсийн монгол хэл дээрх лавлах.
 Программын цэс, самбар, товчлуур, тохиргоо бүрийн монгол нэр, тайлбар, хаана байдгийг цуглуулсан.
 
-**946 нэр томьёо · 44 ангилал · 133 товчлуур · 546 гарын авлагын дэлгэрэнгүй тайлбар · 6 ажлын урсгал · 8 хуудасны загвар · 13 нээгддэг цэс**
+**991 нэр томьёо · 47 ангилал · 133 товчлуур · 591 гарын авлагын дэлгэрэнгүй тайлбар · 6 ажлын урсгал · 8 хуудасны загвар · 17 нээгддэг цэс**
 
 ---
 
@@ -105,6 +105,11 @@ Fairlight, Deliver) хуулбарлан харуулна. Нийт **640 тов
   үед; Single/Multiple User — Local төслийн санд саарал. Тайлбар нь шалтгааныг нэрлэнэ.
 - **Color → Effects → Library** таб дээр товшиход Resolve FX Blur бүлгийн бодит жагсаалт
   (Box Blur, CineFocus, Directional Blur, Gaussian Blur, Lens Blur, Mosaic Blur) нээгдэнэ.
+- **Cut хуудасны ⚌ "Timeline Options" товч** 15 командын бодит жагсаалт нээнэ (Create Subtitles
+  from Audio … Add Transition to All Edits; Voice Convert саарал). Хажуугийн 3 дахь товч
+  Trim Start/End to Playhead, Resync Clip цэс нээнэ. Доод timeline-ийн 5 товч (Ripple On,
+  Dynamic Trim Mode (Slip), Split Clip, Add Marker, Keyframes), замын толгойн 5 товч
+  (Enlarge, Lock, Solo, Mute, Disable Track), Insert Video/Audio Only — tooltip-оор баталгаажсан.
 - **Photo хуудасны "Photo Album ⌄" товч** бодит шүүлтүүрийн жагсаалт нээнэ
   (Sort by, All/Selected/Graded/Ungraded Photos, People, Magic Mask … Create Smart Filter).
   Цэс нээлттэй байхад хажуугийн цэсэн дээр хулгана тултал шилжинэ.
@@ -125,8 +130,9 @@ Blackmagic-ийн албан ёсны гарын авлагын хэв маяг�
 - Загварт: тайлбарын самбарт шууд харагдана; холбоос дээр товшвол тэр нэр томьёог
   дэлгэц дээр олж сонгоно.
 - Толинд: карт бүрийн **▸ Гарын авлага** мөрөөр нээгдэнэ; холбоос хайлт руу үсэрнэ.
-- Хамрах хүрээ: загварын бүх товших цэг (278), 13 цэсний бүх команд (225),
-  AI (Neural Engine) ба сэргээн засварын 36 хэрэглүүр — нийт 546.
+- Хамрах хүрээ: загварын бүх товших цэг (290), 13 цэсний бүх команд (225),
+  AI (Neural Engine) ба сэргээн засварын 36 хэрэглүүр, Photo Album, Resolve FX Blur,
+  Cut хуудасны Timeline Options цэс, товчнууд — нийт 591.
   Үлдсэн 400 нэр томьёо богино тайлбартай; дараагийн шатанд.
 - Бичлэгийн хэлбэр: `js/long/*.js` файлд `RM.dict.long({ id: "бичвэр" })`.
   Мини-markdown: хоосон мөр — догол, `## ` — дэд гарчиг, `- ` / `1. ` — жагсаалт,
@@ -180,11 +186,14 @@ resolve-mn/
         ├── r22-interface-3.js  дэлгэцийн эд анги — 2 (Photo, Deliver, Edited…)
         ├── r23-ai-sergeen.js   AI (Neural Engine), сэргээн засварын хэрэглүүр
         ├── r24-photo.js        Photo — цомгийн шүүлтүүрийн цэс
-        └── r25-resolvefx-blur.js Resolve FX Blur (Color → Effects → Library)
+        ├── r25-resolvefx-blur.js Resolve FX Blur (Color → Effects → Library)
+        └── r26-cut-tses.js     Cut — Timeline Options цэс, timeline-ийн товчнууд
     └── long/                   гарын авлагын дэлгэрэнгүй тайлбар (RM.dict.long)
         ├── l01–l08             загварын товших цэгүүд, хуудас, самбарууд
         ├── l07-ai-sergeen.js   AI ба сэргээн засварын хэрэглүүр
-        └── l09–l12             13 цэсний командууд
+        ├── l09–l12             13 цэсний командууд
+        ├── l13–l14             Photo Album цэс, Resolve FX Blur
+        └── l15-cut-tses.js     Cut хуудасны цэс, товчнууд
 ```
 
 ---
@@ -288,8 +297,12 @@ Color хуудасны нодны хөдөлгүүр дээр засварлан
 - **Resolve FX Blur** — Color → Effects → Library-ийн 6 эффект (2026-09-19).
 - **Photo Album ⌄ цэс** — Photo хуудасны шүүлтүүрийн 18 мөр (Photos in Bin саарал байсан).
 - **Remote Grading** `Ctrl+G` — "Remote Grading Client" цонх: Remote Machine, Port 15000.
+- **Cut хуудасны Timeline Options цэс** — 15 мөр, 5 тусгаарлагч (Voice Convert саарал байсан);
+  тайрах/дахин синк цэсний 3 мөр; 12 товчны tooltip (2026-09-19).
 
-Хараахан баталгаажуулаагүй: цэсний дэд цэснүүдийн (AI Tools, Audio Operations,
+Хараахан баталгаажуулаагүй: Cut хуудасны дээд timeline-ийн дунд товч (⇤≡) ба 3 дахь товчны
+tooltip нэр; транспорт мөрийн 6 засварын товч, тэдгээрийн баруун талын 3 + 5 товчны нэр;
+Resync Clip-ийн яг үйлдэл; цэсний дэд цэснүүдийн (AI Tools, Audio Operations,
 Edit Options, Go To, Sort by…) доторх мөрүүд; Resolve 20–21-д нэмэгдсэн AI хэрэглүүрийн
 яг байрлал; Edit цэсний төлөв Media хуудсанд, File цэсний төлөв Media-аас бусад
 хуудсанд. Зохиомол агуулга

@@ -173,6 +173,28 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
 .rs-menu .mi.open{background:#3d3d42;color:#fff}
 .rs-menu .wc{color:var(--rs-dim);padding:0 14px;font-size:11px}
 
+/* ── нээгддэг цэс (цэсний мөр, хэрэгслийн товчны унждаг жагсаалт) ──
+   Өнгө нь бодит Resolve 21-ийн цэснээс: бараан саарал дэвсгэр, цайвар бичиг, хөх онцлолт. */
+.rs-menupop{position:absolute;z-index:40;min-width:296px;max-height:calc(100% - 4px);
+  overflow-y:auto;background:#28282b;border:1px solid #0e0e10;border-radius:3px;
+  padding:4px 0;box-shadow:0 10px 30px rgba(0,0,0,.6);font-family:'Inter',system-ui,sans-serif}
+.rs-menupop .msep{height:1px;background:#3b3b3f;margin:4px 0}
+.rs-menupop .mrow{display:flex;align-items:center;width:100%;gap:12px;border:0;background:none;
+  font:inherit;cursor:pointer;padding:4px 14px;font-size:11.5px;color:var(--rs-txt);text-align:left;line-height:1.5}
+.rs-menupop .mrow:hover{background:var(--rs-sel);color:#fff}
+.rs-menupop .ml{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rs-menupop .mk{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;
+  color:var(--rs-dim2);white-space:nowrap}
+.rs-menupop .mrow:hover .mk{color:#cfe0f0}
+.rs-menupop .ma{color:var(--rs-dim2);font-size:11px}
+/* Идэвхгүй команд — тухайн хуудсанд (эсвэл зурагт) саарал */
+.rs-menupop .mrow.dim .ml,
+.rs-menupop .mrow.dim .mk,
+.rs-menupop .mrow.dim .ma{color:#5c5c60}
+.rs-menupop .mrow.dim:hover{background:rgba(58,110,165,.35)}
+.rs-menupop .mrow.dim:hover .ml{color:#c0c0c0}
+.rs-tools .tg.mi.open,.mi.open{color:#fff}
+
 /* хэрэгслийн мөр 1 */
 .rs-tools{display:flex;align-items:center;gap:2px;background:var(--rs-tool);
   border-bottom:1px solid var(--rs-line);padding:0 8px;height:38px;flex-shrink:0;overflow:hidden}
@@ -375,11 +397,20 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
   border-top:1px solid var(--rs-line);border-bottom:1px solid var(--rs-line);font-size:14px;color:var(--rs-icon);flex-shrink:0;overflow:hidden}
 .cut-transport .gap{width:16px}
 .cut-transport .tc{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:14px;color:var(--rs-txt)}
-.cut-upper{flex:0 0 78px;display:flex;flex-direction:column;background:var(--rs-pane);border-bottom:1px solid var(--rs-line)}
+.cut-upper{flex:0 0 78px;display:flex;background:var(--rs-pane);border-bottom:1px solid var(--rs-line)}
+.cut-upper .tl-col{flex:1;display:flex;flex-direction:column;min-width:0}
 .cut-lower{flex:1;display:flex;min-height:0;background:var(--rs-sub)}
-.cut-tools{width:290px;flex-shrink:0;display:flex;flex-direction:column;gap:14px;padding:12px 14px;border-right:1px solid var(--rs-line);
+.cut-tools{width:290px;flex-shrink:0;display:flex;flex-direction:column;gap:10px;padding:10px 14px;border-right:1px solid var(--rs-line);
   font-size:15px;color:var(--rs-icon)}
-.cut-tools span{display:inline-block;margin-right:14px}
+.cut-tools.up{justify-content:center;gap:0;padding:0 14px 0 22px}
+.cut-tools .row{display:flex;align-items:center}
+.cut-tools .row>span{display:inline-block;margin-right:24px;cursor:pointer}
+.cut-tools .row>span.on{color:var(--rs-txt)}
+.cut-tools .row>span.mk{color:#3d7bdc}
+.cut-tools .row>span.mi.open{color:var(--rs-txt)}
+.cut-tools .sp{flex:1}
+.cut-tools .thead{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--rs-dim)}
+.cut-tools .thead .nm{margin-left:auto;font-size:11px;color:var(--rs-txt)}
 
 /* ── Fusion ── */
 .fu-split{flex:1;display:flex;gap:1px;background:var(--rs-line);min-height:0}
@@ -2246,6 +2277,41 @@ note:"Effects → Library → Resolve FX Blur бүлгийн зургаар ба
 ]});
 
 </script>
+<script>
+/* ── js/dict/r26-cut-tses.js ── */
+/* ── Ангилал 26 · Cut хуудас — timeline-ийн товч, цэс ──
+   Resolve Studio 21-ийн Cut хуудасны дээд timeline-ийн зүүн булангийн "Timeline Options" (⚌)
+   товчны жагсаалт, гурав дахь товчны тайрах/дахин синк цэс, транспорт мөрийн зүүн захын
+   Insert Video/Audio Only товч, доод timeline-ийн 5 хэрэгсэл, замын толгойн 5 товч.
+   2026-09-19-ний дэлгэцийн зургууд (унждаг жагсаалт, tooltip) -аас мөр бүрээр нь баталгаажсан. */
+
+RM.dict.add({ id:"cut-tses", label:"Cut — timeline-ийн товч, цэс", icon:"⚌", page:"cut",
+note:"Cut хуудасны timeline-ийн зүүн талын товчнууд ба тэдгээрийн унждаг жагсаалт. Tooltip, жагсаалтын мөр бүр дэлгэцийн зургаас баталгаажсан.", terms:[
+["Timeline Options","Timeline-ийн сонголт (Cut)","Cut хуудасны дээд timeline-ийн зүүн булангийн ⚌ товч (tooltip: Timeline Options). Хадмал үүсгэх, огтлолт илрүүлэх, AI дууны хэрэгсэл, зам нэмэх/устгах, клип хуваах/нийлүүлэх, тэмдэг, бүх огтлолтод шилжилт нэмэх/арилгах — 15 командын жагсаалт нээнэ.","","Cut → дээд timeline → зүүн булан ⚌"],
+["Create Subtitles from Audio","Дуунаас хадмал үүсгэх","Timeline-ийн яриаг DaVinci Neural Engine-ээр таньж хадмалын зам дээр хадмалыг автоматаар үүсгэнэ (Studio). Хэл, мөрийн тэмдэгтийн тоо, хадмалын уртыг цонхонд сонгоно.","","Timeline Options ⚌ · Timeline цэс"],
+["Add Video Track","Видео зам нэмэх","Timeline-д шинэ видео зам (V2, V3…) нэмнэ. Гарчиг, давхар дүрс, дээд давхаргын клипт зориулна.","","Timeline Options ⚌"],
+["Add Audio Track","Дууны зам нэмэх","Timeline-д шинэ дууны зам (A2, A3…) нэмнэ. Хөгжим, эффект, яриаг тусдаа замд байрлуулахад.","","Timeline Options ⚌"],
+["Add Subtitle Track","Хадмалын зам нэмэх","Timeline-д хадмалын зам нэмнэ. Нэг зам — нэг хэл; экспортод тусдаа файл (SRT) эсвэл дүрсэнд шатааж гаргана.","","Timeline Options ⚌"],
+["Delete Empty Tracks","Хоосон замуудыг устгах","Клипгүй бүх видео, дууны замыг нэг дор устгаж timeline-ийг цэгцэлнэ. Клиптэй замд нөлөөлөхгүй.","","Timeline Options ⚌"],
+["Join Match Edit Clips","Залгаа огтлолттой клипүүдийг нийлүүлэх","Нэг эх файлын залгаа (match edit / through edit) хэсгүүдийг буцаан нэг клип болгоно. Edit хуудасны Join Clips (Alt+\\) -тэй ижил үйлдэл.","","Timeline Options ⚌"],
+["Set Color and Add Marker","Өнгө сонгож тэмдэг нэмэх","Тэмдгийн өнгийг сонгоод заагчийн байрлалд тэмдэг нэмнэ. Ангиллаар (өнгөөр) тэмдэглэхэд.","","Timeline Options ⚌"],
+["Clear Transition from All Edits","Бүх огтлолтоос шилжилт арилгах","Timeline-ийн бүх огтлолтын цэг дээрх шилжилтийг устгаж энгийн огтлолт болгоно.","","Timeline Options ⚌"],
+["Add Dissolve to All Edits","Бүх огтлолтод уусалт нэмэх","Timeline-ийн бүх огтлолтын цэг дээр Cross Dissolve (уусалт) нэмнэ. Урт нь Preferences → Editing дахь стандарт уртаар.","","Timeline Options ⚌"],
+["Add Transition to All Edits","Бүх огтлолтод шилжилт нэмэх","Timeline-ийн бүх огтлолтын цэг дээр стандарт шилжилтийг (Set as Standard Transition гэж заасан) нэмнэ.","","Timeline Options ⚌"],
+["Trim / Resync Menu (Cut)","Тайрах / дахин синк цэс (Cut)","Дээд timeline-ийн зүүн булангийн гурав дахь товч. Trim Start to Playhead, Trim End to Playhead, Resync Clip гурван команд нээнэ. Товчны tooltip нэр дэлгэцийн зурагт хараагүй — баталгаажаагүй.","","Cut → дээд timeline → зүүн булан, 3 дахь товч"],
+["Resync Clip","Клипийг дахин синк болгох","Дуу, дүрс нь хоорондоо зөрсөн (out of sync) клипийг буцааж синк болгоно гэж ойлгогдоно. Яг үйлдлийг Resolve дээрээ шалгана уу — зурагт зөвхөн нэр харагдсан.","","Cut → 3 дахь товч → Resync Clip"],
+["Insert Video Only","Зөвхөн видео шигтгэх","Эх клипийн зөвхөн видео хэсгийг timeline-д оруулна; дууг орхино. Cut хуудасны транспорт мөрийн зүүн захын эхний товч (tooltip-оор баталгаажсан).","","Cut → транспорт мөр → зүүн зах, 1"],
+["Insert Audio Only","Зөвхөн дуу шигтгэх","Эх клипийн зөвхөн дууны хэсгийг timeline-д оруулна; дүрсийг орхино. Зүүн захын хоёр дахь товч (tooltip-оор баталгаажсан).","","Cut → транспорт мөр → зүүн зах, 2"],
+["Ripple On","Ripple асаалттай (долгиолох унтраалга)","Доод timeline-ийн эхний товч — тайралт, устгалтын дараа хойших клипүүд автоматаар зөрж хоосон зай үлдээхгүй (ripple) горимын унтраалга. Tooltip одоогийн төлөвийг харуулна (зурагт: Ripple On).","","Cut → доод timeline → зүүн булан, 1"],
+["Dynamic Trim Mode (Slip)","Динамик тайралт (Slip)","Доод timeline-ийн хоёр дахь товч — Dynamic Trim горим; хаалтанд одоогийн дэд горим (Slip — клипийн агуулгыг урт өөрчлөлгүй гулсуулах). Тоглуулах товчоор (J K L) тайрна.","","Cut → доод timeline → зүүн булан, 2"],
+["Enlarge Track","Замыг томруулах","Доод timeline-ийн замын толгойн эхний товч (⇕) — замын өндрийг томруулж жижигрүүлнэ. Tooltip-оор баталгаажсан.","","Cut → доод timeline → замын толгой, 1"],
+["Lock Track","Замыг түгжих","Замын толгойн цоожны товч — замыг түгжвэл түүн дээрх клипүүд сонгогдохгүй, зөөгдөхгүй, тайрагдахгүй. Edit хуудасны Track Lock-той ижил.","","Cut → доод timeline → замын толгой, 2"],
+["Solo Track On","Замыг соло болгох","Замын толгойн чихэвчний товч — зөвхөн энэ замын дууг сонсгож бусдыг түр дуугүй болгоно. Tooltip одоогийн үйлдлийг заана (зурагт: Solo Track On).","","Cut → доод timeline → замын толгой, 3"],
+["Mute Track","Замыг дуугүй болгох","Замын толгойн чанга яригчийн товч — энэ замын дууг түр хаана; экспортод мөн дуугүй гарна.","","Cut → доод timeline → замын толгой, 4"],
+["Disable Track","Замыг идэвхгүй болгох","Замын толгойн сүүлийн товч (▤) — видео замыг унтраавал түүн дээрх клипүүд viewer-т харагдахгүй, рендерт орохгүй. Timeline → Video → Enable/Disable-тай ижил.","","Cut → доод timeline → замын толгой, 5"]
+]});
+
+</script>
 <!-- long:start — гарын авлагын дэлгэрэнгүй тайлбар -->
 <script>
 /* ── js/long/l01-erunhii-1.js ── */
@@ -2793,6 +2859,8 @@ Marker нь timeline эсвэл клипийн **тодорхой кадарт**
 - Тэмдэглэгээний өнгөөр ажлын төлөвийг ялгах (улаан — засах, ногоон — бэлэн).
 
 Холбоотой: [[flag]] — кадарт биш клипэд хамаарах тэмдэг.
+
+> Cut хуудсанд: доод timeline-ийн зүүн булангийн цэнхэр товч (tooltip: **Add Marker**) заагчийн байрлалд тэмдэг нэмнэ; viewer дээр Time / Name (Marker 1) хүснэгт гарна. Timeline Options ⚌ жагсаалтад мөн Add Marker, Set Color and Add Marker байна. [[set-color-and-add-marker]].
 `,
 
 "media-pool": `
@@ -4677,6 +4745,8 @@ Keyframe Editor нь клипийн **түлхүүр кадруудыг timeline
 Inspector дахь параметрийн ◀ ▶ сумаар өмнөх, дараагийн түлхүүр кадар руу үсэрнэ. Заагч яг түлхүүр кадар дээр байвал ромбо улбар шар болно.
 
 > Утга өөрчлөхөд шинэ түлхүүр кадар үүсэхгүй байвал ромбо асаагүй байна. Ромбо саарал — түлхүүр кадаргүй, статик утга.
+
+> Cut хуудсанд: доод timeline-ийн зүүн булангийн сүүлийн товч (tooltip: **Keyframes**) дэлгэцийн доод хэсэгт Parameters баганатай түлхүүр кадрын самбар нээнэ; хэрэгслийн мөрийн Keyframes товчтой ижил.
 `,
 
 "lens-correction": `
@@ -9819,6 +9889,8 @@ Trim → Nudge нь сонгосон клип эсвэл огтлолтын цэ
 Trim → Trim Start [k:Shift+[] нь заагчийн доорх клипийн **эхлэлийг заагч хүртэл тайрна** (ripple — хойшхи зөрнө). Клипийн эхний хэрэггүй хэсгийг хаях хамгийн хурдан арга: заагчийг байрлуулаад товч.
 
 > Auto Select асаалттай бүх замын клипт үйлчилнэ. Ripple биш (зай үлдээх) тайралт бол Selection Mode-д ирмэгийг чирнэ.
+
+> Cut хуудсанд: дээд timeline-ийн зүүн булангийн гурав дахь товчны жагсаалтад **Trim Start to Playhead** нэрээр. [[trim-resync-menu-cut]].
 `,
 
 "trim-end": `
@@ -9826,6 +9898,8 @@ Trim → Trim Start [k:Shift+[] нь заагчийн доорх клипийн 
 Trim → Trim End [k:Shift+]] нь заагчийн доорх клипийн **төгсгөлийг заагч хүртэл тайрна** (ripple). Клипийн сүүлийн хэсгийг хаях.
 
 > Cut Tail (Edit цэс) ижил тайрч, хэсгийг санах ойд хуулна.
+
+> Cut хуудсанд: гурав дахь товчны жагсаалтад **Trim End to Playhead** нэрээр. [[trim-resync-menu-cut]].
 `,
 
 "trim-to-selection": `
@@ -9999,6 +10073,8 @@ Timeline → Split Clip [k:Ctrl+\\] нь заагчийн байрлалд кл�
 > Огтолсон хоёр хэсэг эх файлыг заана; сунгаж болно. Буцаан нийлүүлэх — [k:Alt+\\].
 
 Холбоотой: [[join-clips]], [[blade]], [[razor]].
+
+> Cut хуудсанд: доод timeline-ийн хайчны товч (tooltip: **Split Clip**) заагч дээр хуваана; Timeline Options ⚌ жагсаалтад **Split Clips** нэрээр. Хуваасны дараа төслийн нэрний хажууд Edited гарна. [[timeline-options]].
 `,
 
 "join-clips": `
@@ -11634,6 +11710,294 @@ Mosaic Blur (Pixelate) нь дүрсийг **том пиксэлийн моза�
 });
 
 </script>
+<script>
+/* ── js/long/l15-cut-tses.js ── */
+/* ═════════════════════════════════════════════════════════════
+   Гарын авлагын дэлгэрэнгүй тайлбар · Cut хуудасны timeline-ийн товч, цэс
+   (2026-09-19-ний дэлгэцийн зургууд: Timeline Options жагсаалт, тайрах/дахин синк цэс,
+    Insert Video/Audio Only, доод timeline-ийн 5 хэрэгсэл, замын толгойн 5 товч)
+   ═════════════════════════════════════════════════════════════ */
+RM.dict.long({
+
+"timeline-options": `
+## Зориулалт
+Cut хуудасны **дээд timeline**-ийн зүүн булангийн эхний товч (⚌, tooltip: **Timeline Options**) нь timeline-тэй ажиллах хамгийн түгээмэл командуудыг **нэг жагсаалтад** цуглуулсан. Cut хуудас цэсний мөрөөр бус, дэлгэц дээрх товчоор хурдан ажиллах зориулалттай тул Timeline, Mark цэсний зарим команд энд давхардана.
+
+## Мөрүүд (Resolve Studio 21 — таны зурагт)
+- **Create Subtitles from Audio**, **Detect Scene Cuts** — AI-д суурилсан шинжилгээ. [[create-subtitles-from-audio]], [[scene-cut-detection]].
+- **Audio Assistant**, **Voice Convert** — Fairlight-ийн AI хэрэгсэл; Voice Convert таны зурагт **саарал**. [[ai-audio-assistant]], [[ai-voice-convert]].
+- **Add Video Track**, **Add Audio Track**, **Add Subtitle Track**, **Delete Empty Tracks** — зам удирдах.
+- **Split Clips**, **Join Match Edit Clips** — заагч дээр хуваах, залгаа хэсгүүдийг нийлүүлэх. [[split-clip]], [[join-match-edit-clips]].
+- **Add Marker**, **Set Color and Add Marker** — тэмдэг. [[marker]], [[set-color-and-add-marker]].
+- **Clear Transition from All Edits**, **Add Dissolve to All Edits**, **Add Transition to All Edits** — бүх огтлолтын шилжилт нэг дор.
+
+## Хэрэглэх алхам
+1. Заагчийг хэрэгтэй байрлалд тавина (Split, Add Marker заагч дээр ажиллана).
+2. ⚌ товч → командыг сонгоно. Дэлгэцэнд багтахгүй урт жагсаалт тул Resolve үүнийг дээш шилжүүлж харуулна.
+3. Үр дүнг доод timeline дээр шалгана; буцаах — [k:Ctrl+Z].
+
+> Загвар дээр энэ товчийг дарахад бодит жагсаалт нээгдэнэ; мөр бүр дээр товшвол тайлбар гарна. Voice Convert яагаад саарал байсныг зургаас тогтоох боломжгүй — Resolve дээрээ клип сонгоод дахин шалгана уу.
+
+Холбоотой: [[dual-timeline]], [[trim-resync-menu-cut]], [[timeline-menu]].
+`,
+
+"create-subtitles-from-audio": `
+## Зориулалт
+**Create Subtitles from Audio** нь timeline-ийн ярианы дууг DaVinci Neural Engine-ээр (Studio) таньж, **хадмалын зам** дээр хадмалын клипүүдийг автоматаар үүсгэнэ. Гараар бичихээс хэд дахин хурдан; дараа нь текстийг засаж, загварыг Inspector-оос тохируулна.
+
+## Хэрэглэх алхам
+1. Timeline Options ⚌ → **Create Subtitles from Audio** (эсвэл Timeline цэс → AI Tools).
+2. Цонхонд: **хэл**, хадмал бүрийн **тэмдэгтийн дээд тоо**, **мөрийн тоо**, хадмалын үргэлжлэх хугацаа.
+3. Create. Шинэ Subtitle зам (ST1) дээр хадмалууд гарна.
+4. Хадмал дээр давхар товшиж текстийг засна; Inspector → Subtitle → фонт, хэмжээ, дэвсгэр.
+5. Экспорт: Deliver → Subtitle Settings → Burn into video (дүрсэнд шатаах) эсвэл As a separate file (SRT).
+
+> Монгол хэл таних чанар хувилбараас хамаарна; дэмжигдээгүй бол англи хэлээр таниулаад засах, эсвэл SRT-г гаднаас импортлоно. Ярианы бичлэг цэвэр, дэвсгэр дуу багатай байх тусам үр дүн сайн.
+
+Холбоотой: [[auto-subtitle]], [[subtitle]], [[add-subtitle-track]], [[davinci-neural-engine]].
+`,
+
+"add-video-track": `
+## Зориулалт
+**Add Video Track** нь timeline-д **шинэ видео зам** (V2, V3…) нэмнэ. Дээд замын клип доод замын клипийг дардаг тул гарчиг, лого, давхар дүрс (picture-in-picture), Adjustment Clip зэргийг тусдаа замд байрлуулна.
+
+## Хэрэглэх алхам
+1. Timeline Options ⚌ → Add Video Track. Замын толгойд V2 гарна.
+2. Клипийг тэр зам руу чирнэ, эсвэл Place on Top товчоор шууд дээд зам руу тавина. [[place-on-top]].
+
+> Edit хуудсанд замын толгой дээр баруун товч → Add Track, Add Tracks… (тоо, төрлөө сонгох) илүү уян хатан. Хоосон болсон замыг Delete Empty Tracks-аар цэвэрлэнэ.
+
+Холбоотой: [[track]], [[add-track]], [[delete-empty-tracks]].
+`,
+
+"add-audio-track": `
+## Зориулалт
+**Add Audio Track** нь timeline-д **шинэ дууны зам** (A2, A3…) нэмнэ. Яриа, хөгжим, эффект, орчны дууг тусдаа замд байрлуулбал түвшин, EQ, Fairlight-ийн боловсруулалтыг замаар нь удирдахад хялбар.
+
+## Хэрэглэх алхам
+1. Timeline Options ⚌ → Add Audio Track.
+2. Дууны клипийг тэр зам руу чирнэ, эсвэл Insert Audio Only-оор оруулна. [[insert-audio-only]].
+
+> Cut хуудсанд замын форматыг (Mono, Stereo, 5.1) сонгох цонх гарахгүй байж болно — Fairlight эсвэл Edit хуудасны Add Tracks… цонхонд форматыг заана.
+
+Холбоотой: [[track]], [[add-track]], [[mute-track]].
+`,
+
+"add-subtitle-track": `
+## Зориулалт
+**Add Subtitle Track** нь timeline-д **хадмалын зам** нэмнэ. Хадмал видео, дууны замаас тусдаа хадгалагдаж, нэг зам — нэг хэл гэсэн зарчмаар олон хэлний хадмалыг нэг timeline-д байлгана.
+
+## Хэрэглэх алхам
+1. Timeline Options ⚌ → Add Subtitle Track.
+2. Заагчийг байрлуулаад баруун товч → Add Subtitle, эсвэл Create Subtitles from Audio-оор автоматаар дүүргэнэ.
+3. Inspector → Subtitle → загвар (фонт, өнгө, байрлал) — замын бүх хадмалд нэг загвар.
+4. Deliver → Subtitle Settings → шатаах эсвэл тусдаа файл.
+
+> Хэд хэдэн хадмалын зам байвал viewer-т зөвхөн **идэвхтэй** замын хадмал харагдана; замын толгойн унтраалгаар солино.
+
+Холбоотой: [[subtitle]], [[create-subtitles-from-audio]].
+`,
+
+"delete-empty-tracks": `
+## Зориулалт
+**Delete Empty Tracks** нь **клипгүй бүх видео, дууны замыг** нэг дор устгана. Олон зам нэмж, зөөж ажилласны дараа timeline-ийг цэгцлэхэд; клиптэй замд нөлөөлөхгүй тул аюулгүй.
+
+> Устгасан зам дээр байсан замын тохиргоо (нэр, түгжээ, Fairlight-ийн эффект) мөн алга болно. Буцаах — [k:Ctrl+Z].
+
+Холбоотой: [[track]], [[add-video-track]].
+`,
+
+"join-match-edit-clips": `
+## Зориулалт
+**Join Match Edit Clips** нь нэг эх файлын **залгаа хэсгүүдийг** (match edit / through edit — дунд нь кадар хасагдаагүй огтлолт) буцаан **нэг клип** болгоно. Split Clip-ээр хуваасан боловч хэрэглээгүй огтлолтуудыг цэвэрлэх.
+
+## Хэрэглэх алхам
+1. Залгаа огтлолттой клипүүдийг (эсвэл огтлолтыг) сонгоно; сонголтгүй бол заагчийн доорх.
+2. Timeline Options ⚌ → Join Match Edit Clips.
+
+> Хооронд нь өөр клип орсон, кадар хасагдсан, хурд нь өөр огтлолтод үйлчлэхгүй. Edit хуудсанд Timeline → Join Clips [k:Alt+\\] ижил үйлдэл. [[join-clips]].
+
+Холбоотой: [[split-clip]], [[join-clips]].
+`,
+
+"set-color-and-add-marker": `
+## Зориулалт
+**Set Color and Add Marker** нь тэмдгийн **өнгийг сонгоод** заагчийн байрлалд тэмдэг нэмнэ. Өнгөөр ангилах ажлын урсгалд (жишээ нь улаан — засах, ногоон — бэлэн, цэнхэр — VFX) хурдан.
+
+## Хэрэглэх алхам
+1. Заагчийг байрлуулна.
+2. Timeline Options ⚌ → Set Color and Add Marker → өнгийг сонгоно.
+3. Тэмдгийг давхар товшиж нэр, тэмдэглэл бичнэ. [[add-and-modify-marker]].
+
+> Энгийн Add Marker [k:M] сүүлд сонгосон өнгөөр нэмдэг; өнгөө нэг удаа тогтоовол дараа нь M дарахад л хангалттай. Edit Index → Markers -оор бүх тэмдгийг жагсааж өнгөөр шүүнэ.
+
+Холбоотой: [[marker]], [[edit-index]].
+`,
+
+"clear-transition-from-all-edits": `
+## Зориулалт
+**Clear Transition from All Edits** нь timeline-ийн (эсвэл сонгосон клипүүдийн) **бүх огтлолтын цэг дээрх шилжилтийг** устгаж энгийн огтлолт болгоно. Туршилтаар нэмсэн уусалтуудыг нэг дор арилгах, эсвэл Add Dissolve to All Edits-ийн эсрэг үйлдэл.
+
+> Нэг шилжилтийг л устгах бол timeline дээр шилжилтийг сонгоод [k:Delete]. Буцаах — [k:Ctrl+Z].
+
+Холбоотой: [[transition]], [[add-dissolve-to-all-edits]], [[add-transition-to-all-edits]].
+`,
+
+"add-dissolve-to-all-edits": `
+## Зориулалт
+**Add Dissolve to All Edits** нь timeline-ийн (эсвэл сонгосон клипүүдийн) **бүх огтлолтын цэг дээр Cross Dissolve** нэмнэ. Зургийн слайд-шоу, дурсамжийн монтаж, зөөлөн урсгалтай хэсгийг нэг товшилтоор.
+
+## Хэрэглэх алхам
+1. Бүх timeline-д бол сонголтгүй, хэсэгт бол клипүүдийг сонгоно.
+2. Timeline Options ⚌ → Add Dissolve to All Edits.
+3. Уусалтын урт — Preferences → User → Editing → Standard transition duration (анхдагч 1 секунд). Тус тусыг timeline дээр чирж өөрчилнө.
+
+> Шилжилт нэмэгдэхийн тулд огтлолтын хоёр талд **handle** (эх файлын нөөц кадар) байх ёстой; нөөцгүй огтлолт алгасагдана.
+
+Холбоотой: [[cross-dissolve]], [[add-transition-to-all-edits]], [[clear-transition-from-all-edits]].
+`,
+
+"add-transition-to-all-edits": `
+## Зориулалт
+**Add Transition to All Edits** нь бүх огтлолтын цэг дээр **стандарт шилжилтийг** нэмнэ. Стандарт шилжилт анхдагчаар Cross Dissolve; Effects → Transitions самбарт өөр шилжилт дээр баруун товч → **Set as Standard Transition** хийвэл тэр нь нэмэгдэнэ (жишээ нь Smooth Cut, Dip to Color).
+
+## Хэрэглэх алхам
+1. Effects → Transitions → хүссэн шилжилтээ Set as Standard Transition.
+2. Timeline Options ⚌ → Add Transition to All Edits.
+3. Урт, параметрийг Inspector → Transition-оос.
+
+> Add Dissolve to All Edits нь стандартаас үл хамааран **уусалт** нэмдэг; энэ команд **стандарт** шилжилтийг нэмдэг — ялгаа нь энэ.
+
+Холбоотой: [[add-transition]], [[transition]], [[transition]].
+`,
+
+"trim-resync-menu-cut": `
+## Зориулалт
+Дээд timeline-ийн зүүн булангийн **гурав дахь товч** нь гурван командтай жижиг жагсаалт нээнэ: **Trim Start to Playhead**, **Trim End to Playhead**, **Resync Clip**. Заагчаар тайрах хоёр команд Edit хуудасны Trim → Trim Start / Trim End-тэй ижил. [[trim-start]], [[trim-end]], [[resync-clip]].
+
+## Хэрэглэх алхам
+1. Заагчийг тайрах цэгт тавина.
+2. Товч → Trim Start to Playhead (эхлэлээс заагч хүртэлх хэсгийг хаях) эсвэл Trim End to Playhead (заагчаас төгсгөл хүртэлх).
+3. Ripple асаалттай бол хойших клипүүд зөрж хоосон зай үлдэхгүй. [[ripple-on]].
+
+> Товчны **tooltip нэр** таны зурагт хараагүй — Resolve дээр хулганаа дээр нь тавьж нэрийг илгээвэл энд засна. Дунд товчны (⇤≡) нэр мөн баталгаажаагүй.
+`,
+
+"resync-clip": `
+## Зориулалт
+**Resync Clip** нь дуу, дүрс нь хоорондоо **зөрсөн** (out of sync) клипийг буцааж синк болгоно гэж ойлгогдоно. Дүрсийг л зөөж, дууг нь орхисон, эсвэл Slip Audio хийсний дараа клипийн дээр улаан зөрүүний тоо гардаг; энэ команд түүнийг арилгана.
+
+> Таны зурагт зөвхөн нэр харагдсан тул **яг үйлдэл, ямар клипт идэвхтэй байх** нь баталгаажаагүй. Resolve дээр зөрсөн клип сонгоод командыг туршаад үр дүнг илгээвэл энд нарийвчилна. Sync Bin-ийн олон камерын синктэй холбоотой байж болзошгүй — таамаг.
+
+Холбоотой: [[sync-bin]], [[slip-audio]].
+`,
+
+"insert-video-only": `
+## Зориулалт
+Cut хуудасны транспорт мөрийн зүүн захын **эхний товч** (tooltip: **Insert Video Only**) нь эх клипийн **зөвхөн видео** хэсгийг timeline-д оруулна; дууг орхино. Дууг нь хэрэггүй B-roll, дэвсгэр дүрс оруулахад — дараа нь дууг устгах шаардлагагүй.
+
+## Хэрэглэх алхам
+1. Media Pool-оос клип сонгоно (viewer дээр In/Out тэмдэглэж болно).
+2. Insert Video Only товч — Smart Insert-ийн дүрмээр (хамгийн ойрын огтлолт руу) зөвхөн видео орно.
+
+> Edit хуудсанд ижил үр дүнг замын хаяг (A1 хаяг унтраах) -аар авдаг; Cut хуудсанд энэ товч илүү хурдан.
+
+Холбоотой: [[insert-audio-only]], [[smart-insert]], [[insert]].
+`,
+
+"insert-audio-only": `
+## Зориулалт
+Транспорт мөрийн зүүн захын **хоёр дахь товч** (tooltip: **Insert Audio Only**) нь эх клипийн **зөвхөн дууны** хэсгийг timeline-д оруулна; дүрсийг орхино. Ярилцлагын дуу, хөгжим, орчны дууг дүрсгүйгээр нэмэхэд.
+
+## Хэрэглэх алхам
+1. Media Pool-оос клип (эсвэл дууны файл) сонгоно.
+2. Insert Audio Only товч — дуу шинэ эсвэл чөлөөтэй дууны зам дээр орно.
+
+> Дүрс, дууг зэрэг оруулах энгийн шигтгээ — Smart Insert. Замын хэсэг хэсгээр нь удирдах нарийн ажил бол Edit хуудас.
+
+Холбоотой: [[insert-video-only]], [[smart-insert]], [[add-audio-track]].
+`,
+
+"ripple-on": `
+## Зориулалт
+Доод timeline-ийн зүүн булангийн **эхний товч** нь **Ripple** горимын унтраалга; tooltip одоогийн төлөвийг харуулна (таны зурагт **Ripple On**). Ripple асаалттай үед клип устгах, тайрах бүрт хойших клипүүд **автоматаар зөрж** хоосон зай үлдээхгүй; унтраалттай үед хоосон зай (gap) үлдэнэ.
+
+## Хэзээ унтраах
+- Хөгжимд тааруулж клипүүдийн байрлалыг хадгалах ёстой үед.
+- Дээд замын гарчиг, хадмал доод замын өөрчлөлтөөр зөрөхгүй байх ёстой үед.
+
+> Edit хуудсанд ижил зарчим Trim → Ripple, Trim Edit Mode-оор; Cut хуудас нэг товчоор удирдана. [[ripple-trim]].
+
+Холбоотой: [[ripple-overwrite]], [[trim-resync-menu-cut]].
+`,
+
+"dynamic-trim-mode-slip": `
+## Зориулалт
+Доод timeline-ийн **хоёр дахь товч** (tooltip: **Dynamic Trim Mode (Slip)**) нь **Dynamic Trim** горимыг асаана; хаалтанд одоогийн дэд горим — **Slip**. Dynamic Trim-д огтлолтыг хулганаар биш **тоглуулах товчоор** (J K L) тайрна: тоглуулж байгаад зогсооход тэр цэгт тайрагдана.
+
+## Slip ба Slide
+- **Slip** — клипийн байрлал, уртыг өөрчлөлгүй **дотоод агуулгыг** (аль кадраас эхлэхийг) гулсуулна.
+- **Slide** — клипийн агуулгыг хадгалж, **байрлалыг** хөрш клипүүдийн хооронд зөөнө.
+Дэд горимыг Trim → Dynamic Trim Mode эсвэл Edit хуудасны товчоор солино.
+
+## Хэрэглэх алхам
+1. Товчийг асаана (заагч улаанаас өөр өнгөтэй болно).
+2. Клип эсвэл огтлолтыг сонгоно.
+3. [k:J] [k:K] [k:L] -ээр гулсуулж, дуустал зогсооно; товчийг дахин дарж горимоос гарна.
+
+> Энгийн засварт буцахаа мартвал клип гулсаж алдагдана — ажлын дараа горимоос **заавал гарна**.
+
+Холбоотой: [[dynamic-trim]], [[trim-editor]].
+`,
+
+"enlarge-track": `
+## Зориулалт
+Доод timeline-ийн замын толгойн **эхний товч** (⇕, tooltip: **Enlarge Track**) нь тэр замын **өндрийг томруулна**; дахин дарвал буцаана. Видео замд том thumbnail, дууны замд долгионыг тодорхой харахад.
+
+> Бүх замыг зэрэг өөрчлөх бол timeline дээр [k:Ctrl] + хулганы дугуй (эсвэл View → Zoom). Edit хуудсанд Timeline View Options-оор замын өндрийг тусад нь тохируулна.
+
+Холбоотой: [[track]], [[timeline-view-options]].
+`,
+
+"lock-track": `
+## Зориулалт
+Замын толгойн **цоожны товч** (tooltip: **Lock Track**) нь замыг **түгжинэ**: түүн дээрх клипүүд сонгогдохгүй, зөөгдөхгүй, тайрагдахгүй, ripple-д зөрөхгүй. Дууссан хөгжмийн зам, эцсийн гарчгийн замыг санамсаргүй өөрчлөлтөөс хамгаална.
+
+> Түгжсэн зам дээр клип оруулах гэвэл Resolve өөр зам сонгоно эсвэл хориглоно. Тайлах — дахин товшино. Edit хуудасны Track Lock-той ижил. [[track-lock]].
+
+Холбоотой: [[disable-track]], [[track]].
+`,
+
+"solo-track-on": `
+## Зориулалт
+Замын толгойн **чихэвчний товч** (tooltip: **Solo Track On**) нь тэр замыг **соло** болгоно — зөвхөн энэ замын дуу сонсогдож бусад бүх зам түр дуугүй болно. Нэг замын дууг тусгаарлан шалгах, дууны алдааг хайхад.
+
+> Соло нь **зөвхөн сонсголт**; экспортод нөлөөлөхгүй. Хэд хэдэн замыг зэрэг соло болгож болно. Tooltip дараагийн үйлдлийг заана: асаалттай үед Solo Track Off гэж гарах магадлалтай — баталгаажаагүй.
+
+Холбоотой: [[solo]], [[mute-track]].
+`,
+
+"mute-track": `
+## Зориулалт
+Замын толгойн **чанга яригчийн товч** (tooltip: **Mute Track**) нь тэр замын дууг **хаана**. Соло-оос ялгаатай нь Mute **экспортод мөн нөлөөлнө** — дуугүй болгосон зам рендерт орохгүй. Нөөц дуу, хэрэггүй болсон хөгжмийн замыг унтраахад.
+
+> Экспортын өмнө бүх замын Mute төлөвийг шалгана — дуугүй экспорт хамгийн түгээмэл алдаа. Fairlight-ийн Mixer дээр M товчтой ижил.
+
+Холбоотой: [[mute]], [[solo-track-on]].
+`,
+
+"disable-track": `
+## Зориулалт
+Замын толгойн **сүүлийн товч** (▤, tooltip: **Disable Track**) нь видео замыг **идэвхгүй** болгоно: тэр замын клипүүд viewer-т харагдахгүй, рендерт орохгүй, доод замын дүрс харагдана. Хувилбар харьцуулах (гарчигтай/гарчиггүй), түр нуух.
+
+> Идэвхгүй зам нь Lock-оос ялгаатай — клипүүдийг засаж болно, зөвхөн харагдахгүй. Timeline цэс → Video → Enable/Disable-тай ижил. Экспортын өмнө шалгана. [[video-track-enable]].
+
+Холбоотой: [[lock-track]], [[track]].
+`
+
+});
+
+</script>
 <!-- long:end -->
 <script>
 /* ── js/50-sim-pages.js ── */
@@ -11923,11 +12287,11 @@ Mosaic Blur (Pixelate) нь дүрсийг **том пиксэлийн моза�
         </div>
       </div>
       <div class="cut-transport hs" data-t="transport-controls">
-        <span class="hs" data-t="smart-insert">⊟</span><span class="hs" data-t="append-to-end">⊞</span>
+        <span class="hs" data-t="insert-video-only">▣</span><span class="hs" data-t="insert-audio-only">♪</span>
         <span class="gap"></span>
+        <span class="hs" data-t="smart-insert">⊟</span><span class="hs" data-t="append-to-end">⊞</span>
         <span class="hs" data-t="ripple-overwrite">⊡</span><span class="hs" data-t="close-up">⊙</span>
         <span class="hs" data-t="place-on-top">⊕</span><span class="hs" data-t="source-overwrite">⊛</span>
-        <span class="hs" data-t="fit-to-fill">⊠</span><span class="hs" data-t="replace">⊗</span>
         <span class="gap"></span>
         <span class="hs" data-t="transition-button">◇</span><span class="hs" data-t="speed-ramp">⟋</span>
         <span class="hs" data-t="trim-editor">⇹</span>
@@ -11940,20 +12304,31 @@ Mosaic Blur (Pixelate) нь дүрсийг **том пиксэлийн моза�
         <span class="tc hs" data-t="timecode">TCG 01:00:00:00</span><span class="hs" data-t="timeline-menu">≡</span>
       </div>
       <div class="cut-upper hs" data-t="dual-timeline">
-        <div class="tl-ruler hs" data-t="timeline-ruler" style="padding-left:34px">
-          <div class="tk"><span>01:00:00:00</span></div><div class="tk"><span>01:00:05:00</span></div>
-          <div class="tk"><span>01:00:10:00</span></div><div class="tk"><span>01:00:15:00</span></div>
-          <div class="tk"><span>01:00:20:00</span></div><div class="tk"><span>01:00:25:00</span></div>
+        <!-- Дээд timeline-ийн зүүн булан (2026-09-19-ний зураг): ⚌ Timeline Options (tooltip баталгаажсан),
+             дунд товчны нэр тодорхойгүй, 3 дахь товч Trim Start/End to Playhead, Resync Clip цэс нээнэ. -->
+        <div class="cut-tools up">
+          <div class="row"><span class="hs mi" data-t="timeline-options">⚌</span><span title="Нэр нь баталгаажаагүй">⇤≡</span><span class="hs mi" data-t="trim-resync-menu-cut">⇥≡</span></div>
         </div>
-        <div class="tl-row" style="height:26px"><div class="tl-head hs" data-t="track" style="width:34px"><span class="nm">V1</span></div>
-          <div class="tl-lane"><div class="clip cutv hs" data-t="clip" style="width:100%"></div></div></div>
+        <div class="tl-col">
+          <div class="tl-ruler hs" data-t="timeline-ruler" style="padding-left:34px">
+            <div class="tk"><span>01:00:00:00</span></div><div class="tk"><span>01:00:05:00</span></div>
+            <div class="tk"><span>01:00:10:00</span></div><div class="tk"><span>01:00:15:00</span></div>
+            <div class="tk"><span>01:00:20:00</span></div><div class="tk"><span>01:00:25:00</span></div>
+          </div>
+          <div class="tl-row" style="height:26px"><div class="tl-head hs" data-t="track" style="width:34px"><span class="nm">V1</span></div>
+            <div class="tl-lane"><div class="clip cutv hs" data-t="clip" style="width:100%"></div></div></div>
+        </div>
       </div>
       <div class="cut-lower hs" data-t="dual-timeline">
+        <!-- Доод timeline-ийн зүүн булан — 5 товч, tooltip бүр баталгаажсан:
+             Ripple On · Dynamic Trim Mode (Slip) · Split Clip · Add Marker · Keyframes -->
         <div class="cut-tools">
-          <span class="hs" data-t="source-track-selector">⚌</span><span class="hs" data-t="track">⧈</span><span class="hs" data-t="track-lock">⊠</span>
+          <div class="row"><span class="hs on" data-t="ripple-on">▣</span><span class="hs" data-t="dynamic-trim-mode-slip">⇹</span>
+            <span class="hs" data-t="split-clip">✂</span><span class="hs mk" data-t="marker">⬟</span><span class="hs" data-t="keyframe-editor">◈</span></div>
           <div class="sp"></div>
-          <span class="hs" data-t="selection-mode">⧉</span><span class="hs" data-t="trim-edit-mode">⇹</span>
-          <span class="hs" data-t="blade">✂</span><span class="hs" data-t="marker">●</span><span class="hs" data-t="snapping">◈</span>
+          <!-- Замын толгойн 5 товч, tooltip бүр баталгаажсан: Enlarge · Lock · Solo Track On · Mute · Disable Track -->
+          <div class="thead"><span class="hs" data-t="enlarge-track">⇕</span><span class="hs" data-t="lock-track">🔒</span><span class="hs" data-t="solo-track-on">🎧</span><span class="hs" data-t="mute-track">🔊</span><span class="hs" data-t="disable-track">▤</span><span class="nm hs" data-t="track">V1</span></div>
+          <div class="thead"><span class="nm hs" data-t="track">A1</span></div>
         </div>
         <div style="flex:1;display:flex;flex-direction:column;min-width:0">
           <div class="tl-ruler hs" data-t="timeline-ruler" style="padding-left:0;background:var(--rs-sub)">
@@ -13076,6 +13451,40 @@ Mosaic Blur (Pixelate) нь дүрсийг **том пиксэлийн моза�
       ["create-smart-filter", "Create Smart Filter…"]
     ]},
 
+    /* Cut хуудас — дээд timeline-ийн зүүн булангийн ⚌ "Timeline Options" товч
+       (2026-09-19-ний зураг: 15 мөр, 5 тусгаарлагч). Voice Convert саарал байсан —
+       нөхцөл тодорхойгүй. */
+    "timeline-options": { label: "Timeline Options", verified: true, items: [
+      ["create-subtitles-from-audio", "Create Subtitles from Audio"],
+      ["scene-cut-detection", "Detect Scene Cuts"],
+      "-",
+      ["ai-audio-assistant", "Audio Assistant"],
+      ["ai-voice-convert", "Voice Convert", "", "", "none"],
+      "-",
+      ["add-video-track", "Add Video Track"],
+      ["add-audio-track", "Add Audio Track"],
+      ["add-subtitle-track", "Add Subtitle Track"],
+      ["delete-empty-tracks", "Delete Empty Tracks"],
+      "-",
+      ["split-clip", "Split Clips"],
+      ["join-match-edit-clips", "Join Match Edit Clips"],
+      "-",
+      ["marker", "Add Marker"],
+      ["set-color-and-add-marker", "Set Color and Add Marker"],
+      "-",
+      ["clear-transition-from-all-edits", "Clear Transition from All Edits"],
+      ["add-dissolve-to-all-edits", "Add Dissolve to All Edits"],
+      ["add-transition-to-all-edits", "Add Transition to All Edits"]
+    ]},
+
+    /* Cut хуудас — дээд timeline-ийн зүүн булангийн 3 дахь товч (tooltip нэр баталгаажаагүй). */
+    "trim-resync-menu-cut": { label: "Trim / Resync", verified: true, items: [
+      ["trim-start", "Trim Start to Playhead"],
+      ["trim-end", "Trim End to Playhead"],
+      "-",
+      ["resync-clip", "Resync Clip"]
+    ]},
+
     "color-page": { label: "Color", verified: true, items: [
       ["node-editor", "Nodes", "", "›"],
       ["reset", "Reset", "", "›"],
@@ -13431,6 +13840,10 @@ Mosaic Blur (Pixelate) нь дүрсийг **том пиксэлийн моза�
     pop.style.left = Math.max(2, Math.min(nb.left - hb.left, hb.width - 300)) + "px";
     pop.style.top  = (nb.bottom - hb.top) + "px";
     host.appendChild(pop);
+    /* Урт жагсаалт доош багтахгүй бол Resolve шиг дээш шилжүүлнэ
+       (Cut хуудасны Timeline Options цэс дэлгэцийн дээд захаас эхэлдэг). */
+    const top = nb.bottom - hb.top, ph = pop.offsetHeight;
+    if (top + ph > hb.height - 2) pop.style.top = Math.max(2, hb.height - ph - 2) + "px";
     return true;
   };
 

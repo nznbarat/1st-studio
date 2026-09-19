@@ -153,6 +153,28 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
 .rs-menu .mi.open{background:#3d3d42;color:#fff}
 .rs-menu .wc{color:var(--rs-dim);padding:0 14px;font-size:11px}
 
+/* ── нээгддэг цэс (цэсний мөр, хэрэгслийн товчны унждаг жагсаалт) ──
+   Өнгө нь бодит Resolve 21-ийн цэснээс: бараан саарал дэвсгэр, цайвар бичиг, хөх онцлолт. */
+.rs-menupop{position:absolute;z-index:40;min-width:296px;max-height:calc(100% - 4px);
+  overflow-y:auto;background:#28282b;border:1px solid #0e0e10;border-radius:3px;
+  padding:4px 0;box-shadow:0 10px 30px rgba(0,0,0,.6);font-family:'Inter',system-ui,sans-serif}
+.rs-menupop .msep{height:1px;background:#3b3b3f;margin:4px 0}
+.rs-menupop .mrow{display:flex;align-items:center;width:100%;gap:12px;border:0;background:none;
+  font:inherit;cursor:pointer;padding:4px 14px;font-size:11.5px;color:var(--rs-txt);text-align:left;line-height:1.5}
+.rs-menupop .mrow:hover{background:var(--rs-sel);color:#fff}
+.rs-menupop .ml{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rs-menupop .mk{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;
+  color:var(--rs-dim2);white-space:nowrap}
+.rs-menupop .mrow:hover .mk{color:#cfe0f0}
+.rs-menupop .ma{color:var(--rs-dim2);font-size:11px}
+/* Идэвхгүй команд — тухайн хуудсанд (эсвэл зурагт) саарал */
+.rs-menupop .mrow.dim .ml,
+.rs-menupop .mrow.dim .mk,
+.rs-menupop .mrow.dim .ma{color:#5c5c60}
+.rs-menupop .mrow.dim:hover{background:rgba(58,110,165,.35)}
+.rs-menupop .mrow.dim:hover .ml{color:#c0c0c0}
+.rs-tools .tg.mi.open,.mi.open{color:#fff}
+
 /* хэрэгслийн мөр 1 */
 .rs-tools{display:flex;align-items:center;gap:2px;background:var(--rs-tool);
   border-bottom:1px solid var(--rs-line);padding:0 8px;height:38px;flex-shrink:0;overflow:hidden}
@@ -355,11 +377,20 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
   border-top:1px solid var(--rs-line);border-bottom:1px solid var(--rs-line);font-size:14px;color:var(--rs-icon);flex-shrink:0;overflow:hidden}
 .cut-transport .gap{width:16px}
 .cut-transport .tc{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:14px;color:var(--rs-txt)}
-.cut-upper{flex:0 0 78px;display:flex;flex-direction:column;background:var(--rs-pane);border-bottom:1px solid var(--rs-line)}
+.cut-upper{flex:0 0 78px;display:flex;background:var(--rs-pane);border-bottom:1px solid var(--rs-line)}
+.cut-upper .tl-col{flex:1;display:flex;flex-direction:column;min-width:0}
 .cut-lower{flex:1;display:flex;min-height:0;background:var(--rs-sub)}
-.cut-tools{width:290px;flex-shrink:0;display:flex;flex-direction:column;gap:14px;padding:12px 14px;border-right:1px solid var(--rs-line);
+.cut-tools{width:290px;flex-shrink:0;display:flex;flex-direction:column;gap:10px;padding:10px 14px;border-right:1px solid var(--rs-line);
   font-size:15px;color:var(--rs-icon)}
-.cut-tools span{display:inline-block;margin-right:14px}
+.cut-tools.up{justify-content:center;gap:0;padding:0 14px 0 22px}
+.cut-tools .row{display:flex;align-items:center}
+.cut-tools .row>span{display:inline-block;margin-right:24px;cursor:pointer}
+.cut-tools .row>span.on{color:var(--rs-txt)}
+.cut-tools .row>span.mk{color:#3d7bdc}
+.cut-tools .row>span.mi.open{color:var(--rs-txt)}
+.cut-tools .sp{flex:1}
+.cut-tools .thead{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--rs-dim)}
+.cut-tools .thead .nm{margin-left:auto;font-size:11px;color:var(--rs-txt)}
 
 /* ── Fusion ── */
 .fu-split{flex:1;display:flex;gap:1px;background:var(--rs-line);min-height:0}

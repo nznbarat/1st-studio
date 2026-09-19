@@ -284,11 +284,11 @@
         </div>
       </div>
       <div class="cut-transport hs" data-t="transport-controls">
-        <span class="hs" data-t="smart-insert">⊟</span><span class="hs" data-t="append-to-end">⊞</span>
+        <span class="hs" data-t="insert-video-only">▣</span><span class="hs" data-t="insert-audio-only">♪</span>
         <span class="gap"></span>
+        <span class="hs" data-t="smart-insert">⊟</span><span class="hs" data-t="append-to-end">⊞</span>
         <span class="hs" data-t="ripple-overwrite">⊡</span><span class="hs" data-t="close-up">⊙</span>
         <span class="hs" data-t="place-on-top">⊕</span><span class="hs" data-t="source-overwrite">⊛</span>
-        <span class="hs" data-t="fit-to-fill">⊠</span><span class="hs" data-t="replace">⊗</span>
         <span class="gap"></span>
         <span class="hs" data-t="transition-button">◇</span><span class="hs" data-t="speed-ramp">⟋</span>
         <span class="hs" data-t="trim-editor">⇹</span>
@@ -301,20 +301,31 @@
         <span class="tc hs" data-t="timecode">TCG 01:00:00:00</span><span class="hs" data-t="timeline-menu">≡</span>
       </div>
       <div class="cut-upper hs" data-t="dual-timeline">
-        <div class="tl-ruler hs" data-t="timeline-ruler" style="padding-left:34px">
-          <div class="tk"><span>01:00:00:00</span></div><div class="tk"><span>01:00:05:00</span></div>
-          <div class="tk"><span>01:00:10:00</span></div><div class="tk"><span>01:00:15:00</span></div>
-          <div class="tk"><span>01:00:20:00</span></div><div class="tk"><span>01:00:25:00</span></div>
+        <!-- Дээд timeline-ийн зүүн булан (2026-09-19-ний зураг): ⚌ Timeline Options (tooltip баталгаажсан),
+             дунд товчны нэр тодорхойгүй, 3 дахь товч Trim Start/End to Playhead, Resync Clip цэс нээнэ. -->
+        <div class="cut-tools up">
+          <div class="row"><span class="hs mi" data-t="timeline-options">⚌</span><span title="Нэр нь баталгаажаагүй">⇤≡</span><span class="hs mi" data-t="trim-resync-menu-cut">⇥≡</span></div>
         </div>
-        <div class="tl-row" style="height:26px"><div class="tl-head hs" data-t="track" style="width:34px"><span class="nm">V1</span></div>
-          <div class="tl-lane"><div class="clip cutv hs" data-t="clip" style="width:100%"></div></div></div>
+        <div class="tl-col">
+          <div class="tl-ruler hs" data-t="timeline-ruler" style="padding-left:34px">
+            <div class="tk"><span>01:00:00:00</span></div><div class="tk"><span>01:00:05:00</span></div>
+            <div class="tk"><span>01:00:10:00</span></div><div class="tk"><span>01:00:15:00</span></div>
+            <div class="tk"><span>01:00:20:00</span></div><div class="tk"><span>01:00:25:00</span></div>
+          </div>
+          <div class="tl-row" style="height:26px"><div class="tl-head hs" data-t="track" style="width:34px"><span class="nm">V1</span></div>
+            <div class="tl-lane"><div class="clip cutv hs" data-t="clip" style="width:100%"></div></div></div>
+        </div>
       </div>
       <div class="cut-lower hs" data-t="dual-timeline">
+        <!-- Доод timeline-ийн зүүн булан — 5 товч, tooltip бүр баталгаажсан:
+             Ripple On · Dynamic Trim Mode (Slip) · Split Clip · Add Marker · Keyframes -->
         <div class="cut-tools">
-          <span class="hs" data-t="source-track-selector">⚌</span><span class="hs" data-t="track">⧈</span><span class="hs" data-t="track-lock">⊠</span>
+          <div class="row"><span class="hs on" data-t="ripple-on">▣</span><span class="hs" data-t="dynamic-trim-mode-slip">⇹</span>
+            <span class="hs" data-t="split-clip">✂</span><span class="hs mk" data-t="marker">⬟</span><span class="hs" data-t="keyframe-editor">◈</span></div>
           <div class="sp"></div>
-          <span class="hs" data-t="selection-mode">⧉</span><span class="hs" data-t="trim-edit-mode">⇹</span>
-          <span class="hs" data-t="blade">✂</span><span class="hs" data-t="marker">●</span><span class="hs" data-t="snapping">◈</span>
+          <!-- Замын толгойн 5 товч, tooltip бүр баталгаажсан: Enlarge · Lock · Solo Track On · Mute · Disable Track -->
+          <div class="thead"><span class="hs" data-t="enlarge-track">⇕</span><span class="hs" data-t="lock-track">🔒</span><span class="hs" data-t="solo-track-on">🎧</span><span class="hs" data-t="mute-track">🔊</span><span class="hs" data-t="disable-track">▤</span><span class="nm hs" data-t="track">V1</span></div>
+          <div class="thead"><span class="nm hs" data-t="track">A1</span></div>
         </div>
         <div style="flex:1;display:flex;flex-direction:column;min-width:0">
           <div class="tl-ruler hs" data-t="timeline-ruler" style="padding-left:0;background:var(--rs-sub)">

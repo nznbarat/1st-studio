@@ -464,6 +464,40 @@
       ["create-smart-filter", "Create Smart Filter…"]
     ]},
 
+    /* Cut хуудас — дээд timeline-ийн зүүн булангийн ⚌ "Timeline Options" товч
+       (2026-09-19-ний зураг: 15 мөр, 5 тусгаарлагч). Voice Convert саарал байсан —
+       нөхцөл тодорхойгүй. */
+    "timeline-options": { label: "Timeline Options", verified: true, items: [
+      ["create-subtitles-from-audio", "Create Subtitles from Audio"],
+      ["scene-cut-detection", "Detect Scene Cuts"],
+      "-",
+      ["ai-audio-assistant", "Audio Assistant"],
+      ["ai-voice-convert", "Voice Convert", "", "", "none"],
+      "-",
+      ["add-video-track", "Add Video Track"],
+      ["add-audio-track", "Add Audio Track"],
+      ["add-subtitle-track", "Add Subtitle Track"],
+      ["delete-empty-tracks", "Delete Empty Tracks"],
+      "-",
+      ["split-clip", "Split Clips"],
+      ["join-match-edit-clips", "Join Match Edit Clips"],
+      "-",
+      ["marker", "Add Marker"],
+      ["set-color-and-add-marker", "Set Color and Add Marker"],
+      "-",
+      ["clear-transition-from-all-edits", "Clear Transition from All Edits"],
+      ["add-dissolve-to-all-edits", "Add Dissolve to All Edits"],
+      ["add-transition-to-all-edits", "Add Transition to All Edits"]
+    ]},
+
+    /* Cut хуудас — дээд timeline-ийн зүүн булангийн 3 дахь товч (tooltip нэр баталгаажаагүй). */
+    "trim-resync-menu-cut": { label: "Trim / Resync", verified: true, items: [
+      ["trim-start", "Trim Start to Playhead"],
+      ["trim-end", "Trim End to Playhead"],
+      "-",
+      ["resync-clip", "Resync Clip"]
+    ]},
+
     "color-page": { label: "Color", verified: true, items: [
       ["node-editor", "Nodes", "", "›"],
       ["reset", "Reset", "", "›"],

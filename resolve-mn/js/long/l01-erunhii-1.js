@@ -542,6 +542,8 @@ Marker нь timeline эсвэл клипийн **тодорхой кадарт**
 - Тэмдэглэгээний өнгөөр ажлын төлөвийг ялгах (улаан — засах, ногоон — бэлэн).
 
 Холбоотой: [[flag]] — кадарт биш клипэд хамаарах тэмдэг.
+
+> Cut хуудсанд: доод timeline-ийн зүүн булангийн цэнхэр товч (tooltip: **Add Marker**) заагчийн байрлалд тэмдэг нэмнэ; viewer дээр Time / Name (Marker 1) хүснэгт гарна. Timeline Options ⚌ жагсаалтад мөн Add Marker, Set Color and Add Marker байна. [[set-color-and-add-marker]].
 `,
 
 "media-pool": `

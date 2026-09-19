@@ -281,6 +281,10 @@
     pop.style.left = Math.max(2, Math.min(nb.left - hb.left, hb.width - 300)) + "px";
     pop.style.top  = (nb.bottom - hb.top) + "px";
     host.appendChild(pop);
+    /* Урт жагсаалт доош багтахгүй бол Resolve шиг дээш шилжүүлнэ
+       (Cut хуудасны Timeline Options цэс дэлгэцийн дээд захаас эхэлдэг). */
+    const top = nb.bottom - hb.top, ph = pop.offsetHeight;
+    if (top + ph > hb.height - 2) pop.style.top = Math.max(2, hb.height - ph - 2) + "px";
     return true;
   };
 
