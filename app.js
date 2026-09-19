@@ -1503,8 +1503,9 @@ function drawOverlay(cw, ch) {
       octx.beginPath(); octx.moveTo(r.x + r.w / 2 - 7, r.y + r.h / 2); octx.lineTo(r.x + r.w / 2 + 7, r.y + r.h / 2);
       octx.moveTo(r.x + r.w / 2, r.y + r.h / 2 - 7); octx.lineTo(r.x + r.w / 2, r.y + r.h / 2 + 7); octx.stroke();
     }
+    /* Камерын нэрийг хүрээний ДОТОР доод талд — зүүн дээд талын HUD-тай давхцахгүй */
     octx.fillStyle = 'rgba(255,160,40,.95)'; octx.font = '600 10px JetBrains Mono, monospace'; octx.textAlign = 'left';
-    octx.fillText('ShotCam · ' + $('aspect').value + ' · ' + lensMM(state.fov) + 'mm · f' + curFrame, r.x + 2, r.y - 5);
+    octx.fillText('ShotCam · ' + $('aspect').value + ' · ' + lensMM(state.fov) + 'mm · f' + curFrame, r.x + 5, r.y + r.h - 7);
     if (playing) {
       octx.fillStyle = '#f22e23'; octx.beginPath();   /* before_current_frame */ octx.arc(r.x + r.w - 14, r.y + 12, 4.5, 0, TAU); octx.fill();
       octx.fillStyle = '#fff'; octx.font = '600 9px JetBrains Mono'; octx.textAlign = 'right';
@@ -2017,6 +2018,9 @@ rdata || '',
   dl('1st-studio-camera-' + stamp() + '.py', py, 'text/x-python;charset=utf-8');
 }
 
+/** manual.js ачаалагдсан эсэх (файл дутуу хуулсан ч програм ажиллана) */
+function manualReady() { return typeof openManual === 'function' && typeof MANUAL !== 'undefined'; }
+
 /* ─────────── 22. Toast ─────────── */
 let toastT = null;
 function toast(msg, kind) {
@@ -2082,7 +2086,7 @@ function doAct(a) {
     case 'asclear': asClearAll(); break;
     case 'recover': { const l = asList(); if (!l.length) { toast('Хадгалалт олдсонгүй', 'err'); break; } asRestore(0); break; }
     case 'fixtab': gotoPage('pgFix'); break;
-    case 'manual': openManual(); break;
+    case 'manual': manualReady() ? openManual() : toast('manual.js файл олдсонгүй', 'err'); break;
     case 'incsave': dl('1st-studio-project-' + stamp() + '.json', serialize(), 'application/json'); break;
   }
 }
@@ -2120,7 +2124,7 @@ document.addEventListener('click', e => {
   if (d.hist !== undefined) { const i = +d.hist; if (hist[i]) { histGo(i); toast('⟲ ' + hist[i].label); } return; }
   if (d.asr !== undefined) { asRestore(+d.asr); return; }
   if (d.asd !== undefined) { e.stopPropagation(); asDelete(+d.asd); return; }
-  if (d.man !== undefined) { manualGo(d.man); return; }
+  if (d.man !== undefined) { if (manualReady()) manualGo(d.man); return; }
   if (d.ex !== undefined) { $('inPrompt').value = EXAMPLES[+d.ex].t; runParse(); return; }
   if (d.k !== undefined) { gotoKey(+d.k); return; }
   if (d.kdel !== undefined) { e.stopPropagation(); delKey(+d.kdel); return; }
@@ -2211,8 +2215,10 @@ $('asChk').onchange = () => { asOn = $('asChk').checked; asSaveCfg(); refreshFix
 $('asEvery').onchange = () => { asSec = +$('asEvery').value || 30; asSaveCfg(); refreshFix(); };
 $('recYes').onclick = () => asRestore(0);
 $('recNo').onclick = () => recBar(false);
-$('manClose').onclick = closeManual;
-$('manQ').addEventListener('input', () => manualSearch($('manQ').value));
+if (manualReady()) {
+  $('manClose').onclick = closeManual;
+  $('manQ').addEventListener('input', () => manualSearch($('manQ').value));
+}
 ['nx', 'ny', 'nr'].forEach(id => $(id).addEventListener('change', () => {
   if (!active) return;
   active.position.x = clamp(+$('nx').value || 0, -22, 22);
@@ -2225,7 +2231,7 @@ $('manQ').addEventListener('input', () => manualSearch($('manQ').value));
 
 /* ─────────── 25. Гарын товчлуур ─────────── */
 document.addEventListener('keydown', e => {
-  if (typeof manualOpen !== 'undefined' && manualOpen) {
+  if (manualReady() && manualOpen) {
     if (e.key === 'Escape' || e.key === 'F1') { e.preventDefault(); closeManual(); return; }
     if (e.key === '/' && document.activeElement !== $('manQ')) { e.preventDefault(); $('manQ').focus(); return; }
     return;
@@ -2243,7 +2249,7 @@ document.addEventListener('keydown', e => {
     if (k === 'x' || k === 'y' || k === 'z') { xf.axis = xf.axis === k ? null : (k === 'z' ? 'y' : k); showXHint(); e.preventDefault(); return; }
     return;
   }
-  if (k === 'f1') { e.preventDefault(); openManual(); return; }
+  if (k === 'f1') { e.preventDefault(); if (manualReady()) openManual(); return; }
   if ((e.ctrlKey || e.metaKey) && k === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
   if ((e.ctrlKey || e.metaKey) && k === 'y') { e.preventDefault(); redo(); return; }
   if ((e.ctrlKey || e.metaKey) && e.altKey && k === 's') { e.preventDefault(); doAct('incsave'); return; }
@@ -2945,7 +2951,7 @@ syncAll();
 asSetup();
 histReset('Нээлтийн төлөв');
 asDirty = false;
-manualInit();
+if (manualReady()) manualInit();
 diagnose(); refreshFix();
 asOffer();
 tick();
