@@ -34,6 +34,13 @@ CFG = {
     "layout": {"khalkh": (-2.69, 10.62), "buryat": (0.09, 17.62),
                "uzemchin": (3.97, 21.56)},
     "seed": 11,
+    # Харьцуулах стандарт хүн. 2260 оны орчин үе — энгийн битүү хослол.
+    "human": {"on": True, "height": 1.70, "at": (-1.18, 9.75), "rot": -24.0},
+    # Цуваа эгнээ: --queue тугаар асаана. Гүн рүү жигд алслана.
+    # Диагональ эгнээ: гүн рүү 29 / 50 / 70 м. Хажуу тийш ч шилжинэ —
+    # эс бөгөөс урт линз дээр бие биенээ бүрэн халхална.
+    "queue": {"khalkh": (-2.49, 11.40), "buryat": (0.42, 32.00),
+              "uzemchin": (6.52, 52.00)},
     "wind": 0.30,         # хормойн салхины хазайлт (0 = салхигүй)
     "ground": True,
     "sun": {"energy": 4.5, "color": (1.0, 0.82, 0.60), "angle_deg": 7.0},
@@ -706,6 +713,70 @@ def fig_uzemchin(B, M, origin):
 
 
 # ══════════════════════════════════════════════════════════════════════
+#  Харьцуулах стандарт хүн — 170 см
+# ══════════════════════════════════════════════════════════════════════
+def fig_human(M, origin, H=1.70, rot=0.0):
+    """Хэмжээ харьцуулах жирийн хүн.
+
+    Аврагуудын 1/9 харьцаатай толгойн оронд бодит 1/7.6 харьцаа өгнө —
+    эс бөгөөс харьцуулалт өөрөө гажина.
+    """
+    root = empty("HUMAN", (origin[0], origin[1], 0), (0, 0, math.radians(rot)))
+    suit = cloth("hm_suit", (0.085, 0.095, 0.115), rough=0.62, sheen=0.15)
+    trim = cloth("hm_trim", (0.30, 0.34, 0.40), rough=0.40, sheen=0.25)
+    hw, hd = H * 0.066, H * 0.076
+    z_head, z_chin = H, H * 0.868
+    z_neck, z_sh = H * 0.845, H * 0.818
+    z_bust, z_waist, z_hip = H * 0.720, H * 0.600, H * 0.520
+    z_knee, z_ank = H * 0.285, H * 0.040
+    sw = H * 0.115
+
+    # толгой
+    secs = []
+    for t, rw, rd in ((0.00, 0.60, 0.62), (0.18, 0.88, 0.90), (0.44, 1.00, 1.00),
+                      (0.70, 0.96, 0.98), (1.00, 0.42, 0.46)):
+        secs.append((z_chin + (z_head - z_chin) * t,
+                     ring(hw * rw, hd * rd, 20, squash=0.16)))
+    loft("HM_Head", secs, M["skin"], root, cap_top=True)
+    loft("HM_Hair", [(z_chin + (z_head - z_chin) * 0.40, ring(hw * 1.03, hd * 1.05, 20, cy=-hd * 0.10)),
+                     (z_chin + (z_head - z_chin) * 0.78, ring(hw * 1.02, hd * 1.04, 20, cy=-hd * 0.10)),
+                     (z_head, ring(hw * 0.44, hd * 0.48, 20, cy=-hd * 0.06))],
+         M["hair"], root, cap_top=True)
+    loft("HM_Neck", [(z_sh, ring(hw * 0.54, hw * 0.54, 14)),
+                     (z_chin + H * 0.004, ring(hw * 0.46, hw * 0.48, 14))], M["skin"], root)
+    # их бие
+    loft("HM_Torso", [(z_hip, ring(sw * 0.82, sw * 0.58, 26)),
+                      (z_waist, ring(sw * 0.72, sw * 0.50, 26)),
+                      (z_bust, ring(sw * 0.90, sw * 0.58, 26)),
+                      (z_sh, ring(sw, sw * 0.56, 26))], suit, root, cap_top=True)
+    box("HM_Collar", (sw * 0.70, sw * 0.50, H * 0.020), (0, -sw * 0.10, z_sh - H * 0.014),
+        mat=trim, parent=root, bevel=H * 0.004)
+    # гар — бага зэрэг биеэс салангид
+    for sx in (-1, 1):
+        path = [(sx * sw * 0.92, 0, z_sh - H * 0.020),
+                (sx * sw * 1.05, -H * 0.006, z_bust - H * 0.030),
+                (sx * sw * 1.02, -H * 0.028, z_waist),
+                (sx * sw * 0.96, -H * 0.040, z_hip - H * 0.030)]
+        sweep("HM_Arm_%d" % sx, path, H * 0.040, suit, root, n=12,
+              taper=lambda t: 1.0 - 0.34 * t)
+        cyl("HM_Hand_%d" % sx, H * 0.021, H * 0.050,
+            (sx * sw * 0.94, -H * 0.046, z_hip - H * 0.062),
+            mat=M["skin"], parent=root, n=12)
+    # хөл
+    for sx in (-1, 1):
+        path = [(sx * sw * 0.40, 0, z_hip),
+                (sx * sw * 0.40, H * 0.004, z_knee + H * 0.08),
+                (sx * sw * 0.38, 0, z_knee),
+                (sx * sw * 0.36, -H * 0.004, z_ank + H * 0.04)]
+        sweep("HM_Leg_%d" % sx, path, H * 0.056, suit, root, n=12,
+              taper=lambda t: 1.0 - 0.30 * t)
+        box("HM_Boot_%d" % sx, (H * 0.060, H * 0.115, H * 0.052),
+            (sx * sw * 0.36, -H * 0.022, H * 0.026), mat=M["boot"], parent=root,
+            bevel=H * 0.010)
+    return root
+
+
+# ══════════════════════════════════════════════════════════════════════
 #  Тайз
 # ══════════════════════════════════════════════════════════════════════
 FIGURES = {"khalkh": fig_khalkh, "buryat": fig_buryat, "uzemchin": fig_uzemchin}
@@ -734,13 +805,17 @@ def build(only=None):
         # бүрт өөр тул биеийн өндрийг тус тусад нь буцаан бодно.
         H = CFG["height"] / (1.0 + HAT_EXTRA[n])
         B = Body(H)
-        pos = (0.0, 0.0) if only else CFG["layout"][n]
+        table = CFG["queue"] if CFG.get("use_queue") else CFG["layout"]
+        pos = (0.0, 0.0) if only else table[n]
         o = FIGURES[n](B, M, (pos[0], pos[1], 0))
         o.rotation_euler = (0, 0, math.radians(rots[n]))
         out.append((n, o))
         d = math.hypot(pos[0] - 0.0, pos[1] - (-6.0))
         print("[1st Studio] %-9s нийт %.2f м (бие %.2f) · камераас %.1f м"
               % (n, H * (1.0 + HAT_EXTRA[n]), H, d))
+    hc = CFG["human"]
+    if hc["on"] and not only:
+        fig_human(M, hc["at"], hc["height"], hc["rot"])
     if CFG["ground"]:
         # Хажуугийн гялбаа (sheen) нь асар том хавтгайг цав цагаан болгодог
         # тул газарт зөвхөн матовой сарних гадаргуу өгнө.
@@ -771,6 +846,20 @@ def build(only=None):
         h1 = top_of(o)
         print("   %-9s барьсан %.3f -> масштаб %.4f -> %.3f м (зөрүү %+.1f мм)"
               % (n, h0, o.scale.z, h1, 1000 * (h1 - CFG["height"])))
+    if hc["on"] and not only:
+        H = CFG["height"] / (1.0 + HAT_EXTRA["khalkh"])
+        man = hc["height"]
+        print("\n[1st Studio] ХЭМЖЭЭНИЙ ХАРЬЦУУЛАЛТ")
+        print("   аврага %.2f м · стандарт хүн %.2f м · харьцаа %.2f дахин"
+              % (CFG["height"], man, CFG["height"] / man))
+        print("   хүн аврагын нийт өндрийн %.1f%%" % (100 * man / CFG["height"]))
+        for k in ("ankle", "knee", "hip", "waist", "shoulder", "head_top"):
+            z = LM[k] * H
+            tag = "  <- хүний толгойн орой яг энд" if abs(z - man) < 0.10 else ""
+            print("   аврагын %-9s %5.2f м%s" % (k, z, tag))
+        print("   Жишээ: 170 см хүнтэй харьцуулбал энэ нь 50 см нялх хүүхэд")
+        print("          насанд хүрэгчийн хажууд зогсохтой тэнцүү (29.4%% ~ %.1f%%)"
+              % (100 * man / CFG["height"]))
     print("[1st Studio] Нийт объект %d" % len(bpy.data.objects))
     return out
 
@@ -816,6 +905,12 @@ ANGLES = {
     "close": ((1.31, 6.12, 5.05), (-2.69, 10.62, 5.15), 85.0),
     # гурвуулангийн бүтэн хүрээ, арай өргөн
     "trio":  ((1.6, -9.0, 3.2), (0.4, 18.0, 3.0), 40.0),
+    # ХЭМЖЭЭ ХАРЬЦУУЛАХ: алсаас урт линзээр — хэтийн гажилт багасч,
+    # аврага ба хүний өндрийн харьцаа цэвэр уншигдана (46 м, 135 мм).
+    "scale": ((-1.90, -35.6, 3.05), (-1.90, 10.30, 3.05), 135.0),
+    # цуваа эгнээ (--queue-тэй хамт): 85 мм, нэг дэх нь 29 м зайд.
+    # Хэтийн шахалт бий боловч алслалтын жижгэрэлт (100/59/42%) хадгалагдана.
+    "line":  ((0.0, -18.0, 3.10), (0.0, 30.0, 3.10), 85.0),
 }
 
 
@@ -886,6 +981,9 @@ def main():
     CFG["wind"] = float(opt("--wind", CFG["wind"]))
     CFG["device"] = opt("--device", CFG["device"])
     only = opt("--only")
+    CFG["use_queue"] = "--queue" in argv
+    if "--no-human" in argv:
+        CFG["human"]["on"] = False
     build(only)
     build_light()
     build_camera(opt("--angle", "close" if only else "hero"))
