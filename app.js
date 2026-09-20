@@ -1397,7 +1397,12 @@ function buildUI() {
       '<p class="hint">PNG-г AI видео хэрэгсэлдээ <b>эхний фрейм</b> болгон өгвөл промттой хослоод үр дүн эрс сайжирна.</p>') +
     box('🔶 Blender экспорт',
       '<button class="big" data-act="py">🐍 Blender скрипт (.py) татах</button>' +
-      '<p class="hint">Blender дээр <b>Scripting</b> таб → <b>Open</b> → скриптийг сонгоод <b>Run</b>. Камер, түлхүүр кадр, линзний анимаци, дүрүүдийн байрлал бүгд үүснэ (Blender 4.x / 5.x).</p>') +
+      '<p class="hint">Blender дээр <b>Scripting</b> таб → <b>Open</b> → скриптийг сонгоод <b>Run</b>. Камер, түлхүүр кадр, линзний анимаци, дүрүүдийн байрлал бүгд үүснэ (Blender 3.0+, 4.x / 5.x).</p>' +
+      '<p class="hint" style="border-left:2px solid var(--ok);padding-left:8px;margin-top:6px">' +
+      '<b>Юу ч эвдрэхгүй.</b> Скрипт зөвхөн өөрийн үүсгэснээ дарж бичнэ — таны объект, ' +
+      'тохиргоо хөндөгдөхгүй. <b>Дахин дахин</b> ажиллуулж болно: <b>Ctrl+P</b>-ээр холбосон ' +
+      'загвар салахгүй. Бүгдийг буцаах бол скриптийн эхний <b>ACTION</b> мөрийг ' +
+      '<b>"REMOVE"</b> болгоод дахин Run дарна.</p>') +
     box('📊 Өгөгдөл', '<div class="g2"><button class="w" data-act="csv">Кадрын CSV</button><button class="w" data-act="txt">Промт .txt</button></div>') +
     '</div>' +
 
