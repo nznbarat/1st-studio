@@ -922,37 +922,80 @@ ANGLES = {
 # болгодог. Хүрээ өөрчлөгдөх нь зөвхөн камер өөрөө явснаас.
 MOVES = {
     # Хүнээс эхэлж, ухарч өргөгдөн аврагуудыг илчилнэ — хэмжээний цохилт.
-    "reveal": ((1.40, 3.00, 1.45), (-0.10, 7.00, 1.05),
-               (2.30, -8.60, 4.30), (-1.40, 9.60, 3.10), 40.0),
-    # Эхний аврагыг тойрон нум зурна.
-    "orbit":  ((-19.5, 1.50, 3.40), (-2.69, 10.62, 3.00),
-               (13.5, -3.50, 3.40), (-2.69, 10.62, 3.00), 55.0),
+    "reveal": {"kind": "line", "lens": 40.0,
+               "c0": (1.40, 3.00, 1.45), "a0": (-0.10, 7.00, 1.05),
+               "c1": (2.30, -8.60, 4.30), "a1": (-1.40, 9.60, 3.10)},
+    # Эхний аврагыг ЖИНХЭНЭ нумаар тойрно. Өмнө нь энэ нь хоёр цэгийн
+    # хоорондох ШУЛУУН байсан тул камер дундуураа 11.6 м хүртэл ойртож,
+    # аврага кадрыг бүхэлд нь эзэлж нөгөө хоёрыг халхалдаг байв.
+    # Тогтмол радиустай нум нь хүрээг эхнээс эцэс хүртэл жигд барина.
+    "orbit":  {"kind": "arc", "lens": 55.0,
+               "center": (-2.69, 10.62), "r": 21.0,
+               "az0": -150.0, "az1": -42.0, "z": 3.40, "aim_z": 3.00},
     # Эгнээний дагуу удаан түрэх (--queue-тэй хамт).
-    "push":   ((0.00, -30.0, 3.10), (0.20, 30.0, 3.10),
-               (0.00, -12.0, 3.10), (0.20, 30.0, 3.10), 85.0),
+    "push":   {"kind": "line", "lens": 85.0,
+               "c0": (0.00, -30.0, 3.10), "a0": (0.20, 30.0, 3.10),
+               "c1": (0.00, -12.0, 3.10), "a1": (0.20, 30.0, 3.10)},
 }
 
 
 def animate_camera(cam, aim, move, frames):
-    """Камер ба харцыг шугаман замаар хөдөлгөнө.
+    """Камер ба харцыг түлхүүрлэнэ.
 
-    Blender анхдагчаар Bezier-ээр зөөлрүүлдэг — эхлэл, төгсгөлд удааширч
-    дундуураа хурдасна. Энэ нь кран/долли хөдөлгөөнд яг тохирно тул
-    интерполяцийг хэвээр үлдээв (нисдэг камерын үед шугаман болгодог).
+    line — эхлэл, төгсгөл хоёрын хооронд шулуунаар.
+    arc  — төв цэгийг тойрон тогтмол радиустай нумаар. Нум нь завсрын
+           түлхүүрүүд шаарддаг: зөвхөн хоёр үзүүрийг өгвөл Blender тэднийг
+           шулуунаар холбож, камер дундуураа объект руу дайрна.
     """
-    c0, a0, c1, a1, lens = MOVES[move]
+    m = MOVES[move]
     sc = bpy.context.scene
     sc.frame_start, sc.frame_end = 1, frames
-    cam.data.lens = lens
-    for f, c, a in ((1, c0, a0), (frames, c1, a1)):
+    cam.data.lens = m["lens"]
+
+    if m["kind"] == "line":
+        keys = [(1, m["c0"], m["a0"]), (frames, m["c1"], m["a1"])]
+        d0, d1 = math.dist(m["c0"], m["a0"]), math.dist(m["c1"], m["a1"])
+        print("[1st Studio] Хөдөлгөөн '%s': %d фрейм (%.1f сек), %.0f мм, шулуун"
+              % (move, frames, frames / 24.0, m["lens"]))
+        print("   зай %.1f -> %.1f м, өндөр %.2f -> %.2f м, хурд %.2f м/с"
+              % (d0, d1, m["c0"][2], m["c1"][2],
+                 math.dist(m["c0"], m["c1"]) / (frames / 24.0)))
+    else:
+        cx, cy = m["center"]
+        keys, prev, travel = [], None, 0.0
+        steps = max(8, frames // 6)          # нумыг хангалттай нягт түлхүүрлэнэ
+        for i in range(steps + 1):
+            t = i / steps
+            f = 1 + round((frames - 1) * t)
+            az = math.radians(m["az0"] + (m["az1"] - m["az0"]) * t)
+            c = (cx + m["r"] * math.cos(az), cy + m["r"] * math.sin(az), m["z"])
+            keys.append((f, c, (cx, cy, m["aim_z"])))
+            if prev:
+                travel += math.dist(prev, c)
+            prev = c
+        print("[1st Studio] Хөдөлгөөн '%s': %d фрейм (%.1f сек), %.0f мм, нум"
+              % (move, frames, frames / 24.0, m["lens"]))
+        print("   радиус %.1f м тогтмол, өнцөг %.0f° -> %.0f° (%.0f°), %d түлхүүр"
+              % (m["r"], m["az0"], m["az1"], abs(m["az1"] - m["az0"]), len(keys)))
+        print("   туулах зам %.1f м, хурд %.2f м/с" % (travel, travel / (frames / 24.0)))
+
+    for f, c, a in keys:
         cam.location = c
         aim.location = a
         cam.keyframe_insert("location", frame=f)
         aim.keyframe_insert("location", frame=f)
-    print("[1st Studio] Хөдөлгөөн '%s': %d фрейм, %.0f мм" % (move, frames, lens))
-    d0 = math.dist(c0, a0)
-    d1 = math.dist(c1, a1)
-    print("   зай %.1f м -> %.1f м, өндөр %.2f -> %.2f м" % (d0, d1, c0[2], c1[2]))
+    # Нумын завсрын түлхүүрүүд Bezier-ээр зөөлрвөл алхам бүрт удааширч
+    # чичирдэг тул шугаман болгоно. Хоёр үзүүрт л зөөлрөлт хэрэгтэй.
+    if m["kind"] == "arc":
+        for ob in (cam, aim):
+            ad = ob.animation_data
+            try:
+                cb = ad.action.layers[0].strips[0].channelbag(ad.action_slot)
+                for fc in cb.fcurves:
+                    for kp in fc.keyframe_points:
+                        kp.interpolation = "LINEAR"
+            except Exception:
+                pass
 
 
 def build_camera(name="hero"):
