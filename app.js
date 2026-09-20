@@ -2588,7 +2588,7 @@ function diagnose() {
       fixGaps(1);
     }));
   if (oobIdx.length) out.push(ISS('err', 'oob',
-    oobIdx.length + ' кадар фреймийн мужаас гадуур байна.',
+    oobIdx.length + ' кадр фреймийн мужаас гадуур байна.',
     'Мужид багтаан оруулж, дарааллыг нь засна.',
     () => { keys.forEach(k => k.frame = clamp(Math.round(k.frame), fStart, fEnd)); fixGaps(2); }));
   if (clampIdx.length) out.push(ISS('warn', 'clamp',
@@ -2602,9 +2602,9 @@ function diagnose() {
     const g = keys[i].frame - keys[i - 1].frame;
     if (g <= 0) dup++; else if (g < 3) tight++;
   }
-  if (dup) out.push(ISS('err', 'dup', dup + ' кадар нэг фрейм дээр давхарлаа.',
+  if (dup) out.push(ISS('err', 'dup', dup + ' кадр нэг фрейм дээр давхарлаа.',
     'Хамгийн багадаа 2 фреймээр салгана.', () => { fixGaps(2); }));
-  else if (tight) out.push(ISS('warn', 'tight', tight + ' кадар хоорондоо хэт ойрхон (3 фреймээс бага).',
+  else if (tight) out.push(ISS('warn', 'tight', tight + ' кадр хоорондоо хэт ойрхон (3 фреймээс бага).',
     'Хөдөлгөөн огцом харагдана — 3 фреймийн зайтай болгоно.', () => { fixGaps(3); }));
 
   /* ── Камерын байрлал ── */
@@ -2623,7 +2623,7 @@ function diagnose() {
     }));
   if (tooClose.length) out.push(ISS('warn', 'close',
     tooClose.length + ' кадарт камер дүрийн дотуур орох магадлалтай (зай < 1.05м).',
-    'Зайг 1.4 метр болгож татна — ойрын кадар хэвээр үлдэнэ.',
+    'Зайг 1.4 метр болгож татна — ойрын кадр хэвээр үлдэнэ.',
     () => { keys.forEach(k => { if (k.radius < 1.4) k.radius = 1.4; clampS(k); }); }));
   if (notFit.length) out.push(ISS('warn', 'fit',
     notFit.length + ' кадарт бүх дүр кадарт багтахгүй байна.',
@@ -2667,7 +2667,7 @@ function diagnose() {
       const lin = { theta: a.theta + angDiff(c.theta, a.theta) * u, phi: lerp(a.phi, c.phi, u), radius: lerp(a.radius, c.radius, u), fov: lerp(a.fov, c.fov, u), roll: lerp(a.roll || 0, c.roll || 0, u), target: a.target.clone().lerp(c.target, u) };
       if (stateDist(b, lin) < .1) redun++;
     }
-    if (redun) out.push(ISS('tip', 'redun', redun + ' кадар илүүдэж байна (хөрш кадруудаасаа ялгарахгүй).',
+    if (redun) out.push(ISS('tip', 'redun', redun + ' кадр илүүдэж байна (хөрш кадруудаасаа ялгарахгүй).',
       'Blender-ийн "Clean Keyframes"-тэй адил — хэрэггүй кадруудыг хасна.',
       () => { enhClean(.1); }));
 
