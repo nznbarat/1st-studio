@@ -1124,6 +1124,10 @@ def build_camera(name="hero"):
     d = bpy.data.cameras.new("DEEL_CAM")
     d.lens = lens
     d.sensor_width = 36.0
+    # Анхдагч clip_end нь 100 м — 600 м газрыг таслаж хиймэл тэнгэрийн
+    # хаяа үүсгэнэ. Тайз 60 м хүрэх тул алсыг нь нээв.
+    d.clip_start = 0.10
+    d.clip_end = 3000.0
     d.dof.use_dof = True
     d.dof.focus_object = aim
     d.dof.aperture_fstop = 3.2
@@ -1135,6 +1139,26 @@ def build_camera(name="hero"):
     c.track_axis, c.up_axis = "TRACK_NEGATIVE_Z", "UP_Y"
     bpy.context.scene.camera = cam
     return cam
+
+
+def prep_viewport():
+    """Blender дээр нээмэгц камерын харцаар, материалтай харагддаг болгоно."""
+    for screen in bpy.data.screens:
+        for area in screen.areas:
+            if area.type != "VIEW_3D":
+                continue
+            for space in area.spaces:
+                if space.type != "VIEW_3D":
+                    continue
+                space.shading.type = "MATERIAL"
+                space.shading.use_scene_lights = True
+                space.shading.use_scene_world = True
+                space.clip_end = 3000.0        # алсын газар харагдана
+                space.clip_start = 0.10
+                try:
+                    space.region_3d.view_perspective = "CAMERA"
+                except Exception:
+                    pass
 
 
 def pick_device():
@@ -1210,6 +1234,14 @@ def main():
         bpy.context.scene.frame_set(int(frame))
     blend = opt("--save-blend")
     if blend:
+        # Нээмэгц шууд ажиллахад бэлэн байлгана: камерын харц, материал,
+        # гаралтын зам, фреймийн хүрээ бүгд тавигдсан байна.
+        bpy.context.scene.frame_set(1)
+        if not bpy.context.scene.render.filepath or \
+                bpy.context.scene.render.filepath.startswith("/tmp"):
+            bpy.context.scene.render.filepath = "//out/f"
+        bpy.context.scene.render.image_settings.file_format = "PNG"
+        prep_viewport()
         bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(blend))
         print("[1st Studio] Хадгаллаа:", blend)
     if "--render" in argv:
