@@ -189,18 +189,69 @@ function clearScene() {
 }
 const objs = () => people.concat(props);
 
+/* ── Бай (subject): дүрүүд ба Blender-ээс оруулсан 3D загварууд ──
+   Загвар нь хэт том (14м-ээс өргөн) бол «орчин» гэж үзэж, жаазлалтад тооцохгүй. */
+const MODEL_MAX_SUBJ = 14;
+function modelDim(o) {
+  return o.userData.dim || { w: .9, h: 1.8, d: .9 };
+}
+/** Бай болж чадах оруулсан загварууд */
+function subjModels() {
+  return props.filter(o => {
+    if (o.userData.kind !== 'model' || o.visible === false) return false;
+    const d = modelDim(o);
+    return Math.hypot(d.w * o.scale.x, d.d * o.scale.z) <= MODEL_MAX_SUBJ;
+  });
+}
+/** Гол байн өндөр (м) — хүн байвал хүний өндөр, эс бөгөөс загварын бодит өндөр */
+/** Байн гадна талд үлдэх хамгийн бага зай — камер загварын дотор орохгүй */
+function minSafeRadius() {
+  let r = .6;
+  subjModels().forEach(m => {
+    const d = modelDim(m);
+    r = Math.max(r, Math.hypot(d.w * m.scale.x, d.d * m.scale.z) / 2 * 1.15);
+  });
+  return Math.min(r, 40);
+}
+function subjH() {
+  if (people.length) return SUBJ_H;
+  const ms = subjModels();
+  if (!ms.length) return SUBJ_H;
+  let h = 0;
+  ms.forEach(m => { h = Math.max(h, modelDim(m).h * m.scale.y); });
+  return clamp(h, .3, 12);
+}
 function centroid() {
   const c = new THREE.Vector3();
-  if (!people.length) return c.set(0, 1.0, 0);
-  people.forEach(p => c.add(p.position));
-  c.divideScalar(people.length); c.y = 1.05; return c;
+  const ms = subjModels();
+  if (!people.length && !ms.length) return c.set(0, 1.0, 0);
+  let n = 0;
+  people.forEach(p => { c.add(p.position); n++; });
+  ms.forEach(m => { c.add(m.position); n++; });
+  c.divideScalar(n);
+  c.y = people.length ? 1.05 : clamp(subjH() * .61, .35, 8);
+  return c;
 }
 /** Дүрүүдийн хэвтээ тархалт (м) — бүлгийн кадрын өргөнд хэрэгтэй */
 function spread() {
-  if (people.length < 2) return .7;
+  const ms = subjModels();
+  if (!ms.length) {                       /* загваргүй бол хуучин зан хэвээр */
+    if (people.length < 2) return .7;
+    let x0 = 1e9, x1 = -1e9, z0 = 1e9, z1 = -1e9;
+    people.forEach(p => { x0 = Math.min(x0, p.position.x); x1 = Math.max(x1, p.position.x); z0 = Math.min(z0, p.position.z); z1 = Math.max(z1, p.position.z); });
+    return Math.hypot(x1 - x0, z1 - z0) + .7;
+  }
   let x0 = 1e9, x1 = -1e9, z0 = 1e9, z1 = -1e9;
-  people.forEach(p => { x0 = Math.min(x0, p.position.x); x1 = Math.max(x1, p.position.x); z0 = Math.min(z0, p.position.z); z1 = Math.max(z1, p.position.z); });
-  return Math.hypot(x1 - x0, z1 - z0) + .7;
+  people.forEach(p => {
+    x0 = Math.min(x0, p.position.x - .35); x1 = Math.max(x1, p.position.x + .35);
+    z0 = Math.min(z0, p.position.z - .35); z1 = Math.max(z1, p.position.z + .35);
+  });
+  ms.forEach(m => {
+    const d = modelDim(m), w = d.w * m.scale.x / 2, dp = d.d * m.scale.z / 2;
+    x0 = Math.min(x0, m.position.x - w); x1 = Math.max(x1, m.position.x + w);
+    z0 = Math.min(z0, m.position.z - dp); z1 = Math.max(z1, m.position.z + dp);
+  });
+  return Math.max(.7, Math.hypot(x1 - x0, z1 - z0));
 }
 function arrange(kind) {
   const n = people.length; if (!n) return;
@@ -298,9 +349,15 @@ function placeModel(root, fileName, plainMaterial) {
 
   const g = new THREE.Group();
   g.add(root);
-  const finalH = new THREE.Box3().setFromObject(g).getSize(new THREE.Vector3()).y;
+  const sz = new THREE.Box3().setFromObject(g).getSize(new THREE.Vector3());
+  const finalH = sz.y;
   const base = fileName.replace(/\.[^.]+$/, '');
-  g.userData = { kind: 'model', name: base + '.' + String(++oCounter).padStart(3, '0'), vis: true, file: fileName, h: +finalH.toFixed(2) };
+  g.userData = {
+    kind: 'model', name: base + '.' + String(++oCounter).padStart(3, '0'), vis: true, file: fileName,
+    h: +finalH.toFixed(2),
+    /* автомат камер жаазлалтдаа ашиглана (дүрийн оронд загварын бодит хэмжээ) */
+    dim: { w: +sz.x.toFixed(3), h: +sz.y.toFixed(3), d: +sz.z.toFixed(3) }
+  };
 
   /* Төсөл нээхэд үүссэн «дутуу» орлуулагчийг олвол яг тэр байрлалд нь тавина */
   const slot = props.find(p => p.userData.kind === 'model' && p.userData.missing &&
@@ -309,14 +366,19 @@ function placeModel(root, fileName, plainMaterial) {
     g.position.copy(slot.position); g.rotation.y = slot.rotation.y; g.scale.copy(slot.scale);
     g.userData.name = slot.userData.name;
     disposeObj(slot); world.remove(slot); props.splice(props.indexOf(slot), 1);
+  } else if (!people.length && !props.some(o => o.userData.kind === 'model')) {
+    g.position.set(0, 0, 0);                 /* тайз хоосон бол төв рүү — камер шууд түүн рүү чиглэнэ */
   } else {
     const cen = centroid();
     g.position.set(clamp(cen.x + 2.4 + Math.random() * .8, -22, 22), 0, clamp(cen.z + (Math.random() * 2 - 1), -22, 22));
   }
+  const first = !people.length && props.filter(o => o.userData.kind === 'model').length === 0;
   props.push(g); world.add(g);
-  setActive(g); applyShading(); syncAll(); commit('Загвар оруулав: ' + fileName);
+  setActive(g); applyShading();
+  if (first) { focusAll(); onCamMove(); }    /* эхний загварыг шууд багтаана */
+  syncAll(); commit('Загвар оруулав: ' + fileName);
   toast('✅ ' + fileName + ' орлоо · ' + finalH.toFixed(1) + 'м' + (auto ? ' (хэмжээг тааруулав)' : '') +
-    ' · G зөөх, S хэмжээ, R эргүүлэх', 'ok');
+    (first ? ' · автомат камер үүн рүү чиглэнэ' : '') + ' · G зөөх, S хэмжээ, R эргүүлэх', 'ok');
 }
 
 /** Санах ойг чөлөөлнө */
@@ -697,8 +759,16 @@ function setCamView(on) {
 /* ─────────── 9. Кадрын шинжилгээ ─────────── */
 const NUM_EN = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight'];
 const NUM_MN = ['дүргүй', 'ганц', 'хоёр', 'гурван', 'дөрвөн', 'таван', 'зургаан', 'долоон', 'найман'];
-function subjEN() { const n = people.length; return n === 0 ? 'the empty landscape' : n === 1 ? 'the subject' : 'the ' + NUM_EN[n] + ' subjects'; }
-function subjMN() { const n = people.length; return n === 0 ? 'хоосон орчин' : n === 1 ? 'дүр' : NUM_MN[n] + ' дүр'; }
+function subjEN() {
+  const n = people.length;
+  if (n) return n === 1 ? 'the subject' : 'the ' + NUM_EN[n] + ' subjects';
+  return subjModels().length ? 'the subject' : 'the empty landscape';
+}
+function subjMN() {
+  const n = people.length;
+  if (n) return n === 1 ? 'дүр' : NUM_MN[n] + ' дүр';
+  return subjModels().length ? 'загвар' : 'хоосон орчин';
+}
 
 const SIZES = [
   { f: 4.6, en: 'extreme close-up', ab: 'ECU', mn: 'маш ойрын кадр (ECU)' },
@@ -711,19 +781,20 @@ const SIZES = [
   { f: 0, en: 'extreme wide shot', ab: 'EWS', mn: 'маш өргөн кадр (EWS)' }
 ];
 /** Кадрын өндөрт дүрийн эзлэх хувь → кадрын хэмжээ */
-function frameFrac(s) { return SUBJ_H / (2 * s.radius * Math.tan(s.fov * Math.PI / 360)); }
+function frameFrac(s) { return subjH() / (2 * s.radius * Math.tan(s.fov * Math.PI / 360)); }
 function shotSize(s) { const f = frameFrac(s); return SIZES.find(x => f > x.f) || SIZES[SIZES.length - 1]; }
 function radiusForSize(ab, fov) {
   const t = SIZES.find(x => x.ab === ab); if (!t) return state.radius;
   const idx = SIZES.indexOf(t);
   const hi = idx === 0 ? 7 : SIZES[idx - 1].f;
   const f = (t.f + hi) / 2;
-  return clamp(SUBJ_H / (2 * f * Math.tan(fov * Math.PI / 360)), .6, 90);
+  return clamp(subjH() / (2 * f * Math.tan(fov * Math.PI / 360)), minSafeRadius(), 90);
 }
 function camAngle(s) {
   const p = posOf(s);
   const dh = Math.hypot(p.x - s.target.x, p.z - s.target.z);
-  const el = Math.atan2(p.y - EYE_Y, Math.max(dh, .001)) * 180 / Math.PI;
+  const eye = people.length ? EYE_Y : clamp(subjH() * .826, .25, 10);
+  const el = Math.atan2(p.y - eye, Math.max(dh, .001)) * 180 / Math.PI;
   if (el > 58) return { en: "a bird's-eye top-down angle", mn: 'шувууны харц', ab: 'top' };
   if (el > 22) return { en: 'a high angle', mn: 'өндөр өнцөг', ab: 'high' };
   if (el < -40) return { en: "a worm's-eye extreme low angle", mn: 'маш доод өнцөг', ab: 'worm' };
@@ -739,8 +810,13 @@ function targetOf(s) {
 }
 /** Бүх дүр кадарт багтаж байна уу */
 function allInFrame(s) {
+  const tan = Math.tan(s.fov * Math.PI / 360);
+  const halfW = s.radius * tan * shotAspect(), halfH = s.radius * tan;
+  const ms = subjModels();
+  if (!people.length && ms.length) {          /* зөвхөн загвар — өндөр, өргөн хоёулаа */
+    return subjH() * .55 < halfH && spread() * .55 < halfW;
+  }
   if (people.length < 2) return true;
-  const halfW = s.radius * Math.tan(s.fov * Math.PI / 360) * shotAspect();
   return spread() * .55 < halfW;
 }
 function shotAspect() { const a = ($('aspect').value || '16:9').split(':'); return (+a[0]) / (+a[1]); }
@@ -2865,7 +2941,7 @@ function diagnose() {
   keys.forEach((k, i) => {
     if (isBad(k.phi) || isBad(k.radius)) return;
     if (posOf(k).y < .25) under.push(i);
-    if (k.radius < 1.05 && people.length) tooClose.push(i);
+    if (k.radius < Math.max(people.length ? 1.05 : 0, minSafeRadius())) tooClose.push(i);
     if (!allInFrame(k)) notFit.push(i);
   });
   if (under.length) out.push(ISS('err', 'under',
@@ -2874,10 +2950,13 @@ function diagnose() {
     () => {
       keys.forEach(k => { let n = 0; while (posOf(k).y < .35 && n++ < 60) k.phi = Math.max(.05, k.phi - .035); clampS(k); });
     }));
-  if (tooClose.length) out.push(ISS('warn', 'close',
-    tooClose.length + ' кадарт камер дүрийн дотуур орох магадлалтай (зай < 1.05м).',
-    'Зайг 1.4 метр болгож татна — ойрын кадр хэвээр үлдэнэ.',
-    () => { keys.forEach(k => { if (k.radius < 1.4) k.radius = 1.4; clampS(k); }); }));
+  if (tooClose.length) {
+    const safe = Math.max(people.length ? 1.4 : 0, minSafeRadius() * 1.12);
+    out.push(ISS('warn', 'close',
+      tooClose.length + ' кадарт камер дүр/загварын дотуур орох магадлалтай.',
+      'Зайг ' + safe.toFixed(1) + ' метр болгож татна — ойрын кадр хэвээр үлдэнэ.',
+      () => { keys.forEach(k => { if (k.radius < safe) k.radius = safe; clampS(k); }); }));
+  }
   if (notFit.length) out.push(ISS('warn', 'fit',
     notFit.length + ' кадарт бүх дүр кадарт багтахгүй байна.',
     'Зайг нэмж бүх дүрийг хүрээнд оруулна (авто жаазлалт).',
@@ -2943,7 +3022,7 @@ function diagnose() {
     () => { const ne = fStart + Math.round(fps * 10); rescaleKeys(fStart, ne); fEnd = ne; $('fEnd').value = fEnd; }));
 
   /* ── Тайз ── */
-  if (!people.length) out.push(ISS('tip', 'noppl', 'Тайзан дээр нэг ч дүр алга.',
+  if (!people.length && !subjModels().length) out.push(ISS('tip', 'noppl', 'Тайзан дээр нэг ч дүр алга.',
     'Хоёр дүр нэмж нүүр тулган байрлуулна.',
     () => { addPerson(undefined, undefined, undefined, true); addPerson(undefined, undefined, undefined, true); arrange('face'); }));
   let ovl2 = 0, outside = 0;
@@ -3130,13 +3209,15 @@ function enhRetime() {
 }
 /** Бүх дүрийг кадарт багтаах — зайг нэмнэ */
 function enhFit() {
-  if (!people.length) return 0;
+  if (!people.length && !subjModels().length) return 0;
   let n = 0;
-  const ar = shotAspect(), sp2 = spread();
+  const ar = shotAspect(), sp2 = spread(), tall = subjH();
   keys.forEach(k => {
     if (allInFrame(k)) return;
-    const need = sp2 * .55 / (Math.tan(k.fov * Math.PI / 360) * ar);
-    k.radius = clamp(need * 1.12, .6, 90);
+    const tan = Math.tan(k.fov * Math.PI / 360);
+    const needW = sp2 * .55 / (tan * ar);          /* өргөнөөр багтаах */
+    const needH = tall * .55 / tan;                /* өндрөөр багтаах (загварт чухал) */
+    k.radius = clamp(Math.max(needW, people.length ? 0 : needH, minSafeRadius()) * 1.12, .6, 90);
     clampS(k); n++;
   });
   return n;
