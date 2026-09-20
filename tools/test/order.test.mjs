@@ -124,6 +124,41 @@ r = await call({ name: 'A', phone: '1' }, { TELEGRAM_BOT_TOKEN: GOOD, TELEGRAM_C
 ok(r.code === 502 && sent.length === 0, 'чатын дугаар буруу бол мөн зогсоно');
 globalThis.fetch = realFetch;
 
+console.log('8в. Шалгах хуудас (GET /api/order)');
+async function get(env, telegram) {
+  for (const k of ['TELEGRAM_BOT_TOKEN', 'TELEGRAM_CHAT_ID']) delete process.env[k];
+  Object.assign(process.env, env || {});
+  delete require.cache[require.resolve(ROOT + 'api/order.js')];
+  const handler = require(ROOT + 'api/order.js');
+  globalThis.fetch = telegram || (async () => ({ ok: true, status: 200, json: async () => ({ ok: true, result: { username: 'test_bot' } }) }));
+  const res = mkRes();
+  await handler({ method: 'GET', headers: {}, socket: {} }, res);
+  globalThis.fetch = realFetch;
+  return res;
+}
+let h = await get({});
+ok(h.code === 200 && /TELEGRAM_BOT_TOKEN/.test(h.body['дүгнэлт']), 'түлхүүр байхгүйг хэлсэн');
+h = await get({ TELEGRAM_BOT_TOKEN: TOKEN });
+ok(/TELEGRAM_CHAT_ID/.test(h.body['дүгнэлт']), 'чатын дугаар байхгүйг хэлсэн');
+h = await get({ TELEGRAM_BOT_TOKEN: 'богино', TELEGRAM_CHAT_ID: '999' });
+ok(/хэлбэр буруу/.test(h.body['дүгнэлт']), 'хэлбэр буруугийн хэлсэн');
+h = await get(ENV, async () => ({ ok: false, status: 401, json: async () => ({ ok: false, description: 'Unauthorized' }) }));
+ok(/хүлээж авахгүй/.test(h.body['дүгнэлт']), 'үхсэн түлхүүрийг хэлсэн');
+ok(h.body.telegram === 'Unauthorized', 'Telegram-ийн шалтгааныг дамжуулсан');
+let n = 0;
+h = await get(ENV, async () => {
+  n++;
+  return n === 1
+    ? { ok: true, status: 200, json: async () => ({ ok: true, result: { username: 'first_studio_bot' } }) }
+    : { ok: false, status: 400, json: async () => ({ ok: false, description: 'Bad Request: chat not found' }) };
+});
+ok(/бичиж чадахгүй/.test(h.body['дүгнэлт']), 'START дараагүйг олсон');
+ok(/START/.test(h.body['заавар']) && /first_studio_bot/.test(h.body['заавар']), 'ботын нэрээр зааж өгсөн');
+h = await get(ENV);
+ok(/зөв/.test(h.body['дүгнэлт']), 'бүх зүйл зөв үед тэгж хэлсэн');
+ok(h.body['бот'] === '@test_bot', 'ботын нэрийг харуулсан');
+ok(!JSON.stringify(h.body).includes(TOKEN), 'ХАРИУНД ТҮЛХҮҮР ОГТ АЛГА');
+
 console.log('9. Хоёр хуудас дээр жинхэнэ хөтчөөр');
 let chromium;
 for (const p of ['playwright', '/opt/node22/lib/node_modules/playwright/index.js']) {

@@ -58,12 +58,83 @@ function clean(v, max) {
     .slice(0, max);
 }
 
+/** Тохиргоог шалгаад монголоор хариулна (түлхүүрийг задруулахгүй) */
+async function health(res) {
+  const token = String(process.env.TELEGRAM_BOT_TOKEN || "").trim().replace(/^["']|["']$/g, "");
+  const chatId = String(process.env.TELEGRAM_CHAT_ID || "").trim().replace(/^["']|["']$/g, "");
+  const out = { шалгалт: "1st Studio — захиалгын суваг" };
+
+  if (!token) {
+    out.дүгнэлт = "TELEGRAM_BOT_TOKEN тавигдаагүй байна.";
+    out.заавар = "Vercel ▸ Settings ▸ Environment Variables дээр нэмнэ. Дараа нь Redeploy.";
+    return res.status(200).json(out);
+  }
+  if (!chatId) {
+    out.дүгнэлт = "TELEGRAM_CHAT_ID тавигдаагүй байна.";
+    out.заавар = "Vercel ▸ Settings ▸ Environment Variables дээр нэмнэ. Дараа нь Redeploy.";
+    return res.status(200).json(out);
+  }
+  out.түлхүүр_урт = token.length;
+  if (!/^\d{6,}:[A-Za-z0-9_-]{30,}$/.test(token)) {
+    out.дүгнэлт = "Түлхүүрийн хэлбэр буруу байна.";
+    out.заавар = "«123456789:AAF…» гэсэн хэлбэртэй, бүтнээрээ, зай хашилтгүй байх ёстой.";
+    return res.status(200).json(out);
+  }
+  if (!/^-?\d{3,}$/.test(chatId)) {
+    out.дүгнэлт = "TELEGRAM_CHAT_ID зөвхөн тооноос бүрдэх ёстой.";
+    return res.status(200).json(out);
+  }
+
+  /* 1) Түлхүүр амьд эсэх */
+  try {
+    const me = await fetch("https://api.telegram.org/bot" + token + "/getMe");
+    const j = await me.json().catch(() => ({}));
+    if (!me.ok || !j.ok) {
+      out.дүгнэлт = "Telegram энэ түлхүүрийг хүлээж авахгүй байна.";
+      out.telegram = String(j.description || me.status);
+      out.заавар = "@BotFather ▸ /mybots ▸ бот ▸ API Token — одоо харагдаж байгаа кодыг бүтнээр нь хуулж тавина.";
+      return res.status(200).json(out);
+    }
+    out.бот = "@" + (j.result && j.result.username ? j.result.username : "?");
+  } catch (e) {
+    out.дүгнэлт = "Telegram руу холбогдож чадсангүй.";
+    return res.status(200).json(out);
+  }
+
+  /* 2) Тэр чат руу бичих эрхтэй эсэх */
+  try {
+    const chat = await fetch("https://api.telegram.org/bot" + token +
+      "/getChat?chat_id=" + encodeURIComponent(chatId));
+    const j = await chat.json().catch(() => ({}));
+    if (!chat.ok || !j.ok) {
+      out.дүгнэлт = "Бот энэ чат руу бичиж чадахгүй байна.";
+      out.telegram = String(j.description || chat.status);
+      out.заавар = "Telegram дээр " + out.бот + " ботоо нээж, START товч дарна уу. " +
+        "Тэгж байж л бот тань руу мессеж илгээх эрхтэй болно.";
+      return res.status(200).json(out);
+    }
+  } catch (e) {
+    out.дүгнэлт = "Чатыг шалгаж чадсангүй.";
+    return res.status(200).json(out);
+  }
+
+  out.дүгнэлт = "Бүх зүйл зөв. Захиалга ирэх ёстой.";
+  return res.status(200).json(out);
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
 
   if (req.method === "OPTIONS") {
     res.setHeader("Allow", "POST, OPTIONS");
     return res.status(204).end();
+  }
+  /* ─── Шалгах хуудас ───────────────────────────────────────────────
+     Хөтчөөр  /api/order  гэж орвол тохиргоо зөв эсэхийг хэлнэ.
+     Нууц түлхүүрийг ХЭЗЭЭ Ч буцаахгүй — зөвхөн «зөв / буруу» ба
+     Telegram-ийн хэлсэн шалтгааныг харуулна. */
+  if (req.method === "GET") {
+    return health(res);
   }
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Use POST" });
