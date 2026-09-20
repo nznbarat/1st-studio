@@ -1339,6 +1339,20 @@ def main():
         # Нэг тугт нийлүүлбэл --frame-тэй зөрчилдөж, ганц кадар хүсэхэд
         # бүтэн дараалал рендерлэдэг байв.
         if move and "--anim" in argv and not frame:
+            # --mp4: PNG дараалал биш, шууд видео бичнэ (Blender-ийн ffmpeg).
+            # --range A-B: дарааллын зөвхөн нэг хэсгийг (жишээ: ойртолт).
+            if "--range" in argv:
+                a, b = argv[argv.index("--range") + 1].split("-")
+                bpy.context.scene.frame_start = int(a)
+                bpy.context.scene.frame_end = int(b)
+                print("[1st Studio] Зөвхөн фрейм %s-%s" % (a, b))
+            if "--mp4" in argv:
+                r = bpy.context.scene.render
+                r.image_settings.file_format = "FFMPEG"
+                r.ffmpeg.format = "MPEG4"
+                r.ffmpeg.codec = "H264"
+                r.ffmpeg.constant_rate_factor = "HIGH"
+                r.ffmpeg.ffmpeg_preset = "GOOD"
             bpy.ops.render.render(animation=True)
             print("[1st Studio] Анимац рендерлэв:", out)
         else:
