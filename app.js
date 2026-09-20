@@ -21,7 +21,6 @@ renderer.autoClear = false;
    Blender-ийн албан ёсны өнгийг ЯГ тэр чигээр нь гаргахын тулд эхлээд шугаман
    орон зай руу хөрвүүлж өгнө. Ингэснээр дэлгэц дээрх пиксел яг #3d3d3d болно. */
 const srgb = hex => new THREE.Color(hex).convertSRGBToLinear();
-const srgbHex = hex => srgb(hex).getHex();
 
 const scene = new THREE.Scene();
 const viewCam = new THREE.PerspectiveCamera(50, 1, 0.05, 400);   // чөлөөт харагдац
@@ -55,7 +54,7 @@ function axisLine(dir, color) {
     new THREE.LineBasicMaterial({ color, transparent: true, opacity: .8 })));
 }
 /* Blender: tui.xaxis #ff3352 ба yaxis #8bdc00 -г grid_axis_brightness 0.46-аар бүдгэрүүлсэн нь */
-axisLine('x', srgbHex(0x751726)); axisLine('z', srgbHex(0x406500));
+axisLine('x', srgb(0x751726)); axisLine('z', srgb(0x406500));
 
 const floor = new THREE.Mesh(new THREE.PlaneGeometry(140, 140), new THREE.ShadowMaterial({ opacity: .35 }));
 floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
@@ -77,7 +76,7 @@ function applyEnv(id) {
   /* Дэвсгэрийг WebGL шууд арчдаг (шейдэргүй) тул хөрвүүлэхгүй — яг тэр өнгө гарна.
      Манан харин шейдэрээр дамждаг тул шугаман орон зайд өгөх ёстой. */
   scene.background = new THREE.Color(e.bg);
-  scene.fog = new THREE.Fog(e.exact ? srgb(e.bg).getHex() : e.bg, e.fog[0], e.fog[1]);
+  scene.fog = new THREE.Fog(srgb(e.bg).getHex(), e.fog[0], e.fog[1]);
   hemi.color.set(e.hemi[0]); hemi.groundColor.set(e.hemi[1]); hemi.intensity = e.hemi[2];
   sun.color.set(e.sun[0]); sun.intensity = e.sun[1]; sun.position.set.apply(sun.position, e.sun[2]);
   rim.intensity = e.rim;
@@ -153,7 +152,7 @@ function makeProp(type) {
 
 const SPAWN = [[0, 0], [-1.0, .25], [1.0, .25], [-2.0, .6], [2.0, .6], [-.5, -1.1], [.5, -1.1], [0, 1.5]];
 function addPerson(x, z, ry, silent) {
-  if (people.length >= MAXP) { toast('Дээд тал нь ' + MAXP + ' хүн', 'err'); return null; }
+  if (people.length >= MAXP) { toast('Дээд тал нь ' + MAXP + ' хүн нэмнэ — илүү нэмэх боломжгүй', 'err'); return null; }
   const p = makePerson(people.length);
   const s = SPAWN[people.length] || [Math.random() * 4 - 2, Math.random() * 4 - 2];
   p.position.set(x !== undefined ? x : s[0], 0, z !== undefined ? z : s[1]);
@@ -513,7 +512,7 @@ function shakeAt(t) {
 
 /* ── кадрын үйлдлүүд ── */
 function addKey(frame) {
-  if (keys.length >= MAXK) { toast('Дээд тал нь ' + MAXK + ' кадр', 'err'); return; }
+  if (keys.length >= MAXK) { toast('Дээд тал нь ' + MAXK + ' түлхүүр кадр — эхлээд аль нэгийг устгана уу', 'err'); return; }
   const f = frame !== undefined ? frame : curFrame;
   const ex = keys.findIndex(k => k.frame === f);
   const s = cloneS(state); s.frame = f;
@@ -642,7 +641,7 @@ function analyzePair(a, b, dThSum) {
   }
   if (Math.abs(dy) >= .4) {
     EN.push(dy > 0 ? (dy > 1.8 ? 'cranes high up into the air' : 'booms up smoothly') : (dy < -1.8 ? 'drops steeply down toward ground level' : 'booms down smoothly'));
-    MN.push(dy > 0 ? (dy > 1.8 ? 'өндөрт хөөрнө' : 'зөөлөн дээшилнэ') : (dy < -1.8 ? 'огцом доошилно' : 'зөөлөн буана'));
+    MN.push(dy > 0 ? (dy > 1.8 ? 'өндөрт хөөрнө' : 'зөөлөн дээшилнэ') : (dy < -1.8 ? 'огцом доошилно' : 'зөөлөн бууна'));
     KW.push(dy > 0 ? 'crane up' : 'crane down');
   }
   if (rr < .84) { EN.push(rr < .55 ? 'pushes in hard toward ' + subjEN() : 'pushes in closer'); MN.push(rr < .55 ? 'хүчтэй ойртоно' : 'ойртоно'); KW.push('dolly in'); }
@@ -673,23 +672,23 @@ function paceOf() {
   const d = durSec();
   return d <= 2.5 ? { en: 'fast, energetic', mn: 'хурдан, эрчтэй' }
     : d <= 6 ? { en: 'smooth, steady', mn: 'жигд, тогтвортой' }
-      : { en: 'slow, graceful', mn: 'удаан, эгэлдэг' };
+      : { en: 'slow, graceful', mn: 'удаан, тайван' };
 }
 
 /* ─────────── 10. ПРОМТ → КАМЕР (задлан шинжлэгч) ─────────── */
 const RX = {
   cw: /(clockwise|цагийн зүүний дагуу|цагийн дагуу|\bcw\b)/i,
   ccw: /(counter[\s-]*clockwise|anti[\s-]*clockwise|цагийн зүүний эсрэг|эсрэг чиглэл|\bccw\b)/i,
-  orbit: /(orbit|circl|arc around|arcs? round|revolv|swirl|тойр|эргэл|тойрог|эргэн тойрон)/i,
+  orbit: /(orbit|circl|arc around|arcs? round|revolv|swirl|тойр|эрг[эиж]|тойрог|эргэн тойрон)/i,
   push: /(push in|dolly in|move in|creep in|closer|approach|advance|ойрт|дөхө|дөх|урагш|ойртож|шахах)/i,
-  pull: /(pull back|pull out|dolly out|back away|retreat|reverse out|ухар|холд|хойш|ухраад)/i,
+  pull: /(pull back|pull out|dolly out|back away|move away|retreat|reverse out|ухар|холд|хойш|ухраад)/i,
   craneU: /(crane up|boom up|rise|ascend|lift|fly up|soar|дээш|өргөгд|хөөр|мандах|дээшил)/i,
   craneD: /(crane down|boom down|descend|drop down|lower|swoop down|доош|бууж|буух|шумба|доошил)/i,
   zoomI: /(zoom in|tighter lens|telephoto|long lens|зумдаж|зум ойрт|телефото|урт линз)/i,
   zoomO: /(zoom out|wider lens|wide[\s-]?angle|зум холд|өргөн өнцөг|өргөн линз)/i,
   vert: /(dolly[\s-]?zoom|vertigo|zolly|hitchcock|вертиго)/i,
   panL: /(pan left|whip left|zvvn|зүүн тийш эрг|зүүн pan)/i,
-  panR: /(pan right|whip right|баруун тийш эрг|баруун pan)/i,
+  panR: /(pan right|whip right|whip pan|баруун тийш эрг|баруун pan|огцом pan)/i,
   tiltU: /(tilt up|дээш хазай|дээш харуул)/i,
   tiltD: /(tilt down|доош хазай|доош харуул)/i,
   truckL: /(truck left|track left|strafe left|slide left|зүүн тийш гулс|зүүн тийш шилж)/i,
@@ -699,7 +698,7 @@ const RX = {
   flyby: /(fly[\s-]?by|fly[\s-]?through|swoop past|нисэн өнгөр|нисэх|нисээд)/i,
   topd: /(top[\s-]?down|bird'?s?[\s-]?eye|overhead|aerial|drone|шувууны|дээрээс харах|нисдэг тэрэг)/i,
   low: /(low angle|worm'?s?[\s-]?eye|hero (shot|angle)|from below|доод өнцөг|доороос)/i,
-  high: /(high angle|from above|дээд өнцөг|дээрээс)/i,
+  high: /(high angle|from above|өндөр өнцөг|дээд өнцөг|дээрээс)/i,
   eye: /(eye[\s-]?level|нүдний түвшин)/i,
   dutch: /(dutch|canted|tilted horizon|налуу|ташуу)/i,
   reveal: /(reveal|establish|илчил|нээн үзүүл|танилцуул)/i,
@@ -715,7 +714,8 @@ const RX = {
   fast: /(fast|quick|rapid|snap|whip|energetic|хурдан|шуурхай|огцом)/i,
   slow: /(slow|gentle|gradual|leisurely|удаан|аажим|зөөлөн)/i
 };
-const SPLIT = /\s*(?:,\s*then\b|\bthen\b|\band then\b|→|->|;|\bдараа нь\b|\bтэгээд\b|\bдараа\b)\s*/i;
+/* \b нь зөвхөн латин үсэгт ажилладаг тул монгол үгсийг зай/цэг таслалаар хүрээлж шалгана */
+const SPLIT = /(?:\s*,\s*then\b|\bthen\b|\band then\b|\s*→\s*|\s*->\s*|\s*;\s*|(?:^|[\s,.;])(?:дараа\s+нь|тэгээд|дараа)(?=[\s,.;]|$))\s*/i;
 
 function parseDuration(t) {
   const m = t.match(/(\d+(?:\.\d+)?)\s*(?:s\b|sec|second|секунд|сек)/i);
@@ -1120,12 +1120,12 @@ function buildUI() {
     '<div class="page on" id="pgCam">' +
     box('◆ Түлхүүр кадрууд',
       '<div class="g4" style="margin-bottom:7px">' +
-      '<button class="w" data-act="key">＋ I</button><button class="w" data-act="upd">Шинэч</button>' +
+      '<button class="w" data-act="key">＋ I</button><button class="w" data-act="upd">Шинэчлэх</button>' +
       '<button class="w" data-act="delk">− Устгах</button><button class="w" data-act="clrk">Цэвэрлэх</button></div>' +
       '<div class="kfl" id="kfList"></div>' +
       '<p class="hint">Камераа байрлуулаад <b>I</b> дарж кадр нэмнэ. Цагийн шугам дээрх <b>◆</b>-г чирж хугацааг өөрчилнө.</p>') +
     box('🎞 Бэлэн хөдөлгөөн', '<div class="g2">' + pg + '</div>' +
-      '<p class="hint">Preset нь одоогийн байрлал, дүрүүдэд тааруулж кадруудыг үүсгэнэ.</p>') +
+      '<p class="hint">Бэлэн хөдөлгөөн нь одоогийн байрлал, дүрүүдэд тааруулж кадруудыг үүсгэнэ.</p>') +
     box('🎬 Авто найруулга', '<div class="g2">' + dirs + '</div>' +
       '<p class="hint">Нэг товшилтоор бүрэн камерын дараалал + промт үүснэ.</p>') +
     box('⚙ Камерын тохиргоо',
@@ -1161,7 +1161,7 @@ function buildUI() {
       '<div class="chips" id="exChips" style="margin-top:8px"></div>' +
       '<div class="chips" id="tagChips" style="margin-top:8px"></div>' +
       '<p class="hint">Монгол, англи хоёулаа ажиллана. <b>«тэгээд / then / →»</b> гэж салгаж олон үе шаттай хөдөлгөөн бичиж болно.</p>') +
-    box('🖼 Дүр зурагны тайлбар',
+    box('🖼 Дүр зургийн тайлбар',
       '<textarea class="w" id="sceneTxt" rows="3" placeholder="two Mongolian warriors facing each other on the open steppe at dusk…"></textarea>' +
       '<div class="styles" style="margin-top:8px">' + stl + '</div>') +
     box('📝 Гарсан промт',
@@ -1199,7 +1199,7 @@ function buildUI() {
       '<button class="w" data-act="fixall">🩹 Бүгдийг засах</button></div>' +
       '<div class="sum" id="fixSum">Шалгалт хийгдээгүй байна.</div>' +
       '<div id="fixList"></div>' +
-      '<p class="hint">Шалгалт нь эвдэрсэн тоон утга, мужаас гарсан кадр, давхарласан кадр, газрын доорх камер, кадарт багтаагүй дүр, хэт хурдан эргэлт, илүүдэл кадр зэрэг <b>16 зүйлийг</b> хардаг. Засвар бүрийг <b>Ctrl+Z</b>-ээр буцаана.</p>') +
+      '<p class="hint">Шалгалт нь эвдэрсэн тоон утга, мужаас гарсан кадр, давхарласан кадр, газрын доорх камер, кадарт багтаагүй дүр, хэт хурдан эргэлт, илүүдэл кадр зэрэг <b>24 зүйлийг</b> хардаг. Засвар бүрийг <b>Ctrl+Z</b>-ээр буцаана.</p>') +
     box('✨ Автомат сайжруулалт',
       '<button class="big gr" data-act="enhauto">⚡ Бүрэн автоматаар сайжруулах</button>' +
       '<div class="r" style="margin-top:10px"><label>Хүч</label><input type="range" id="enhAmt" min="5" max="100" step="5" value="40"><span class="v" id="enhAmtV">40%</span></div>' +
@@ -1389,7 +1389,7 @@ function drawTimeline() {
   let step = 1;
   const cand = [1, 2, 5, 10, 20, 25, 50, 100, 200, 500];
   for (let i = 0; i < cand.length; i++) { if (span / cand[i] <= 14) { step = cand[i]; break; } step = cand[i]; }
-  tctx.font = '9px JetBrains Mono, monospace'; tctx.textAlign = 'center';
+  tctx.font = '9px JetBrains Mono, monospace'; tctx.textAlign = 'center'; tctx.lineWidth = 1;
   for (let f = Math.ceil(fStart / step) * step; f <= fEnd; f += step) {
     const x = f2x(f);
     tctx.strokeStyle = '#161616'; tctx.beginPath(); tctx.moveTo(x, 20); tctx.lineTo(x, h); tctx.stroke();   /* space_action.grid */
@@ -1433,6 +1433,7 @@ function drawTimeline() {
   tctx.strokeStyle = '#4772b3'; tctx.lineWidth = 1.5;
   tctx.beginPath(); tctx.moveTo(cx, 4); tctx.lineTo(cx, h); tctx.stroke();
   tctx.fillStyle = '#4772b3';
+  tctx.font = '9.5px JetBrains Mono';                       /* хэмжихээсээ өмнө фонтоо тавина */
   const lbl = String(curFrame), tw = tctx.measureText(lbl).width + 12;
   tctx.fillRect(cx - tw / 2, 1, tw, 15);
   tctx.fillStyle = '#fff'; tctx.font = '9.5px JetBrains Mono'; tctx.textAlign = 'center';
@@ -1695,6 +1696,14 @@ function dl(name, data, mime) {
   toast('Татагдлаа: ' + name, 'ok');
 }
 const stamp = () => new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-');
+/** Хувилбарын дугаар — Ctrl+Alt+S дарах бүрд 001, 002 … гэж өснө */
+let saveSeq = 0;
+function nextSeq() {
+  if (!saveSeq) { try { saveSeq = +(lsRead('1stStudio.camera.seq') || 0) || 0; } catch (e) { saveSeq = 0; } }
+  saveSeq++;
+  lsWrite('1stStudio.camera.seq', String(saveSeq));
+  return String(saveSeq).padStart(3, '0');
+}
 
 function serialize() {
   return JSON.stringify({
@@ -1705,13 +1714,14 @@ function serialize() {
     incEnv: $('incEnv').checked, incNeg: $('incNeg').checked,
     scene: $('sceneTxt').value, inPrompt: $('inPrompt').value,
     styles: Array.from(document.querySelectorAll('.stl')).map(x => x.checked),
-    people: people.map(p => ({ x: +p.position.x.toFixed(4), z: +p.position.z.toFixed(4), ry: +p.rotation.y.toFixed(4), s: +p.scale.x.toFixed(3) })),
-    props: props.map(p => ({ t: p.userData.kind, x: +p.position.x.toFixed(4), z: +p.position.z.toFixed(4), ry: +p.rotation.y.toFixed(4), s: +p.scale.x.toFixed(3) })),
+    ak: activeK,
+    people: people.map(p => ({ x: +p.position.x.toFixed(4), z: +p.position.z.toFixed(4), ry: +p.rotation.y.toFixed(4), s: +p.scale.x.toFixed(3), v: p.userData.vis !== false })),
+    props: props.map(p => ({ t: p.userData.kind, x: +p.position.x.toFixed(4), z: +p.position.z.toFixed(4), ry: +p.rotation.y.toFixed(4), s: +p.scale.x.toFixed(3), v: p.userData.vis !== false })),
     keys: keys.map(k => ({ th: k.theta, ph: k.phi, r: k.radius, f: k.fov, ro: k.roll || 0, tx: k.target.x, ty: k.target.y, tz: k.target.z, fr: k.frame }))
   }, null, 1);
 }
 function loadProject(d, silent) {
-  if (!d || !d.keys) { toast('Танихгүй файл', 'err'); return; }
+  if (!d || !d.keys) { toast('Энэ файлыг таньсангүй', 'err'); return; }
   const v2 = d.v === 2;
   clearScene();
   fps = +d.fps || 24; $('fps').value = fps;
@@ -1722,9 +1732,15 @@ function loadProject(d, silent) {
   autoTarget = !!d.autoTarget; $('cAuto').checked = autoTarget;
   shakeAmt = +d.shakeAmt || 0; $('cShake').value = Math.round(shakeAmt * 100); $('cShakeV').textContent = Math.round(shakeAmt * 100) + '%';
   (d.people && d.people.length ? d.people : []).slice(0, MAXP).forEach(p => {
-    const o = addPerson(p.x, p.z, p.ry, true); if (o && p.s) o.scale.setScalar(p.s);
+    const o = addPerson(p.x, p.z, p.ry, true);
+    if (o && p.s) o.scale.setScalar(p.s);
+    if (o && p.v === false) { o.userData.vis = false; o.visible = false; }
   });
-  (d.props || []).forEach(p => { const o = addProp(p.t, p.x, p.z, p.ry, true); if (o && p.s) o.scale.setScalar(p.s); });
+  (d.props || []).forEach(p => {
+    const o = addProp(p.t, p.x, p.z, p.ry, true);
+    if (o && p.s) o.scale.setScalar(p.s);
+    if (o && p.v === false) { o.userData.vis = false; o.visible = false; }
+  });
   applyEnv(ENVS[d.env] ? d.env : 'blender');
   $('anim').value = d.anim || 'idle';
   $('pformat').value = d.pformat || 'cine';
@@ -1740,7 +1756,7 @@ function loadProject(d, silent) {
     frame: k.fr !== undefined ? k.fr : Math.round(lerp(fStart, fEnd, arr.length < 2 ? 0 : i / (arr.length - 1)))
   }));
   keys.sort((a, b) => a.frame - b.frame);
-  activeK = keys.length ? 0 : -1;
+  activeK = keys.length ? clamp(d.ak === undefined ? 0 : +d.ak, 0, keys.length - 1) : -1;
   $('fStart').value = fStart; $('fEnd').value = fEnd;
   setFrame(fStart);
   if (keys.length) { Object.assign(state, cloneS(keys[0])); state.target.copy(keys[0].target); }
@@ -2018,6 +2034,13 @@ rdata || '',
   dl('1st-studio-camera-' + stamp() + '.py', py, 'text/x-python;charset=utf-8');
 }
 
+/** Толь (toli.html) шинэ цонхонд нээх */
+function openToli() {
+  const w = window.open('toli.html', '1stStudioToli');
+  if (!w) toast('Хөтөч шинэ цонх нээхийг хориглолоо', 'err');
+  else toast('📚 Толь нээгдлээ');
+}
+
 /** manual.js ачаалагдсан эсэх (файл дутуу хуулсан ч програм ажиллана) */
 function manualReady() { return typeof openManual === 'function' && typeof MANUAL !== 'undefined'; }
 
@@ -2087,7 +2110,8 @@ function doAct(a) {
     case 'recover': { const l = asList(); if (!l.length) { toast('Хадгалалт олдсонгүй', 'err'); break; } asRestore(0); break; }
     case 'fixtab': gotoPage('pgFix'); break;
     case 'manual': manualReady() ? openManual() : toast('manual.js файл олдсонгүй', 'err'); break;
-    case 'incsave': dl('1st-studio-project-' + stamp() + '.json', serialize(), 'application/json'); break;
+    case 'toli': openToli(); break;
+    case 'incsave': dl('1st-studio-project-' + nextSeq() + '-' + stamp() + '.json', serialize(), 'application/json'); break;
   }
 }
 /** Баруун самбарын тодорхой хуудсыг нээх */
@@ -2106,7 +2130,7 @@ document.addEventListener('click', e => {
   if (d.eye !== undefined) {
     e.stopPropagation();
     const arr = d.eye[0] === 'p' ? people : props, o = arr[+d.eye.slice(1)];
-    if (o) { o.userData.vis = !o.userData.vis; o.visible = o.userData.vis; refreshOutliner(); }
+    if (o) { o.userData.vis = !o.userData.vis; o.visible = o.userData.vis; refreshOutliner(); commit('Харагдац солив'); }
     return;
   }
   if (d.pop !== undefined) { e.stopPropagation(); const was = $(d.pop).classList.contains('show'); closePops(); if (!was) { $(d.pop).classList.add('show'); t.classList.add('open'); } return; }
@@ -2187,13 +2211,16 @@ $('interp').onchange = () => { interp = $('interp').value; buildSpline(); rebuil
 $('fStart').onchange = () => { fStart = clamp(Math.round(+$('fStart').value) || 1, 0, fEnd - 1); $('fStart').value = fStart; setFrame(curFrame); syncAll(); commit('Эхлэх фрейм'); };
 $('fEnd').onchange = () => { fEnd = clamp(Math.round(+$('fEnd').value) || 2, fStart + 1, 20000); $('fEnd').value = fEnd; setFrame(curFrame); syncAll(); commit('Төгсгөх фрейм'); };
 $('fCur').onchange = () => { stopPlay(); setFrame(+$('fCur').value || fStart); if (keys.length >= 2) { const s = sampleFrame(curFrame); Object.assign(state, s); state.target.copy(s.target); refreshNPanel(); } };
-$('anim').onchange = () => { };
-$('sceneTxt').addEventListener('input', schedulePrompt);
-$('pformat').onchange = buildPrompt;
-$('pmodel').onchange = buildPrompt;
-$('incEnv').onchange = buildPrompt;
-$('incNeg').onchange = buildPrompt;
-document.querySelectorAll('.stl').forEach(x => x.addEventListener('change', buildPrompt));
+$('anim').onchange = () => commit('Дүрийн хөдөлгөөн');
+$('sceneTxt').addEventListener('input', () => { asDirty = true; schedulePrompt(); });
+$('sceneTxt').addEventListener('change', () => commit('Дүр зургийн тайлбар'));
+$('inPrompt').addEventListener('input', () => { asDirty = true; });
+$('inPrompt').addEventListener('change', () => commit('Промтын бичвэр'));
+$('pformat').onchange = () => { buildPrompt(); commit('Промтын хэлбэр'); };
+$('pmodel').onchange = () => { buildPrompt(); commit('Промтын загвар'); };
+$('incEnv').onchange = () => { buildPrompt(); commit('Промтын тохиргоо'); };
+$('incNeg').onchange = () => { buildPrompt(); commit('Промтын тохиргоо'); };
+document.querySelectorAll('.stl').forEach(x => x.addEventListener('change', () => { buildPrompt(); commit('Хэв маяг'); }));
 $('sCount').oninput = () => {
   const n = +$('sCount').value;
   while (people.length < n) addPerson(undefined, undefined, undefined, true);
@@ -2237,9 +2264,17 @@ document.addEventListener('keydown', e => {
     return;
   }
   const tag = (document.activeElement && document.activeElement.tagName) || '';
-  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') {
+  const inField = (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT');
+  if (inField) {
     if (e.key === 'Escape') document.activeElement.blur();
     if (e.key === 'Enter' && document.activeElement.id === 'inPrompt' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); runParse(); }
+    /* Файлын болон тусламжийн товчлуур текст бичиж байхад ч ажиллана */
+    const kk = e.key.toLowerCase();
+    if (kk === 'f1') { e.preventDefault(); if (manualReady()) openManual(); return; }
+    if ((e.ctrlKey || e.metaKey) && (kk === 's' || kk === 'o' || kk === 'n')) {
+      e.preventDefault();
+      doAct(kk === 's' ? (e.altKey ? 'incsave' : 'save') : kk === 'o' ? 'open' : 'new');
+    }
     return;
   }
   const k = e.key.toLowerCase();
@@ -2250,6 +2285,7 @@ document.addEventListener('keydown', e => {
     return;
   }
   if (k === 'f1') { e.preventDefault(); if (manualReady()) openManual(); return; }
+  if (k === 'f2') { e.preventDefault(); openToli(); return; }
   if ((e.ctrlKey || e.metaKey) && k === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
   if ((e.ctrlKey || e.metaKey) && k === 'y') { e.preventDefault(); redo(); return; }
   if ((e.ctrlKey || e.metaKey) && e.altKey && k === 's') { e.preventDefault(); doAct('incsave'); return; }
@@ -2324,7 +2360,7 @@ function histGo(i) {
   if (keepView) { Object.assign(state, keepView); state.target.copy(keepView.target); }
   setFrame(clamp(f, fStart, fEnd));
   asDirty = true;
-  syncAll(); refreshFix();
+  syncAll(); diagnose(); refreshFix();
 }
 function undo() {
   if (histI <= 0) { toast('Буцаах зүйл алга'); return; }
@@ -2344,8 +2380,12 @@ const AS_CFG = '1stStudio.camera.cfg.v3';
 const AS_MAX = 10;
 let asOn = true, asSec = 30, asDirty = false, asLastAt = 0, asOk = true, asTick = null;
 
-function lsRead(k) { try { return localStorage.getItem(k); } catch (e) { asOk = false; return null; } }
-function lsWrite(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
+let asFailAt = 0;
+function asFail() { asOk = false; asFailAt = Date.now(); }
+/** Санах ой нэг удаа алдаа өгсөн ч дахин оролдох боломж үлдээнэ */
+function asRetry() { if (!asOk && Date.now() - asFailAt > 30000) asOk = true; return asOk; }
+function lsRead(k) { try { return localStorage.getItem(k); } catch (e) { asFail(); return null; } }
+function lsWrite(k, v) { try { localStorage.setItem(k, v); asOk = true; return true; } catch (e) { return false; } }
 function asList() { try { return JSON.parse(lsRead(AS_KEY) || '[]') || []; } catch (e) { return []; } }
 function asWrite(list) {
   for (let i = 0; i < 5; i++) {
@@ -2353,7 +2393,7 @@ function asWrite(list) {
     if (list.length <= 1) break;
     list.pop();                       // зай дүүрсэн бол хамгийн хуучныг хаяна
   }
-  asOk = false; return false;
+  asFail(); return false;
 }
 function asSaveCfg() { lsWrite(AS_CFG, JSON.stringify({ asOn: asOn, asSec: asSec })); }
 /** Хадгалах үнэ цэнэтэй ажил байгаа эсэх — хоосон эхлэлийг хадгалахгүй */
@@ -2381,6 +2421,7 @@ function asRestore(i) {
   const e = asList()[i];
   if (!e) { toast('Хадгалалт олдсонгүй', 'err'); return; }
   let d; try { d = JSON.parse(e.data); } catch (err) { toast('Хадгалалт эвдэрсэн байна', 'err'); return; }
+  if (asWorthSaving()) asSave(true);            /* одоогийн ажлыг эхлээд хадгална — алдагдахгүй */
   loadProject(d, true);
   histReset('Сэргээсэн: ' + asClock(e.t));
   syncAll(); recBar(false);
@@ -2409,10 +2450,20 @@ function asSetup() {
     if (c.asOn !== undefined) asOn = !!c.asOn;
     if (c.asSec) asSec = clamp(+c.asSec, 10, 600);
   } catch (e) { }
+  const chk = $('asChk'), sel = $('asEvery');
+  if (chk) chk.checked = asOn;
+  if (sel) {
+    if (!Array.from(sel.options).some(o => +o.value === asSec)) {
+      const o = document.createElement('option');
+      o.value = String(asSec); o.textContent = asSec + ' секунд'; sel.appendChild(o);
+    }
+    sel.value = String(asSec);
+  }
   if (asTick) clearInterval(asTick);
   asLastAt = Date.now();          /* нээсэн даруйд бичихгүй — бүтэн интервал хүлээнэ */
   asTick = setInterval(() => {
-    if (!asOn || !asOk || !asDirty || playing || xf) return;
+    if (!asOn || !asDirty || playing || xf) return;
+    if (!asRetry()) return;
     if (Date.now() - asLastAt < asSec * 1000) return;
     asSave(false);
   }, 2000);
@@ -2513,8 +2564,18 @@ function diagnose() {
     nanIdx.length + ' кадарт эвдэрсэн тоон утга байна (NaN / хязгааргүй).',
     'Хөрш кадруудын утгаар, эсвэл стандарт утгаар сольж засна.',
     () => {
+      const okAt = j => {
+        const k = keys[j];
+        return k && !isBad(k.theta) && !isBad(k.phi) && !isBad(k.radius) && !isBad(k.fov) &&
+          k.target && !isBad(k.target.x) && !isBad(k.target.y) && !isBad(k.target.z);
+      };
       nanIdx.slice().reverse().forEach(i => {
-        const ref = keys[i - 1] || keys[i + 1];
+        let a = i - 1, b = i + 1, ref = null;                 /* хамгийн ойрын БҮТЭН кадрыг олно */
+        while (a >= 0 || b < keys.length) {
+          if (a >= 0 && okAt(a)) { ref = keys[a]; break; }
+          if (b < keys.length && okAt(b)) { ref = keys[b]; break; }
+          a--; b++;
+        }
         const base = ref ? cloneS(ref) : cloneS(state);
         base.frame = isBad(keys[i].frame) ? clamp(fStart + i, fStart, fEnd) : keys[i].frame;
         keys[i] = clampS(base);
@@ -2574,7 +2635,7 @@ function diagnose() {
       if (Math.abs(lensMM(b.fov) - lensMM(a.fov)) > 55 && dt < 1.2) lensJump++;
     }
     if (fastSeg) out.push(ISS('warn', 'fast',
-      fastSeg + ' хэсэгт эргэлт хэт хурдан (AI видео дээр "зуурах" эрсдэлтэй).',
+      fastSeg + ' хэсэгт эргэлт хэт хурдан (AI видео дээр зураг хайлах эрсдэлтэй).',
       'Хугацааг уртасгаж хурдыг жигд болгоно.',
       () => { const need = Math.round((fEnd - fStart) * 1.5); fEnd = fStart + Math.min(need, 20000 - fStart); $('fEnd').value = fEnd; rescaleKeys(fStart, fEnd); enhRetime(); }));
     if (lensJump) out.push(ISS('tip', 'lens',
@@ -2585,7 +2646,7 @@ function diagnose() {
     /* зигзаг / доргио */
     let jit = 0;
     for (let i = 1; i < keys.length - 1; i++) {
-      const mid = { theta: (keys[i - 1].theta + keys[i + 1].theta) / 2, phi: (keys[i - 1].phi + keys[i + 1].phi) / 2, radius: (keys[i - 1].radius + keys[i + 1].radius) / 2, fov: (keys[i - 1].fov + keys[i + 1].fov) / 2, roll: ((keys[i - 1].roll || 0) + (keys[i + 1].roll || 0)) / 2, target: keys[i - 1].target.clone().lerp(keys[i + 1].target, .5) };
+      const mid = { theta: keys[i - 1].theta + angDiff(keys[i + 1].theta, keys[i - 1].theta) / 2, phi: (keys[i - 1].phi + keys[i + 1].phi) / 2, radius: (keys[i - 1].radius + keys[i + 1].radius) / 2, fov: (keys[i - 1].fov + keys[i + 1].fov) / 2, roll: ((keys[i - 1].roll || 0) + (keys[i + 1].roll || 0)) / 2, target: keys[i - 1].target.clone().lerp(keys[i + 1].target, .5) };
       const d = stateDist(keys[i], mid);
       if (d > .02 && d < .28) jit++;
     }
@@ -2609,7 +2670,7 @@ function diagnose() {
     let tilt = 0;
     keys.forEach(k => { const d = Math.abs(k.roll || 0) * 180 / Math.PI; if (d > .15 && d < 2.5) tilt++; });
     if (tilt) out.push(ISS('tip', 'tilt', tilt + ' кадарт хаяа өчүүхэн налуу байна (санамсаргүй roll).',
-      'Хаяаг яг тэгш болгоно.', () => { enhLevel(); }));
+      'Тэнгэрийн хаяаг яг тэгш болгоно.', () => { enhLevel(); }));
   }
 
   /* ── Хугацаа ── */
@@ -2661,11 +2722,11 @@ function diagnose() {
 
   /* ── Промт ── */
   if (!($('sceneTxt').value || '').trim()) out.push(ISS('tip', 'scene',
-    'Дүр зурагны тайлбар хоосон байна.',
+    'Дүр зургийн тайлбар хоосон байна.',
     'Энэ талбар AI промтын чанарыг хамгийн их өсгөдөг — «✨ Промт» таб дээр 1–2 өгүүлбэр бичээрэй.', null));
   if (shakeAmt > .7) out.push(ISS('tip', 'shake',
     'Доргио хэт өндөр (' + Math.round(shakeAmt * 100) + '%).',
-    'AI видео дээр зураг "хайлах" эрсдэлтэй — 45% болгож бууруулна.',
+    'AI видео дээр зураг хайлах эрсдэлтэй — 45% болгож бууруулна.',
     () => { shakeAmt = .45; $('cShake').value = 45; $('cShakeV').textContent = '45%'; }));
 
   issues = out;
@@ -2674,25 +2735,39 @@ function diagnose() {
 
 /** Засагдах бүх алдааг дараалан засна */
 function fixAll(silent) {
-  let list = diagnose().filter(x => x.fix), done = 0, names = [];
-  for (let round = 0; round < 4 && list.length; round++) {
-    list.forEach(x => { try { x.fix(); done++; names.push(x.msg); } catch (e) { } });
-    sortKeys(); clampAllKeys(); buildSpline();
-    list = diagnose().filter(x => x.fix);
-  }
+  const wasLocked = histLock;
+  histLock = true;                              /* завсрын алхмуудыг түүхэнд бичихгүй */
+  let before = '', done = 0;
+  try { before = serialize(); } catch (e) { }
+  let list = diagnose().filter(x => x.fix);
+  try {
+    for (let round = 0; round < 4 && list.length; round++) {
+      list.forEach(x => { try { x.fix(); } catch (e) { } });
+      sortKeys(); clampAllKeys(); buildSpline();
+      const after = diagnose().filter(x => x.fix);
+      done += Math.max(0, list.length - after.length);   /* үнэхээр арилсан зөрчлийн тоо */
+      list = after;
+    }
+  } finally { histLock = wasLocked; }
   clampAllKeys(); sortKeys();
   if (keys.length) activeK = clamp(activeK, 0, keys.length - 1);
   syncAll();
+  let changed = false;
+  try { changed = serialize() !== before; } catch (e) { changed = !!done; }
   if (!silent) {
-    if (done) { commit('Автомат засвар (' + done + ')'); toast('🩹 ' + done + ' засвар хийгдлээ', 'ok'); }
+    if (changed) { commit('Автомат засвар (' + done + ')'); toast('🩹 ' + done + ' зөрчил зассан', 'ok'); }
     else toast('✓ Засах зүйл алга — бүх шалгалт цэвэр', 'ok');
   }
-  refreshFix();
+  diagnose(); refreshFix();
   return done;
 }
 function fixOne(i) {
   const x = issues[i]; if (!x || !x.fix) return;
-  try { x.fix(); } catch (e) { toast('Энэ засварыг хийж чадсангүй', 'err'); return; }
+  const wasLocked = histLock;
+  histLock = true;
+  try { x.fix(); }
+  catch (e) { histLock = wasLocked; toast('Энэ засварыг хийж чадсангүй', 'err'); return; }
+  finally { histLock = wasLocked; }
   sortKeys(); clampAllKeys();
   if (keys.length) activeK = clamp(activeK, 0, keys.length - 1);
   syncAll(); commit('Засвар: ' + x.id);
@@ -2834,7 +2909,7 @@ function enhAuto() {
   const f = fixAll(true); if (f) rep.push(f + ' алдаа засав');
   let n;
   n = enhDeJitter(); if (n) rep.push(n + ' кадрын чичрэлт арилгав');
-  n = enhLevel(); if (n) rep.push(n + ' кадрын хаяа тэгшлэв');
+  n = enhLevel(); if (n) rep.push(n + ' кадрын тэнгэрийн хаяа тэгшлэв');
   n = enhClean(.09); if (n) rep.push(n + ' илүүдэл кадр хасав');
   n = enhFit(); if (n) rep.push(n + ' кадрын жаазлалт засав');
   n = enhRetime(); if (n) rep.push('хугацааг жигдрүүлэв');
@@ -2860,7 +2935,7 @@ function runEnh(kind) {
     case 'clean': n = enhClean(.06 + amt * .18); nm = 'Илүүдэл кадр хасав (' + n + ')'; break;
     case 'retime': n = enhRetime(); nm = 'Хурдыг жигдрүүлэв'; break;
     case 'fit': n = enhFit(); nm = 'Жаазлалт засав (' + n + ' кадр)'; break;
-    case 'level': n = enhLevel(); nm = 'Хаяаг тэгшлэв (' + n + ' кадр)'; break;
+    case 'level': n = enhLevel(); nm = 'Тэнгэрийн хаяаг тэгшлэв (' + n + ' кадр)'; break;
     case 'ease': n = enhEase(); nm = 'Зөөлөн эхлэл-төгсгөл'; break;
   }
   clampAllKeys(); sortKeys();
@@ -2874,9 +2949,10 @@ function runEnh(kind) {
 /* ══════════════════════════════════════════════════════════════
    31. «Сэргээх ба засах» самбарыг шинэчлэх
    ══════════════════════════════════════════════════════════════ */
-const SEVNM = { err: ['Алдаа', 'e'], warn: ['Анхаар', 'w'], tip: ['Зөвлөмж', 't'] };
+const SEVNM = { err: ['Алдаа', 'e'], warn: ['Анхааруулга', 'w'], tip: ['Зөвлөмж', 't'] };
 function refreshFix() {
   const fl = $('fixList'); if (!fl) return;
+  diagnose();                      /* жагсаалт ба «Засах» товчнууд үргэлж одоогийн төлөвтэй таарна */
 
   /* — оношилгооны жагсаалт — */
   if (!issues.length) {

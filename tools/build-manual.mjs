@@ -24,8 +24,28 @@ const body = src.slice(start, end + 3).replace(/^const MANUAL = /, '');
 // eslint-disable-next-line no-new-func
 const MANUAL = new Function('return ' + body.replace(/;\s*$/, ''))();
 
-/* [[G]] → `G`,  бусад нь аль хэдийн markdown */
-const conv = t => t.replace(/\[\[(.+?)\]\]/g, '`$1`').replace(/^!\s/gm, '> ⚠️ ');
+/* [[G]] → `G` · «!» анхааруулгын блокыг нэг ишлэл болгоно */
+function conv(t) {
+  const lines = t.replace(/\[\[(.+?)\]\]/g, '`$1`').split('\n');
+  const out = [];
+  let inWarn = false;
+  for (const ln of lines) {
+    if (/^!\s/.test(ln)) {
+      out.push((inWarn ? '> ' : '> ⚠️ ') + ln.replace(/^!\s+/, ''));
+      inWarn = true;
+    } else { inWarn = false; out.push(ln); }
+  }
+  return out.join('\n');
+}
+
+/* GitHub-ийн гарчгийн холбоос (anchor) үүсгэх дүрэм:
+   жижиг үсэг → үсэг, тоо, зай, зураасаас бусдыг хасах → зайг зураас болгох */
+function anchor(text) {
+  return text.toLowerCase()
+    .replace(/[^\p{L}\p{N} _-]/gu, '')
+    .trim()
+    .replace(/\s+/g, '-');
+}
 
 const today = new Date().toISOString().slice(0, 10);
 let out = `# 1st Studio — Camera Director · Гарын авлага
@@ -47,8 +67,7 @@ AI видео промт үүсгэгч. Суулгац шаардахгүй —
 let grp = '';
 MANUAL.forEach(s => {
   if (s.grp !== grp) { grp = s.grp; out += `\n**${grp}**\n\n`; }
-  const anchor = s.t.toLowerCase().replace(/[^\wа-яөүёa-z0-9]+/gi, '-').replace(/^-+|-+$/g, '');
-  out += `- [${s.ico} ${s.t}](#${anchor})\n`;
+  out += `- [${s.ico} ${s.t}](#${anchor(s.ico + ' ' + s.t)})\n`;
 });
 
 out += '\n---\n';

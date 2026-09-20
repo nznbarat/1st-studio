@@ -457,8 +457,8 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
       <hr>
       <div class="lbl">Сэргээн засварлах</div>
       <button data-act="diag">🩺 Шалгах (оношилгоо)</button>
-      <button data-act="fixall">🩹 Олдсон алдааг бүгдийг засах</button>
-      <button data-act="enhauto">⚡ Автоматаар сайжруулах</button>
+      <button data-act="fixall">🩹 Бүх алдааг засах</button>
+      <button data-act="enhauto">⚡ Бүрэн автоматаар сайжруулах</button>
       <hr>
       <button data-act="fixtab">Засварын самбарыг нээх<i>🩹</i></button>
     </div>
@@ -503,13 +503,14 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
   <div style="position:relative"><button class="mnu" data-pop="popHelp">Тусламж</button>
     <div class="pop" id="popHelp" style="min-width:300px">
       <button data-act="manual">📖 Бүрэн гарын авлага<i>F1</i></button>
+      <button data-act="toli">📚 Толь — нэр томъёоны тайлбар<i>F2</i></button>
       <hr>
       <div class="lbl">Харагдац</div>
       <button>Урд / Хажуу / Дээр<i>1 / 3 / 7</i></button>
       <button>Ар / Зүүн / Доор<i>Ctrl 1 / 3 / 7</i></button>
       <button>Камерын харц<i>0</i></button>
       <hr><div class="lbl">Навигац</div>
-      <button>Тойрох<i>ЗТ чирэх</i></button>
+      <button>Тойрох<i>хулгана чирэх</i></button>
       <button>Зөөх (pan)<i>Shift + чирэх</i></button>
       <button>Ойртох<i>Гүйлгэх</i></button>
       <button>Линз (FOV)<i>Ctrl + гүйлгэх</i></button>
@@ -519,12 +520,13 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
       <button>Устгах<i>X / Del</i></button>
       <hr><div class="lbl">Анимаци</div>
       <button>Тоглуулах / зогсоох<i>Space</i></button>
-      <button>Кадр урагш / хойш<i>← / →</i></button>
+      <button>1 фрейм урагш / хойш<i>← / →</i></button>
       <button>Эхэнд / Төгсгөлд<i>Shift ← / →</i></button>
       <button>Хажуугийн самбар<i>N</i></button>
       <hr><div class="lbl">Сэргээн засварлах</div>
       <button>Буцаах / Дахих<i>Ctrl Z / Ctrl Shift Z</i></button>
       <button>Гарын авлага<i>F1</i></button>
+      <button>Толь (нэр томъёо)<i>F2</i></button>
     </div>
   </div>
   <div class="spacer"></div>
@@ -550,6 +552,7 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
     <div class="gap"></div>
     <button data-act="diag" title="Шалгах — оношилгоо">🩺</button>
     <button data-act="manual" title="Гарын авлага (F1)">📖</button>
+    <button data-act="toli" title="Толь — нэр томъёоны тайлбар (F2)">📚</button>
   </div>
 
   <!-- ═══ Харагдац ═══ -->
@@ -592,10 +595,10 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
       <h4>Камер</h4>
       <div class="nrow"><label style="width:34px;color:var(--dim2)">Зай</label><span id="nDist">—</span></div>
       <div class="nrow"><label style="width:34px;color:var(--dim2)">Линз</label><span id="nLens">—</span></div>
-      <div class="nrow"><label style="width:34px;color:var(--dim2)">Өнд</label><span id="nHgt">—</span></div>
+      <div class="nrow"><label style="width:34px;color:var(--dim2)">Өндөр</label><span id="nHgt">—</span></div>
       <div class="nrow"><label style="width:34px;color:var(--dim2)">Roll</label><span id="nRoll">—</span></div>
       <h4>Кадр</h4>
-      <div class="nrow"><label style="width:34px;color:var(--dim2)">Хэмж</label><span id="nSize">—</span></div>
+      <div class="nrow"><label style="width:34px;color:var(--dim2)">Хэмжээ</label><span id="nSize">—</span></div>
       <div class="nrow"><label style="width:34px;color:var(--dim2)">Өнцөг</label><span id="nAng">—</span></div>
     </div>
     <div id="recbar">
@@ -631,23 +634,23 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
 <div id="tl" class="area">
   <div id="tlbar">
     <button class="tb" data-tr="start" title="Эхэнд (Shift+←)">⏮</button>
-    <button class="tb" data-tr="prevk" title="Өмнөх кадр (↑)">◂◆</button>
+    <button class="tb" data-tr="prevk" title="Өмнөх түлхүүр кадр (↑)">◂◆</button>
     <button class="tb" data-tr="prev" title="1 фрейм хойш (←)">◀</button>
     <button class="tb" id="btnPlay" data-tr="play" title="Тоглуулах (Space)">▶</button>
     <button class="tb" data-tr="next" title="1 фрейм урагш (→)">▶</button>
-    <button class="tb" data-tr="nextk" title="Дараагийн кадр (↓)">◆▸</button>
+    <button class="tb" data-tr="nextk" title="Дараагийн түлхүүр кадр (↓)">◆▸</button>
     <button class="tb" data-tr="end" title="Төгсгөлд (Shift+→)">⏭</button>
     <button class="tb" id="btnLoop" data-tr="loop" title="Давтах">🔁</button>
     <div class="sep" style="width:1px;height:15px;background:var(--line);margin:0 4px;flex:none"></div>
     <div class="fld"><label>Фрейм</label><input class="mono" id="fCur" value="1"></div>
-    <div class="fld"><label>Эхэл</label><input class="mono" id="fStart" value="1"></div>
-    <div class="fld"><label>Төгс</label><input class="mono" id="fEnd" value="120"></div>
+    <div class="fld"><label title="Эхлэх фрейм">Эхлэл</label><input class="mono" id="fStart" value="1"></div>
+    <div class="fld"><label title="Төгсгөх фрейм">Төгсгөл</label><input class="mono" id="fEnd" value="120"></div>
     <div class="fld"><label>FPS</label>
       <select class="w" id="fps" style="height:20px;padding:1px 18px 1px 5px;font-size:10px">
         <option>12</option><option>24</option><option>25</option><option>30</option><option>50</option><option>60</option>
       </select>
     </div>
-    <div class="fld"><label>Интерп</label>
+    <div class="fld"><label title="Интерполяци — түлхүүр кадруудын хоорондох шилжилтийн хэлбэр">Шилжилт</label>
       <select class="w" id="interp" style="height:20px;padding:1px 18px 1px 5px;font-size:10px">
         <option value="smooth">Зөөлөн</option><option value="in">Зөөлөн эхлэл</option>
         <option value="out">Зөөлөн төгсгөл</option><option value="linear">Жигд</option><option value="const">Шаталсан</option>
