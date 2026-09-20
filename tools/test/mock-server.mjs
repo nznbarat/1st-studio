@@ -41,6 +41,7 @@ export function fakeReply(body) {
   return 'ok';
 }
 
+export const orders = [];
 const server = createServer(async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   if (req.url.split('?')[0] === '/api/claude') {
@@ -65,6 +66,21 @@ const server = createServer(async (req, res) => {
       content: [{ type: 'text', text: fakeReply(body) }],
       usage: { input_tokens: 120, output_tokens: 240 }
     }));
+    return;
+  }
+  if (req.url.split('?')[0] === '/api/order') {
+    let raw = '';
+    for await (const c of req) raw += c;
+    let body = {};
+    try { body = raw ? JSON.parse(raw) : {}; } catch (e) { }
+    orders.push(body);
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    if (process.env.ORDER_FAIL) {
+      res.writeHead(+process.env.ORDER_FAIL);
+      res.end(JSON.stringify({ error: 'тохируулаагүй байна' }));
+      return;
+    }
+    res.end(JSON.stringify({ ok: true }));
     return;
   }
   const path = decodeURIComponent(req.url.split('?')[0]);

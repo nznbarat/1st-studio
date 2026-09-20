@@ -300,7 +300,10 @@ footer{background:#0a0a0a;border-top:1px solid #1a1a1a;padding:32px 40px;display
         <input type="text" placeholder="Утасны дугаар / имэйл"/>
         <input type="text" placeholder="Хэрэгцээт үйлчилгээ"/>
         <textarea placeholder="Нэмэлт мэдээлэл..."></textarea>
-        <button class="submit-btn" onclick="sendForm()">ИЛГЭЭХ</button>
+        <!-- робот барих хавх: жинхэнэ хүн үүнийг хардаггүй -->
+        <input type="text" name="website" tabindex="-1" autocomplete="off"
+               aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0"/>
+        <button class="submit-btn" onclick="sendForm(this)">ИЛГЭЭХ</button>
       </div>
     </div>
   </div>
@@ -312,6 +315,7 @@ footer{background:#0a0a0a;border-top:1px solid #1a1a1a;padding:32px 40px;display
   <div class="footer-copy">© 2025 1st Studio. Бүх эрх хуулиар хамгаалагдсан.</div>
 </footer>
 
+<script src="order.js"></script>
 <script>
 const tracks=[
   {num:"01",tag:"HIP-HOP",title:"Шөнийн гэрэл",artist:"Munkh-Naran",dur:"3:42",bars:[30,60,80,45,90,55,70,40,85,50,65,35,75,90,45,60,80,40,70,55]},
@@ -335,14 +339,17 @@ grid.innerHTML=tracks.map(t=>`
   <div class="waveform">${buildWave(t.bars)}</div>
   <div class="track-footer"><span class="track-dur">${t.dur}</span><div class="play-btn"><div class="play-icon"></div></div></div>
 </div>`).join('');
-function sendForm(){
-  const n=document.querySelectorAll('.contact-form input')[0].value;
-  const p=document.querySelectorAll('.contact-form input')[1].value;
-  const s=document.querySelectorAll('.contact-form input')[2].value;
-  const m=document.querySelector('.contact-form textarea').value;
-  const msg=`🎵 Шинэ захиалга!\n👤 Нэр: ${n}\n📞 Утас: ${p}\n🎤 Үйлчилгээ: ${s}\n💬 Мэдэгдэл: ${m}`;
-  fetch(`https://api.telegram.org/bot8786835140:AAHYJwcpd3TdhfgoXlJNg1q_O_dbAorVcUM/sendMessage?chat_id=5887820817&text=${encodeURIComponent(msg)}`)
-  .then(()=>alert('Захиалга амжилттай илгээгдлээ!'));
+/* Захиалгыг ӨӨРСДИЙН сервер рүү илгээнэ (order.js).
+   Ботын түлхүүр энд БАЙХГҮЙ — зөвхөн серверт байна. */
+async function sendForm(btn){
+  const i=document.querySelectorAll('.contact-form input');
+  const ok=await sendOrder({
+    name:i[0].value, phone:i[1].value, service:i[2].value,
+    message:document.querySelector('.contact-form textarea').value,
+    website:(document.querySelector('.contact-form input[name=website]')||{}).value
+  }, btn);
+  if(ok){ i[0].value=i[1].value=i[2].value='';
+    document.querySelector('.contact-form textarea').value=''; }
 }
 </script>
 </body>

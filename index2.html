@@ -306,7 +306,10 @@ textarea.form-input{height:80px;resize:none;}
         <option>Хамтын ажиллагаа</option>
       </select>
       <textarea class="form-input" placeholder="Нэмэлт мэдэгдэл..." id="f-msg"></textarea>
-      <button class="form-submit" onclick="sendForm()">ИЛГЭЭХ 🎵</button>
+      <!-- робот барих хавх: жинхэнэ хүн үүнийг хардаггүй -->
+      <input type="text" id="f-website" name="website" tabindex="-1" autocomplete="off"
+             aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0"/>
+      <button class="form-submit" onclick="sendForm(this)">ИЛГЭЭХ 🎵</button>
     </div>
   </div>
 </div>
@@ -374,6 +377,7 @@ textarea.form-input{height:80px;resize:none;}
   </div>
 </nav>
 
+<script src="order.js"></script>
 <script>
 const tracks=[
   {num:"01",tag:"HIP-HOP",title:"Шөнийн гэрэл",artist:"Munkh-Naran",dur:"3:42",emoji:"🌙",bars:[30,60,80,45,90,55,70,40,85,50,65,35,75,90,45,60,80,40,70,55,30,60,80,45]},
@@ -508,21 +512,22 @@ function selectService(s){
   go('s-contact');
   setTimeout(()=>document.getElementById('f-name').focus(),300);
 }
-function sendForm(){
-  const n=document.getElementById('f-name').value;
-  const p=document.getElementById('f-phone').value;
-  const s=document.getElementById('f-service').value;
-  const m=document.getElementById('f-msg').value;
-  if(!n||!p){alert('Нэр болон утасны дугаараа оруулна уу!');return;}
-  const msg=`🎵 Шинэ захиалга!\n👤 Нэр: ${n}\n📞 Утас: ${p}\n🎤 Үйлчилгээ: ${s}\n💬 Мэдэгдэл: ${m}`;
-  fetch(`https://api.telegram.org/bot8786835140:AAHYJwcpd3TdhfgoXlJNg1q_O_dbAorVcUM/sendMessage?chat_id=5887820817&text=${encodeURIComponent(msg)}`)
-  .then(()=>{
-    alert('Захиалга амжилттай илгээгдлээ! 🎵');
+/* Захиалгыг ӨӨРСДИЙН сервер рүү илгээнэ (order.js).
+   Ботын түлхүүр энд БАЙХГҮЙ — зөвхөн серверт байна. */
+async function sendForm(btn){
+  const ok=await sendOrder({
+    name:document.getElementById('f-name').value,
+    phone:document.getElementById('f-phone').value,
+    service:document.getElementById('f-service').value,
+    message:document.getElementById('f-msg').value,
+    website:(document.getElementById('f-website')||{}).value
+  }, btn);
+  if(ok){
     document.getElementById('f-name').value='';
     document.getElementById('f-phone').value='';
     document.getElementById('f-service').value='';
     document.getElementById('f-msg').value='';
-  });
+  }
 }
 </script>
 </body>
