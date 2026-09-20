@@ -1386,7 +1386,15 @@ function buildUI() {
       '<div class="sum" id="mnSum"></div><div class="kbox" id="promptOut"></div>' +
       '<div style="display:flex;gap:6px;margin-top:7px"><button class="big" id="copyBtn">📋 Хуулах</button>' +
       '<button class="w" id="btnTxt" style="flex:none;padding:9px 12px">.txt</button></div>' +
-      '<p class="hint" id="pLen"></p>') +
+      '<p class="hint" id="pLen"></p>' +
+      '<div class="ai-only" style="margin-top:9px;border-top:1px solid var(--rim);padding-top:9px">' +
+      '<button class="w" data-act="aiPrompt">🤖 Claude-ээр сайжруулах</button>' +
+      '<div class="kbox" id="aiPromptOut" style="display:none;margin-top:7px"></div>' +
+      '<div id="aiPromptBtns" style="display:none;gap:6px;margin-top:6px">' +
+      '<button class="w" data-act="aiPromptCopy">📋 Хуулах</button>' +
+      '<button class="w" data-act="aiPromptUse">✓ Үүнийг авах</button></div>' +
+      '<p class="hint">Дээрх «Загвар» сонголтод тохируулж бичнэ. Камерын заавар, линз, цаг хугацаа өөрчлөгдөхгүй.</p>' +
+      '</div>') +
     '</div>' +
 
     /* ── ЭКСПОРТ ── */
@@ -1404,6 +1412,30 @@ function buildUI() {
       'загвар салахгүй. Бүгдийг буцаах бол скриптийн эхний <b>ACTION</b> мөрийг ' +
       '<b>"REMOVE"</b> болгоод дахин Run дарна.</p>') +
     box('📊 Өгөгдөл', '<div class="g2"><button class="w" data-act="csv">Кадрын CSV</button><button class="w" data-act="txt">Промт .txt</button></div>') +
+    '</div>' +
+
+    /* ── CLAUDE ТУСЛАХ ── */
+    '<div class="page" id="pgAI">' +
+    box('🤖 Claude холболт',
+      '<div class="sum" id="aiStat">Шалгаж байна…</div>' +
+      '<div class="r"><label>Загвар</label><select class="w" id="aiModel"></select></div>' +
+      '<div class="ai-keybox">' +
+      '<div class="r"><label>Түлхүүр</label>' +
+      '<input class="w" id="aiKey" type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-…"></div>' +
+      '<div class="styles" style="margin:6px 0"><label><input type="checkbox" id="aiRemember"> Энэ хөтөч дээр санах</label></div>' +
+      '<div class="g2"><button class="w" data-act="aiConnect">🔌 Холбох</button>' +
+      '<button class="w" data-act="aiForget">🗑 Түлхүүр устгах</button></div>' +
+      '<p class="hint">Түлхүүрээ <b>console.anthropic.com</b> хаягаас авна. ' +
+      'Санах сонголтыг асаавал зөвхөн <b>энэ хөтчийн</b> санах ойд хадгалагдана, хаашаа ч илгээгдэхгүй.</p>' +
+      '</div>') +
+    box('🎬 Монголоор бичээд камер үүсгэх',
+      '<textarea class="w" id="aiWish" rows="4" placeholder="Морьтой баатар талаар давхиж байна. Эхлээд хол харуулаад, дараа нь нүүр рүү нь аажим ойртоорой."></textarea>' +
+      '<div class="g2" style="margin-top:7px">' +
+      '<button class="big gr" data-act="aiMake">⚡ Камер үүсгэх</button>' +
+      '<button class="w" data-act="aiIdeas">💡 3 санал</button></div>' +
+      '<div id="aiOut" style="margin-top:8px"></div>' +
+      '<p class="hint">Claude таны үгийг камерын хөдөлгөөн болгож, <b>юу хийснээ монголоор</b> тайлбарлана. ' +
+      'Дараа нь 🎥 таб дээрээс гараар засаж болно.</p>') +
     '</div>' +
 
     /* ── СЭРГЭЭХ БА ЗАСАХ ── */
@@ -2899,10 +2931,15 @@ function toliInit() {
   if (toli || !toliReady()) return toli;
   toli = toliMount($('tolihost'), {
     hash: false,
-    onOpenTab: id => { closeToli(); gotoPage(id); toast('📂 ' + id.replace('pg', '') + ' хэсэг нээгдлээ'); }
+    onOpenTab: id => { closeToli(); gotoPage(id); toast('📂 ' + id.replace('pg', '') + ' хэсэг нээгдлээ'); },
+    /* Claude холбогдоогүй бол аяархан заавар харуулна */
+    onAsk: aiReady()
+      ? (e, host) => aiTerm(e.mn + (e.en ? ' (' + e.en + ')' : ''), e.short || e.deep, host)
+      : null
   });
-  const last = toli.last();
-  if (last) toli.open(last);
+  /* Сүүлд үзсэн үг, эсвэл эхний үгийг нээж, хоосон хуудас харуулахгүй */
+  const start = toli.last() || (toli.data && toli.data[0] && toli.data[0].id);
+  if (start) toli.open(start);
   return toli;
 }
 /** Толийг нээх. term өгвөл шууд тэр үгийг харуулна. */
@@ -2920,6 +2957,244 @@ function closeToli() { $('toli').classList.remove('show'); toliOpen = false; }
 
 /** manual.js ачаалагдсан эсэх (файл дутуу хуулсан ч програм ажиллана) */
 function manualReady() { return typeof openManual === 'function' && typeof MANUAL !== 'undefined'; }
+
+/* ══════════════════════════════════════════════════════════════
+   32. CLAUDE ТУСЛАХ
+   claude-api.js (холболт) ба claude-tasks.js (даалгавар) дээр суурилна.
+   Файл дутуу хуулсан ч програм хэвийн ажиллана — товчнууд л нуугдана.
+   ══════════════════════════════════════════════════════════════ */
+let aiLastPrompt = '';
+/** HTML-д аюулгүй болгох */
+function aiEsc(t) {
+  return String(t == null ? '' : t)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+/** Санах ойд хуулах (clipboard хаалттай үед ч ажиллана) */
+function aiCopy(txt) {
+  const done = () => toast('📋 Хуулагдлаа', 'ok');
+  try {
+    navigator.clipboard.writeText(txt).then(done, () => {
+      const t = document.createElement('textarea');
+      t.value = txt; document.body.appendChild(t); t.select();
+      try { document.execCommand('copy'); done(); } catch (e) { toast('Хуулж чадсангүй', 'err'); }
+      t.remove();
+    });
+  } catch (e) { toast('Хуулж чадсангүй', 'err'); }
+}
+/** Claude-ийн файлууд ачаалагдсан эсэх */
+function aiReady() { return typeof CLA !== 'undefined' && typeof AITASK !== 'undefined'; }
+
+function aiInit() {
+  if (!aiReady()) { const t = $('aiStat'); if (t) t.textContent = 'Claude-ийн файл олдсонгүй (claude-api.js).'; return; }
+
+  const sel = $('aiModel');
+  if (sel && !sel.options.length) {
+    sel.innerHTML = CLA.MODELS.map(m => '<option value="' + m[0] + '">' + m[1] + '</option>').join('');
+    sel.value = CLA.state.model;
+    sel.onchange = () => { CLA.setModel(sel.value); aiStatus(); };
+  }
+  const key = $('aiKey'), rem = $('aiRemember');
+  if (key) key.value = CLA.state.key || '';
+  if (rem) {
+    rem.checked = CLA.remembers();
+    rem.onchange = () => { CLA.rememberKey(rem.checked); toast(rem.checked ? 'Түлхүүрийг санана' : 'Түлхүүрийг санахгүй'); };
+  }
+  CLA.on('mode', aiStatus);
+  CLA.on('busy', aiStatus);
+  aiStatus();
+  CLA.probe().then(aiStatus);
+}
+
+/** Холболтын байдлыг харуулж, холбоогүй үед товчнуудыг нууна */
+function aiStatus() {
+  const el = $('aiStat'); if (!el) return;
+  const st = CLA.state;
+  const txt = {
+    unknown: '⏳ Шалгаж байна…',
+    proxy: '✅ Холбогдсон — сервер дамжуулагчаар (түлхүүр хэрэггүй)',
+    key: '✅ Холбогдсон — таны түлхүүрээр',
+    off: '⚪ Холбоогүй' + (st.lastError ? ' — ' + st.lastError : '')
+  }[st.mode] || '';
+  const used = st.calls ? '  ·  ' + st.calls + ' дуудлага, ' +
+    ((st.inTokens + st.outTokens) / 1000).toFixed(1) + 'k токен' : '';
+  el.textContent = txt + used + (st.busy ? '  ·  ажиллаж байна…' : '');
+  el.className = 'sum' + (st.mode === 'off' ? ' warn' : '');
+
+  const on = CLA.ready();
+  document.querySelectorAll('.ai-only').forEach(n => n.style.display = on ? '' : 'none');
+  document.querySelectorAll('.ai-keybox').forEach(n => n.style.display = st.mode === 'proxy' ? 'none' : '');
+  document.querySelectorAll('[data-ai]').forEach(b => { b.disabled = !on || !!st.busy; });
+}
+
+/** Түлхүүрийг аваад дахин шалгана */
+function aiConnect() {
+  if (!aiReady()) return;
+  const k = $('aiKey');
+  if (k) CLA.setKey(k.value);
+  $('aiStat').textContent = '⏳ Шалгаж байна…';
+  CLA.probe().then(m => {
+    aiStatus();
+    toast(m === 'off' ? '❌ ' + (CLA.state.lastError || 'Холбогдсонгүй') : '✅ Claude холбогдлоо',
+      m === 'off' ? 'err' : 'ok');
+  });
+}
+function aiForget() {
+  if (!aiReady()) return;
+  CLA.forget();
+  const k = $('aiKey'), r = $('aiRemember');
+  if (k) k.value = ''; if (r) r.checked = false;
+  CLA.state.mode = 'off'; CLA.state.lastError = 'Түлхүүр устгагдлаа.';
+  aiStatus(); toast('Түлхүүр устгагдлаа');
+}
+
+/** Ажиллаж байгааг харуулах жижиг туслах */
+function aiWork(node, msg) {
+  if (node) node.innerHTML = '<div class="sum">⏳ ' + aiEsc(msg || 'Claude бодож байна…') + '</div>';
+  aiStatus();
+}
+function aiFail(node, err) {
+  const m = aiReady() ? CLA.humanError(err) : 'Claude холбогдоогүй байна.';
+  if (node) node.innerHTML = '<div class="sum warn">❌ ' + aiEsc(m) + '</div>';
+  toast('❌ ' + m, 'err');
+  aiStatus();
+}
+
+/** Claude-ийн төлөвлөгөөг программд буулгана */
+function aiApply(p, label) {
+  if (!p || !p.command) { toast('Claude камерын тушаал буцаасангүй', 'err'); return false; }
+  if (p.env) applyEnv(p.env);
+  if (p.people !== null && p.people !== undefined) setPeople(p.people);
+  if (p.scene) $('sceneTxt').value = p.scene;
+  $('inPrompt').value = p.command + (p.duration ? ', ' + p.duration + ' seconds' : '');
+  gotoPage('pgPrompt');
+  runParse();
+  focusAll(); onCamMove();
+  histReset(label || 'Claude-ийн камер');
+  diagnose(); refreshFix();
+  return true;
+}
+
+/* ── Монголоор бичээд камер үүсгэх ── */
+async function aiMake() {
+  const wish = ($('aiWish') || {}).value || '';
+  if (!wish.trim()) { toast('Юу болохыг монголоор бичнэ үү', 'err'); return; }
+  const out = $('aiOut');
+  aiWork(out, 'Claude камерыг төлөвлөж байна…');
+  try {
+    const p = await AITASK.camera(wish);
+    if (!aiApply(p, 'Claude: ' + wish.slice(0, 40))) { aiStatus(); return; }
+    out.innerHTML =
+      '<div class="ai-card"><div class="ai-cmd mono">' + aiEsc(p.command) +
+      (p.duration ? '  ·  ' + p.duration + 'с' : '') + '</div>' +
+      (p.explain ? '<div class="ai-exp">' + aiEsc(p.explain) + '</div>' : '') +
+      '<div class="g2" style="margin-top:7px">' +
+      '<button class="w" data-ai data-act="aiAgain">🔄 Өөр хувилбар</button>' +
+      '<button class="w" data-act="camtab">🎥 Камер руу очих</button></div></div>';
+    toast('🤖 ' + keys.length + ' кадр үүслээ', 'ok');
+  } catch (e) { aiFail(out, e); }
+  aiStatus();
+}
+/** Ижил хүслээр өөр хувилбар (кэшгүй, илүү чөлөөтэй) */
+async function aiAgain() {
+  const wish = ($('aiWish') || {}).value || '';
+  const out = $('aiOut');
+  aiWork(out, 'Өөр хувилбар бодож байна…');
+  try {
+    const p = AITASK.sanitize(await CLA.askJSON(
+      'Дүр зураг (монголоор):\n' + wish.slice(0, 1500) +
+      '\n\nGive a DIFFERENT treatment than the obvious one. Return the same JSON shape:\n' +
+      '{"command":"...","duration":6,"people":2,"env":"...","scene":"...","explain":"Монголоор"}',
+      1400, { system: AITASK.SYSTEM, temperature: 0.9, noCache: true }));
+    if (aiApply(p, 'Claude: өөр хувилбар')) {
+      out.innerHTML = '<div class="ai-card"><div class="ai-cmd mono">' + aiEsc(p.command) +
+        (p.duration ? '  ·  ' + p.duration + 'с' : '') + '</div>' +
+        (p.explain ? '<div class="ai-exp">' + aiEsc(p.explain) + '</div>' : '') +
+        '<div class="g2" style="margin-top:7px">' +
+        '<button class="w" data-ai data-act="aiAgain">🔄 Дахиад</button>' +
+        '<button class="w" data-act="camtab">🎥 Камер руу очих</button></div></div>';
+      toast('🤖 Шинэ хувилбар · ' + keys.length + ' кадр', 'ok');
+    }
+  } catch (e) { aiFail(out, e); }
+  aiStatus();
+}
+
+/* ── Гурван шотын санал ── */
+let aiIdeaList = [];
+async function aiIdeas() {
+  const wish = ($('aiWish') || {}).value || '';
+  if (!wish.trim()) { toast('Юу болохыг монголоор бичнэ үү', 'err'); return; }
+  const out = $('aiOut');
+  aiWork(out, 'Claude гурван санал бэлдэж байна…');
+  try {
+    aiIdeaList = await AITASK.shots(wish);
+    if (!aiIdeaList.length) { out.innerHTML = '<div class="sum warn">Санал гарсангүй. Дахин оролдоно уу.</div>'; return; }
+    out.innerHTML = aiIdeaList.map((p, i) =>
+      '<div class="ai-card"><div class="ai-ttl">' + (i + 1) + '. ' + aiEsc(p.title || 'Хувилбар') + '</div>' +
+      '<div class="ai-cmd mono">' + aiEsc(p.command) + (p.duration ? '  ·  ' + p.duration + 'с' : '') + '</div>' +
+      (p.why ? '<div class="ai-exp">' + aiEsc(p.why) + '</div>' : '') +
+      '<button class="w" style="margin-top:6px" data-act="aiPick" data-idea="' + i + '">✓ Үүнийг үүсгэх</button></div>'
+    ).join('');
+    toast('💡 ' + aiIdeaList.length + ' санал бэлэн', 'ok');
+  } catch (e) { aiFail(out, e); }
+  aiStatus();
+}
+function aiPick(i) {
+  const p = aiIdeaList[+i];
+  if (!p) return;
+  if (aiApply(p, 'Claude: ' + (p.title || 'санал'))) toast('🎬 ' + (p.title || '') + ' · ' + keys.length + ' кадр', 'ok');
+}
+
+/* ── AI видеоны промтыг сайжруулах ── */
+async function aiImprove() {
+  const cur = ($('promptOut') || {}).textContent || '';
+  if (!cur.trim()) { toast('Эхлээд промт үүсгэнэ үү', 'err'); return; }
+  const out = $('aiPromptOut'), btns = $('aiPromptBtns');
+  out.style.display = ''; btns.style.display = 'none';
+  out.textContent = '⏳ Claude сайжруулж байна…';
+  aiStatus();
+  try {
+    aiLastPrompt = await AITASK.prompt(cur, ($('pmodel') || {}).value || 'generic');
+    out.textContent = aiLastPrompt;
+    btns.style.display = 'flex';
+    toast('✨ Промт сайжирлаа · ' + aiLastPrompt.length + ' тэмдэгт', 'ok');
+  } catch (e) {
+    out.textContent = '❌ ' + (aiReady() ? CLA.humanError(e) : 'Claude холбогдоогүй байна.');
+    toast('❌ Промт сайжруулж чадсангүй', 'err');
+  }
+  aiStatus();
+}
+function aiPromptCopy() {
+  if (!aiLastPrompt) return;
+  aiCopy(aiLastPrompt);
+}
+/** Сайжруулсан промтыг дүр зургийн тайлбар болгон авна */
+function aiPromptUse() {
+  if (!aiLastPrompt) return;
+  $('sceneTxt').value = aiLastPrompt.slice(0, 1200);
+  schedulePrompt();
+  toast('✓ Дүр зургийн тайлбарт орлоо — промт шинэчлэгдэнэ', 'ok');
+}
+
+/* ── Толь: «Claude-аас асуух» ── */
+async function aiTerm(word, context, host) {
+  if (!host) return;
+  if (!aiReady() || !CLA.ready()) {
+    host.innerHTML = '<div class="sum warn">Claude холбогдоогүй байна. ' +
+      '<b>🤖 Claude</b> таб дээр очиж API түлхүүрээ оруулна уу.</div>' +
+      '<button class="tl-go" data-act="aiOpenTab">🤖 Тэр хэсгийг нээх</button>';
+    return;
+  }
+  host.innerHTML = '<div class="sum">⏳ Claude тайлбарлаж байна…</div>';
+  try {
+    const t = await AITASK.term(word, context);
+    host.innerHTML = '<div class="ai-card"><div class="ai-ttl">🤖 Claude-ийн тайлбар</div>' +
+      '<div class="ai-exp">' + aiEsc(t).replace(/\n{2,}/g, '</div><div class="ai-exp">').replace(/\n/g, '<br>') + '</div></div>';
+  } catch (e) {
+    host.innerHTML = '<div class="sum warn">❌ ' + aiEsc(aiReady() ? CLA.humanError(e) : 'Claude холбогдоогүй') + '</div>';
+  }
+  aiStatus();
+}
 
 /* ─────────── 22. Toast ─────────── */
 let toastT = null;
@@ -2952,8 +3227,9 @@ function runParse() {
   syncAll(); commit('Промтоос камер');
   toast('⚡ ' + res.n + ' түлхүүр кадр үүслээ · ' + res.dur.toFixed(1) + 'с', 'ok');
 }
-function doAct(a) {
+function doAct(a, d) {
   if (!a) return;
+  if (a === 'aiPick') { aiPick((d && d.idea) || 0); return; }
   if (a.indexOf('p:') === 0) { addProp(a.slice(2)); return; }
   if (a.indexOf('a:') === 0) { arrange(a.slice(2)); return; }
   switch (a) {
@@ -2986,6 +3262,17 @@ function doAct(a) {
     case 'asclear': asClearAll(); break;
     case 'recover': { const l = asList(); if (!l.length) { toast('Хадгалалт олдсонгүй', 'err'); break; } asRestore(0); break; }
     case 'fixtab': gotoPage('pgFix'); break;
+    case 'camtab': gotoPage('pgCam'); break;
+    case 'aitab': gotoPage('pgAI'); break;
+    case 'aiOpenTab': closeToli(); gotoPage('pgAI'); break;
+    case 'aiConnect': aiConnect(); break;
+    case 'aiForget': aiForget(); break;
+    case 'aiMake': aiMake(); break;
+    case 'aiAgain': aiAgain(); break;
+    case 'aiIdeas': aiIdeas(); break;
+    case 'aiPrompt': aiImprove(); break;
+    case 'aiPromptCopy': aiPromptCopy(); break;
+    case 'aiPromptUse': aiPromptUse(); break;
     case 'manual': manualReady() ? openManual() : toast('manual.js файл олдсонгүй', 'err'); break;
     case 'toli': openToli(); break;
     case 'import': $('modelIn').click(); break;
@@ -3019,7 +3306,7 @@ document.addEventListener('click', e => {
     document.querySelectorAll('.page').forEach(p => p.classList.toggle('on', p.id === d.page));
     return;
   }
-  if (d.act !== undefined) { closePops(); doAct(d.act); return; }
+  if (d.act !== undefined) { closePops(); doAct(d.act, d); return; }
   if (d.preset !== undefined) { applyPreset(+d.preset); return; }
   if (d.dir !== undefined) { autoDirect(d.dir); return; }
   if (d.env !== undefined) { applyEnv(d.env); syncAll(); commit('Орчин: ' + (ENVS[d.env] ? ENVS[d.env].nm : d.env)); return; }
@@ -3943,6 +4230,7 @@ asSetup();
 histReset('Нээлтийн төлөв');
 asDirty = false;
 if (manualReady()) manualInit();
+aiInit();
 diagnose(); refreshFix();
 if (!applyUrlAuto()) asOffer();      /* сангаас ирсэн бол шууд үүсгэнэ */
 tick();

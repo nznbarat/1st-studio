@@ -293,6 +293,18 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
 .sum{background:rgba(71,114,179,.14);border:1px solid rgba(71,114,179,.4);border-left:2px solid var(--acc);
   border-radius:var(--r-wid);padding:8px 10px;font-size:11.5px;line-height:1.55;margin-bottom:8px;color:var(--txt)}
 .sum b{color:var(--link)}
+/* ── Claude туслах ─────────────────────────────────────────── */
+.sum.warn{background:rgba(172,135,55,.13);border-color:rgba(172,135,55,.45);border-left-color:var(--warn);color:var(--warn-t)}
+.ai-card{background:var(--wid-in);border:1px solid var(--wid-out);border-left:2px solid var(--act);
+  border-radius:var(--r-wid);padding:9px 10px;margin-bottom:7px}
+.ai-ttl{font-size:11.5px;font-weight:600;color:var(--act);margin-bottom:5px}
+.ai-cmd{font-size:10.5px;color:var(--txt-hi);background:var(--win);border-radius:3px;
+  padding:5px 7px;word-break:break-word;line-height:1.5}
+.ai-exp{font-size:11px;color:var(--dim);margin-top:6px;line-height:1.6}
+.ai-exp+.ai-exp{margin-top:5px}
+#aiKey{font-family:'JetBrains Mono',monospace;letter-spacing:.5px}
+#aiWish{font-size:12px;line-height:1.55}
+.ai-keybox{margin-top:8px;border-top:1px solid var(--rim);padding-top:8px}
 .styles{display:flex;flex-wrap:wrap;gap:5px 12px;font-size:11px;color:var(--txt)}
 .styles label{display:flex;align-items:center;gap:5px;cursor:pointer}
 .big{width:100%;padding:9px;border-radius:var(--r-wid);background:var(--acc);color:var(--txt-hi);font-weight:500;
@@ -647,6 +659,7 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
         <button data-page="pgScene" title="Тайз ба дүрүүд">🧍</button>
         <button data-page="pgPrompt" title="Промт (AI)">✨</button>
         <button data-page="pgOut" title="Экспорт">📦</button>
+        <button data-page="pgAI" title="Claude туслах — монголоор бичээд камер үүсгэх">🤖</button>
         <button data-page="pgFix" title="Сэргээх ба засах (оношилгоо, түүх, авто хадгалалт)">🩹</button>
       </div>
       <div id="pbody"></div>
@@ -736,6 +749,8 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
 <!-- three.js r128-ийн албан ёсны ачаалагчид (MIT) — Blender-ээс гаргасан файл оруулахад -->
 <script src="libs/GLTFLoader.js"></script>
 <script src="libs/OBJLoader.js"></script>
+<script src="claude-api.js"></script>
+<script src="claude-tasks.js"></script>
 <script src="manual.js"></script>
 <script src="toli-data.js"></script>
 <script src="toli-ui.js"></script>

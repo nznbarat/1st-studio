@@ -8,6 +8,8 @@
    Хэрэглэх:
      toliMount(элемент, { onOpenTab, extra })
        onOpenTab(tabId) — «🎥 Энэ хэсгийг нээх» товч дарахад дуудагдана
+       onAsk(entry, host) — «🤖 Claude-аас асуух» товч дарахад дуудагдана
+                            (host нь хариуг байрлуулах хоосон div)
        extra: [{ label, title, onClick }] — толгой мөрөнд нэмэх товчнууд
 
    Өгөгдөл: toli-data.js доторх дэлхийн хувьсагч TOLI
@@ -61,6 +63,8 @@
 .tl-lrow .c{font-size:9px;color:var(--mute,#838383);text-transform:uppercase;letter-spacing:.06em}
 .tl-empty{padding:14px 12px;color:var(--mute,#838383);font-size:11px;line-height:1.6}
 .tl-det{flex:1;min-width:0;background:var(--editor,#303030)}
+.tl-ai{margin-top:8px}
+.tl-ai .ai-exp{font-size:11.5px;line-height:1.65;color:var(--dim,#c3c3c3);margin-top:6px}
 .tl-dhdr{height:24px;flex:none;display:flex;align-items:center;gap:8px;padding:0 10px}
 .tl-dbody{flex:1;overflow-y:auto;padding:14px 18px 50px;user-select:text}
 .tl-dbody.center{display:flex;align-items:center;justify-content:center;text-align:center}
@@ -270,6 +274,11 @@
         h += box('🎥 Энэ програм дээр хаана байна', paras(e.studio) +
           (t && opts.onOpenTab ? '<button class="tl-go" data-ttab="' + t.id + '">' + t.ico + ' Тэр хэсгийг нээх</button>' : ''), 'tl-st');
       }
+      if (opts.onAsk) {
+        h += box('🤖 Claude-аас асуух',
+          '<button class="tl-go" data-task="' + esc(e.id) + '">🤖 Энэ үгийг надад дэлгэрэнгүй тайлбарла</button>' +
+          '<div class="tl-ai"></div>');
+      }
       const rel = (e.rel || []).filter(id => byId[id]);
       if (rel.length) h += box('🔗 Холбоотой үгс', '<div class="tl-rel">' +
         rel.map(id => '<button data-tgo="' + id + '">' + esc(byId[id].mn) + '</button>').join('') + '</div>');
@@ -316,6 +325,14 @@
       if (g) { curCat = 'all'; drawCats(); select(g.dataset.tgo); return; }
       const t = ev.target.closest('[data-ttab]');
       if (t) { if (opts.onOpenTab) opts.onOpenTab(t.dataset.ttab); return; }
+      const ask = ev.target.closest('[data-task]');
+      if (ask && opts.onAsk) {
+        const id = ask.dataset.task, e = byId[id];
+        /* Нэг үеэ зөвхөн нэг тайлбар харагддаг тул ангиар нь олно
+           (энэ файлын дотор CSS гэдэг нэр эзэлсэн тул CSS.escape хэрэглэхгүй) */
+        if (e) opts.onAsk(e, root.querySelector('.tl-ai'));
+        return;
+      }
       const h3 = ev.target.closest('.tl-box>h3');
       if (h3) h3.parentElement.classList.toggle('fold');
     });
