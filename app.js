@@ -2200,6 +2200,45 @@ rdata || '',
   dl('1st-studio-camera-' + stamp() + '.py', py, 'text/x-python;charset=utf-8');
 }
 
+/* ══════════════════════════════════════════════════════════════
+   ХӨДӨЛГӨӨНИЙ САНГААС ИРЭХ АВТОМАТ ТУШААЛ
+   camera-movements.html ▸ «Автомат камер» хэсгээс ирнэ:
+     camera.html#p=<хөдөлгөөн>&d=<секунд>&n=<хүн>&env=<орчин>&s=<дүр зураг>
+   ══════════════════════════════════════════════════════════════ */
+function clearHash() {
+  try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { }
+}
+/** Дүрийн тоог шууд тохируулна */
+function setPeople(n) {
+  n = clamp(Math.round(n) || 0, 0, MAXP);
+  while (people.length < n) addPerson(undefined, undefined, undefined, true);
+  while (people.length > n) { const t = people.pop(); world.remove(t); if (active === t) setActive(null); }
+  if (people.length >= 2) arrange('face'); else syncAll();
+}
+function applyUrlAuto() {
+  const raw = (location.hash || '').slice(1);
+  if (!raw) return false;
+  if (raw === 'manual') { clearHash(); if (manualReady()) openManual(); return true; }
+  if (raw === 'toli') { clearHash(); openToli(); return true; }
+  let q; try { q = new URLSearchParams(raw); } catch (e) { return false; }
+  const p = q.get('p');
+  if (!p) return false;
+  const n = q.get('n'), env = q.get('env'), sc = q.get('s');
+  if (env && ENVS[env]) applyEnv(env);
+  if (n !== null && n !== '') setPeople(+n);
+  if (sc) $('sceneTxt').value = sc;
+  $('inPrompt').value = p;
+  gotoPage('pgPrompt');
+  runParse();
+  focusAll(); onCamMove();
+  histReset('Сангаас ирсэн хөдөлгөөн');
+  diagnose(); refreshFix();
+  toast('🎬 Хөдөлгөөний сангаас үүсгэлээ · ' + keys.length + ' кадр', 'ok');
+  clearHash();
+  return true;
+}
+window.addEventListener('hashchange', () => { applyUrlAuto(); });
+
 /* ─────────── Толь — програмын дотор (F2) ─────────── */
 let toli = null, toliOpen = false;
 /** Толийн өгөгдөл ба үзүүлэгч ачаалагдсан эсэх */
@@ -2299,6 +2338,7 @@ function doAct(a) {
     case 'toli': openToli(); break;
     case 'import': $('modelIn').click(); break;
     case 'toliwin': window.open('toli.html', '1stStudioToli'); break;
+    case 'lib': window.open('camera-movements.html#auto', '1stStudioLib'); break;
     case 'incsave': dl('1st-studio-project-' + nextSeq() + '-' + stamp() + '.json', serialize(), 'application/json'); break;
   }
 }
@@ -3247,7 +3287,7 @@ histReset('Нээлтийн төлөв');
 asDirty = false;
 if (manualReady()) manualInit();
 diagnose(); refreshFix();
-asOffer();
+if (!applyUrlAuto()) asOffer();      /* сангаас ирсэн бол шууд үүсгэнэ */
 tick();
 console.log('%c1st Studio — Camera Director', 'color:#ffa028;font-weight:700', 'Blender 5.2 загвар — бэлэн.');
 

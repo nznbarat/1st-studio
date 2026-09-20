@@ -542,6 +542,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between}
     <nav class="topnav">
       <a class="tlink" href="#finder">Сан</a>
       <a class="tlink" href="#builder">Угсрагч</a>
+      <a class="tlink" href="#auto">Автомат камер</a>
       <a class="tlink" href="#sheet">Хураангуй</a>
       <a class="tlink" href="#faq">Тусламж</a>
       <button class="mini" id="motion-toggle" title="Урьдчилсан харагдацын хөдөлгөөнийг унтраах/асаах">⏸ Хөдөлгөөн</button>
@@ -699,6 +700,83 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between}
         <span class="counter" id="b-count">0 тэмдэгт</span>
       </div>
       <p class="b-note">Зөвлөгөө: эхний фрейм (зураг) ашиглаж байгаа бол дүр зургийн хэсгээ товчилж, камерын хөдөлгөөний хэсгийг нь голлуулаарай. Нэг кадрт 1–2 хөдөлгөөнөөс илүүг битгий хий — AI загварууд төөрдөг.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ АВТОМАТ КАМЕР (НЭМЭЛТ) ══════════ -->
+<style id="ac-style">
+#auto .ac-row{display:flex;align-items:center;gap:10px}
+#auto .ac-row label{min-width:86px;font-size:13px;color:var(--dim)}
+#auto .ac-row input[type=range]{flex:1;min-width:0;accent-color:var(--tungsten)}
+#auto .ac-row b{min-width:82px;text-align:right;font-variant-numeric:tabular-nums}
+#auto .ac-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:22px}
+#auto .ac-steps>div{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;
+  padding:14px 16px;font-size:13px;line-height:1.65;color:var(--dim)}
+#auto .ac-steps b{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;
+  border-radius:50%;background:var(--tungsten);color:#1a1206;font-size:12px;margin-right:8px}
+#auto .ac-badge{color:var(--ok)}
+#auto #ac-out{min-height:60px}
+</style>
+
+<section id="auto">
+  <div class="wrap inner">
+    <span class="eyebrow">Шинэ · сан ↔ 3D автоматжуулалт</span>
+    <h2>Автомат камер</h2>
+    <p class="sub">Энэ сангийн хөдөлгөөнийг сонгоход <b>Camera Director</b> (3D камер найруулагч) дээр
+      түлхүүр кадрууд нь <b>автоматаар</b> үүснэ — та юу ч гараар хийхгүй. Тэндээсээ
+      <b>Blender скрипт (.py)</b>, <b>AI промт</b>, <b>PNG эхний фрейм</b> болгон гаргаж болно.
+      Сангийн <b>60 хөдөлгөөн бүгд</b> холбогдсон.</p>
+
+    <div class="b-step">
+      <label class="hd" for="ac-move"><span class="b-num">1</span> Хөдөлгөөн сонгох</label>
+      <select id="ac-move"></select>
+      <div class="b-two" style="margin-top:12px">
+        <div>
+          <label class="hd" for="ac-move2" style="font-size:13px"><span class="b-num">1b</span> Дараа нь (заавал биш)</label>
+          <select id="ac-move2"></select>
+        </div>
+        <div>
+          <label class="hd" for="ac-env" style="font-size:13px"><span class="b-num">1c</span> Орчин</label>
+          <select id="ac-env"></select>
+        </div>
+      </div>
+      <p class="hint" id="ac-tip"></p>
+    </div>
+
+    <div class="b-step">
+      <label class="hd"><span class="b-num">2</span> Хугацаа ба дүрүүд</label>
+      <div class="b-two">
+        <div class="ac-row"><label for="ac-dur">Хугацаа</label>
+          <input type="range" id="ac-dur" min="2" max="15" step="1" value="8"><b id="ac-durv">8 секунд</b></div>
+        <div class="ac-row"><label for="ac-n">Дүрийн тоо</label>
+          <input type="range" id="ac-n" min="0" max="8" step="1" value="2"><b id="ac-nv">2 хүн</b></div>
+      </div>
+    </div>
+
+    <div class="b-step">
+      <label class="hd" for="ac-scene"><span class="b-num">3</span> Дүр зургийн тайлбар (заавал биш)</label>
+      <input id="ac-scene" type="text" placeholder="two Mongolian warriors on the open steppe at dusk">
+    </div>
+
+    <div class="b-step">
+      <label class="hd"><span class="b-num">4</span> Автомат камерт дамжих тушаал</label>
+      <div class="prompt" id="ac-out">Хөдөлгөөнөө сонгоорой…</div>
+      <div class="outbar">
+        <button class="copy" id="ac-go">🎬 Camera Director дээр үүсгэх</button>
+        <button class="ghost" id="ac-copy">📋 Тушаал хуулах</button>
+        <button class="ghost" id="ac-dice">🎲 Санамсаргүй</button>
+        <span class="counter ac-badge" id="ac-badge"></span>
+      </div>
+      <p class="b-note" id="ac-note">Товч дарахад <b>camera.html</b> шинэ цонхонд нээгдэж, тушаалыг задлан
+        шинжлээд 3D түлхүүр кадруудыг өөрөө үүсгэнэ. Нэг цонх нээлттэй байвал дахин дарахад тэрхүү цонхон
+        дотроо шинэчлэгдэнэ.</p>
+    </div>
+
+    <div class="ac-steps">
+      <div><b>1</b> Сангаас хөдөлгөөнөө сонгоно — 60 хөдөлгөөн бүгд автомат камертай холбоотой.</div>
+      <div><b>2</b> «Camera Director дээр үүсгэх» дарна — 3D тайз, камерын зам, түлхүүр кадрууд автоматаар үүснэ.</div>
+      <div><b>3</b> Тэндээсээ Blender скрипт, AI промт, PNG зураг, Storyboard болгон гаргана.</div>
     </div>
   </div>
 </section>
@@ -1560,6 +1638,178 @@ if(location.hash.startsWith("#mv-")){
   const id=location.hash.slice(4);
   if(id in byId)setTimeout(()=>openModal(id),300);
 }
+</script>
+
+<!-- ══════════ АВТОМАТ КАМЕР — логик (НЭМЭЛТ, дээрхийг хөндөөгүй) ══════════ -->
+<script>
+/* Сангийн 60 хөдөлгөөн бүрийг Camera Director-ийн задлан шинжлэгч ойлгодог
+   англи тушаал руу хөрвүүлэх хүснэгт. (camera.html ▸ app.js ▸ promptToCamera) */
+(function(){
+  if (typeof MOVES === "undefined" || typeof CATS === "undefined") return;
+
+  var AUTO = {
+  "static": "static locked off shot",
+  "pan-right": "pan right",
+  "pan-left": "pan left",
+  "whip-pan-right": "fast pan right",
+  "whip-pan-left": "fast pan left",
+  "tilt-up": "tilt up",
+  "tilt-down": "tilt down",
+  "slow-zoom-in": "slow zoom in",
+  "slow-zoom-out": "slow zoom out",
+  "fast-zoom-in": "fast zoom in",
+  "fast-zoom-out": "fast zoom out",
+  "crash-zoom-in": "fast zoom in",
+  "crash-zoom-out": "fast zoom out",
+  "dolly-in": "dolly in",
+  "dolly-out": "dolly out",
+  "truck-right": "truck right",
+  "truck-left": "truck left",
+  "pedestal-up": "crane up",
+  "pedestal-down": "crane down",
+  "slider-right": "truck right",
+  "slider-left": "truck left",
+  "push-past": "fly by",
+  "arc-right": "orbit 90 degrees clockwise",
+  "arc-left": "orbit 90 degrees counter-clockwise",
+  "orbit-cw": "orbit 180 degrees clockwise",
+  "orbit-ccw": "orbit 180 degrees counter-clockwise",
+  "tracking": "follow the subject",
+  "follow": "follow the subject from behind",
+  "reverse-tracking": "follow the subject and pull back",
+  "side-tracking": "follow the subject, truck right",
+  "low-tracking": "low angle, follow the subject",
+  "vehicle-tracking": "follow the subject, fast",
+  "chase": "follow the subject, push in, fast",
+  "handheld": "handheld shot, slowly push in",
+  "snorricam": "handheld, push in to a close-up",
+  "crane-up": "crane up",
+  "crane-down": "crane down",
+  "drone-push": "aerial drone push in",
+  "drone-pull": "aerial drone pull back",
+  "helicopter": "aerial, orbit 180 degrees",
+  "fpv": "fast handheld fly by",
+  "tilt-shift": "high angle static shot",
+  "infinite-zoom": "slow zoom in",
+  "earth-zoom-out": "crane up and pull back to an extreme wide shot",
+  "time-lapse": "static locked off shot",
+  "pass-through": "fly by",
+  "dolly-zoom": "dolly zoom vertigo",
+  "rack-focus": "static locked off shot",
+  "dutch-roll": "dutch angle push in",
+  "birds-eye": "bird's eye view from above",
+  "worms-eye": "low angle push in",
+  "bullet-time": "slow orbit 180 degrees",
+  "hyperlapse": "fast push in",
+  "speed-ramp": "push in, fast",
+  "whip-tilt-up": "fast tilt up",
+  "whip-tilt-down": "fast tilt down",
+  "ots-push": "over the shoulder, push in",
+  "quake": "handheld shaky, push in",
+  "pov-run": "handheld, fast push in",
+  "reveal": "pull back to an extreme wide establishing shot, reveal"
+  };
+
+  var ENVL = [["blender","Blender харагдац"],["night","Шөнийн студи"],["dusk","Үдшийн тал"],
+              ["snow","Цасан өдөр"],["dawn","Үүрийн гэгээ"],["noir","Хар цагаан"],["void","Цайвар студи"]];
+
+  var el = function(id){ return document.getElementById(id); };
+  var mv=el("ac-move"), mv2=el("ac-move2"), env=el("ac-env"), dur=el("ac-dur"), durv=el("ac-durv"),
+      np=el("ac-n"), npv=el("ac-nv"), scene=el("ac-scene"), out=el("ac-out"), tip=el("ac-tip"), badge=el("ac-badge");
+  if (!mv || !out) return;
+
+  function fill(sel, withNone){
+    var h = withNone ? '<option value="">— байхгүй —</option>' : '';
+    Object.keys(CATS).forEach(function(c){
+      var list = MOVES.filter(function(m){ return m.c === c && AUTO[m.id]; });
+      if (!list.length) return;
+      h += '<optgroup label="' + CATS[c] + '">' + list.map(function(m){
+        return '<option value="' + m.id + '">' + m.n + ' · ' + m.mn + ' — ' + m.en + '</option>';
+      }).join('') + '</optgroup>';
+    });
+    sel.innerHTML = h;
+  }
+  fill(mv, false); fill(mv2, true);
+  env.innerHTML = ENVL.map(function(e){ return '<option value="' + e[0] + '">' + e[1] + '</option>'; }).join('');
+
+  var LSK = "1stStudio.autocam", st = {};
+  try { st = JSON.parse(localStorage.getItem(LSK) || "{}") || {}; } catch (e) {}
+  if (st.m && AUTO[st.m]) mv.value = st.m;
+  if (st.m2 && AUTO[st.m2]) mv2.value = st.m2;
+  if (st.env) env.value = st.env;
+  if (st.d) dur.value = st.d;
+  if (st.n !== undefined && st.n !== null) np.value = st.n;
+  if (st.s) scene.value = st.s;
+
+  function save(){
+    try { localStorage.setItem(LSK, JSON.stringify({
+      m: mv.value, m2: mv2.value, env: env.value, d: dur.value, n: np.value, s: scene.value
+    })); } catch (e) {}
+  }
+  function moveOf(id){ return MOVES.filter(function(m){ return m.id === id; })[0]; }
+  function cmd(){
+    var a = AUTO[mv.value] || "", b = mv2.value ? AUTO[mv2.value] : "";
+    return (b ? a + ", then " + b : a) + ", " + dur.value + " seconds";
+  }
+  function url(){
+    var q = [];
+    q.push("p=" + encodeURIComponent(cmd()));
+    q.push("d=" + dur.value);
+    q.push("n=" + np.value);
+    q.push("env=" + env.value);
+    var sc = (scene.value || "").trim();
+    if (sc) q.push("s=" + encodeURIComponent(sc));
+    q.push("src=lib");
+    return "camera.html#" + q.join("&");
+  }
+  function render(){
+    durv.textContent = dur.value + " секунд";
+    npv.textContent  = np.value + " хүн";
+    out.textContent  = cmd();
+    var m = moveOf(mv.value), m2 = moveOf(mv2.value);
+    tip.innerHTML = m ? (m.t || "") + (m2 ? ' <b style="color:var(--tungsten)">+</b> ' + (m2.t || "") : "") : "";
+    badge.textContent = "✓ автомат камер таньдаг" + (m2 ? " · 2 үе шат" : "");
+    save();
+  }
+  [mv, mv2, env, dur, np, scene].forEach(function(x){
+    x.addEventListener("input", render);
+    x.addEventListener("change", render);
+  });
+
+  el("ac-go").addEventListener("click", function(){
+    var w = window.open(url(), "1stStudioCamera");
+    if (!w) { alert("Хөтөч шинэ цонх нээхийг хориглолоо. Зөвшөөрөөд дахин оролдоно уу."); return; }
+    try { w.focus(); } catch (e) {}
+  });
+  el("ac-copy").addEventListener("click", function(){
+    var t = cmd(), b = this;
+    var done = function(){ var o = b.textContent; b.textContent = "✓ Хуулагдлаа"; setTimeout(function(){ b.textContent = o; }, 1400); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done, done);
+    else { var ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta); ta.select();
+           try { document.execCommand("copy"); } catch (e) {} ta.remove(); done(); }
+  });
+  el("ac-dice").addEventListener("click", function(){
+    var ids = MOVES.filter(function(m){ return AUTO[m.id]; }).map(function(m){ return m.id; });
+    mv.value = ids[Math.floor(Math.random() * ids.length)];
+    mv2.value = Math.random() < 0.4 ? ids[Math.floor(Math.random() * ids.length)] : "";
+    if (mv2.value === mv.value) mv2.value = "";
+    dur.value = [5, 6, 8, 8, 10, 12][Math.floor(Math.random() * 6)];
+    render();
+  });
+
+  /* camera-movements.html#auto=<хөдөлгөөний id> гэж шууд нээж болно */
+  function fromHash(){
+    var h = location.hash || "";
+    if (h.indexOf("#auto=") !== 0) return;
+    var id = decodeURIComponent(h.slice(6));
+    if (AUTO[id]) { mv.value = id; render();
+      var sec = el("auto"); if (sec) sec.scrollIntoView({ behavior: "smooth", block: "start" }); }
+  }
+  window.addEventListener("hashchange", fromHash);
+
+  render();
+  fromHash();
+})();
 </script>
 </body>
 </html>
