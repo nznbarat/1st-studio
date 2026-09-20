@@ -990,7 +990,7 @@ function buildPrompt() {
       }
       mn = '<b>Эхлэл:</b> ' + szA.mn + ', ' + anA.mn + ' → ' + segMN.join(' → ') + ' → <b>Төгсгөл:</b> ' + szZ.mn + ', ' + anZ.mn +
         '.<br>Хурд: ' + p.mn + ' · ' + dur + 'с · ' + keys.length + ' кадр · ' + $('aspect').value +
-        (allInFrame(Z) ? '' : '<br><span style="color:#ac8737">⚠ Төгсгөлийн кадарт бүх дүр багтахгүй байж магадгүй.</span>');
+        (allInFrame(Z) ? '' : '<br><span style="color:var(--warn)">⚠ Төгсгөлийн кадарт бүх дүр багтахгүй байж магадгүй.</span>');
     }
   }
 
@@ -1007,6 +1007,11 @@ function buildPrompt() {
     if ($('incNeg').checked && fmt !== 'shots') parts.push('Single continuous shot, no cuts, no camera jitter, consistent subject identity, stable horizon.');
     txt = parts.join(' ');
     if (model === 'veo') txt = txt + '\n\nCamera: ' + (keys.length >= 2 ? analyseAll().flatMap(s => s.KW).join(', ') || 'static' : 'static locked off') + '. Duration: ' + dur + 's. Aspect: ' + $('aspect').value + '.';
+    else if (model === 'sora') {
+      /* Sora нь урсгал кино өгүүлбэрийг илүү сайн уншдаг — хугацаа, харьцааг нэг мөрөнд */
+      txt = txt.replace(/\s+/g, ' ') + ' Shot length about ' + dur + ' seconds, ' + $('aspect').value +
+        ' frame, filmed as one continuous take.';
+    }
     else if (model === 'runway') txt = txt.replace(/\s+/g, ' ');
     else if (model === 'kling') txt = txt + '\n\n[Camera movement]: ' + (keys.length >= 2 ? analyseAll().flatMap(s => s.KW).join(' → ') : 'fixed') + '\n[Duration]: ' + dur + 's';
   }
@@ -1134,7 +1139,7 @@ function buildUI() {
       '<div class="r"><label>Өндөр</label><input type="range" id="cPhi" min="0.06" max="1.94" step="0.005" value="1.2"><span class="v" id="cPhiV">—</span></div>' +
       '<div class="r"><label>Roll</label><input type="range" id="cRoll" min="-45" max="45" step="1" value="0"><span class="v" id="cRollV">0°</span></div>' +
       '<div class="r"><label>Доргио</label><input type="range" id="cShake" min="0" max="100" step="1" value="0"><span class="v" id="cShakeV">0%</span></div>' +
-      '<div class="r"><label style="width:auto">&nbsp;</label><label style="width:auto;display:flex;gap:6px;align-items:center;font-size:11px;color:#e6e6e6;cursor:pointer">' +
+      '<div class="r"><label style="width:auto">&nbsp;</label><label style="width:auto;display:flex;gap:6px;align-items:center;font-size:11px;color:var(--txt);cursor:pointer">' +
       '<input type="checkbox" id="cAuto"> Дүрийг үргэлж кадарт барих (auto-target)</label></div>') +
     '</div>' +
 
@@ -1399,7 +1404,7 @@ function drawTimeline() {
   // сувгийн шошго
   tctx.textAlign = 'left'; tctx.fillStyle = '#b8b8b8'; tctx.font = '9.5px Inter, sans-serif';   /* regions.channels.text */
   tctx.fillText('ShotCam', 5, 40);
-  tctx.fillStyle = '#838383'; tctx.fillText('Subj', 5, 60);
+  tctx.fillStyle = '#b8b8b8'; tctx.globalAlpha = .75; tctx.fillText('Subj', 5, 60); tctx.globalAlpha = 1;
 
   // хөдөлгөөний зурвас (кадр хоорондын хурд)
   if (keys.length >= 2) {
@@ -1467,7 +1472,7 @@ tlc.addEventListener('pointermove', e => {
   }
 });
 tlc.addEventListener('pointerup', () => { if (tlDrag && !tlDrag.scrub) commit('Кадрын хугацаа'); tlDrag = null; });
-tlc.addEventListener('pointercancel', () => { tlDrag = null; });
+tlc.addEventListener('pointercancel', () => { if (tlDrag && !tlDrag.scrub) commit('Кадрын хугацаа'); tlDrag = null; });
 
 /* ─────────── 18. 2D Overlay (гизмо + кадрын хүрээ) ─────────── */
 const ovl = $('ovl'), octx = ovl.getContext('2d');
@@ -1536,7 +1541,7 @@ function drawOverlay(cw, ch) {
     if (!p.neg) { octx.strokeStyle = p.c; octx.globalAlpha = .8; octx.beginPath(); octx.moveTo(gx, gy); octx.lineTo(p.x, p.y); octx.stroke(); }
     octx.globalAlpha = 1;
     octx.beginPath(); octx.arc(p.x, p.y, p.neg ? 4.5 : 6.5, 0, TAU);
-    octx.fillStyle = p.neg ? 'rgba(30,30,30,.85)' : p.c; octx.fill();
+    octx.fillStyle = p.neg ? p.c + '44' : p.c; octx.fill();   /* сөрөг тэнхлэг: тэнхлэгийн өнгө сулруулсан */
     if (p.neg) { octx.strokeStyle = p.c; octx.lineWidth = 1.2; octx.stroke(); }
     if (p.l) { octx.fillStyle = '#101010'; octx.font = '700 8.5px Inter, sans-serif'; octx.textAlign = 'center'; octx.textBaseline = 'middle'; octx.fillText(p.l, p.x, p.y + .5); }
   });
