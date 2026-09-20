@@ -32,7 +32,9 @@ async function call(body, env, headers, keepWarm) {
   return res;
 }
 
-const ENV = { TELEGRAM_BOT_TOKEN: 'НУУЦ-ТҮЛХҮҮР-123', TELEGRAM_CHAT_ID: '999' };
+/* Жинхэнэ түлхүүрийн хэлбэртэй, гэхдээ хуурамч утга */
+const TOKEN = '8123456789:AAFнууц' .replace('нууц', 'S') + 'x'.repeat(32);
+const ENV = { TELEGRAM_BOT_TOKEN: TOKEN, TELEGRAM_CHAT_ID: '999' };
 const sent = [];
 const realFetch = globalThis.fetch;
 globalThis.fetch = async (url, opt) => {
@@ -49,7 +51,7 @@ console.log('2. Хэвийн захиалга');
 sent.length = 0;
 r = await call({ name: 'Бараат', phone: '99112233', service: 'Бичлэг', message: 'Сайн уу' }, ENV);
 ok(r.code === 200 && r.body.ok, 'амжилттай');
-ok(sent.length === 1 && sent[0].url.includes('НУУЦ-ТҮЛХҮҮР-123'), 'түлхүүр зөвхөн серверээс хэрэглэгдсэн');
+ok(sent.length === 1 && sent[0].url.includes(TOKEN), 'түлхүүр зөвхөн серверээс хэрэглэгдсэн');
 ok(sent[0].body.chat_id === '999', 'чат нь серверийн тохиргооноос');
 ok(/Бараат/.test(sent[0].body.text) && /99112233/.test(sent[0].body.text), 'мэдээлэл дамжсан');
 ok(sent[0].body.parse_mode === undefined, 'parse_mode хэрэглээгүй — текст эвдэрэхгүй');
@@ -102,6 +104,25 @@ for (const f of ['index.html', 'index2.html', 'order.js']) {
   ok(!/\d{8,}:[A-Za-z0-9_-]{30,}/.test(src), f + ' — ботын түлхүүр алга');
   ok(!/chat_id/.test(src), f + ' — чатын дугаар алга');
 }
+
+console.log('8б. Түлхүүр буруу наалдсан үед');
+globalThis.fetch = async (url, opt) => { sent.push({ url, body: JSON.parse(opt.body) }); return { ok: true, status: 200, json: async () => ({ ok: true }) } };
+const GOOD = TOKEN;
+sent.length = 0;
+r = await call({ name: 'A', phone: '1' }, { TELEGRAM_BOT_TOKEN: ' ' + GOOD + '\n', TELEGRAM_CHAT_ID: ' 5887820817 ' });
+ok(r.code === 200, 'хоосон зай, мөр таслалттай ч ажилласан');
+ok(sent[0] && sent[0].url.indexOf(GOOD) > 0 && !/\s/.test(sent[0].url), 'хаяг цэвэр — зай үлдээгүй');
+ok(sent[0] && sent[0].body.chat_id === '5887820817', 'чатын дугаар цэвэрлэгдсэн');
+sent.length = 0;
+r = await call({ name: 'A', phone: '1' }, { TELEGRAM_BOT_TOKEN: '"' + GOOD + '"', TELEGRAM_CHAT_ID: '5887820817' });
+ok(r.code === 200 && sent.length === 1, 'хашилттай хуулсан ч ажилласан');
+sent.length = 0;
+r = await call({ name: 'A', phone: '1' }, { TELEGRAM_BOT_TOKEN: 'буруу-түлхүүр', TELEGRAM_CHAT_ID: '5887820817' });
+ok(r.code === 502 && sent.length === 0, 'хэлбэр буруу бол Telegram руу дэмий залгахгүй');
+sent.length = 0;
+r = await call({ name: 'A', phone: '1' }, { TELEGRAM_BOT_TOKEN: GOOD, TELEGRAM_CHAT_ID: 'хаяг' });
+ok(r.code === 502 && sent.length === 0, 'чатын дугаар буруу бол мөн зогсоно');
+globalThis.fetch = realFetch;
 
 console.log('9. Хоёр хуудас дээр жинхэнэ хөтчөөр');
 let chromium;

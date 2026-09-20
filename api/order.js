@@ -69,12 +69,24 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: "Use POST" });
   }
 
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
+  /* Түлхүүр хуулахад хоосон зай, мөр таслалт, хашилт наалдах нь элбэг.
+     Тэдгээрийг эндээс цэвэрлэнэ — эс бөгөөс Telegram 404 буцаадаг. */
+  const token = String(process.env.TELEGRAM_BOT_TOKEN || "").trim().replace(/^["']|["']$/g, "");
+  const chatId = String(process.env.TELEGRAM_CHAT_ID || "").trim().replace(/^["']|["']$/g, "");
   if (!token || !chatId) {
     return res.status(501).json({
       error: "Захиалгын суваг тохируулаагүй байна."
     });
+  }
+  /* Хэлбэр нь буруу бол Telegram руу дэмий залгахгүй — логт тодорхой бичнэ */
+  if (!/^\d{6,}:[A-Za-z0-9_-]{30,}$/.test(token)) {
+    console.error("[order] TELEGRAM_BOT_TOKEN хэлбэр буруу байна " +
+      "(«123456789:AAF…» байх ёстой, урт: " + token.length + ")");
+    return res.status(502).json({ error: "Илгээж чадсангүй. Дахин оролдоно уу." });
+  }
+  if (!/^-?\d{3,}$/.test(chatId)) {
+    console.error("[order] TELEGRAM_CHAT_ID зөвхөн тооноос бүрдэх ёстой (урт: " + chatId.length + ")");
+    return res.status(502).json({ error: "Илгээж чадсангүй. Дахин оролдоно уу." });
   }
 
   let body;
