@@ -409,6 +409,15 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
 #mantxt mark{background:var(--act);color:#1a1206;border-radius:2px;padding:0 2px}
 #mantxt .hit{font-size:11.5px;color:var(--dim2);padding:5px 0}
 
+/* ═══ Файл чирж хаях ═══ */
+#drop{position:fixed;inset:0;z-index:950;display:none;align-items:center;justify-content:center;
+  background:rgba(22,22,22,.72);backdrop-filter:blur(3px)}
+#drop.show{display:flex}
+#drop .bx{border:2px dashed var(--act);border-radius:var(--r-panel);padding:34px 54px;text-align:center;
+  background:var(--editor);box-shadow:var(--shadow)}
+#drop .bx b{display:block;font-size:17px;color:var(--txt-hi);margin-bottom:8px}
+#drop .bx span{font-size:12px;color:var(--dim2);line-height:1.7}
+
 /* ═══ Толь (F2) — програмын дотор ═══ */
 #toli{position:fixed;inset:0;z-index:890;display:none;background:rgba(0,0,0,.55);backdrop-filter:blur(2px)}
 #toli.show{display:flex;align-items:center;justify-content:center;padding:18px}
@@ -478,6 +487,9 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
       <div class="lbl">Дүр</div>
       <button data-act="addPerson">Хүн нэмэх<i>Shift A</i></button>
       <button data-act="delPerson">Сүүлийн хүнийг хасах<i></i></button>
+      <hr>
+      <div class="lbl">Blender-ээс</div>
+      <button data-act="import">📥 3D загвар оруулах<i>.glb .obj</i></button>
       <hr>
       <div class="lbl">Объект</div>
       <button data-act="p:tree">Мод</button>
@@ -556,6 +568,7 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
     <button data-act="addPerson" title="Хүн нэмэх (Shift+A)">🧍</button>
     <button data-act="p:tree" title="Мод нэмэх">🌲</button>
     <button data-act="p:rock" title="Чулуу нэмэх">🪨</button>
+    <button data-act="import" title="Blender-ээс 3D загвар оруулах (.glb / .obj)">📥</button>
     <div class="gap"></div>
     <button data-act="key" title="Түлхүүр кадр (I)">◆</button>
     <button data-act="camview" title="Камерын харц (0)">🎥</button>
@@ -712,9 +725,16 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
   </div>
 </div>
 
+<div id="drop"><div class="bx"><b>📥 Файлаа энд тавина уу</b>
+  <span>.glb · .gltf · .obj — Blender-ээс гаргасан 3D загвар<br>.json — хадгалсан төсөл</span></div></div>
+
 <input type="file" id="fileIn" accept=".json,application/json" hidden>
+<input type="file" id="modelIn" accept=".glb,.gltf,.obj" multiple hidden>
 <!-- three.js r128 (MIT) — репо дотор суулгасан тул интернэтгүй ч ажиллана -->
 <script src="three.min.js"></script>
+<!-- three.js r128-ийн албан ёсны ачаалагчид (MIT) — Blender-ээс гаргасан файл оруулахад -->
+<script src="libs/GLTFLoader.js"></script>
+<script src="libs/OBJLoader.js"></script>
 <script src="manual.js"></script>
 <script src="toli-data.js"></script>
 <script src="toli-ui.js"></script>

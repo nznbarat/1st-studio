@@ -117,7 +117,7 @@ function makePerson(idx) {
   return g;
 }
 
-const PROP_NM = { tree: 'Мод', rock: 'Чулуу', box: 'Хайрцаг', ger: 'Гэр', fire: 'Гал', pole: 'Багана' };
+const PROP_NM = { tree: 'Мод', rock: 'Чулуу', box: 'Хайрцаг', ger: 'Гэр', fire: 'Гал', pole: 'Багана', model: 'Загвар' };
 function makeProp(type) {
   const g = new THREE.Group();
   const add = m => { m.castShadow = true; m.receiveShadow = true; g.add(m); return m; };
@@ -143,6 +143,12 @@ function makeProp(type) {
   } else if (type === 'pole') {
     add(new THREE.Mesh(new THREE.CylinderGeometry(.06, .08, 3.2, 8), new THREE.MeshStandardMaterial({ color: 0x6a5a48, roughness: .9 }))).position.y = 1.6;
     add(new THREE.Mesh(new THREE.BoxGeometry(.5, .3, .02), new THREE.MeshStandardMaterial({ color: 0x4a7ab0, roughness: .8, side: THREE.DoubleSide }))).position.set(.25, 3, 0);
+  } else if (type === 'model') {
+    /* Дутуу (дахин оруулаагүй) 3D загварын орлуулагч — Blender-ийн placeholder шиг */
+    const m = new THREE.Mesh(new THREE.BoxGeometry(.9, 1.8, .9),
+      new THREE.MeshBasicMaterial({ color: srgb(0xffa028), wireframe: true, transparent: true, opacity: .6 }));
+    m.position.y = .9; m.castShadow = false; m.receiveShadow = false;
+    g.add(m);
   } else {
     add(new THREE.Mesh(new THREE.BoxGeometry(.85, .85, .85), new THREE.MeshStandardMaterial({ color: 0x4a6a8a, roughness: .7 }))).position.y = .425;
   }
@@ -175,10 +181,10 @@ function addProp(type, x, z, ry, silent) {
   if (!silent) { setActive(g); syncAll(); commit('Объект нэмэв'); }
   return g;
 }
-function removeProp(p) { world.remove(p); props.splice(props.indexOf(p), 1); if (active === p) setActive(null); syncAll(); commit('Объект устгав'); }
+function removeProp(p) { world.remove(p); props.splice(props.indexOf(p), 1); disposeObj(p); if (active === p) setActive(null); syncAll(); commit('Объект устгав'); }
 function clearScene() {
   people.slice().forEach(p => { world.remove(p); }); people.length = 0;
-  props.slice().forEach(p => { world.remove(p); }); props.length = 0;
+  props.slice().forEach(p => { world.remove(p); disposeObj(p); }); props.length = 0;
   setActive(null);
 }
 const objs = () => people.concat(props);
@@ -210,6 +216,123 @@ function arrange(kind) {
   });
   syncAll(); commit('Байрлуулалт: ' + kind);
 }
+
+/* ══════════════════════════════════════════════════════════════
+   3b. BLENDER-ЭЭС 3D ЗАГВАР ОРУУЛАХ  (.glb / .gltf / .obj)
+   Blender: File ▸ Export ▸ glTF 2.0 (.glb) — нэг файлд бүгд багтана.
+   .blend файлыг хөтөч уншиж чадахгүй тул заавал экспортлоно.
+   ══════════════════════════════════════════════════════════════ */
+const MODEL_MAX_MB = 80;
+const MODEL_RX = /\.(glb|gltf|obj)$/i;
+
+/** Файлуудыг төрлөөр нь ялган оруулна (.json бол төсөл) */
+function importFiles(files) {
+  const list = Array.from(files || []);
+  if (!list.length) return;
+  const proj = list.find(f => /\.json$/i.test(f.name));
+  if (proj) {
+    const rd = new FileReader();
+    rd.onload = () => { try { loadProject(JSON.parse(rd.result)); } catch (e) { toast('JSON уншиж чадсангүй', 'err'); } };
+    rd.readAsText(proj);
+    return;
+  }
+  const models = list.filter(f => MODEL_RX.test(f.name));
+  const blend = list.filter(f => /\.blend$/i.test(f.name));
+  if (blend.length) toast('.blend файлыг хөтөч уншихгүй — Blender дээр File ▸ Export ▸ glTF 2.0 (.glb) гэж гаргана уу', 'err');
+  else if (!models.length) toast('Зөвхөн .glb, .gltf, .obj файл оруулна', 'err');
+  models.forEach(importModel);
+}
+
+function importModel(file) {
+  if (file.size > MODEL_MAX_MB * 1e6) {
+    toast(file.name + ' хэт том (' + (file.size / 1e6).toFixed(0) + 'МБ). ' + MODEL_MAX_MB + 'МБ хүртэл боломжтой.', 'err');
+    return;
+  }
+  const ext = (file.name.split('.').pop() || '').toLowerCase();
+  const rd = new FileReader();
+  toast('⏳ ' + file.name + ' ачаалж байна…');
+  rd.onerror = () => toast('Файлыг уншиж чадсангүй', 'err');
+  if (ext === 'obj') {
+    rd.onload = () => {
+      if (typeof THREE.OBJLoader !== 'function') { toast('OBJLoader олдсонгүй (libs/OBJLoader.js)', 'err'); return; }
+      try { placeModel(new THREE.OBJLoader().parse(rd.result), file.name, true); }
+      catch (e) { toast('OBJ файлыг задалж чадсангүй', 'err'); }
+    };
+    rd.readAsText(file);
+  } else {
+    rd.onload = () => {
+      if (typeof THREE.GLTFLoader !== 'function') { toast('GLTFLoader олдсонгүй (libs/GLTFLoader.js)', 'err'); return; }
+      try {
+        new THREE.GLTFLoader().parse(rd.result, '',
+          g => placeModel(g.scene || (g.scenes && g.scenes[0]), file.name, false),
+          () => toast('Задалж чадсангүй. Blender дээр .glb (Embedded) хэлбэрээр гаргана уу', 'err'));
+      } catch (e) { toast('Задалж чадсангүй — .glb хэлбэрээр гаргана уу', 'err'); }
+    };
+    rd.readAsArrayBuffer(file);
+  }
+}
+
+/** Ачаалсан загварыг тайзан дээр зөв хэмжээ, байрлалд тавина */
+function placeModel(root, fileName, plainMaterial) {
+  if (!root) { toast('Загвар хоосон байна', 'err'); return; }
+  root.position.set(0, 0, 0); root.rotation.set(0, 0, 0); root.scale.setScalar(1);
+  root.updateMatrixWorld(true);
+  let box = new THREE.Box3().setFromObject(root);
+  if (!isFinite(box.min.x) || box.isEmpty()) { toast('Загварт харагдах хэлбэр алга', 'err'); return; }
+  let size = box.getSize(new THREE.Vector3());
+  const h0 = Math.max(size.y, 1e-4);
+  /* Хэт том, хэт жижиг бол хүний өндөрт (1.8м) тааруулна */
+  const auto = (h0 > 12 || h0 < .25);
+  if (auto) root.scale.setScalar(1.8 / h0);
+  root.updateMatrixWorld(true);
+  box = new THREE.Box3().setFromObject(root);
+  const c = box.getCenter(new THREE.Vector3());
+  root.position.set(-c.x, -box.min.y, -c.z);           /* шалан дээр, төвд нь */
+  root.traverse(o => {
+    if (!o.isMesh) return;
+    o.castShadow = true; o.receiveShadow = true;
+    if (plainMaterial || !o.material) {
+      o.material = new THREE.MeshStandardMaterial({ color: 0xb3b3b3, roughness: .75 });  /* Blender Solid саарал */
+    }
+  });
+
+  const g = new THREE.Group();
+  g.add(root);
+  const finalH = new THREE.Box3().setFromObject(g).getSize(new THREE.Vector3()).y;
+  const base = fileName.replace(/\.[^.]+$/, '');
+  g.userData = { kind: 'model', name: base + '.' + String(++oCounter).padStart(3, '0'), vis: true, file: fileName, h: +finalH.toFixed(2) };
+
+  /* Төсөл нээхэд үүссэн «дутуу» орлуулагчийг олвол яг тэр байрлалд нь тавина */
+  const slot = props.find(p => p.userData.kind === 'model' && p.userData.missing &&
+    (p.userData.file || '').toLowerCase() === fileName.toLowerCase());
+  if (slot) {
+    g.position.copy(slot.position); g.rotation.y = slot.rotation.y; g.scale.copy(slot.scale);
+    g.userData.name = slot.userData.name;
+    disposeObj(slot); world.remove(slot); props.splice(props.indexOf(slot), 1);
+  } else {
+    const cen = centroid();
+    g.position.set(clamp(cen.x + 2.4 + Math.random() * .8, -22, 22), 0, clamp(cen.z + (Math.random() * 2 - 1), -22, 22));
+  }
+  props.push(g); world.add(g);
+  setActive(g); applyShading(); syncAll(); commit('Загвар оруулав: ' + fileName);
+  toast('✅ ' + fileName + ' орлоо · ' + finalH.toFixed(1) + 'м' + (auto ? ' (хэмжээг тааруулав)' : '') +
+    ' · G зөөх, S хэмжээ, R эргүүлэх', 'ok');
+}
+
+/** Санах ойг чөлөөлнө */
+function disposeObj(o) {
+  o.traverse(c => {
+    if (c.geometry) c.geometry.dispose();
+    const mats = c.material ? (Array.isArray(c.material) ? c.material : [c.material]) : [];
+    mats.forEach(m => {
+      Object.keys(m).forEach(k => { const v = m[k]; if (v && v.isTexture) v.dispose(); });
+      m.dispose();
+    });
+  });
+}
+
+/** Дутуу загварууд (төсөл нээхэд дахин оруулах шаардлагатай) */
+const missingModels = () => props.filter(p => p.userData.kind === 'model' && p.userData.missing);
 
 /* ─────────── 4. Сонголт ─────────── */
 let active = null;
@@ -1152,6 +1275,12 @@ function buildUI() {
       '<div class="r" style="margin-top:9px"><label>Хөдөлгөөн</label><select class="w" id="anim">' +
       '<option value="idle">Амьсгалах (idle)</option><option value="walk">Алхах</option><option value="talk">Ярих</option><option value="off">Хөдөлгөөнгүй</option></select></div>') +
     box('🌄 Орчин', '<div class="g2">' + envs + '</div>') +
+    box('📥 Blender-ээс 3D загвар',
+      '<button class="big" data-act="import">📥 3D файл оруулах (.glb / .obj)</button>' +
+      '<div id="modelList" style="margin-top:8px"></div>' +
+      '<p class="hint">Blender дээр <b>File ▸ Export ▸ glTF 2.0 (.glb)</b> гэж гаргаад энэ товчоор оруулна. ' +
+      'Файлыг цонх руу шууд <b>чирж хаяад</b> ч болно. Оруулсан загвараа <b>G</b> зөөх, <b>R</b> эргүүлэх, ' +
+      '<b>S</b> хэмжээ, <b>X</b> устгана. <b>.blend</b> файлыг хөтөч уншиж чадахгүй тул заавал экспортлоорой.</p>') +
     box('🌲 Объект',
       '<div class="g3"><button class="w" data-act="p:tree">Мод</button><button class="w" data-act="p:rock">Чулуу</button><button class="w" data-act="p:box">Хайрцаг</button>' +
       '<button class="w" data-act="p:ger">Гэр</button><button class="w" data-act="p:fire">Гал</button><button class="w" data-act="p:pole">Багана</button></div>' +
@@ -1250,6 +1379,22 @@ const EXAMPLES = [
   { l: 'Налуу экшн', t: 'fast whip pan right, then dutch angle push in hard to a close-up, 3 seconds' }
 ];
 
+/** Оруулсан ба дутуу загваруудын жагсаалт (🧍 таб) */
+function refreshModels() {
+  const el = $('modelList'); if (!el) return;
+  const list = props.filter(p => p.userData.kind === 'model');
+  if (!list.length) { el.innerHTML = ''; return; }
+  el.innerHTML = list.map((p, i) => {
+    const miss = !!p.userData.missing;
+    return '<div class="arow"><span class="ic">' + (miss ? '⚠' : '📦') + '</span>' +
+      '<span class="d">' + (p.userData.file || p.userData.name) +
+      '<small>' + (miss ? 'файл дутуу — дахин оруулна уу' : (p.userData.h || '?') + 'м өндөр') + '</small></span>' +
+      (miss ? '<button class="w" data-act="import">Оруулах</button>'
+            : '<button class="w" data-mfocus="' + props.indexOf(p) + '">Очих</button>') +
+      '</div>';
+  }).join('');
+}
+
 /* ─────────── 15. Outliner ─────────── */
 function refreshOutliner() {
   const t = $('otree'); if (!t) return;
@@ -1308,7 +1453,7 @@ function refreshCount() {
   const sc = $('sCount'); if (sc) { sc.value = people.length; $('sCountV').textContent = people.length; }
 }
 function syncAll() {
-  buildSpline(); rebuildHelpers(); refreshCount(); refreshOutliner(); refreshKeyList(); refreshNPanel();
+  buildSpline(); rebuildHelpers(); refreshCount(); refreshOutliner(); refreshKeyList(); refreshNPanel(); refreshModels();
   $('sbKeys').textContent = keys.length;
   $('sbDur').textContent = durSec().toFixed(2) + 'с / ' + (fEnd - fStart) + ' фрейм';
   $('tlInfo').textContent = keys.length + ' кадр · ' + durSec().toFixed(2) + 's · ' + fps + 'fps';
@@ -1721,7 +1866,7 @@ function serialize() {
     styles: Array.from(document.querySelectorAll('.stl')).map(x => x.checked),
     ak: activeK,
     people: people.map(p => ({ x: +p.position.x.toFixed(4), z: +p.position.z.toFixed(4), ry: +p.rotation.y.toFixed(4), s: +p.scale.x.toFixed(3), v: p.userData.vis !== false })),
-    props: props.map(p => ({ t: p.userData.kind, x: +p.position.x.toFixed(4), z: +p.position.z.toFixed(4), ry: +p.rotation.y.toFixed(4), s: +p.scale.x.toFixed(3), v: p.userData.vis !== false })),
+    props: props.map(p => ({ t: p.userData.kind, x: +p.position.x.toFixed(4), z: +p.position.z.toFixed(4), ry: +p.rotation.y.toFixed(4), s: +p.scale.x.toFixed(3), v: p.userData.vis !== false, f: p.userData.file || undefined })),
     keys: keys.map(k => ({ th: k.theta, ph: k.phi, r: k.radius, f: k.fov, ro: k.roll || 0, tx: k.target.x, ty: k.target.y, tz: k.target.z, fr: k.frame }))
   }, null, 1);
 }
@@ -1745,6 +1890,11 @@ function loadProject(d, silent) {
     const o = addProp(p.t, p.x, p.z, p.ry, true);
     if (o && p.s) o.scale.setScalar(p.s);
     if (o && p.v === false) { o.userData.vis = false; o.visible = false; }
+    if (o && p.t === 'model') {                 /* 3D файл нь JSON дотор хадгалагддаггүй */
+      o.userData.file = p.f || 'model.glb';
+      o.userData.missing = true;
+      o.userData.name = (p.f || 'Загвар').replace(/\.[^.]+$/, '') + ' (дутуу)';
+    }
   });
   applyEnv(ENVS[d.env] ? d.env : 'blender');
   $('anim').value = d.anim || 'idle';
@@ -1768,7 +1918,9 @@ function loadProject(d, silent) {
   syncAll();
   if (!silent) {
     histReset('Нээсэн төсөл');
-    toast('Төсөл ачаалагдлаа' + (v2 ? ' (хуучин v2 хувилбар хөрвүүлэгдлээ)' : ''), 'ok');
+    const miss = missingModels();
+    toast('Төсөл ачаалагдлаа' + (v2 ? ' (хуучин v2 хөрвүүлэгдлээ)' : '') +
+      (miss.length ? ' · ' + miss.length + ' 3D загвар дутуу — 🧍 табаас дахин оруулна уу' : ''), miss.length ? '' : 'ok');
     diagnose(); refreshFix();
   }
 }
@@ -2015,12 +2167,21 @@ rdata || '',
 '        layout.objects.link(ob)',
 '',
 '    for (name, kind, x, y, rz, sc) in PROPS:',
-'        bpy.ops.mesh.primitive_cube_add(size=0.85, location=(x, y, 0.42))',
-'        ob = bpy.context.active_object',
+'        if kind == "model":',
+'            # 1st Studio дотор оруулсан 3D загвар. Энд Empty болж үүснэ —',
+'            # өөрийн загвараа импортлоод үүнд parent (Ctrl+P) хийвэл яг тэр байрлалд орно.',
+'            ob = bpy.data.objects.new(name, None)',
+'            ob.empty_display_type = "PLAIN_AXES"',
+'            ob.empty_display_size = 0.8',
+'            bpy.context.scene.collection.objects.link(ob)',
+'            ob.location = (x, y, 0.0)',
+'        else:',
+'            bpy.ops.mesh.primitive_cube_add(size=0.85, location=(x, y, 0.42))',
+'            ob = bpy.context.active_object',
+'            ob.display_type = "WIRE"',
 '        ob.name = name',
 '        ob.rotation_euler[2] = rz',
 '        ob.scale = (sc, sc, sc)',
-'        ob.display_type = "WIRE"',
 '        for c in list(ob.users_collection):',
 '            c.objects.unlink(ob)',
 '        layout.objects.link(ob)',
@@ -2136,6 +2297,7 @@ function doAct(a) {
     case 'fixtab': gotoPage('pgFix'); break;
     case 'manual': manualReady() ? openManual() : toast('manual.js файл олдсонгүй', 'err'); break;
     case 'toli': openToli(); break;
+    case 'import': $('modelIn').click(); break;
     case 'toliwin': window.open('toli.html', '1stStudioToli'); break;
     case 'incsave': dl('1st-studio-project-' + nextSeq() + '-' + stamp() + '.json', serialize(), 'application/json'); break;
   }
@@ -2148,7 +2310,7 @@ function gotoPage(id) {
   if (t) t.scrollIntoView({ block: 'nearest' });
 }
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-act],[data-preset],[data-dir],[data-env],[data-ex],[data-k],[data-kdel],[data-p],[data-r],[data-eye],[data-view],[data-shade],[data-tool],[data-tr],[data-pop],[data-page],[data-fix],[data-enh],[data-hist],[data-asr],[data-asd],[data-man]');
+  const t = e.target.closest('[data-act],[data-preset],[data-dir],[data-env],[data-ex],[data-k],[data-kdel],[data-p],[data-r],[data-eye],[data-view],[data-shade],[data-tool],[data-tr],[data-pop],[data-page],[data-fix],[data-enh],[data-hist],[data-asr],[data-asd],[data-man],[data-mfocus]');
   // цэс хаах
   if (!e.target.closest('.pop') && !e.target.closest('[data-pop]')) closePops();
   if (!t) return;
@@ -2180,6 +2342,7 @@ document.addEventListener('click', e => {
   if (d.kdel !== undefined) { e.stopPropagation(); delKey(+d.kdel); return; }
   if (d.p !== undefined) { setActive(people[+d.p]); return; }
   if (d.r !== undefined) { setActive(props[+d.r]); return; }
+  if (d.mfocus !== undefined) { const o = props[+d.mfocus]; if (o) { setActive(o); focusSel(); onCamMove(); } return; }
   if (d.view !== undefined) { setView(d.view, e.ctrlKey); return; }
   if (d.shade !== undefined) { shading = d.shade; document.querySelectorAll('.sh').forEach(b => b.classList.toggle('on', b === t)); return; }
   if (d.tool !== undefined) {
@@ -2218,6 +2381,26 @@ $('fileIn').addEventListener('change', e => {
   rd.onload = () => { try { loadProject(JSON.parse(rd.result)); } catch (err) { toast('JSON уншиж чадсангүй', 'err'); } };
   rd.readAsText(f); e.target.value = '';
 });
+$('modelIn').addEventListener('change', e => { importFiles(e.target.files); e.target.value = ''; });
+
+/* ── Файл чирж хаях ── */
+let dragN = 0;
+const dropEl = () => $('drop');
+window.addEventListener('dragenter', e => {
+  if (!e.dataTransfer || Array.from(e.dataTransfer.types || []).indexOf('Files') < 0) return;
+  e.preventDefault(); dragN++; dropEl().classList.add('show');
+});
+window.addEventListener('dragover', e => {
+  if (!e.dataTransfer || Array.from(e.dataTransfer.types || []).indexOf('Files') < 0) return;
+  e.preventDefault(); e.dataTransfer.dropEffect = 'copy';
+});
+window.addEventListener('dragleave', e => { if (--dragN <= 0) { dragN = 0; dropEl().classList.remove('show'); } });
+window.addEventListener('drop', e => {
+  if (!e.dataTransfer || !e.dataTransfer.files || !e.dataTransfer.files.length) return;
+  e.preventDefault(); dragN = 0; dropEl().classList.remove('show');
+  importFiles(e.dataTransfer.files);
+});
+
 $('btnParse').onclick = runParse;
 $('copyBtn').onclick = async e => {
   const txt = $('promptOut').textContent;
