@@ -27,7 +27,7 @@ function fromApp(names) {
   }
   return new Function(code + 'return {' + names.join(',') + '};')();
 }
-const { pyNum, pyStr, pyName } = fromApp(['pyNum', 'pyStr', 'pyName']);
+const { pyNum, pyStr, pyName, pyInt } = fromApp(['pyNum', 'pyStr', 'pyName', 'pyInt']);
 
 function render(o) {
   o = o || {};
@@ -37,18 +37,19 @@ function render(o) {
   const resX = ar >= 1 ? 1920 : Math.max(2, Math.round(1080 * ar) & ~1);
   const resY = ar >= 1 ? Math.max(2, Math.round(1920 / ar) & ~1) : 1080;
   put('DATE', '#  Үүсгэсэн: 2026-09-20T00:00:00.000Z');
+  put('STAMP', 'STAMP        = "' + (o.stamp || '2026-09-20T00:00:00.000Z') + '"');
   put('FPS', 'FPS          = ' + (o.fps ?? 24));
   put('FRAME_START', 'FRAME_START  = ' + (o.fStart ?? 1));
   put('FRAME_END', 'FRAME_END    = ' + (o.fEnd ?? 120));
   put('RES_X', 'RES_X        = ' + resX);
   put('RES_Y', 'RES_Y        = ' + resY);
-  put('INTERP', 'INTERPOLATION = "' + (o.interp ?? 'BEZIER') + '"');
+  put('INTERP', 'INTERPOLATION = "' + (o.interp ?? 'LINEAR') + '"');
   put('KEYS', o.kdata ?? ('    (1, (' + [0, -4, 1.6].map(pyNum).join(', ') + '), (0.707107, 0.707107, 0.0, 0.0), (0.0, 0.0, 1.05), 35.0),'));
   put('SUBJECTS', o.pdata ?? ('    (' + pyName('Subject_01') + ', 0.0, 0.0, 0.0, 1.0),'));
-  put('PROPS', o.rdata ?? ('    (' + pyName('chair_01') + ', "box", 1.2, 0.4, 0.0, 0.3, 1.0, 0.8, 0.8, 0.9),'));
+  put('PROPS', o.rdata ?? ('    (' + pyName('uid-box-1') + ', ' + pyName('box_01') + ', "box", 1.2, 0.4, 0.0, 0.3, 1.0, 0.8, 0.8, 0.9),'));
   const pr = (o.promptTxt ?? 'Slow orbit.').replace(/\r\n?/g, '\n');
   put('PROMPT', pr ? pr.split('\n').map(l => '    ' + pyStr(l) + ',').join('\n') : '');
   return py;
 }
-module.exports = { render, pyNum, pyStr, pyName, OUTDIR, OUT };
+module.exports = { render, pyNum, pyStr, pyName, pyInt, OUTDIR, OUT };
 if (require.main === module) { fs.writeFileSync(OUT('sample-export.py'), render({})); console.log('ok'); }

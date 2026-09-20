@@ -1,6 +1,6 @@
 /* Ирмэгийн тохиолдол бүрд ЗӨВ Python үүсч байгааг шалгана.
    (Өмнө нь NaN, Infinity, хашилтаар төгссөн промт скриптийг унагадаг байсан.) */
-const { render, pyNum, pyStr, pyName, OUT } = require('./pygen.cjs');
+const { render, pyNum, pyStr, pyName, pyInt, OUT } = require('./pygen.cjs');
 const fs = require('fs'), cp = require('child_process');
 
 let bad = 0;
@@ -14,6 +14,9 @@ ok(pyNum(undefined) === '0.0', 'undefined → 0.0');
 ok(pyNum(-0) === '0.0', '-0 → 0.0');
 ok(pyNum(3) === '3.0', 'бүхэл тоо float болно');
 ok(pyNum(1.23456789) === '1.234568', '6 орон хүртэл');
+ok(pyNum(1e21) === '1000000000.0', 'экспонент хэлбэр гарахгүй');
+ok(pyNum(-1e21) === '-1000000000.0', 'сөрөг том тоо ч хязгаарлагдана');
+ok(!/e/i.test([1e-9, 1e21, 5e-7, 1e-300].map(pyNum).join(' ')), 'ямар ч тоонд e үсэг гарахгүй');
 ok(pyNum(1e-9) === '0.0', 'маш жижиг тоо 0 болно');
 
 console.log('2. Текст хөрвүүлэлт');
@@ -21,8 +24,12 @@ ok(pyStr('a"b') === '"a\\"b"', 'хашилт escape');
 ok(pyStr('a\\b') === '"a\\\\b"', 'налуу зураас escape');
 ok(pyStr('a\nb') === '"a\\nb"', 'шинэ мөр escape');
 ok(pyName('') === '"Object"', 'хоосон нэр');
-ok(JSON.parse(pyName('x'.repeat(200))).length === 60, 'нэр 60 тэмдэгтээр таслагдана');
+ok(JSON.parse(pyName('x'.repeat(200))).length === 59, 'нэр 59 байтаар таслагдана');
 ok(pyName('a\u0007b') === '"a b"', 'удирдах тэмдэг арилна');
+ok(new TextEncoder().encode(JSON.parse(pyName('ү'.repeat(200)))).length <= 59, 'кирилл нэр 59 БАЙТ дотор');
+ok(pyInt(NaN, 1, 240, 24) === '24', 'pyInt: NaN → анхдагч');
+ok(pyInt(1e9, 2, 16384, 1920) === '16384', 'pyInt: дээд хязгаар');
+ok(pyInt(-5, 1, 240, 24) === '1', 'pyInt: доод хязгаар');
 
 console.log('3. Үүссэн Python бүрэн зөв эсэх');
 const CASES = {
@@ -35,7 +42,7 @@ const CASES = {
   'кирилл промт': { promptTxt: 'Удаан эргэлт — 35мм-ээс 50мм рүү' },
   'олон мөрт промт': { promptTxt: 'мөр1\r\nмөр2\rмөр3\nмөр4' },
   'Python мэт промт': { promptTxt: '""")\nimport os\nos.system("rm -rf /")\n#' },
-  'хашилттай нэр': { rdata: '    (' + pyName('say "hi".glb_01') + ', "model", 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0),' },
+  'хашилттай нэр': { rdata: '    (' + pyName('uid1') + ', ' + pyName('say "hi".glb_01') + ', "model", 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0),' },
   'босоо формат': { aspect: 9 / 16 },
   'дөрвөлжин': { aspect: 1 },
 };

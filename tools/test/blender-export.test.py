@@ -11,10 +11,17 @@ GEN = os.path.join(HERE, "pygen.cjs")
 subprocess.run(["node", GEN], check=True, env=dict(os.environ))
 SRC = open(os.path.join(SP, "sample-export.py"), encoding="utf-8").read()
 
-def run(src=None, action=None):
+import re as _re
+def run(src=None, action=None, **flags):
     s = src if src is not None else SRC
     if action:
-        s = s.replace('ACTION     = "BUILD"', 'ACTION     = "%s"' % action, 1)
+        s2 = _re.sub(r'^ACTION\s*=\s*"BUILD"', 'ACTION = "%s"' % action, s, count=1, flags=_re.M)
+        assert s2 != s, "ACTION мөрийг олсонгүй"
+        s = s2
+    for k, v in flags.items():
+        s2 = _re.sub(r'^%s\s*=\s*\w+' % k, '%s = %r' % (k, v), s, count=1, flags=_re.M)
+        assert s2 != s, k + " мөрийг олсонгүй"
+        s = s2
     g = {"__name__": "shot"}
     exec(compile(s, "shot.py", "exec"), g)
     return g
@@ -39,7 +46,7 @@ ok(all(o.get("1st_studio") for o in bpy.data.objects), "бүх объект тэ
 cam = cams[0]
 ok(cam.rotation_mode == "QUATERNION", "камер квартернион горимд")
 ok(cam.animation_data and len(cam.animation_data.action.fcurves) == 7, "байрлал 3 + эргэлт 4 = 7 муруй")
-ok(all(kp.interpolation == "BEZIER" for fc in cam.animation_data.action.fcurves for kp in fc.keyframe_points), "интерполяц тохирсон")
+ok(all(kp.interpolation == "LINEAR" for fc in cam.animation_data.action.fcurves for kp in fc.keyframe_points), "интерполяц тохирсон")
 ok(len(bpy.WM.popups) == 1, "хэрэглэгчид мэдэгдсэн")
 ok(("undo_push", "1st Studio — камер үүсгэв") in bpy.ops_log, "Ctrl+Z-ийн алхам үүссэн")
 
@@ -57,6 +64,9 @@ ok(tgt in bpy.data.objects, "хэрэглэгчийн CAM_TARGET амьд")
 ok(prec in bpy.data.objects, "хэрэглэгчийн загвар амьд")
 ok(prec.get("1st_studio") is None, "хэрэглэгчийн объект тэмдэглэгдээгүй")
 ok(len([o for o in bpy.data.objects if o.get("1st_role") == "cam"]) == 1, "манай камер тусдаа үүссэн")
+ok(len([o for o in bpy.data.objects if o.get("1st_role") == "target"]) == 1, "манай бай тусдаа үүссэн")
+ourcam = [o for o in bpy.data.objects if o.get("1st_role") == "cam"][0]
+ok(sc.collection in ourcam.users_collection, "камер лавлах цуглуулга дотор БИШ — тайзны үндэст")
 
 # ── 3. Дахин дахин ажиллуулах — холбосон загвар салахгүй ─────────────
 print("3. Гурван удаа дараалан ажиллуулах")
@@ -65,7 +75,7 @@ sc.render.fps = 30; sc.frame_end = 77; sc.render.resolution_x = 1280
 run()
 empty = [o for o in bpy.data.objects if o.get("1st_role") == "model"]
 ok(len(empty) == 0, "энэ жишээнд загвар алга")
-rd = ("    (\"myhero_01\", \"model\", 0.0, 0.0, 0.0, 0.0, 0.09, 20.0, 12.0, 18.0),")
+rd = ("    (\"uid-hero\", \"myhero_01\", \"model\", 0.0, 0.0, 0.0, 0.0, 0.09, 20.0, 12.0, 18.0),")
 import json
 subprocess.run(["node", "-e",
   "const{render}=require(process.env.GEN);require('fs').writeFileSync(require('path').join(process.env.TPLOUT,'with-model.py'),render({rdata:" + json.dumps(rd) + "}))"],
@@ -129,6 +139,114 @@ sc = bpy.reset(); old = bpy.app.version; bpy.App.version = (2, 93, 0)
 run()
 ok(len([o for o in bpy.data.objects if o.get("1st_studio")]) == 0, "хуучин Blender дээр эелдэг татгалзсан")
 bpy.App.version = old
+
+
+# ── 7. Хэрэглэгчийн болгосон хуулбарт хүрэхгүй ───────────────────────
+print("7. Shift+D хуулбар, нэр сольсон объектод хүрэхгүй")
+sc = bpy.reset()
+run(WITH)
+cam = [o for o in bpy.data.objects if o.get("1st_role") == "cam"][0]
+copy = bpy.data.objects.new("ShotCam.001", bpy.data.cameras.new("c2"))
+sc.collection.objects.link(copy)
+copy["1st_studio"] = cam["1st_studio"]          # Shift+D тэмдгийг нь ч хуулна
+copy["1st_role"] = "cam"
+renamed = [o for o in bpy.data.objects if o.get("1st_role") == "subject"][0]
+renamed.name = "МинийДүр"
+run(WITH)
+ok(copy in bpy.data.objects, "Shift+D хуулбар амьд үлдсэн")
+ok(renamed in bpy.data.objects, "нэрийг нь сольсон объект амьд үлдсэн")
+run(WITH, action="REMOVE")
+ok(copy in bpy.data.objects, "REMOVE ч хуулбарт хүрээгүй")
+ok(renamed in bpy.data.objects, "REMOVE ч нэр сольсонд хүрээгүй")
+
+# ── 8. Хадгалаагүй файл ба нөөц хуулбар ─────────────────────────────
+print("8. Хадгалаагүй файл дээр ажиллахгүй")
+sc = bpy.reset()
+bpy.data.is_saved = False
+run()
+ok(len([o for o in bpy.data.objects if o.get("1st_studio")]) == 0, "юунд ч хүрээгүй")
+ok(bpy.WM.popups and "ЗОГС" in " ".join(bpy.WM.popups[-1][1]), "яагаад зогссоноо хэлсэн")
+sc = bpy.reset()
+bpy.data.is_saved = False
+run(SAFETY=False)
+ok(len([o for o in bpy.data.objects if o.get("1st_studio")]) > 0, "SAFETY=False бол үргэлжилнэ")
+sc = bpy.reset()
+run()
+ok(len(bpy.saved_copies) == 1 and "нөөц" in bpy.saved_copies[0], "нөөц хуулбар үүссэн")
+
+# ── 9. Туршилтын горим ───────────────────────────────────────────────
+print("9. DRY_RUN — юунд ч хүрэхгүй")
+sc = bpy.reset()
+run(DRY_RUN=True)
+ok(len([o for o in bpy.data.objects if o.get("1st_studio")]) == 0, "объект үүсээгүй")
+ok(sc.render.fps == 24 and sc.get("1st_studio_backup") is None, "тохиргоо хөндөгдөөгүй")
+ok(bpy.WM.popups and "DRY_RUN" in " ".join(bpy.WM.popups[-1][1]), "юу болох байсныг хэлсэн")
+
+# ── 10. Буруу ACTION ─────────────────────────────────────────────────
+print("10. Буруу ACTION")
+sc = bpy.reset()
+run(action="REMOOVE")
+ok(len([o for o in bpy.data.objects if o.get("1st_studio")]) == 0, "бичиглэлийн алдаанд юу ч хийгээгүй")
+ok(bpy.WM.popups and "BUILD" in " ".join(bpy.WM.popups[-1][1]), "зөв утгыг зааж өгсөн")
+
+# ── 11. «Бүгдийг арилгах» товч ───────────────────────────────────────
+print("11. Арилгах товч бүртгэгдсэн")
+sc = bpy.reset()
+run()
+ok(len(bpy.utils.registered) == 1, "оператор бүртгэгдсэн")
+run()
+ok(len(bpy.utils.registered) == 1, "дахин ажиллуулахад давхарлаагүй")
+op = bpy.utils.registered[0]
+ok(op.bl_idname == "wm.studio1_remove", "товчны нэр зөв")
+op().execute(None)
+ok(len([o for o in bpy.data.objects if o.get("1st_studio")]) == 0, "товч дарахад бүгд арилсан")
+
+# ── 12. Хэрэглэгчийн тэмдэглэл, гараар зөөсөн загвар ────────────────
+print("12. Хэрэглэгчийн тэмдэглэл ба гар байрлал")
+sc = bpy.reset()
+run(WITH)
+txt = [t for t in bpy.data.texts if t.get("1st_studio")][0]
+txt.write("\nМинийи тэмдэглэл: гэрлийг зүүн талаас")
+run(WITH)
+ok("Минийи тэмдэглэл" in txt.as_string(), "тэмдэглэл хадгалагдсан")
+ok(txt.as_string().count("Минийи тэмдэглэл") == 1, "тэмдэглэл давхарлаагүй")
+em = [o for o in bpy.data.objects if o.get("1st_role") == "model"][0]
+em.location = (5.0, 5.0, 0.0)
+run(WITH)
+ok(abs(em.location[0] - 5.0) < 1e-6, "гараар зөөсөн загварыг дарж бичээгүй")
+ok(bpy.WM.popups and "Гараар зөөсөн" in " ".join(bpy.WM.popups[-1][1]), "энэ тухай хэлсэн")
+run(WITH, action="REMOVE")
+ok(txt in bpy.data.texts, "тэмдэглэлтэй текстийг устгаагүй")
+
+# ── 13. Хоёр тайз ────────────────────────────────────────────────────
+print("13. Хоёр тайзтай файл")
+sc = bpy.reset()
+sc.render.fps = 30
+run()
+sc2 = bpy.data.scenes.new("Scene2")
+sc2.render.fps = 60
+other = bpy.data.objects.new("ӨөрТайзныКамер", bpy.data.cameras.new("c3"))
+sc2.collection.objects.link(other)
+sc2.camera = other
+bpy.context.scene = sc2
+run()
+ok(other in bpy.data.objects, "нөгөө тайзны объектод хүрээгүй")
+ok(len([o for o in sc.objects if o.get("1st_role") == "cam"]) == 1, "эхний тайзны камер бүтэн")
+ok(len([o for o in sc2.objects if o.get("1st_role") == "cam"]) == 1, "хоёр дахь тайзанд ч камер үүссэн")
+run(action="REMOVE")
+ok(sc.render.fps == 30 and sc2.render.fps == 60, "хоёр тайзны тохиргоо хоёулаа сэргэсэн")
+ok(sc2.camera is other, "хоёр дахь тайзны камер буцаж ирсэн")
+bpy.context.scene = sc
+
+# ── 14. Хэрэглэгчийн сонголт .blend дотор үлдэнэ ────────────────────
+print("14. Сонголт .blend дотор хадгалагдана")
+sc = bpy.reset()
+run(MAKE_REFS=False)
+ok(len([o for o in bpy.data.objects if o.get("1st_role") == "subject"]) == 0, "лавлах хэлбэр үүсээгүй")
+run()
+ok(len([o for o in bpy.data.objects if o.get("1st_role") == "subject"]) == 0, "шинэ файл ч сонголтыг дарж бичээгүй")
+run(FORCE_OPTS=True)
+ok(len([o for o in bpy.data.objects if o.get("1st_role") == "subject"]) == 1, "FORCE_OPTS үед дарж бичсэн")
 
 print()
 print(("БҮГД ТЭНЦЛЭЭ ✅" if not fails else "УНАСАН: %d ❌" % len(fails)))

@@ -78,6 +78,7 @@ class Object(Animatable):
         self.data=d
         if d is not None: d.users += 1
         self.location=(0.0,0.0,0.0); self.rotation_euler=[0.0,0.0,0.0]; self.scale=(1.0,1.0,1.0)
+        self.rotation_quaternion=(1.0,0.0,0.0,0.0)
         self.rotation_mode="XYZ"; self.parent=None; self._children=[]
         self.display_type="TEXTURED"; self.hide_render=False; self.mode="OBJECT"
         self.empty_display_type="PLAIN_AXES"; self.empty_display_size=1.0
@@ -89,13 +90,21 @@ class Matrix:
     def copy(self): return self
 
 class Text(ID):
-    def __init__(self,name): ID.__init__(self,name); self.body=""
+    def __init__(self,name): ID.__init__(self,name); self.body=""; self.filepath=""
     def clear(self): self.body=""
     def write(self,s): self.body+=s
+    def as_string(self): return self.body
 
 class Coll(ID):
     def __init__(self,name):
         ID.__init__(self,name); self.objects=CollObjects(self); self.children=CollChildren()
+    @property
+    def children_recursive(self):
+        out=[]
+        def walk(c):
+            for k in c.children:
+                out.append(k); walk(k)
+        walk(self); return out
 
 class CollObjects:
     def __init__(self,owner): self.owner=owner; self._l=[]
@@ -147,18 +156,29 @@ class Render:
     def __init__(self):
         self.fps=24; self.fps_base=1.0; self.resolution_x=1920
         self.resolution_y=1080; self.resolution_percentage=100
+        self.pixel_aspect_x=1.0; self.pixel_aspect_y=1.0; self.use_border=False
 
 class Scene(ID):
     def __init__(self,name):
         ID.__init__(self,name); self.render=Render(); self.frame_start=1; self.frame_end=250
-        self.camera=None; self.collection=Coll("Scene Collection"); self.frame=1
-    def frame_set(self,f): self.frame=f
+        self.camera=None; self.collection=Coll("Scene Collection")
+        self.frame_current=1; self.frame_step=1; self.timeline_markers=[]
+    def frame_set(self,f): self.frame_current=f
+    @property
+    def objects(self):
+        """Тайзан дээр аль нэг замаар холбогдсон бүх объект."""
+        seen=[]
+        def walk(c):
+            for o in c.objects:
+                if o not in seen: seen.append(o)
+            for k in c.children: walk(k)
+        walk(self.collection); return seen
 
 class Data:
     def __init__(self):
         self.objects=Store(Object); self.meshes=Store(Mesh); self.cameras=Store(Camera)
         self.collections=Store(Coll); self.texts=Store(Text); self.actions=Store(Action)
-        self.scenes=Store(Scene); self.filepath=""
+        self.scenes=Store(Scene); self.filepath="/tmp/тест.blend"; self.is_saved=True
     def reset(self): self.__init__()
 
 class WM:
@@ -180,29 +200,60 @@ class ViewLayer:
 
 class Context:
     def __init__(self): self.scene=None; self.view_layer=ViewLayer(); self.window_manager=WM()
+    @property
+    def mode(self):
+        ob=self.view_layer.objects.active
+        return "OBJECT" if ob is None else ("OBJECT" if ob.mode=="OBJECT" else "EDIT_MESH")
 
 class _Ed:
     def undo_push(self,message=""): ops_log.append(("undo_push",message))
+class _Wm:
+    def save_as_mainfile(self,filepath="",copy=False):
+        ops_log.append(("save_as_mainfile",filepath,copy))
+        saved_copies.append(filepath)
 class _ObjOps:
     def mode_set(self,mode="OBJECT"):
         ob=context.view_layer.objects.active
         if ob is None: raise RuntimeError("no active object")
         ob.mode=mode; ops_log.append(("mode_set",mode))
 class Ops:
-    def __init__(self): self.ed=_Ed(); self.object=_ObjOps()
+    def __init__(self): self.ed=_Ed(); self.object=_ObjOps(); self.wm=_Wm()
 
 class App:
     version=(5,2,0)
 
+class Operator:
+    pass
+
+class _Types:
+    Operator=Operator
+
+class _Utils:
+    registered=[]
+    def register_class(self,c):
+        """Blender адилаар bl_idname давхцвал хуучныг нь соливол."""
+        nm=getattr(c,'bl_idname',None)
+        _Utils.registered=[x for x in _Utils.registered if getattr(x,'bl_idname',None)!=nm]
+        _Utils.registered.append(c)
+    def unregister_class(self,c):
+        nm=getattr(c,'bl_idname',None)
+        before=len(_Utils.registered)
+        _Utils.registered=[x for x in _Utils.registered if getattr(x,'bl_idname',None)!=nm]
+        if len(_Utils.registered)==before: raise RuntimeError("not registered")
+
 ops_log=[]
+saved_copies=[]
 data=Data()
 context=Context()
 ops=Ops()
 app=App()
+types=_Types()
+utils=_Utils()
 
 def reset():
-    global data, context, ops_log
-    data.reset(); ops_log=[]
+    global data, context, ops_log, saved_copies
+    data.reset(); ops_log=[]; saved_copies=[]
+    _Utils.registered=[]
     sc=data.scenes.new("Scene"); context.scene=sc
     context.view_layer=ViewLayer(); WM.popups=[]
     return sc
