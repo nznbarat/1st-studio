@@ -36,11 +36,14 @@ CFG = {
     "seed": 11,
     # Харьцуулах стандарт хүн. 2260 оны орчин үе — энгийн битүү хослол.
     "human": {"on": True, "height": 1.70, "at": (-0.10, 7.00), "rot": -24.0},
-    # Алхалт: эхний аврагын хажуугаас (камер талдаа) хол аврага руу.
-    # 11.67 м / 25 сек = 0.47 м/с — ёслолын, удаан алхаа.
-    "walk": {"a": (-1.30, 8.60), "b": (2.60, 19.60),
-             "hold": 0.1667,          # эхний 5 сек зогсоно (30 сек дотор)
-             "step": 0.62, "swing": 19.0, "bob": 0.028},
+    # Алхалт. Зам нь аврагуудын шугамаас 13.5 м ПЕРПЕНДИКУЛЯР зайд —
+    # 6 м аврагыг 2.39:1 дэлгэц гэж үзвэл (14.3 м өргөн) 13.5 м дээрээс
+    # хэвтээ 56°, босоо 25° өнцгөөр харагдана. Кино театрын эхний эгнээ
+    # ихэвчлэн 50–60° хэвтээ өнцгийн бүсэд байдаг (SMPTE сүүлийн эгнээ
+    # >= 30°, THX >= 36°). Замын турш хамгийн ойрын аврага 13.5–14.8 м.
+    "walk": {"a": (8.84, 3.60), "b": (15.50, 14.54),
+             "hold": 0.0,             # хүн зогсохгүй — 30 секундын турш алхана
+             "step": 0.62, "swing": 17.0, "bob": 0.026},
     # Цуваа эгнээ: --queue тугаар асаана. Гүн рүү жигд алслана.
     # Диагональ эгнээ: гүн рүү 29 / 50 / 70 м. Хажуу тийш ч шилжинэ —
     # эс бөгөөс урт линз дээр бие биенээ бүрэн халхална.
@@ -786,6 +789,14 @@ def fig_human(M, origin, H=1.70, rot=0.0):
     return {"root": root, "hips": hips, "arms": arms}
 
 
+def walk_t(f, frames):
+    """Фреймээс алхалтын 0..1 параметр. CFG["walk"]["hold"] зогсолтыг тооцно."""
+    hf = max(1, int(frames * CFG["walk"]["hold"])) if CFG["walk"]["hold"] > 0 else 1
+    if f <= hf:
+        return 0.0
+    return (f - hf) / float(frames - hf)
+
+
 def walk_pos(t):
     """Алхалтын зам дээрх байрлал. t нь 0..1 (зогсолтын дараах хэсэгт)."""
     w = CFG["walk"]
@@ -805,17 +816,15 @@ def animate_walk(h, frames):
     """Алхалт: урагш хөдөлгөөн + биеийн доргио + хөлийн савлалт."""
     w = CFG["walk"]
     root, hips = h["root"], h["hips"]
-    hold_f = max(1, int(frames * w["hold"]))
     dist = math.dist(w["a"], w["b"])
     nstep = dist / w["step"]
     base_z = root.location.z
     root.rotation_euler = (0, 0, math.radians(walk_heading()))
-    # Замыг хангалттай нягтаар түлхүүрлэнэ — алхаа нь синусоид тул
-    # хоёр үзүүр хангалтгүй.
-    keys = max(24, (frames - hold_f) // 4)
+    # Алхаа нь синусоид тул хоёр үзүүрийн түлхүүр хангалтгүй.
+    keys = max(30, frames // 4)
     for i in range(keys + 1):
-        f = hold_f + round((frames - hold_f) * i / keys)
-        t = i / keys
+        f = 1 + round((frames - 1) * i / keys)
+        t = walk_t(f, frames)
         x, y = walk_pos(t)
         ph = 2 * math.pi * nstep * t                    # алхмын фаз
         root.location = (x, y, base_z + w["bob"] * abs(math.sin(ph)))
@@ -824,17 +833,20 @@ def animate_walk(h, frames):
             a = math.radians(w["swing"]) * math.sin(ph + (0 if sx > 0 else math.pi))
             hips[sx].rotation_euler = (a, 0, 0)
             hips[sx].keyframe_insert("rotation_euler", frame=f)
-    # Зогсолтын үед хөдөлгөөнгүй
-    x0, y0 = walk_pos(0.0)
-    for f in (1, hold_f):
-        root.location = (x0, y0, base_z)
-        root.keyframe_insert("location", frame=f)
-        for sx in (-1, 1):
-            hips[sx].rotation_euler = (0, 0, 0)
-            hips[sx].keyframe_insert("rotation_euler", frame=f)
-    print("[1st Studio] Алхалт: %.2f м / %.1f сек = %.2f м/с, %.0f алхам, "
-          "зогсолт %d фрейм" % (dist, (frames - hold_f) / 24.0,
-                                dist / ((frames - hold_f) / 24.0), nstep, hold_f))
+    for ob in [root] + list(hips.values()):             # жигд алхаа — зөөлрөлтгүй
+        ad = ob.animation_data
+        try:
+            cb = ad.action.layers[0].strips[0].channelbag(ad.action_slot)
+            for fc in cb.fcurves:
+                for kp in fc.keyframe_points:
+                    kp.interpolation = "LINEAR"
+        except Exception:
+            pass
+    hold_s = frames * w["hold"] / 24.0
+    print("[1st Studio] Алхалт: %.2f м / %.1f сек = %.2f м/с, %.0f алхам%s"
+          % (dist, (frames * (1 - w["hold"])) / 24.0,
+             dist / ((frames * (1 - w["hold"])) / 24.0), nstep,
+             ", зогсолт %.1f сек" % hold_s if hold_s > 0 else ", зогсохгүй"))
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -997,12 +1009,17 @@ MOVES = {
     # Алхаж яваа хүнийг МӨРДӨЖ, зэрэг тойрон холдоно.
     # Харцыг хүнээс ДЭЭШ тооцоолсноор хүн дэлгэцийн доод хэсэгт голлож
     # үлдэнэ — аврагууд дээгүүр нь өндийж харагдана.
-    "walk":   {"kind": "follow", "lens": 55.0,
-               "az0": -152.0, "az1": -58.0,      # тойрох өнцөг
-               "r0": 13.0, "r1": 34.0,           # зэрэг холдоно
-               "z0": 2.20, "z1": 6.50,
+    # Камер ТОГТМОЛ төвтэй нумаар явж холдоно, харц нь хүнийг мөрдөнө.
+    # Нумыг хөдөлж яваа хүн дээр төвлөрүүлбэл зогсолт дуусах мөчид камер
+    # гэнэт үсэрнэ (хүн тэр хооронд 2 м явчихсан байна). Бодит зураг авалт
+    # ч ийм байдаг: камер замаараа явна, операторч харцаа дагуулна.
+    "walk":   {"kind": "follow", "lens": 40.0,
+               "center": (12.17, 9.07),          # замын дунд цэг
+               "az0": -61.0, "az1": -1.0,        # хүн→аврагын тэнхлэгийн ±30°
+               "r0": 20.0, "r1": 38.0,
+               "z0": 2.40, "z1": 7.00,
                "ndc_y": 0.28,                    # хүн кадрын доод хэсэгт
-               "hold": 0.1667},                  # эхний 5 сек зогсоно
+               "hold": 0.1667},                  # камер эхний 5 сек байрандаа
     # Эгнээний дагуу удаан түрэх (--queue-тэй хамт).
     "push":   {"kind": "line", "lens": 85.0,
                "c0": (0.00, -30.0, 3.10), "a0": (0.20, 30.0, 3.10),
@@ -1033,34 +1050,32 @@ def animate_camera(cam, aim, move, frames):
                  math.dist(m["c0"], m["c1"]) / (frames / 24.0)))
     elif m["kind"] == "follow":
         hold_f = max(1, int(frames * m["hold"]))
+        cx, cy = m["center"]
         k = (m["lens"] / 36.0) * (bpy.context.scene.render.resolution_x /
                                   bpy.context.scene.render.resolution_y)
         lift = (0.5 - m["ndc_y"]) / k          # харц нь хүнээс (lift x зай) дээш
+        hz = CFG["human"]["height"] * 0.5
         keys, prev, travel = [], None, 0.0
-        steps = max(24, frames // 5)
+        steps = max(30, frames // 5)
         for i in range(steps + 1):
-            f = hold_f + round((frames - hold_f) * i / steps)
-            t = i / steps
-            hx, hy = walk_pos(t)
-            az = math.radians(m["az0"] + (m["az1"] - m["az0"]) * t)
-            r = m["r0"] + (m["r1"] - m["r0"]) * t
-            c = (hx + r * math.cos(az), hy + r * math.sin(az),
-                 m["z0"] + (m["z1"] - m["z0"]) * t)
-            # Харцны өндөр нь ЗАЙнаас хамаарна: камер холдох тусам хүнийг
-            # нэг ижил ndc_y дээр барихын тулд харц илүү дээш гарах ёстой.
-            d = math.dist(c, (hx, hy, CFG["human"]["height"] * 0.5))
-            keys.append((f, c, (hx, hy, CFG["human"]["height"] * 0.5 + lift * d)))
+            f = 1 + round((frames - 1) * i / steps)
+            # камерын БАЙРЛАЛ: зогсолтын дараа эхэлнэ
+            tc = 0.0 if f <= hold_f else (f - hold_f) / float(frames - hold_f)
+            az = math.radians(m["az0"] + (m["az1"] - m["az0"]) * tc)
+            r = m["r0"] + (m["r1"] - m["r0"]) * tc
+            c = (cx + r * math.cos(az), cy + r * math.sin(az),
+                 m["z0"] + (m["z1"] - m["z0"]) * tc)
+            # ХАРЦ: хүнийг үргэлж мөрдөнө — зогсолтын үед ч (энэ нь пан)
+            hx, hy = walk_pos(walk_t(f, frames))
+            d = math.dist(c, (hx, hy, hz))
+            keys.append((f, c, (hx, hy, hz + lift * d)))
             if prev:
                 travel += math.dist(prev, c)
             prev = c
-        x0, y0 = walk_pos(0.0)
-        c0 = keys[0][1]
-        for f in (1, hold_f):                  # зогсолтын үе
-            keys.insert(0, (f, c0, keys[0][2]))
         print("[1st Studio] Хөдөлгөөн '%s': %d фрейм (%.1f сек), %.0f мм, мөрдөх"
               % (move, frames, frames / 24.0, m["lens"]))
-        print("   зогсолт %d фрейм (%.1f сек), дараа нь %.1f сек хөдөлнө"
-              % (hold_f, hold_f / 24.0, (frames - hold_f) / 24.0))
+        print("   камер зогсолт %d фрейм (%.1f сек) — харц нь энэ үед ч хүнийг дагана"
+              % (hold_f, hold_f / 24.0))
         print("   радиус %.0f -> %.0f м, өндөр %.2f -> %.2f м, өнцөг %.0f°"
               % (m["r0"], m["r1"], m["z0"], m["z1"], abs(m["az1"] - m["az0"])))
         print("   зам %.1f м, хурд %.2f м/с, хүн ndc_y=%.2f дээр"
