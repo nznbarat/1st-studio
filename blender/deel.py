@@ -36,6 +36,11 @@ CFG = {
     "seed": 11,
     # Харьцуулах стандарт хүн. 2260 оны орчин үе — энгийн битүү хослол.
     "human": {"on": True, "height": 1.70, "at": (-0.10, 7.00), "rot": -24.0},
+    # Алхалт: эхний аврагын хажуугаас (камер талдаа) хол аврага руу.
+    # 11.67 м / 25 сек = 0.47 м/с — ёслолын, удаан алхаа.
+    "walk": {"a": (-1.30, 8.60), "b": (2.60, 19.60),
+             "hold": 0.1667,          # эхний 5 сек зогсоно (30 сек дотор)
+             "step": 0.62, "swing": 19.0, "bob": 0.028},
     # Цуваа эгнээ: --queue тугаар асаана. Гүн рүү жигд алслана.
     # Диагональ эгнээ: гүн рүү 29 / 50 / 70 м. Хажуу тийш ч шилжинэ —
     # эс бөгөөс урт линз дээр бие биенээ бүрэн халхална.
@@ -66,6 +71,7 @@ LM = {
 }
 
 COL = "DEEL"
+HUMAN = {}       # build() дараа: {"root": ..., "hips": {...}}
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -762,18 +768,73 @@ def fig_human(M, origin, H=1.70, rot=0.0):
         cyl("HM_Hand_%d" % sx, H * 0.021, H * 0.050,
             (sx * sw * 0.94, -H * 0.046, z_hip - H * 0.062),
             mat=M["skin"], parent=root, n=12)
-    # хөл
+    # Хөл — ташааны голд эцэглэнэ. Гол байхгүй бол алхаа хийх боломжгүй:
+    # объектыг өөрийнх нь төвөөр эргүүлэхэд хөл дундуураа тасарч эргэдэг.
+    hips, arms = {}, {}
     for sx in (-1, 1):
-        path = [(sx * sw * 0.40, 0, z_hip),
-                (sx * sw * 0.40, H * 0.004, z_knee + H * 0.08),
-                (sx * sw * 0.38, 0, z_knee),
-                (sx * sw * 0.36, -H * 0.004, z_ank + H * 0.04)]
-        sweep("HM_Leg_%d" % sx, path, H * 0.056, suit, root, n=12,
+        hip = empty("HM_HIP_%d" % sx, (sx * sw * 0.40, 0, z_hip), parent=root)
+        hips[sx] = hip
+        path = [(0, 0, 0),
+                (0, H * 0.004, -(z_hip - z_knee) * 0.55),
+                (-sx * sw * 0.02, 0, -(z_hip - z_knee)),
+                (-sx * sw * 0.04, -H * 0.004, -(z_hip - z_ank - H * 0.04))]
+        sweep("HM_Leg_%d" % sx, path, H * 0.056, suit, hip, n=12,
               taper=lambda t: 1.0 - 0.30 * t)
         box("HM_Boot_%d" % sx, (H * 0.060, H * 0.115, H * 0.052),
-            (sx * sw * 0.36, -H * 0.022, H * 0.026), mat=M["boot"], parent=root,
-            bevel=H * 0.010)
-    return root
+            (-sx * sw * 0.04, -H * 0.022, -(z_hip - H * 0.026)), mat=M["boot"],
+            parent=hip, bevel=H * 0.010)
+    return {"root": root, "hips": hips, "arms": arms}
+
+
+def walk_pos(t):
+    """Алхалтын зам дээрх байрлал. t нь 0..1 (зогсолтын дараах хэсэгт)."""
+    w = CFG["walk"]
+    ax, ay = w["a"]
+    bx, by = w["b"]
+    return (ax + (bx - ax) * t, ay + (by - ay) * t)
+
+
+def walk_heading():
+    """Алхах чиглэл рүү харах Z эргэлт (градусаар). Хүний нүүр нь -Y тал."""
+    w = CFG["walk"]
+    dx, dy = w["b"][0] - w["a"][0], w["b"][1] - w["a"][1]
+    return math.degrees(math.atan2(dx, -dy))
+
+
+def animate_walk(h, frames):
+    """Алхалт: урагш хөдөлгөөн + биеийн доргио + хөлийн савлалт."""
+    w = CFG["walk"]
+    root, hips = h["root"], h["hips"]
+    hold_f = max(1, int(frames * w["hold"]))
+    dist = math.dist(w["a"], w["b"])
+    nstep = dist / w["step"]
+    base_z = root.location.z
+    root.rotation_euler = (0, 0, math.radians(walk_heading()))
+    # Замыг хангалттай нягтаар түлхүүрлэнэ — алхаа нь синусоид тул
+    # хоёр үзүүр хангалтгүй.
+    keys = max(24, (frames - hold_f) // 4)
+    for i in range(keys + 1):
+        f = hold_f + round((frames - hold_f) * i / keys)
+        t = i / keys
+        x, y = walk_pos(t)
+        ph = 2 * math.pi * nstep * t                    # алхмын фаз
+        root.location = (x, y, base_z + w["bob"] * abs(math.sin(ph)))
+        root.keyframe_insert("location", frame=f)
+        for sx in (-1, 1):
+            a = math.radians(w["swing"]) * math.sin(ph + (0 if sx > 0 else math.pi))
+            hips[sx].rotation_euler = (a, 0, 0)
+            hips[sx].keyframe_insert("rotation_euler", frame=f)
+    # Зогсолтын үед хөдөлгөөнгүй
+    x0, y0 = walk_pos(0.0)
+    for f in (1, hold_f):
+        root.location = (x0, y0, base_z)
+        root.keyframe_insert("location", frame=f)
+        for sx in (-1, 1):
+            hips[sx].rotation_euler = (0, 0, 0)
+            hips[sx].keyframe_insert("rotation_euler", frame=f)
+    print("[1st Studio] Алхалт: %.2f м / %.1f сек = %.2f м/с, %.0f алхам, "
+          "зогсолт %d фрейм" % (dist, (frames - hold_f) / 24.0,
+                                dist / ((frames - hold_f) / 24.0), nstep, hold_f))
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -814,8 +875,9 @@ def build(only=None):
         print("[1st Studio] %-9s нийт %.2f м (бие %.2f) · камераас %.1f м"
               % (n, H * (1.0 + HAT_EXTRA[n]), H, d))
     hc = CFG["human"]
+    HUMAN.clear()
     if hc["on"] and not only:
-        fig_human(M, hc["at"], hc["height"], hc["rot"])
+        HUMAN.update(fig_human(M, hc["at"], hc["height"], hc["rot"]))
     if CFG["ground"]:
         # Хажуугийн гялбаа (sheen) нь асар том хавтгайг цав цагаан болгодог
         # тул газарт зөвхөн матовой сарних гадаргуу өгнө.
@@ -932,6 +994,15 @@ MOVES = {
     "orbit":  {"kind": "arc", "lens": 55.0,
                "center": (-2.69, 10.62), "r": 21.0,
                "az0": -150.0, "az1": -42.0, "z": 3.40, "aim_z": 3.00},
+    # Алхаж яваа хүнийг МӨРДӨЖ, зэрэг тойрон холдоно.
+    # Харцыг хүнээс ДЭЭШ тооцоолсноор хүн дэлгэцийн доод хэсэгт голлож
+    # үлдэнэ — аврагууд дээгүүр нь өндийж харагдана.
+    "walk":   {"kind": "follow", "lens": 55.0,
+               "az0": -152.0, "az1": -58.0,      # тойрох өнцөг
+               "r0": 13.0, "r1": 34.0,           # зэрэг холдоно
+               "z0": 2.20, "z1": 6.50,
+               "ndc_y": 0.28,                    # хүн кадрын доод хэсэгт
+               "hold": 0.1667},                  # эхний 5 сек зогсоно
     # Эгнээний дагуу удаан түрэх (--queue-тэй хамт).
     "push":   {"kind": "line", "lens": 85.0,
                "c0": (0.00, -30.0, 3.10), "a0": (0.20, 30.0, 3.10),
@@ -960,6 +1031,40 @@ def animate_camera(cam, aim, move, frames):
         print("   зай %.1f -> %.1f м, өндөр %.2f -> %.2f м, хурд %.2f м/с"
               % (d0, d1, m["c0"][2], m["c1"][2],
                  math.dist(m["c0"], m["c1"]) / (frames / 24.0)))
+    elif m["kind"] == "follow":
+        hold_f = max(1, int(frames * m["hold"]))
+        k = (m["lens"] / 36.0) * (bpy.context.scene.render.resolution_x /
+                                  bpy.context.scene.render.resolution_y)
+        lift = (0.5 - m["ndc_y"]) / k          # харц нь хүнээс (lift x зай) дээш
+        keys, prev, travel = [], None, 0.0
+        steps = max(24, frames // 5)
+        for i in range(steps + 1):
+            f = hold_f + round((frames - hold_f) * i / steps)
+            t = i / steps
+            hx, hy = walk_pos(t)
+            az = math.radians(m["az0"] + (m["az1"] - m["az0"]) * t)
+            r = m["r0"] + (m["r1"] - m["r0"]) * t
+            c = (hx + r * math.cos(az), hy + r * math.sin(az),
+                 m["z0"] + (m["z1"] - m["z0"]) * t)
+            # Харцны өндөр нь ЗАЙнаас хамаарна: камер холдох тусам хүнийг
+            # нэг ижил ndc_y дээр барихын тулд харц илүү дээш гарах ёстой.
+            d = math.dist(c, (hx, hy, CFG["human"]["height"] * 0.5))
+            keys.append((f, c, (hx, hy, CFG["human"]["height"] * 0.5 + lift * d)))
+            if prev:
+                travel += math.dist(prev, c)
+            prev = c
+        x0, y0 = walk_pos(0.0)
+        c0 = keys[0][1]
+        for f in (1, hold_f):                  # зогсолтын үе
+            keys.insert(0, (f, c0, keys[0][2]))
+        print("[1st Studio] Хөдөлгөөн '%s': %d фрейм (%.1f сек), %.0f мм, мөрдөх"
+              % (move, frames, frames / 24.0, m["lens"]))
+        print("   зогсолт %d фрейм (%.1f сек), дараа нь %.1f сек хөдөлнө"
+              % (hold_f, hold_f / 24.0, (frames - hold_f) / 24.0))
+        print("   радиус %.0f -> %.0f м, өндөр %.2f -> %.2f м, өнцөг %.0f°"
+              % (m["r0"], m["r1"], m["z0"], m["z1"], abs(m["az1"] - m["az0"])))
+        print("   зам %.1f м, хурд %.2f м/с, хүн ndc_y=%.2f дээр"
+              % (travel, travel / ((frames - hold_f) / 24.0), m["ndc_y"]))
     else:
         cx, cy = m["center"]
         keys, prev, travel = [], None, 0.0
@@ -986,7 +1091,7 @@ def animate_camera(cam, aim, move, frames):
         aim.keyframe_insert("location", frame=f)
     # Нумын завсрын түлхүүрүүд Bezier-ээр зөөлрвөл алхам бүрт удааширч
     # чичирдэг тул шугаман болгоно. Хоёр үзүүрт л зөөлрөлт хэрэгтэй.
-    if m["kind"] == "arc":
+    if m["kind"] in ("arc", "follow"):
         for ob in (cam, aim):
             ad = ob.animation_data
             try:
@@ -1080,8 +1185,11 @@ def main():
             print("[1st Studio] '%s' хөдөлгөөн алга. Байгаа нь: %s"
                   % (move, ", ".join(MOVES)))
             return
+        nfr = int(opt("--frames", 96))
+        if MOVES[move]["kind"] == "follow" and HUMAN:
+            animate_walk(HUMAN, nfr)
         animate_camera(bpy.context.scene.camera, bpy.data.objects["CAM_AIM"],
-                       move, int(opt("--frames", 96)))
+                       move, nfr)
     frame = opt("--frame")
     if frame:
         bpy.context.scene.frame_set(int(frame))
