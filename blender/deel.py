@@ -1348,6 +1348,9 @@ def main():
                 print("[1st Studio] Зөвхөн фрейм %s-%s" % (a, b))
             if "--mp4" in argv:
                 r = bpy.context.scene.render
+                # Blender 5.0: FFMPEG нь media_type='VIDEO' үед л
+                # file_format-ын жагсаалтад гарч ирнэ.
+                r.image_settings.media_type = "VIDEO"
                 r.image_settings.file_format = "FFMPEG"
                 r.ffmpeg.format = "MPEG4"
                 r.ffmpeg.codec = "H264"
