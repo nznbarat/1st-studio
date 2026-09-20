@@ -2039,12 +2039,32 @@ rdata || '',
   dl('1st-studio-camera-' + stamp() + '.py', py, 'text/x-python;charset=utf-8');
 }
 
-/** Толь (toli.html) шинэ цонхонд нээх */
-function openToli() {
-  const w = window.open('toli.html', '1stStudioToli');
-  if (!w) toast('Хөтөч шинэ цонх нээхийг хориглолоо', 'err');
-  else toast('📚 Толь нээгдлээ');
+/* ─────────── Толь — програмын дотор (F2) ─────────── */
+let toli = null, toliOpen = false;
+/** Толийн өгөгдөл ба үзүүлэгч ачаалагдсан эсэх */
+function toliReady() { return typeof toliMount === 'function' && typeof TOLI !== 'undefined'; }
+function toliInit() {
+  if (toli || !toliReady()) return toli;
+  toli = toliMount($('tolihost'), {
+    hash: false,
+    onOpenTab: id => { closeToli(); gotoPage(id); toast('📂 ' + id.replace('pg', '') + ' хэсэг нээгдлээ'); }
+  });
+  const last = toli.last();
+  if (last) toli.open(last);
+  return toli;
 }
+/** Толийг нээх. term өгвөл шууд тэр үгийг харуулна. */
+function openToli(term) {
+  if (!toliReady()) {                       /* өгөгдөл дутуу бол тусдаа хуудсаар оролдоно */
+    const w = window.open('toli.html', '1stStudioToli');
+    if (!w) toast('Толь олдсонгүй (toli-data.js)', 'err');
+    return;
+  }
+  toliInit();
+  if (term) { if (toli.byId[term]) toli.open(term); else toli.search(term); }
+  $('toli').classList.add('show'); toliOpen = true;
+}
+function closeToli() { $('toli').classList.remove('show'); toliOpen = false; }
 
 /** manual.js ачаалагдсан эсэх (файл дутуу хуулсан ч програм ажиллана) */
 function manualReady() { return typeof openManual === 'function' && typeof MANUAL !== 'undefined'; }
@@ -2116,6 +2136,7 @@ function doAct(a) {
     case 'fixtab': gotoPage('pgFix'); break;
     case 'manual': manualReady() ? openManual() : toast('manual.js файл олдсонгүй', 'err'); break;
     case 'toli': openToli(); break;
+    case 'toliwin': window.open('toli.html', '1stStudioToli'); break;
     case 'incsave': dl('1st-studio-project-' + nextSeq() + '-' + stamp() + '.json', serialize(), 'application/json'); break;
   }
 }
@@ -2247,6 +2268,8 @@ $('asChk').onchange = () => { asOn = $('asChk').checked; asSaveCfg(); refreshFix
 $('asEvery').onchange = () => { asSec = +$('asEvery').value || 30; asSaveCfg(); refreshFix(); };
 $('recYes').onclick = () => asRestore(0);
 $('recNo').onclick = () => recBar(false);
+$('toliClose').onclick = closeToli;
+$('toliWin2').onclick = () => { closeToli(); window.open('toli.html', '1stStudioToli'); };
 if (manualReady()) {
   $('manClose').onclick = closeManual;
   $('manQ').addEventListener('input', () => manualSearch($('manQ').value));
@@ -2263,6 +2286,12 @@ if (manualReady()) {
 
 /* ─────────── 25. Гарын товчлуур ─────────── */
 document.addEventListener('keydown', e => {
+  if (toliOpen) {
+    if (e.key === 'Escape') { if (toli && toli.onKey(e)) return; e.preventDefault(); closeToli(); return; }
+    if (e.key === 'F2') { e.preventDefault(); closeToli(); return; }
+    if (toli) toli.onKey(e);
+    return;
+  }
   if (manualReady() && manualOpen) {
     if (e.key === 'Escape' || e.key === 'F1') { e.preventDefault(); closeManual(); return; }
     if (e.key === '/' && document.activeElement !== $('manQ')) { e.preventDefault(); $('manQ').focus(); return; }
@@ -2276,6 +2305,7 @@ document.addEventListener('keydown', e => {
     /* Файлын болон тусламжийн товчлуур текст бичиж байхад ч ажиллана */
     const kk = e.key.toLowerCase();
     if (kk === 'f1') { e.preventDefault(); if (manualReady()) openManual(); return; }
+    if (kk === 'f2') { e.preventDefault(); openToli(); return; }
     if ((e.ctrlKey || e.metaKey) && (kk === 's' || kk === 'o' || kk === 'n')) {
       e.preventDefault();
       doAct(kk === 's' ? (e.altKey ? 'incsave' : 'save') : kk === 'o' ? 'open' : 'new');
@@ -2290,7 +2320,7 @@ document.addEventListener('keydown', e => {
     return;
   }
   if (k === 'f1') { e.preventDefault(); if (manualReady()) openManual(); return; }
-  if (k === 'f2') { e.preventDefault(); openToli(); return; }
+  if (k === 'f2') { e.preventDefault(); toliOpen ? closeToli() : openToli(); return; }
   if ((e.ctrlKey || e.metaKey) && k === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
   if ((e.ctrlKey || e.metaKey) && k === 'y') { e.preventDefault(); redo(); return; }
   if ((e.ctrlKey || e.metaKey) && e.altKey && k === 's') { e.preventDefault(); doAct('incsave'); return; }
