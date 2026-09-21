@@ -323,7 +323,7 @@ function importModel(file) {
       if (typeof THREE.GLTFLoader !== 'function') { toast('GLTFLoader олдсонгүй (libs/GLTFLoader.js)', 'err'); return; }
       try {
         new THREE.GLTFLoader().parse(rd.result, '',
-          g => placeModel(g.scene || (g.scenes && g.scenes[0]), file.name, false),
+          g => onGltfLoaded(g, file.name),
           () => toast('Задалж чадсангүй. Blender дээр .glb (Embedded) хэлбэрээр гаргана уу', 'err'));
       } catch (e) { toast('Задалж чадсангүй — .glb хэлбэрээр гаргана уу', 'err'); }
     };
@@ -331,13 +331,14 @@ function importModel(file) {
   }
 }
 
-/** Ачаалсан загварыг тайзан дээр зөв хэмжээ, байрлалд тавина */
+/** Ачаалсан загварыг тайзан дээр зөв хэмжээ, байрлалд тавина.
+    Буцаах: үүссэн бүлэг (THREE.Group) — алдаа/хоосон бол null. */
 function placeModel(root, fileName, plainMaterial) {
-  if (!root) { toast('Загвар хоосон байна', 'err'); return; }
+  if (!root) { toast('Загвар хоосон байна', 'err'); return null; }
   root.position.set(0, 0, 0); root.rotation.set(0, 0, 0); root.scale.setScalar(1);
   root.updateMatrixWorld(true);
   let box = new THREE.Box3().setFromObject(root);
-  if (!isFinite(box.min.x) || box.isEmpty()) { toast('Загварт харагдах хэлбэр алга', 'err'); return; }
+  if (!isFinite(box.min.x) || box.isEmpty()) { toast('Загварт харагдах хэлбэр алга', 'err'); return null; }
   let size = box.getSize(new THREE.Vector3());
   const h0 = Math.max(size.y, 1e-4);
   /* Хэт том, хэт жижиг бол хүний өндөрт (1.8м) тааруулна */
@@ -386,7 +387,7 @@ function placeModel(root, fileName, plainMaterial) {
     world.add(g);
     setActive(g); applyShading(); syncAll(); commit('Загвар оруулав: ' + fileName);
     toast('✅ ' + fileName + ' орлоо · дутуу байсан загварын байранд', 'ok');
-    return;
+    return g;
   } else if (!people.length && !props.some(o => o.userData.kind === 'model')) {
     g.position.set(0, 0, 0);                 /* тайз хоосон бол төв рүү — камер шууд түүн рүү чиглэнэ */
   } else {
@@ -400,6 +401,165 @@ function placeModel(root, fileName, plainMaterial) {
   syncAll(); commit('Загвар оруулав: ' + fileName);
   toast('✅ ' + fileName + ' орлоо · ' + finalH.toFixed(1) + 'м' + (auto ? ' (хэмжээг тааруулав)' : '') +
     (first ? ' · автомат камер үүн рүү чиглэнэ' : '') + ' · G зөөх, S хэмжээ, R эргүүлэх', 'ok');
+  return g;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   3c. BLENDER-ЭЭС КАМЕРЫГ БУЦААЖ ОРУУЛАХ
+   .glb дотор камер (ShotCam) байвал түүнийг 3D загвар биш,
+   ТҮЛХҮҮР КАДР болгон оруулна. Blender-ийн glTF экспорт (+Y дээш)
+   аль хэдийн хөтчийн координатад байдаг тул тэнхлэг солихгүй.
+   Дараалал: эхлээд анимацийг ДЭЭЖЛЭНЭ, дараа нь камер, гэрэл,
+   лавлах объектуудыг загвараас ХАСНА.
+   ══════════════════════════════════════════════════════════════ */
+/** Blender template-ийн custom prop (extras) — GLTFLoader userData руу хуулдаг.
+    (Blender: Include ▸ Data ▸ Custom Properties тэмдэглэсэн үед л ирнэ.) */
+const gltfRole = o => (o && o.userData && o.userData['1st_role'] !== undefined) ? String(o.userData['1st_role']).toLowerCase() : '';
+const gltfName = o => (o && (o.name || (o.userData && o.userData.name))) || '';
+/** Template-ийн лавлах объектуудын нэр: Subject_01, tree_02 … (extras байхгүй үед) */
+const GLTF_HELPER_RX = /^(Subject_\d+|(tree|rock|box|ger|fire|pole)_\d+)(\.\d+)?$/i;
+const GLTF_TARGET_RX = /^CAM_TARGET_REF/i;
+const isGltfTarget = o => gltfRole(o) === 'target' || GLTF_TARGET_RX.test(gltfName(o));
+const isGltfHelper = o => ['subject', 'prop', 'target', 'cam', 'anim'].includes(gltfRole(o)) ||
+  GLTF_HELPER_RX.test(gltfName(o)) || GLTF_TARGET_RX.test(gltfName(o));
+
+const _rollCam = new THREE.PerspectiveCamera();
+/** applyCam-ын (up=Y, lookAt, rotateZ) яг урвуу: дэлхийн квартернионоос эргэлтийг (roll) гаргана */
+function rollFromQuat(P, T, Q) {
+  _rollCam.position.copy(P); _rollCam.up.set(0, 1, 0); _rollCam.lookAt(T);
+  const dq = _rollCam.quaternion.clone().invert().multiply(Q);
+  let r = 2 * Math.atan2(dq.z, dq.w);
+  while (r > Math.PI) r -= TAU;
+  while (r < -Math.PI) r += TAU;
+  return r;
+}
+
+/** Файлаас хасах (эцгээс салгаад санах ойг чөлөөлнө) */
+function stripGltf(list) {
+  list.forEach(o => { if (o.parent) o.parent.remove(o); disposeObj(o); });
+}
+
+/** GLTFLoader амжилттай задалсны дараа: камер байвал кадр, загвар байвал загвар */
+function onGltfLoaded(gltf, fileName) {
+  const root = gltf.scene || (gltf.scenes && gltf.scenes[0]);
+  if (!root) { placeModel(root, fileName, false); return; }
+  root.updateMatrixWorld(true);
+
+  /* ── 1. Камер ба гэрэл хайх ── */
+  let cams = []; root.traverse(o => { if (o.isCamera) cams.push(o); });
+  if (!cams.length) cams = (gltf.cameras || []).slice();
+  const lights = []; root.traverse(o => { if (o.isLight) lights.push(o); });
+  const persp = cams.filter(c => c.isPerspectiveCamera);
+  const cam = persp.find(c => gltfRole(c) === 'cam') || persp.find(c => /ShotCam/i.test(gltfName(c))) || persp[0] || null;
+
+  if (!cam) {
+    /* Камергүй файл — хуучин замаар (зөвхөн гэрлийг хасна: тайзны гэрэлтүүлгийг эвддэг) */
+    if (cams.length) { toast('Orthographic камерыг дэмжихгүй — Blender дээр Perspective болгоно уу. Загварыг л оруулав.', 'err'); stripGltf(cams); }
+    stripGltf(lights);
+    placeModel(root, fileName, false);
+    return;
+  }
+
+  /* ── 2. Бай (CAM_TARGET_REF) ── */
+  let tnode = null;
+  root.traverse(o => { if (!tnode && o !== cam && isGltfTarget(o)) tnode = o; });
+
+  /* ── 3. Анимацийг дээжлэх (бүх clip-ийг нэг mixer дээр зэрэг тоглуулна) ── */
+  const clips = gltf.animations || [];
+  let D = 0; clips.forEach(c => { D = Math.max(D, c.duration || 0); });
+  const total = Math.round(D * fps);
+  let n = (D > 0 && total >= 1) ? Math.min(MAXK, total + 1) : 1;
+  let mixer = null, actions = [];
+  if (n > 1) {
+    mixer = new THREE.AnimationMixer(root);
+    actions = clips.map(c => { const a = mixer.clipAction(c); a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; a.play(); return a; });
+  }
+  const readAt = t => {
+    if (mixer) {
+      actions.forEach(a => { a.paused = false; a.enabled = true; a.time = 0; });   /* богино clip дууссан бол дахин сэрээнэ */
+      mixer.setTime(Math.min(t, D - 1e-4));
+    }
+    root.updateMatrixWorld(true);
+    if (!cam.parent) cam.updateMatrixWorld(true);
+    const P = new THREE.Vector3(), Q = new THREE.Quaternion(), S = new THREE.Vector3();
+    cam.matrixWorld.decompose(P, Q, S);
+    const T = tnode ? new THREE.Vector3().setFromMatrixPosition(tnode.matrixWorld) : null;
+    return { P, Q, T };
+  };
+  let samples = [];
+  for (let i = 0; i < n; i++) samples.push(readAt(n > 1 ? D * i / (n - 1) : 0));
+  let animated = false;
+  if (n > 1) {
+    const s0 = samples[0];
+    animated = samples.some(s => s.P.distanceTo(s0.P) > 1e-4 || 1 - Math.abs(s.Q.dot(s0.Q)) > 1e-6 ||
+      (s.T && s0.T && s.T.distanceTo(s0.T) > 1e-4));
+    if (!animated) { samples = [samples[0]]; n = 1; }
+  }
+  if (mixer) { mixer.stopAllAction(); mixer.uncacheRoot(root); root.updateMatrixWorld(true); }   /* загварыг анхны байдалд нь буцаана */
+
+  /* ── 4. Камер, гэрэл, лавлах объектуудыг загвараас хасна ── */
+  const junk = [];
+  root.traverse(o => { if (o !== root && (o.isCamera || o.isLight || o === tnode || isGltfHelper(o))) junk.push(o); });
+  stripGltf(junk);
+
+  /* ── 5. Үлдсэн хэлбэрийг загвар болгон тавиад, камерыг түүнтэй хамт зөөнө ── */
+  let hasGeo = false; root.traverse(o => { if (o.geometry) hasGeo = true; });
+  let g = null;
+  if (hasGeo) {
+    histLock = true;                                   /* нэг л «буцаах» алхам болно */
+    try { g = placeModel(root, fileName, false); } finally { histLock = false; }
+    if (g) {
+      root.updateMatrixWorld(true);
+      const M = root.matrixWorld.clone();
+      const qM = new THREE.Quaternion(); M.decompose(new THREE.Vector3(), qM, new THREE.Vector3());
+      samples.forEach(s => { s.P.applyMatrix4(M); if (s.T) s.T.applyMatrix4(M); s.Q.premultiply(qM); });
+    }
+  }
+  let C = null;
+  if (g) C = new THREE.Box3().setFromObject(g).getCenter(new THREE.Vector3());
+  else if (people.length || props.length) C = centroid();
+
+  /* ── 6. Дээж → камерын төлөв ── */
+  const fEndNew = animated ? 1 + total : fEnd;
+  const frames = [];
+  for (let i = 0; i < n; i++) {
+    let f = animated ? Math.round(lerp(1, fEndNew, i / (n - 1))) : fStart;
+    if (i && f <= frames[i - 1]) f = frames[i - 1] + 1;
+    frames.push(f);
+  }
+  const fov = clamp(cam.fov, 8, 110);
+  const states = samples.map((s, i) => {
+    const fw = new THREE.Vector3(0, 0, -1).applyQuaternion(s.Q);
+    let T = null;
+    if (s.T) {            /* бай нь камерын харах чиглэлд (30° дотор) байвал түүнийг авна */
+      const d = s.T.clone().sub(s.P), L = d.length();
+      if (L > .3 && d.divideScalar(L).dot(fw) > Math.cos(Math.PI / 6)) T = s.T.clone();
+    }
+    if (!T) {
+      const dist = C ? clamp(C.clone().sub(s.P).dot(fw), .55, 90) : 4;
+      T = s.P.clone().addScaledVector(fw, dist);
+    }
+    const st = stateFromPT(s.P, T, fov, rollFromQuat(s.P, T, s.Q));
+    st.frame = frames[i];
+    return st;
+  });
+
+  /* ── 7. Хэрэглэх ── */
+  stopPlay();
+  keys = states.slice(0, MAXK); activeK = 0;
+  if (animated) {
+    /* Blender-ийн фрейм бүрээр шатаасан муруйг ≤24 цэгээр хамгийн үнэнч нь шугаман дамжуулна */
+    fStart = 1; fEnd = fEndNew; interp = 'linear';
+    $('fStart').value = fStart; $('fEnd').value = fEnd; $('interp').value = interp;
+  }
+  autoTarget = false; $('cAuto').checked = false;
+  Object.assign(state, cloneS(keys[0])); state.target.copy(keys[0].target);
+  setFrame(fStart); syncAll(); commit('Blender камер орлоо: ' + fileName);
+  let msg = '✅ ' + fileName + ' · камер орлоо · ' + keys.length + ' кадр · ' + D.toFixed(1) + ' сек' +
+    (animated ? '' : ' (хөдөлгөөнгүй)') + ' · ' + lensMM(fov) + 'мм';
+  if (persp.length > 1) msg += ' · ' + persp.length + ' камераас «' + (gltfName(cam) || 'camera') + '»-г авав';
+  if (g) msg += ' · загвар ' + g.userData.h + 'м';
+  toast(msg + ' · Ctrl+Z буцаана', 'ok');
 }
 
 /** Санах ойг чөлөөлнө */
@@ -1604,7 +1764,8 @@ function buildUI() {
       '<div id="modelList" style="margin-top:8px"></div>' +
       '<p class="hint">Blender дээр <b>File ▸ Export ▸ glTF 2.0 (.glb)</b> гэж гаргаад энэ товчоор оруулна. ' +
       'Файлыг цонх руу шууд <b>чирж хаяад</b> ч болно. Оруулсан загвараа <b>G</b> зөөх, <b>R</b> эргүүлэх, ' +
-      '<b>S</b> хэмжээ, <b>X</b> устгана. <b>.blend</b> файлыг хөтөч уншиж чадахгүй тул заавал экспортлоорой.</p>') +
+      '<b>S</b> хэмжээ, <b>X</b> устгана. <b>.blend</b> файлыг хөтөч уншиж чадахгүй тул заавал экспортлоорой. ' +
+      'Файл дотор Blender камер (<b>ShotCam</b>) байвал загвар биш, <b>камерын түлхүүр кадр</b> болж орж ирнэ.</p>') +
     box('🌲 Объект',
       '<div class="g3"><button class="w" data-act="p:tree">Мод</button><button class="w" data-act="p:rock">Чулуу</button><button class="w" data-act="p:box">Хайрцаг</button>' +
       '<button class="w" data-act="p:ger">Гэр</button><button class="w" data-act="p:fire">Гал</button><button class="w" data-act="p:pole">Багана</button></div>' +
