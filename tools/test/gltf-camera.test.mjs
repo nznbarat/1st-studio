@@ -53,7 +53,7 @@ function buildGltf(o) {
   const nodes = [], meshes = [], cameras = [], animations = [];
   const g = { asset: { version: '2.0', generator: 'test' }, scene: 0, scenes: [{ nodes: [] }], nodes, meshes, accessors, bufferViews, buffers: [] };
   let cubeMesh = -1;
-  if (o.cube || o.subject) {
+  if (o.cube || o.subject || (o.extraMeshes && o.extraMeshes.length)) {
     /* 1×1×1 шоо, x,z ∈ [−.5,.5], y ∈ [0,1] — placeModel-ийн хувиргалт identity болно */
     const P = [], I = [];
     for (let i = 0; i < 8; i++) P.push((i & 1) ? .5 : -.5, (i & 2) ? 1 : 0, (i & 4) ? .5 : -.5);
@@ -65,6 +65,10 @@ function buildGltf(o) {
     cubeMesh = 0;
   }
   if (o.cube) { nodes.push({ name: 'Cube', mesh: cubeMesh }); g.scenes[0].nodes.push(nodes.length - 1); }
+  (o.extraMeshes || []).forEach(m => {
+    nodes.push({ name: m.name, mesh: cubeMesh, translation: m.translation || [0, 0, 0] });
+    g.scenes[0].nodes.push(nodes.length - 1);
+  });
   (o.cams || []).forEach(c => {
     cameras.push(c.ortho
       ? { type: 'orthographic', name: c.name, orthographic: { xmag: 1, ymag: 1, znear: .1, zfar: 100 } }
@@ -110,6 +114,9 @@ function buildGltf(o) {
 /* ── хөтөч ── */
 const browser = await chromium.launch({ executablePath: EXE });
 const page = await browser.newPage();
+/* confirm() — кадр солихын өмнөх асуулт: анхдагчаар «OK» */
+let dialogMode = 'accept';
+page.on('dialog', d => (dialogMode === 'accept' ? d.accept() : d.dismiss()));
 const errs = [];
 page.on('pageerror', e => errs.push(e.message));
 page.on('console', m => { if (m.type() === 'error' && !/Failed to load resource|ERR_CERT|fonts\.g/.test(m.text())) errs.push(m.text()); });
@@ -271,6 +278,141 @@ const rG = await load(jsonG, 'two.glb');
 const G = await snap();
 ok(rG === true && G.k0 && dist(G.k0.p, [2, 1, 6]) < 1e-3, 'ShotCam нэртэйг нь авав ' + fmt(G.k0.p));
 ok(/2 камераас/.test(G.toast) && /ShotCam/.test(G.toast), 'toast тоо, нэрийг хэлэв: ' + G.toast);
+
+/* ═══ H. Тайз хоосон биш — камер загвараа дагах ёстой ═══ */
+console.log('H. Тайзан дээр хүн байхад загвар + камер');
+await page.evaluate(() => { clearScene(); keys = []; activeK = -1; setPeople(1); syncAll(); });
+const rH = await load(jsonA, 'shot.glb');
+const H = await page.evaluate(() => {
+  const g = props[props.length - 1];
+  return { gp: g.position.toArray(), p: posOf(keys[0]).toArray(), t: keys[0].target.toArray(), kind: g.userData.kind, n: keys.length };
+});
+ok(rH === true && H.kind === 'model' && H.n >= 3, 'загвар + кадрууд орлоо');
+const expP = KP[0].map((v, i) => v + H.gp[i]), expT = TGT.map((v, i) => v + H.gp[i]);
+ok(dist(H.p, expP) < 1e-3, 'камер загварын шинэ байрлалыг дагав ' + fmt(H.p) + ' = P0 + g ' + fmt(expP));
+ok(dist(H.t, expT) < 1e-3, 'бай ч дагав ' + fmt(H.t));
+ok(Math.hypot(H.gp[0], H.gp[2]) > .5, 'загвар голд биш байрласан ' + fmt(H.gp));
+
+/* ═══ I. Дутуу загварын орлуулагч — эргэлт, хэмжээтэй ═══ */
+console.log('I. Дутуу загварын байранд (эргэлт + хэмжээ)');
+await page.evaluate(() => {
+  clearScene(); keys = []; activeK = -1;
+  const o = addProp('model', 5, -2, 1.1, true);
+  o.scale.setScalar(2); o.userData.file = 'slot.glb'; o.userData.missing = true; syncAll();
+});
+const rI = await load(jsonA, 'slot.glb');
+const I = await page.evaluate(([KP0, TGT]) => {
+  const g = props.find(p => p.userData.file === 'slot.glb');
+  const root = g.children[0]; root.updateWorldMatrix(true, false);
+  const ex = new THREE.Vector3(KP0[0], KP0[1], KP0[2]).applyMatrix4(root.matrixWorld).toArray();
+  const et = new THREE.Vector3(TGT[0], TGT[1], TGT[2]).applyMatrix4(root.matrixWorld).toArray();
+  return { ex, et, p: posOf(keys[0]).toArray(), t: keys[0].target.toArray(), ry: g.rotation.y, s: g.scale.x, missing: !!g.userData.missing, n: props.length };
+}, [KP[0], TGT]);
+ok(rI === true && I.n === 1 && !I.missing && near(I.s, 2, 1e-6) && near(I.ry, 1.1, 1e-6), 'орлуулагчийн байранд эргэлт, хэмжээтэйгээ орлоо');
+ok(dist(I.p, I.ex) < 1e-3, 'камер = эргүүлж томруулсан загварын матрицаар ' + fmt(I.p) + ' ≈ ' + fmt(I.ex));
+ok(dist(I.t, I.et) < 1e-3, 'бай ч мөн ' + fmt(I.t));
+
+/* ═══ J. Бай хажуу тийш 15° — чиглэл, налуу файлынхаараа ═══ */
+console.log('J. CAM_TARGET_REF 15° хажууд: чиглэл хэвээр');
+const PJ = [0, 1.5, 6], TJ = [0, .5, 0], a15 = 15 * Math.PI / 180;
+const dJ = [TJ[0] - PJ[0], TJ[1] - PJ[1], TJ[2] - PJ[2]];
+const rotJ = [dJ[0] * Math.cos(a15) + dJ[2] * Math.sin(a15), dJ[1], -dJ[0] * Math.sin(a15) + dJ[2] * Math.cos(a15)];
+const AIM = [PJ[0] + rotJ[0], PJ[1] + rotJ[1], PJ[2] + rotJ[2]];
+const jsonJ = buildGltf({ target: { translation: TJ }, cams: [{ name: 'ShotCam', translation: PJ, rotation: await quatOf(PJ, AIM, 0), yfov: .6 }] });
+await page.evaluate(() => { clearScene(); keys = []; activeK = -1; syncAll(); });
+const rJ = await load(jsonJ, 'aim.glb');
+const J = await page.evaluate(([PJ, AIM]) => {
+  const k = keys[0]; const p = posOf(k); const fw = k.target.clone().sub(p).normalize();
+  const want = new THREE.Vector3(AIM[0] - PJ[0], AIM[1] - PJ[1], AIM[2] - PJ[2]).normalize();
+  return { ang: Math.acos(Math.min(1, fw.dot(want))) * 180 / Math.PI, roll: k.roll, r: k.radius };
+}, [PJ, AIM]);
+ok(rJ === true && J.ang < .01, 'харах чиглэл файлынх хэвээр (зөрүү ' + J.ang.toFixed(4) + '°)');
+ok(Math.abs(J.roll) < 1e-4, 'налуу 0 хэвээр: ' + J.roll.toFixed(6));
+const dTJ = (dJ[0] * rotJ[0] + dJ[1] * rotJ[1] + dJ[2] * rotJ[2]) / Math.hypot(dJ[0], dJ[1], dJ[2]);
+ok(near(J.r, dTJ, 1e-3), 'зай = байн проекц ' + J.r.toFixed(3) + ' ≈ ' + dTJ.toFixed(3));
+
+/* ═══ K. Нэрээр хасах — зөвхөн манай файл дээр ═══ */
+console.log('K. tree_01 нэртэй жинхэнэ загвар');
+const treeMeshes = [{ name: 'tree_01', translation: [3, 0, 0] }, { name: 'Ground' }];
+const camK = { name: 'Camera', translation: [2, 1, 6], rotation: await quatOf([2, 1, 6], [0, 1, 0], 0), yfov: .6 };
+const treeInfo = () => page.evaluate(() => {
+  const g = props[props.length - 1]; let tree = false;
+  g.traverse(o => { if (/^tree_01/.test(o.name)) tree = true; });
+  return { tree, w: new THREE.Box3().setFromObject(g).getSize(new THREE.Vector3()).x, toast: document.getElementById('toast').textContent };
+});
+await page.evaluate(() => { clearScene(); keys = []; activeK = -1; syncAll(); });
+const rK1 = await load(buildGltf({ extraMeshes: treeMeshes, cams: [camK] }), 'forest.glb');
+const K1 = await treeInfo();
+ok(rK1 === true && K1.tree && K1.w > 3.5, 'нотолгоогүй файлд tree_01 үлдэв (өргөн ' + K1.w.toFixed(2) + ')');
+ok(!/лавлах объект хасав/.test(K1.toast), 'toast хасалт дурдаагүй');
+await page.evaluate(() => { clearScene(); keys = []; activeK = -1; syncAll(); });
+const rK2 = await load(buildGltf({ extraMeshes: treeMeshes, target: { translation: [0, .5, 0] }, cams: [Object.assign({}, camK, { name: 'ShotCam' })] }), 'ours.glb');
+const K2 = await treeInfo();
+ok(rK2 === true && !K2.tree && near(K2.w, 1, 1e-3), 'манай файлд (CAM_TARGET_REF байгаа) tree_01 хасагдав');
+ok(/1 лавлах объект хасав/.test(K2.toast), 'toast: ' + K2.toast);
+
+/* ═══ L. Blender-ийн эхлэл 1/24 с ═══ */
+console.log('L. Эхний кадр 1/fps с дээр (Blender анхдагч)');
+const KTL = KT.map(t => t + 1 / FPS);
+const jsonL = buildGltf({ cams: [{ name: 'ShotCam', translation: KP[0], rotation: KQ[0], yfov: YFOV }], anim: { node: 'ShotCam', times: KTL, translations: KP, rotations: KQ } });
+await page.evaluate(() => { clearScene(); keys = []; activeK = -1; syncAll(); });
+const rL = await load(jsonL, 'offset.glb');
+const L = await snap();
+ok(rL === true && L.fEnd - L.fStart === Math.round(2 * FPS), 'эхлэлийн зөрүүг хасав: fEnd−fStart = ' + (L.fEnd - L.fStart));
+ok(dist(L.k0.p, KP[0]) < 1e-3 && dist(L.kl.p, KP[2]) < 1e-3, 'эхний/сүүлийн кадр яг таарав');
+const pL = await page.evaluate(f => posOf(sampleFrame(f)).toArray(), L.fStart + FPS);
+ok(dist(pL, KP[1]) < .05, 'фрейм ' + (L.fStart + FPS) + ' = 1 сек дэх цэг ' + fmt(pL));
+ok(/2\.0 сек/.test(L.toast), 'toast 2.0 сек: ' + L.toast);
+
+/* ═══ M. Orthographic ═══ */
+console.log('M. Orthographic камер');
+const orthoCam = { name: 'Camera', ortho: true, translation: [2, 1, 6], rotation: [0, 0, 0, 1] };
+const bM = await snap();
+const rM1 = await load(buildGltf({ cams: [orthoCam] }), 'ortho.glb');
+const M1 = await snap();
+ok(rM1 === true && M1.props === bM.props && M1.n === bM.n, 'юу ч ороогүй');
+ok(/Orthographic/.test(M1.toast) && /err/.test(M1.toastCls), 'toast: ' + M1.toast);
+const rM2 = await load(buildGltf({ cube: true, cams: [orthoCam] }), 'ortho2.glb');
+const M2 = await snap();
+ok(rM2 === true && M2.models === bM.models + 1 && M2.n === bM.n, 'загвар орсон, кадр хэвээр');
+ok(/Orthographic/.test(M2.toast) && /орлоо/.test(M2.toast), 'toast хоёуланг хэлэв: ' + M2.toast);
+
+/* ═══ N. Асуултад «Cancel» ═══ */
+console.log('N. Кадр солихоос татгалзах');
+await page.evaluate(() => { clearScene(); const a = cloneS(state); a.frame = 1; const b = cloneS(state); b.theta += 1; b.frame = 60; keys = [a, b]; activeK = 0; syncAll(); });
+dialogMode = 'dismiss';
+const bN = await snap();
+const rN = await load(jsonA, 'shot.glb');
+const N = await snap();
+dialogMode = 'accept';
+ok(rN === true && JSON.stringify(N.frames) === JSON.stringify(bN.frames) && N.n === 2, 'кадрууд хэвээр');
+ok(N.models === bN.models + 1, 'зөвхөн загвар орлоо');
+ok(N.k0 && dist(N.k0.p, bN.k0.p) < 1e-9, 'эхний кадр өөрчлөгдөөгүй');
+
+/* ═══ O. Камерын харцтай үед ═══ */
+console.log('O. Камерын харц (0) асаалттай үед');
+await page.evaluate(() => { clearScene(); keys = []; activeK = -1; camView = true; syncAll(); });
+const rO = await load(jsonB, 'cam-only.glb');
+const O = await page.evaluate(() => ({ p: posOf(state).toArray() }));
+await page.evaluate(() => { camView = false; syncAll(); });
+ok(rO === true && dist(O.p, KP[0]) < 1e-3, 'харц шууд шинэ камер дээр ' + fmt(O.p));
+await page.waitForTimeout(2600);
+const O2 = await page.evaluate(() => document.getElementById('toast').className);
+ok(/show/.test(O2), 'оруулалтын мэдэгдэл 2.2 секундээс удаан харагдана');
+
+/* ═══ P. Toast хугацаа ═══ */
+console.log('P. Toast хугацаа');
+const P1 = await page.evaluate(() => new Promise(res => { toast('x', 'ok', 120); const a = document.getElementById('toast').className; setTimeout(() => res({ a, b: document.getElementById('toast').className }), 250); }));
+ok(/show/.test(P1.a) && !/show/.test(P1.b), 'toast(msg, kind, ms) хугацааг хүндэтгэнэ');
+
+/* ═══ Q. Хязгаарт таслагдсан кадрын анхааруулга ═══ */
+console.log('Q. Дээш 40° харсан камер');
+const PQ = [0, .5, 6], AQ = [0, .5 + 6 * Math.tan(40 * Math.PI / 180), 0];
+const jsonQ = buildGltf({ cams: [{ name: 'ShotCam', translation: PQ, rotation: await quatOf(PQ, AQ, 0), yfov: .6 }] });
+await page.evaluate(() => { clearScene(); keys = []; activeK = -1; syncAll(); });
+const rQ = await load(jsonQ, 'up.glb');
+const Q = await snap();
+ok(rQ === true && /анхаар/.test(Q.toast), 'toast анхааруулав: ' + Q.toast);
 
 await browser.close();
 if (errs.length) { console.log('  ✗ JS алдаа: ' + errs.slice(0, 3).join(' | ')); bad++ }
