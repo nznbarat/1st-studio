@@ -10,7 +10,7 @@
     "manual": "node tools/build-manual.mjs",
     "toli": "node tools/build-toli.mjs",
     "blender": "node tools/build-blender-py.mjs",
-    "test": "node tools/build-blender-py.mjs --check && node tools/test/codegen.test.cjs && python3 tools/test/blender-export.test.py && node tools/test/fidelity.test.mjs && node tools/test/claude.test.mjs && node tools/test/order.test.mjs",
+    "test": "node tools/build-blender-py.mjs --check && node tools/test/codegen.test.cjs && python3 tools/test/blender-export.test.py && node tools/test/fidelity.test.mjs && node tools/test/claude.test.mjs && node tools/test/order.test.mjs && node tools/test/library.test.mjs",
     "mock": "node tools/test/mock-server.mjs"
   }
 }

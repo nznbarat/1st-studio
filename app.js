@@ -753,7 +753,14 @@ function reverseKeys() {
 function spreadKeys(list, dur) {
   const total = Math.max(2, Math.round(dur * fps));
   fStart = 1; fEnd = 1 + total;
-  list.forEach((k, i) => k.frame = Math.round(lerp(fStart, fEnd, list.length === 1 ? 0 : i / (list.length - 1))));
+  /* k.t (0..1) өгөгдсөн бол тэр хуваарийг, үгүй бол жигд тараана */
+  const timed = list.some(k => typeof k.t === 'number');
+  list.forEach((k, i) => {
+    const u = timed ? clamp(k.t || 0, 0, 1) : (list.length === 1 ? 0 : i / (list.length - 1));
+    k.frame = Math.round(lerp(fStart, fEnd, u));
+    delete k.t;
+  });
+  for (let i = 1; i < list.length; i++) if (list[i].frame <= list[i - 1].frame) list[i].frame = list[i - 1].frame + 1;
   return list;
 }
 
@@ -852,17 +859,32 @@ function analyzePair(a, b, dThSum) {
   const posD = pa.distanceTo(pb), tD = a.target.distanceTo(b.target);
   const dy = pb.y - pa.y, rr = b.radius / Math.max(a.radius, .01), dF = b.fov - a.fov, dR = (b.roll || 0) - (a.roll || 0);
 
-  if (Math.abs(dTh) >= 12) {
+  const dPhi = Math.abs(b.phi - a.phi), dTy = b.target.y - a.target.y;
+  if (Math.abs(dTh) >= 25) {
     const cw = dTh < 0, dir = cw ? 'clockwise' : 'counter-clockwise', dmn = cw ? 'цагийн зүүний дагуу' : 'цагийн зүүний эсрэг';
     EN.push(deg >= 330 ? 'sweeps a full 360° ' + dir + ' orbit around ' + subjEN()
       : 'orbits roughly ' + deg + '° ' + dir + ' around ' + subjEN());
     MN.push(deg >= 330 ? 'бүтэн 360° ' + dmn + ' тойрно' : deg + '° ' + dmn + ' тойрно');
     KW.push(deg >= 330 ? '360° ' + (cw ? 'cw' : 'ccw') + ' orbit' : 'orbit ' + deg + '° ' + (cw ? 'cw' : 'ccw'));
+  } else if (Math.abs(dTh) >= 9 && rr > .84 && rr < 1.2) {
+    EN.push(dTh > 0 ? 'trucks right, sliding laterally past ' + subjEN() : 'trucks left, sliding laterally past ' + subjEN());
+    MN.push(dTh > 0 ? 'баруун тийш гулсана (truck)' : 'зүүн тийш гулсана (truck)');
+    KW.push(dTh > 0 ? 'truck right' : 'truck left');
+  } else if (Math.abs(dTh) >= 4 && rr > .9 && rr < 1.1) {
+    EN.push('glides gently ' + (dTh > 0 ? 'right' : 'left') + ' on a slider');
+    MN.push('slider дээр зөөлөн гулсана');
+    KW.push('slider ' + (dTh > 0 ? 'right' : 'left'));
   }
   if (Math.abs(dy) >= .4) {
-    EN.push(dy > 0 ? (dy > 1.8 ? 'cranes high up into the air' : 'booms up smoothly') : (dy < -1.8 ? 'drops steeply down toward ground level' : 'booms down smoothly'));
-    MN.push(dy > 0 ? (dy > 1.8 ? 'өндөрт хөөрнө' : 'зөөлөн дээшилнэ') : (dy < -1.8 ? 'огцом доошилно' : 'зөөлөн бууна'));
-    KW.push(dy > 0 ? 'crane up' : 'crane down');
+    if (dPhi < .06 && Math.abs(dTy - dy) < .3) {
+      EN.push(dy > 0 ? 'rises straight up on a pedestal, keeping the lens level' : 'sinks straight down on a pedestal, keeping the lens level');
+      MN.push(dy > 0 ? 'босоо дээш өргөгдөнө (pedestal)' : 'босоо доош буана (pedestal)');
+      KW.push(dy > 0 ? 'pedestal up' : 'pedestal down');
+    } else {
+      EN.push(dy > 0 ? (dy > 1.8 ? 'cranes high up into the air' : 'booms up smoothly') : (dy < -1.8 ? 'drops steeply down toward ground level' : 'booms down smoothly'));
+      MN.push(dy > 0 ? (dy > 1.8 ? 'өндөрт хөөрнө' : 'зөөлөн дээшилнэ') : (dy < -1.8 ? 'огцом доошилно' : 'зөөлөн бууна'));
+      KW.push(dy > 0 ? 'crane up' : 'crane down');
+    }
   }
   if (rr < .84) { EN.push(rr < .55 ? 'pushes in hard toward ' + subjEN() : 'pushes in closer'); MN.push(rr < .55 ? 'хүчтэй ойртоно' : 'ойртоно'); KW.push('dolly in'); }
   else if (rr > 1.2) { EN.push(rr > 1.9 ? 'pulls far back to reveal the wider space' : 'pulls back'); MN.push(rr > 1.9 ? 'хол ухарч орчныг илчилнэ' : 'ухарна'); KW.push('dolly out'); }
@@ -877,7 +899,8 @@ function analyzePair(a, b, dThSum) {
     KW.push('dolly zoom vertigo');
   }
   if (Math.abs(dR) > .05) { EN.push(dR > 0 ? 'rolls into a canted dutch angle' : 'levels the horizon back out'); MN.push(dR > 0 ? 'налуу (dutch) өнцөг рүү эргэнэ' : 'тэнхлэгээ тэгшилнэ'); KW.push('dutch roll'); }
-  if (posD < .4 && tD >= .5) { EN.push('pans across from a locked position onto a new point of interest'); MN.push('байрнаасаа эргэж шинэ бай руу pan хийнэ'); KW.push('pan'); }
+  if (posD < .4 && tD >= .5 && Math.abs(dTy) > .6 * tD) { EN.push(dTy > 0 ? 'tilts up from a locked position' : 'tilts down from a locked position'); MN.push(dTy > 0 ? 'байрнаасаа дээш хазайна (tilt)' : 'байрнаасаа доош хазайна (tilt)'); KW.push(dTy > 0 ? 'tilt up' : 'tilt down'); }
+  else if (posD < .4 && tD >= .5) { EN.push('pans across from a locked position onto a new point of interest'); MN.push('байрнаасаа эргэж шинэ бай руу pan хийнэ'); KW.push('pan'); }
   else if (tD >= .7) { EN.push('reframes laterally, tracking the point of interest'); MN.push('хажуу тийш дагаж жаазаа шинэчилнэ'); KW.push('tracking reframe'); }
   return { EN, MN, KW, static: !EN.length };
 }
@@ -915,14 +938,14 @@ const RX = {
   truckR: /(truck right|track right|strafe right|slide right|баруун тийш гулс|баруун тийш шилж)/i,
   statik: /(static|locked[\s-]?off|no movement|motionless|still shot|tripod|хөдөлгөөнгүй|хөдлөхгүй|зогсонги|тогтмол|суурин)/i,
   hand: /(hand[\s-]?held|shaky|handheld|documentary|сэгсрэ|гар камер|чичрэ|доргио)/i,
-  flyby: /(fly[\s-]?by|fly[\s-]?through|swoop past|нисэн өнгөр|нисэх|нисээд)/i,
-  topd: /(top[\s-]?down|bird'?s?[\s-]?eye|overhead|aerial|drone|шувууны|дээрээс харах|нисдэг тэрэг)/i,
+  flyby: /(fly[\s-]?by|fly[\s-]?through|swoop past|push past|нисэн өнгөр|нисэх|нисээд|хажуугаар өнгөр)/i,
+  topd: /(top[\s-]?down|bird'?s?[\s-]?eye|overhead|straight down|шувууны|дээрээс харах|яг дээрээс)/i,
   low: /(low angle|worm'?s?[\s-]?eye|hero (shot|angle)|from below|доод өнцөг|доороос)/i,
   high: /(high angle|from above|өндөр өнцөг|дээд өнцөг|дээрээс)/i,
   eye: /(eye[\s-]?level|нүдний түвшин)/i,
   dutch: /(dutch|canted|tilted horizon|налуу|ташуу)/i,
   reveal: /(reveal|establish|илчил|нээн үзүүл|танилцуул)/i,
-  follow: /(follow|tracking shot|trail|дага|мөрд|хөтөл)/i,
+  follow: /(follow|tracking|trail|дага|мөрд|хөтөл)/i,
   spiral: /(spiral|helix|corkscrew|мушги|эргэлдэн)/i,
   ecu: /(extreme close[\s-]?up|\becu\b|маш ойр)/i,
   cu: /(close[\s-]?up|\bcu\b|ойрын кадр|ойрхон)/i,
@@ -931,6 +954,35 @@ const RX = {
   fs: /(full shot|full body|\bfs\b|бүтэн бие|бүтэн кадр)/i,
   ws: /(wide shot|\bws\b|өргөн кадр|өргөн план)/i,
   ews: /(extreme wide|establishing shot|\bews\b|маш өргөн|ерөнхий план)/i,
+  /* ── Хөдөлгөөний сангийн 60 хөдөлгөөн бүр ӨӨР гарахын тулд нэмсэн техникүүд ── */
+  pedU: /(pedestal up|boom straight up|rise straight up|шулуун дээш|босоо дээш)/i,
+  pedD: /(pedestal down|boom straight down|sink straight down|шулуун доош|босоо доош)/i,
+  sliderL: /(slider left|glide left|slide gently left|зүүн тийш богино гулс)/i,
+  sliderR: /(slider right|glide right|slide gently right|баруун тийш богино гулс)/i,
+  crash: /(crash zoom|snap zoom|огцом зум)/i,
+  whip: /(whip|snap|огцом)/i,
+  bullet: /(bullet[\s-]?time|freeze[\s-]?frame orbit|сум[\s-]?зогс|хөлдөж тойр)/i,
+  ramp: /(speed[\s-]?ramp|хурд солих|хурд огцом өөрчл)/i,
+  hyper: /(hyper[\s-]?lapse|гиперлапс)/i,
+  tlapse: /(time[\s-]?lapse|таймлапс|цаг хугацаа хурдан урс)/i,
+  rack: /(rack[\s-]?focus|focus pull|pull focus|фокус шилж|фокус тата)/i,
+  tshift: /(tilt[\s-]?shift|miniature (look|effect)|тоглоом шиг|миниатюр)/i,
+  infz: /(infinite zoom|endless zoom|төгсгөлгүй зум|хязгааргүй зум)/i,
+  earth: /(earth zoom[\s-]?out|zoom out to (space|orbit)|дэлхий(н хэмжээ)? хүртэл|сансар хүртэл)/i,
+  fpv: /(\bfpv\b|first[\s-]?person|дүрийн нүдээр|нүдээр харна)/i,
+  povrun: /(running pov|pov run|гүйж буй|гүйх нүдээр)/i,
+  quake: /(earthquake|\bquake\b|violent(ly)? shak|газар хөдл|хүчтэй доргио)/i,
+  snorri: /(snorri[\s-]?cam|body[\s-]?mount|биед бэхэл)/i,
+  ots: /(over[\s-]the[\s-]shoulder|\bots\b|мөрөн дээгүүр)/i,
+  behind: /(from behind|follow(s|ing)? (the subject )?(from )?behind|араас|ард нь|ардаас)/i,
+  infront: /(from the front|in front of|walking toward|урдаас|өмнөөс)/i,
+  sideTrack: /(side[\s-]?track|alongside|зэрэгцэн|хажуугаас дага)/i,
+  vehicle: /(vehicle|\bcar\b|\bhorse\b|motorcycle|машин|морь|мотоцикл|тэрэг)/i,
+  chase: /(\bchase\b|pursuit|хөөцөлд|зугта)/i,
+  heli: /(helicopter|нисдэг тэрэг)/i,
+  aerial: /(aerial|drone|дрон|агаараас)/i,
+  passthru: /(pass[\s-]?through|through (the |a )?(window|door|doorway|gate|crowd)|дундуур|нэвтэр)/i,
+  revealFg: /(reveal(ed|ing)? from (behind )?(the |a )?(foreground|rock|wall|tree|corner)|from behind (the |a )?(rock|wall|tree|corner)|хадны ард|хананы ард|модны ард|булангаас)/i,
   fast: /(fast|quick|rapid|snap|whip|energetic|хурдан|шуурхай|огцом)/i,
   slow: /(slow|gentle|gradual|leisurely|удаан|аажим|зөөлөн)/i
 };
@@ -982,16 +1034,99 @@ function parseClause(txt) {
   if (RX.truckL.test(t)) push('truck', { d: -1 });
   if (RX.truckR.test(t)) push('truck', { d: 1 });
   if (RX.flyby.test(t)) push('flyby');
-  if (RX.dutch.test(t)) push('dutch', { r: /extreme|хүчтэй/i.test(t) ? .38 : .22 });
+  if (RX.dutch.test(t)) push('dutch', { r: /extreme|хүчтэй|\broll/i.test(t) ? .32 : .22 });
+
+  /* ── Сангийн техникүүд (хөдөлгөөн) ── */
+  if (RX.pedU.test(t)) push('pedestal', { dy: 1.1 });
+  if (RX.pedD.test(t)) push('pedestal', { dy: -1.0 });
+  if (RX.sliderL.test(t)) push('slider', { d: -1 });
+  if (RX.sliderR.test(t)) push('slider', { d: 1 });
+  if (RX.hyper.test(t)) push('hyper');
+  if (RX.infz.test(t)) push('infz');
+  if (RX.earth.test(t)) push('earth');
+  if (RX.passthru.test(t)) push('passthru');
+  if (RX.revealFg.test(t)) push('revealfg');
+  if (RX.bullet.test(t) && !ops.some(o => o.k === 'orbit')) push('orbit', { deg: 180, dir: -1, spiral: false });
+  if (RX.snorri.test(t) && !ops.some(o => o.k === 'orbit')) push('orbit', { deg: 35, dir: -1, spiral: false });
+  /* ── Эхлэх байрлал (камер хаанаас харах вэ) ── */
+  if (RX.tshift.test(t)) push('tshift');
+  if (RX.fpv.test(t)) push('fpv');
+  if (RX.snorri.test(t)) push('snorri');
+  if (RX.ots.test(t)) push('ots');
+  if (!RX.revealFg.test(t) && RX.behind.test(t)) push('behind');
+  if (RX.infront.test(t)) push('infront');
+  if (RX.sideTrack.test(t)) push('side');
+  if (RX.heli.test(t)) push('heli');
+  else if (RX.aerial.test(t)) push('aerial');
+  /* ── Хөдөлгөөнгүй техник (зөвхөн промтод орно) ── */
+  if (RX.tlapse.test(t)) push('tag', { tag: 'time-lapse', mn: 'таймлапс (камер хөдөлгөөнгүй, цаг хурдан урсана)' });
+  if (RX.rack.test(t)) push('tag', { tag: 'rack focus from foreground to background', mn: 'фокус шилжилт (rack focus)' });
+  /* ── Хурд, доргио, тайлбарын засварууд ── */
+  const hasPT = ops.some(o => o.k === 'pan' || o.k === 'tilt');
+  const hasLens = ops.some(o => o.k === 'lens');
+  if (RX.crash.test(t) && hasLens) {
+    ops.forEach(o => { if (o.k === 'lens') o.mul = o.mul < 1 ? .33 : 2.4; });
+    push('mod', { profile: 'snap', tag: 'crash zoom', mn: 'огцом (crash) зум' });
+  } else if (RX.whip.test(t) && hasPT) {
+    push('mod', { profile: 'snap', tag: ops.some(o => o.k === 'tilt') ? 'whip tilt' : 'whip pan', mn: 'огцом (whip) эргэлт' });
+  }
+  if (RX.bullet.test(t)) push('mod', { profile: 'burst', tag: 'bullet time', mn: 'сум зогсох (bullet time) — хөлдөөд тойрно' });
+  if (RX.ramp.test(t)) push('mod', { profile: 'ramp', tag: 'speed ramp', mn: 'хурдны огцом өөрчлөлт (speed ramp)' });
+  if (RX.quake.test(t)) push('mod', { shake: 1, tag: 'violent earthquake camera shake', mn: 'газар хөдлөлтийн доргио' });
+  if (RX.povrun.test(t)) push('mod', { shake: .85, profile: 'quick', walk: true, tag: 'running first-person POV', mn: 'гүйж буй хүний нүдээр (POV)' });
+  if (RX.chase.test(t)) push('mod', { shake: .45, profile: 'quick', walk: true, tag: 'chase', mn: 'хөөцөлдөөн' });
+  if (RX.vehicle.test(t)) push('mod', { shake: .2, profile: 'quick', walk: true, tag: 'vehicle tracking', mn: 'тээврийн хэрэгслийг дагах' });
+  if (RX.snorri.test(t)) push('mod', { shake: .3 });
+  if (RX.fpv.test(t)) push('mod', { shake: .4 });
+  if (RX.fast.test(t) && !ops.some(o => o.k === 'mod' && o.profile)) push('mod', { profile: 'quick' });
+  /* pedestal нь crane-ийг, slider нь truck-ийг орлоно (монгол үг давхцаж магадгүй) */
+  if (ops.some(o => o.k === 'pedestal')) for (let i = ops.length - 1; i >= 0; i--) if (ops[i].k === 'crane') ops.splice(i, 1);
+  if (ops.some(o => o.k === 'slider')) for (let i = ops.length - 1; i >= 0; i--) if (ops[i].k === 'truck') ops.splice(i, 1);
   // жаазлалт
   const size = RX.ecu.test(t) ? 'ECU' : RX.mcu.test(t) ? 'MCU' : RX.cu.test(t) ? 'CU'
     : RX.ews.test(t) ? 'EWS' : RX.ws.test(t) ? 'WS' : RX.fs.test(t) ? 'FS' : RX.ms.test(t) ? 'MS' : null;
   if (size) push('size', { size });
   const ang = RX.topd.test(t) ? 'top' : RX.high.test(t) ? 'high' : RX.low.test(t) ? (/(worm|extreme|маш)/i.test(t) ? 'worm' : 'low') : RX.eye.test(t) ? 'eye' : null;
   if (ang) push('angle', { a: ang });
-  if (RX.reveal.test(t) && !ops.some(o => o.k === 'pull' || o.k === 'orbit' || o.k === 'crane' || o.k === 'size')) push('pull', { amt: 2.2 });
-  if (RX.follow.test(t)) push('follow');
+  if (RX.reveal.test(t) && !ops.some(o => o.k === 'pull' || o.k === 'orbit' || o.k === 'crane' || o.k === 'size' || o.k === 'revealfg')) push('pull', { amt: 2.2 });
+  if (RX.follow.test(t)) {
+    push('follow');
+    /* Дагах шот = камер дүртэй ЗЭРЭГЦЭН явна. Өөр хөдөлгөөн заагаагүй бол хажуу тийш гулсуулна. */
+    if (!ops.some(o => TRAVEL.has(o.k))) push('truck', { d: 1, amt: .4 });
+  }
   return ops;
+}
+/** Камерыг бодитоор ЗӨӨДӨГ үйлдлүүд */
+const TRAVEL = new Set(['truck', 'slider', 'orbit', 'push', 'pull', 'flyby', 'hyper', 'crane', 'pedestal', 'pan', 'tilt', 'lens', 'vertigo', 'earth', 'infz', 'passthru', 'revealfg']);
+/** Хөдөлгөөн үүсгэдэггүй үйлдлүүд */
+const NOMOTION = new Set(['static', 'follow', 'tag', 'mod']);
+/** Эхлэх байрлалыг тогтоодог үйлдлүүд (эхний өгүүлбэрт байвал камер тэндээс ЭХЭЛНЭ) */
+const POSITIONAL = new Set(['size', 'angle', 'tshift', 'fpv', 'snorri', 'ots', 'behind', 'infront', 'side', 'heli', 'aerial']);
+/** Промтод орох техникийн англи нэр */
+const OPTAG = {
+  pedestal: 'pedestal', slider: 'slider', hyper: 'hyperlapse', tshift: 'tilt-shift miniature look',
+  infz: 'infinite zoom', earth: 'earth zoom-out to space', fpv: 'first-person POV', snorri: 'Snorricam body-mounted rig',
+  ots: 'over-the-shoulder', passthru: 'pass-through', revealfg: 'reveal from behind foreground',
+  behind: 'following from behind', infront: 'leading from the front', side: 'side tracking',
+  heli: 'helicopter aerial', aerial: 'drone aerial', flyby: 'fly-by'
+};
+/** Дүрийн харж буй чиглэл (theta) — камерыг урд/ард/хажууд нь тавихад */
+function facingOf() {
+  const p = (active && active.userData && active.userData.kind === 'person') ? active : people[0];
+  return p ? p.rotation.y : 0;
+}
+/** Мөрөн дээгүүрх (OTS) байрлал: нэг дүрийн мөрнөөс нөгөө рүү харна */
+function otsState(cur) {
+  if (people.length < 2) return null;
+  const A = (active && active.userData && active.userData.kind === 'person') ? active : people[0];
+  const B = people.find(p => p !== A);
+  const ab = A.position.clone().sub(B.position); ab.y = 0;
+  if (ab.length() < .3) return null;
+  ab.normalize();
+  const right = new THREE.Vector3(-ab.z, 0, ab.x);
+  const P = B.position.clone().addScaledVector(ab, -.35).addScaledVector(right, .38); P.y = 1.55;
+  const T = A.position.clone(); T.y = 1.45;
+  return stateFromPT(P, T, Math.min(cur.fov, fovFromMM(50)), 0);
 }
 const OPMN = {
   orbit: o => Math.round(o.deg) + '° ' + (o.dir > 0 ? 'цагийн зүүний эсрэг' : 'цагийн зүүний дагуу') + ' тойрох',
@@ -1002,7 +1137,15 @@ const OPMN = {
   pan: o => (o.d < 0 ? 'зүүн' : 'баруун') + ' тийш pan', truck: o => (o.d < 0 ? 'зүүн' : 'баруун') + ' тийш гулсах',
   flyby: () => 'хажуугаар нисэн өнгөрөх', dutch: () => 'налуу (dutch) өнцөг',
   size: o => 'жаазлалт → ' + (SIZES.find(s => s.ab === o.size) || {}).mn, angle: o => 'өнцөг → ' + ({ top: 'шувууны харц', high: 'өндөр өнцөг', eye: 'нүдний түвшин', low: 'доод өнцөг', worm: 'маш доод өнцөг' })[o.a],
-  static: () => 'хөдөлгөөнгүй (locked off)', follow: () => 'дүрийг дагах (auto-target)'
+  static: () => 'хөдөлгөөнгүй (locked off)', follow: () => 'дүрийг дагах (auto-target)',
+  pedestal: o => o.dy > 0 ? 'босоо дээш өргөгдөх (pedestal up)' : 'босоо доош буух (pedestal down)',
+  slider: o => (o.d < 0 ? 'зүүн' : 'баруун') + ' тийш богино гулсалт (slider)',
+  hyper: () => 'гиперлапс — урт замыг хурдан', tshift: () => 'tilt-shift миниатюр харагдац',
+  infz: () => 'төгсгөлгүй зум', earth: () => 'дэлхийн хэмжээ хүртэл татах', fpv: () => 'дүрийн нүдээр (FPV)',
+  snorri: () => 'Snorricam — биед бэхэлсэн камер', ots: () => 'мөрөн дээгүүр (OTS)', passthru: () => 'дундуур нэвтрэх',
+  revealfg: () => 'урд талын саадын ард гарч илчлэх', behind: () => 'дүрийн араас', infront: () => 'дүрийн урдаас',
+  side: () => 'дүрийн хажуугаас', heli: () => 'нисдэг тэрэгний өндрөөс', aerial: () => 'дроны өнцгөөс',
+  tag: o => o.mn, mod: o => o.mn || ''
 };
 
 /** Үйлдлүүдийг камерын төлөв рүү хэрэглэх → шинэ кадруудын жагсаалт */
@@ -1010,7 +1153,7 @@ function applyOps(from, ops) {
   const out = [];
   let s = cloneS(from);
   const orbit = ops.find(o => o.k === 'orbit');
-  const other = ops.filter(o => o.k !== 'orbit' && o.k !== 'static' && o.k !== 'follow');
+  const other = ops.filter(o => o.k !== 'orbit' && !NOMOTION.has(o.k));
   // тойролтыг 120°-аас том бол хэсэгчилж хуваана (spline чиглэлийг тодорхой болгоно)
   if (orbit) {
     const steps = Math.max(1, Math.ceil(orbit.deg / 110));
@@ -1035,15 +1178,68 @@ function applyOps(from, ops) {
       const P = posOf(cur), F = cur.target.clone().sub(P).setY(0).normalize();
       const R = new THREE.Vector3().crossVectors(F, new THREE.Vector3(0, 1, 0)).normalize();
       if (o.k === 'pan') { const T = cur.target.clone().addScaledVector(R, o.d * 1.8); cur = stateFromPT(P, T, cur.fov, cur.roll); }
-      else { cur.theta += o.d * .28; }
+      else { cur.theta += o.d * (o.amt || .28); }
     }
     else if (o.k === 'flyby') { cur.theta += .95; cur.radius *= 1.5; }
     else if (o.k === 'dutch') cur.roll = o.r;
+    else if (o.k === 'pedestal') { cur.target.y = clamp(cur.target.y + o.dy, .1, 8); }       /* phi хэвээр → камер шулуун дээш/доош */
+    else if (o.k === 'slider') { cur.theta += o.d * .11; }
+    else if (o.k === 'hyper') { cur.radius *= .22; }
+    else if (o.k === 'infz') { cur.fov = clamp(cur.fov * .22, 8, 110); cur.radius *= .55; }
+    else if (o.k === 'earth') { cur.target.y = clamp(cur.target.y + .8, .1, 8); cur.phi = .3; cur.radius *= 2.6; cur.fov = clamp(cur.fov * 1.6, 8, 110); }
+    else if (o.k === 'passthru') { cur.radius *= .3; cur.fov = clamp(cur.fov * 1.25, 8, 110); cur.target.y = clamp(cur.target.y - .3, .1, 8); }
+    else if (o.k === 'revealfg') { cur.theta += .35; cur.radius *= 1.45; }
+    else if (o.k === 'tshift') { cur.phi = .5; cur.fov = clamp(cur.fov * .45, 8, 110); cur.radius *= 1.6; }
+    else if (o.k === 'fpv') { cur.phi = 1.5; cur.radius = radiusForSize('MCU', cur.fov); cur.roll = .05; }
+    else if (o.k === 'snorri') { cur.radius = radiusForSize('CU', cur.fov); cur.roll = .14; }
+    else if (o.k === 'aerial') { cur.phi = Math.min(cur.phi, .85); cur.radius *= 1.6; }
+    else if (o.k === 'heli') { cur.phi = .75; cur.radius *= 2.2; cur.fov = clamp(cur.fov * 1.15, 8, 110); }
+    else if (o.k === 'behind') { cur.theta = facingOf() + Math.PI; }
+    else if (o.k === 'infront') { cur.theta = facingOf(); }
+    else if (o.k === 'side') { cur.theta = facingOf() + Math.PI / 2; }
+    else if (o.k === 'ots') { const st = otsState(cur); if (st) cur = st; else { cur.phi = 1.35; cur.radius = radiusForSize('MCU', cur.fov); cur.theta += .35; } }
     else if (o.k === 'size') cur.radius = radiusForSize(o.size, cur.fov);
     else if (o.k === 'angle') cur.phi = PHI_FOR[o.a];
   });
   if (touched) { clampS(cur); out.push(cur); }
   return out;
+}
+
+/** Промтод орох техникийн нэрс (сангаас ирсэн эсвэл танигчийн олсон) */
+let techTags = [];
+/** Хоёр төлөвийн хооронд u (0..1) хувиар */
+function mixS(a, b, u) {
+  const s = cloneS(a);
+  s.theta = a.theta + angDiff(b.theta, a.theta) * u;
+  s.phi = lerp(a.phi, b.phi, u); s.radius = lerp(a.radius, b.radius, u);
+  s.fov = lerp(a.fov, b.fov, u); s.roll = lerp(a.roll || 0, b.roll || 0, u);
+  s.target.lerpVectors(a.target, b.target, u);
+  return s;
+}
+/**
+ * Хугацааны хуваарь (profile) — өгүүлбэр бүр хугацааны тэнцүү хувийг эзэлнэ:
+ *   quick — хөдөлгөөн эхний 50%-д дуусаад барина        (fast …)
+ *   snap  — эхний 16%-д дуусаад барина                   (whip pan, crash zoom)
+ *   burst — 25% хүлээгээд, 35%-ийн дотор хөдөлж, барина  (bullet time)
+ *   ramp  — 62% хүртэл аажим (18%), дараа нь огцом дуусна (speed ramp)
+ * sampleFrame нь сүүлийн кадраас хойш төлөвийг БАРЬДАГ тул хамгийн сүүлд
+ * давхар кадр хэрэггүй; дунд өгүүлбэрт л барих кадр нэмнэ.
+ */
+function applyProfiles(list, segs) {
+  const N = segs.length, out = [list[0]];
+  out[0].t = 0;
+  let prev = list[0];
+  segs.forEach((sg, i) => {
+    const t0 = i / N, span = 1 / N, st = sg.states, m = st.length, last = st[m - 1], mid = i < N - 1;
+    const put = (s, t) => { const c = cloneS(s); c.t = t; out.push(c); };
+    if (sg.profile === 'snap') { st.forEach((s, j) => put(s, t0 + span * .16 * ((j + 1) / m))); if (mid) put(last, t0 + span); }
+    else if (sg.profile === 'quick') { st.forEach((s, j) => put(s, t0 + span * .5 * ((j + 1) / m))); if (mid) put(last, t0 + span); }
+    else if (sg.profile === 'burst') { put(prev, t0 + span * .25); st.forEach((s, j) => put(s, t0 + span * (.25 + .35 * ((j + 1) / m)))); if (mid) put(last, t0 + span); }
+    else if (sg.profile === 'ramp') { put(mixS(prev, last, .18), t0 + span * .62); put(last, t0 + span); }
+    else st.forEach((s, j) => put(s, t0 + span * ((j + 1) / m)));
+    prev = last;
+  });
+  list.length = 0; out.forEach(s => list.push(s));
 }
 
 /** Гол функц: чөлөөт бичвэрээс түлхүүр кадруудыг үүсгэх */
@@ -1053,6 +1249,8 @@ function promptToCamera(text) {
   const clauses = raw.split(SPLIT).map(s => s.trim()).filter(Boolean);
   const all = raw.toLowerCase();
   const recognised = [];
+  techTags = [];
+  let shake = 0, walk = false;
 
   let base = cloneS(state);
   base.target.copy(centroid());
@@ -1061,7 +1259,7 @@ function promptToCamera(text) {
   // эхний өгүүлбэрийн зөвхөн жаазлалт/өнцөг → эхлэлийн байрлал
   const first = parseClause(clauses[0] || '');
   const firstStatic = first.filter(o => o.k === 'size' || o.k === 'angle');
-  const firstMotion = first.filter(o => o.k !== 'size' && o.k !== 'angle' && o.k !== 'static' && o.k !== 'follow');
+  const firstMotion = first.filter(o => o.k !== 'size' && o.k !== 'angle' && !NOMOTION.has(o.k));
   if (firstStatic.length && !firstMotion.length) {
     firstStatic.forEach(o => {
       if (o.k === 'size') base.radius = radiusForSize(o.size, base.fov);
@@ -1073,15 +1271,39 @@ function promptToCamera(text) {
   const list = [cloneS(base)];
   const startIdx = (firstStatic.length && !firstMotion.length) ? 1 : 0;
   let anyMotion = false;
+  const segs = [];
+  const addTag = tg => { if (tg && techTags.indexOf(tg) < 0) techTags.push(tg); };
+  const say = txt => { if (txt) recognised.push(txt); };
 
   for (let i = startIdx; i < clauses.length; i++) {
     const ops = parseClause(clauses[i]);
     if (!ops.length) continue;
-    if (ops.some(o => o.k === 'follow')) { autoTarget = true; recognised.push(OPMN.follow()); }
-    if (ops.length === 1 && ops[0].k === 'static') { recognised.push(OPMN.static()); continue; }
-    const made = applyOps(list[list.length - 1], ops.filter(o => o.k !== 'follow'));
-    if (made.length) { anyMotion = true; made.forEach(m => list.push(m)); }
-    ops.forEach(o => { if (OPMN[o.k] && o.k !== 'follow') recognised.push(OPMN[o.k](o)); });
+    if (ops.some(o => o.k === 'follow')) { autoTarget = true; walk = true; say(OPMN.follow()); }
+    let profile = null;
+    ops.forEach(o => {
+      if (o.k === 'tag') { addTag(o.tag); say(o.mn); }
+      else if (o.k === 'mod') {
+        if (o.profile && !profile) profile = o.profile;
+        if (o.shake) shake = Math.max(shake, o.shake);
+        if (o.walk) walk = true;
+        addTag(o.tag); say(o.mn);
+      }
+    });
+    let motion = ops.filter(o => !NOMOTION.has(o.k));
+    /* Эхний өгүүлбэрт «хаанаас харах» заасан бол камер тэндээс ЭХЭЛНЭ (тийш явахгүй) */
+    if (i === startIdx && list.length === 1) {
+      const posOps = motion.filter(o => POSITIONAL.has(o.k));
+      if (posOps.length) {
+        const b = applyOps(list[0], posOps);
+        if (b.length) list[0] = b[b.length - 1];
+        posOps.forEach(o => { addTag(OPTAG[o.k]); say('Эхлэл: ' + (OPMN[o.k] ? OPMN[o.k](o) : o.k)); });
+        motion = motion.filter(o => !POSITIONAL.has(o.k));
+      }
+    }
+    if (!motion.length) { if (ops.some(o => o.k === 'static')) say(OPMN.static()); continue; }
+    const made = applyOps(list[list.length - 1], motion);
+    motion.forEach(o => { addTag(OPTAG[o.k]); if (OPMN[o.k]) say(OPMN[o.k](o)); });
+    if (made.length) { anyMotion = true; segs.push({ states: made, profile: profile }); made.forEach(m => list.push(m)); }
   }
 
   if (!anyMotion && !recognised.length) { toast('Камерын хөдөлгөөн танигдсангүй — жишээ промт дарж үзнэ үү', 'err'); return null; }
@@ -1089,8 +1311,11 @@ function promptToCamera(text) {
     list.push(cloneS(list[0]));
     recognised.push('хөдөлгөөнгүй барих');
   }
-  if (RX.hand.test(all)) { shakeAmt = .55; recognised.push('гар камерын доргио (handheld)'); }
+  if (RX.hand.test(all)) { shake = Math.max(shake, .55); say('гар камерын доргио (handheld)'); }
+  shakeAmt = shake;
+  if (walk && $('anim') && $('anim').value !== 'walk') $('anim').value = 'walk';
   const dur = parseDuration(all) || clamp(1.6 + list.length * 1.5, 2, 14);
+  if (segs.some(sg => sg.profile)) applyProfiles(list, segs);
   spreadKeys(list, dur);
   keys = list.slice(0, MAXK);
   activeK = 0;
@@ -1185,7 +1410,8 @@ function buildPrompt() {
 
       if (fmt === 'kw') {
         en = 'camera: ' + kw.join(' → ') + ' | framing: ' + szA.ab + ' → ' + szZ.ab + ' | angle: ' + anA.en + ' → ' + anZ.en +
-          ' | lens: ' + lensMM(A.fov) + 'mm → ' + lensMM(Z.fov) + 'mm | ' + p.en + ', single continuous take, ' + dur + 's, ' + $('aspect').value;
+          ' | lens: ' + lensMM(A.fov) + 'mm → ' + lensMM(Z.fov) + 'mm | ' + p.en + ', single continuous take, ' + dur + 's, ' + $('aspect').value +
+          (techTags.length ? ' | technique: ' + techTags.join(', ') : '');
       } else if (fmt === 'shots') {
         en = shots.map(s => 'SHOT ' + s.i + ' (' + s.t + 's) — ' + s.sizeEn + ', ' + s.angleEn + ', ' + s.lens + 'mm, ' + s.dist + 'm from ' + s.on + (s.roll ? ', ' + s.roll + '° dutch' : ''))
           .join('\n') + '\n\nMOVE: ' + kw.join(' → ') + '  |  ' + p.en + '  |  ' + dur + 's total';
@@ -1198,7 +1424,7 @@ function buildPrompt() {
           duration_seconds: +dur, fps: fps,
           camera: {
             movement: kw, pace: p.en, continuous_take: true,
-            handheld: !!shakeAmt, subject_lock: autoTarget,
+            handheld: !!shakeAmt, subject_lock: autoTarget, technique: techTags,
             start: { framing: szA.ab, angle: anA.ab, lens_mm: lensMM(A.fov), distance_m: +A.radius.toFixed(2) },
             end: { framing: szZ.ab, angle: anZ.ab, lens_mm: lensMM(Z.fov), distance_m: +Z.radius.toFixed(2) },
             keyframes: shots
@@ -1223,6 +1449,7 @@ function buildPrompt() {
     if (sceneTxt) parts.push(sceneTxt.replace(/\.?\s*$/, '.'));
     if ($('incEnv').checked) parts.push('Setting: ' + env.en + '.');
     parts.push(en);
+    if (techTags.length) parts.push('Camera technique: ' + techTags.join(', ') + '.');
     if (styles.length) parts.push(styles.join(', ') + '.');
     if ($('incNeg').checked && fmt !== 'shots') parts.push('Single continuous shot, no cuts, no camera jitter, consistent subject identity, stable horizon.');
     txt = parts.join(' ');
@@ -1993,7 +2220,7 @@ function serialize() {
   return JSON.stringify({
     v: 3, app: '1st-studio-camera-director', env: envId,
     fStart, fEnd, fps, interp, aspect: $('aspect').value,
-    autoTarget, shakeAmt, anim: $('anim').value,
+    autoTarget, shakeAmt, anim: $('anim').value, tech: techTags.slice(0, 8),
     pformat: $('pformat').value, pmodel: $('pmodel').value,
     incEnv: $('incEnv').checked, incNeg: $('incNeg').checked,
     scene: $('sceneTxt').value, inPrompt: $('inPrompt').value,
@@ -2024,6 +2251,7 @@ function loadProject(d, silent) {
   $('aspect').value = d.aspect || '16:9';
   autoTarget = !!d.autoTarget; $('cAuto').checked = autoTarget;
   shakeAmt = +d.shakeAmt || 0; $('cShake').value = Math.round(shakeAmt * 100); $('cShakeV').textContent = Math.round(shakeAmt * 100) + '%';
+  techTags = Array.isArray(d.tech) ? d.tech.map(x => String(x).slice(0, 60)).slice(0, 8) : [];
   (d.people && d.people.length ? d.people : []).slice(0, MAXP).forEach(p => {
     const o = addPerson(p.x, p.z, p.ry, true);
     if (o && p.s) o.scale.setScalar(p.s);
@@ -2075,7 +2303,7 @@ function newProject() {
   clearScene(); keys = []; activeK = -1;
   fStart = 1; fEnd = 120; fps = 24; curFrame = 1;
   $('fStart').value = 1; $('fEnd').value = 120; $('fps').value = 24;
-  autoTarget = false; shakeAmt = 0; $('cAuto').checked = false; $('cShake').value = 0; $('cShakeV').textContent = '0%';
+  autoTarget = false; shakeAmt = 0; techTags = []; $('cAuto').checked = false; $('cShake').value = 0; $('cShakeV').textContent = '0%';
   $('sceneTxt').value = ''; $('inPrompt').value = '';
   Array.from(document.querySelectorAll('.stl')).forEach(x => x.checked = false);
   $('tagChips').innerHTML = '';
@@ -3418,6 +3646,15 @@ function applyUrlAuto() {
   $('inPrompt').value = p;
   gotoPage('pgPrompt');
   runParse();
+  /* Сангийн хөдөлгөөний жинхэнэ нэр промтод ЭХЭНД нь орно (жишээ: «Crash zoom in») */
+  const term = q.get('t');
+  if (term) {
+    term.split('|').map(x => x.trim().slice(0, 60)).filter(Boolean).reverse().forEach(x => {
+      const lx = x.toLowerCase();
+      if (!techTags.some(y => y.toLowerCase() === lx)) techTags.unshift(x);
+    });
+    schedulePrompt();
+  }
   focusAll(); onCamMove();
   histReset('Сангаас ирсэн хөдөлгөөн');
   diagnose(); refreshFix();
@@ -3826,7 +4063,7 @@ document.addEventListener('click', e => {
   if (d.p !== undefined) { setActive(people[+d.p]); return; }
   if (d.r !== undefined) { setActive(props[+d.r]); return; }
   if (d.mfocus !== undefined) { const o = props[+d.mfocus]; if (o) { setActive(o); focusSel(); onCamMove(); } return; }
-  if (d.view !== undefined) { setView(d.view, e.ctrlKey); return; }
+  if (d.view !== undefined) { setView(d.view, e.ctrlKey || d.back !== undefined); return; }
   if (d.shade !== undefined) { shading = d.shade; document.querySelectorAll('.sh').forEach(b => b.classList.toggle('on', b === t)); return; }
   if (d.tool !== undefined) {
     tool = d.tool;
