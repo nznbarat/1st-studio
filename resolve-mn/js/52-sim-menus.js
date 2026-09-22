@@ -494,10 +494,10 @@
       ["boring-detector", "Boring Detector"]
     ]},
 
-    /* Cut хуудас — дээд timeline-ийн зүүн булангийн хоёр дахь товч ⇤≡ (tooltip нэр баталгаажаагүй;
-       2026-09-19-ний хоёр зургаас цэс энэ товчных гэдэг нь тодорхой болсон:
-       15 мөр, 5 тусгаарлагч). Voice Convert саарал байсан — нөхцөл тодорхойгүй. */
-    "timeline-commands-menu-cut": { label: "Timeline — командууд", verified: true, items: [
+    /* Cut хуудас — дээд timeline-ийн зүүн булангийн хоёр дахь товч ⇤≡ "Timeline Actions"
+       (tooltip-ийг хэрэглэгч баталгаажуулсан; 2026-09-19-ний зураг: 15 мөр, 5 тусгаарлагч).
+       Voice Convert саарал байсан — нөхцөл тодорхойгүй. */
+    "timeline-actions": { label: "Timeline Actions", verified: true, items: [
       ["create-subtitles-from-audio", "Create Subtitles from Audio"],
       ["scene-cut-detection", "Detect Scene Cuts"],
       "-",

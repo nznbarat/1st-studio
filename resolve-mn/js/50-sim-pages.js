@@ -302,10 +302,10 @@
       </div>
       <div class="cut-upper hs" data-t="dual-timeline">
         <!-- Дээд timeline-ийн зүүн булан (2026-09-19-ний зургууд): ⚌ Timeline Options (tooltip баталгаажсан,
-             18 тохиргооны мөр), ⇤≡ командын цэс (15 мөр, tooltip нэр тодорхойгүй),
+             18 тохиргооны мөр), ⇤≡ Timeline Actions (15 мөр, tooltip баталгаажсан),
              3 дахь товч Trim Start/End to Playhead, Resync Clip цэс нээнэ. -->
         <div class="cut-tools up">
-          <div class="row"><span class="hs mi" data-t="timeline-options">⚌</span><span class="hs mi" data-t="timeline-commands-menu-cut">⇤≡</span><span class="hs mi" data-t="trim-resync-menu-cut">⇥≡</span></div>
+          <div class="row"><span class="hs mi" data-t="timeline-options">⚌</span><span class="hs mi" data-t="timeline-actions">⇤≡</span><span class="hs mi" data-t="trim-resync-menu-cut">⇥≡</span></div>
         </div>
         <div class="tl-col">
           <div class="tl-ruler hs" data-t="timeline-ruler" style="padding-left:34px">
