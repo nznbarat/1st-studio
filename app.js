@@ -766,6 +766,7 @@ function updXform(cx, cy) {
 let lastMouse = { x: 0, y: 0 };
 canvas.addEventListener('contextmenu', e => e.preventDefault());
 canvas.addEventListener('pointerdown', e => {
+  if (rendering) return;   /* 🎬 рендер явж байхад харагдацыг хөндөхгүй */
   canvas.setPointerCapture(e.pointerId);
   lastMouse = { x: e.clientX, y: e.clientY };
   if (xf) { endXform(e.button !== 0); return; }
@@ -828,7 +829,7 @@ function panT(dx, dy) {
   state.target.y = clamp(state.target.y, .05, 9);
 }
 canvas.addEventListener('wheel', e => {
-  e.preventDefault(); stopPlay(); if (camView) setCamView(false);
+  e.preventDefault(); if (rendering) return; stopPlay(); if (camView) setCamView(false);
   if (e.ctrlKey || e.metaKey) state.fov += e.deltaY * .045;
   else state.radius *= 1 + e.deltaY * .0013;
   clampS(state); onCamMove();
@@ -986,7 +987,7 @@ function setFrame(f) {
   }
   drawTimeline();
 }
-function startPlay() { if (keys.length < 2) { toast('Дор хаяж 2 түлхүүр кадр хэрэгтэй', 'err'); return; } playing = true; playAcc = 0; $('btnPlay').textContent = '⏸'; $('btnPlay').classList.add('on'); }
+function startPlay() { if (rendering) return; if (keys.length < 2) { toast('Дор хаяж 2 түлхүүр кадр хэрэгтэй', 'err'); return; } playing = true; playAcc = 0; $('btnPlay').textContent = '⏸'; $('btnPlay').classList.add('on'); }
 function stopPlay() { if (!playing) return; playing = false; $('btnPlay').textContent = '▶'; $('btnPlay').classList.remove('on'); }
 function togglePlay() { playing ? stopPlay() : startPlay(); }
 function setCamView(on) {
@@ -1864,6 +1865,15 @@ function buildUI() {
       '<p class="hint">JSON нь кадр, дүр, объект, орчин, промтын тохиргоог бүгдийг хадгална.</p>') +
     box('🖼 Зураг', '<div class="g2"><button class="w" data-act="png">Одоогийн кадр PNG</button><button class="w" data-act="board">Storyboard PNG</button></div>' +
       '<p class="hint">PNG-г AI видео хэрэгсэлдээ <b>эхний фрейм</b> болгон өгвөл промттой хослоод үр дүн эрс сайжирна.</p>') +
+    box('🎬 Previz видео',
+      '<div class="r"><label>Нягтрал</label><select class="w" id="vidRes"><option value="720p">720p</option><option value="1080p" selected>1080p</option></select></div>' +
+      '<button class="big" data-act="video">🎬 Видео татах (.webm / .mp4)</button>' +
+      '<div class="g2" style="margin-top:6px"><button class="w" data-act="frames">🖼 PNG цуваа (.zip)</button></div>' +
+      '<p class="hint">Энэ бол <b>урьдчилсан (previz)</b> видео — дэлгэц дээр харагдаж буйг (саарал дүр, загвар, орчин) тэр чигээр нь бичнэ. ' +
+      'AI видео хэрэгсэлд (Kling, Runway…) камерын хөдөлгөөний жишээ болгон өгөхөд, хөдөлгөөнөө шалгахад тохиромжтой. ' +
+      'Жинхэнэ рендерийг Blender дээр хийнэ (🔶).</p>' +
+      '<p class="hint">Видео: хугацаа = шотын урт (рендер бодит цагаар явна; компьютер хоцорвол видео арай удаан гарна — тэгвэл 720p сонго). ' +
+      'PNG цуваа: фрейм бүрийг зураг болгох тул хугацаа нь өөр байж болно. <b>Esc</b> цуцална.</p>') +
     box('🔶 Blender экспорт',
       '<button class="big" data-act="py">🐍 Blender скрипт (.py) татах</button>' +
       '<p class="hint">Blender дээр <b>Scripting</b> таб → <b>Open</b> → скриптийг сонгоод <b>Run</b>. Камер, түлхүүр кадр, линзний анимаци, дүрүүдийн байрлал бүгд үүснэ (Blender 3.0+, 4.x / 5.x).</p>' +
@@ -2169,6 +2179,7 @@ function tlPick(x) {
   return best;
 }
 tlc.addEventListener('pointerdown', e => {
+  if (rendering) return;
   tlc.setPointerCapture(e.pointerId);
   const r = tlc.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
   const hit = y > 26 && y < 56 ? tlPick(x) : -1;
@@ -2320,6 +2331,7 @@ function resize() {
 }
 function tick() {
   requestAnimationFrame(tick);
+  if (rendering) return;   /* 🎬 previz рендер явж байна — гогцоо зөвхөн дахин товлоно */
   resize();
   const dt = Math.min(clock.getDelta(), .1);
   elapsed += dt;
@@ -2600,6 +2612,225 @@ function exportCSV() {
   });
   dl('1st-studio-camera-' + stamp() + '.csv', rows.map(r => r.join(',')).join('\n'), 'text/csv;charset=utf-8');
 }
+
+/* ─────────── 21б. 🎬 Previz видео — хөтчөөс шууд ───────────
+   Шотын камерын харагдацыг фрейм фреймээр рендерлээд видео (.webm/.mp4)
+   эсвэл PNG цуваа (.zip) болгоно. Энэ бол урьдчилсан (previz) видео:
+   дэлгэц дээр харагдаж буйг тэр чигээр нь бичнэ. Жинхэнэ рендер — Blender. */
+let rendering = false, cancelRender = false;
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const VID_MIMES = ['video/mp4;codecs=avc1', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
+
+/** Нягтралын сонголт → пикселийн хэмжээ (тэгш тоо, шотын харьцаагаар) */
+function vidSize(res) {
+  const ar = shotAspect();
+  if (ar >= 1) { const H = res === '720p' ? 720 : 1080; return { W: Math.round(H * ar / 2) * 2, H }; }
+  const W = res === '720p' ? 720 : 1080;
+  return { W, H: Math.round(W / ar / 2) * 2 };
+}
+function renderBarShow(txt, frac) {
+  const b = $('renderBar'); if (!b) return;
+  b.classList.add('show');
+  $('renderTxt').textContent = txt;
+  $('renderFill').style.width = Math.round(clamp(frac, 0, 1) * 100) + '%';
+}
+function renderBarHide() { const b = $('renderBar'); if (b) b.classList.remove('show'); }
+
+/**
+ * Нийтлэг фреймийн гогцоо. opts = {W, H, f0=fStart, f1=fEnd, pace}
+ * Фрейм бүрийг шотын камераар рендерлээд onFrame(f, i, n)-г дуудна
+ * (хэрэглэгч renderer.domElement-ийг өөрийн 2D канвас руу шууд хуулна).
+ * pace=true бол fps-ийн хурдаар бодит цагаар явна (видео бичихэд).
+ * Буцаах: рендерлэсэн фреймийн тоо, цуцалсан / болоогүй бол null.
+ */
+async function renderFrames(opts, onFrame) {
+  if (rendering) { toast('Рендер явж байна', 'err'); return null; }
+  if (keys.length < 2) { toast('Дор хаяж 2 түлхүүр кадр хэрэгтэй', 'err'); return null; }
+  const W = opts.W, H = opts.H;
+  const f0 = opts.f0 === undefined ? fStart : opts.f0, f1 = opts.f1 === undefined ? fEnd : opts.f1;
+  const n = Math.max(0, f1 - f0 + 1);
+  rendering = true; cancelRender = false;
+  stopPlay();
+  const oldPx = renderer.getPixelRatio(), oldW = canvas.clientWidth, oldH = canvas.clientHeight;
+  const hv = helpers.visible, ov = overlay3d.visible, rv = selRing.visible, dv = dirArrow.visible;
+  const elapsed0 = elapsed, curFrame0 = curFrame;
+  const resTxt = (H >= W ? W : H) + 'p';
+  let done = 0, cancelled = false;
+  try {
+    renderer.setPixelRatio(1);
+    renderer.setSize(W, H, false);
+    helpers.visible = false; overlay3d.visible = false; selRing.visible = false; dirArrow.visible = false;
+    document.body.classList.add('rendering');   /* док, цэс, цагийн шугамыг түр хаана */
+    renderBarShow('🎬 Рендер… 0 / ' + n + ' · ' + resTxt, 0);
+    let next = performance.now();
+    for (let f = f0, i = 0; f <= f1; f++, i++) {
+      if (cancelRender) { cancelled = true; break; }
+      const t = (f - fStart) / fps;
+      elapsed = t;                      /* дүр, галын анимаци фрейм бүрд тогтмол */
+      animPeople();
+      const s = sampleFrame(f);
+      applyCam(shotCam, s, shakeAmt ? shakeAt(t) : null);
+      shotCam.aspect = W / H; shotCam.updateProjectionMatrix();
+      renderer.setScissorTest(false);
+      renderer.setViewport(0, 0, W, H);
+      renderer.clear(true, true, true);
+      renderer.render(scene, shotCam);
+      await onFrame(f, i, n);
+      done++;
+      renderBarShow('🎬 Рендер… ' + done + ' / ' + n + ' · ' + resTxt, done / n);
+      if (opts.pace) { next += 1000 / fps; await sleep(Math.max(0, next - performance.now())); }
+      else await sleep(0);
+    }
+    if (cancelRender) cancelled = true;
+    /* onDone — бичигчийг хаах гэх мэт төгсгөлийн ажил; rendering=true хэвээр
+       байх тул энэ хооронд өөр экспорт эхлэхгүй */
+    if (!cancelled && opts.onDone) await opts.onDone(done);
+  } finally {
+    document.body.classList.remove('rendering');
+    helpers.visible = hv; overlay3d.visible = ov; selRing.visible = rv; dirArrow.visible = dv;
+    renderer.setPixelRatio(oldPx);
+    renderer.setSize(oldW, oldH, false);
+    elapsed = elapsed0;
+    clock.getDelta();   /* рендерт зарцуулсан цагийг хаяна — дүрүүд үсрэхгүй */
+    rendering = false; cancelRender = false;
+    renderBarHide();
+    setFrame(curFrame0);
+  }
+  return cancelled ? null : done;
+}
+
+/** Видео Blob → {blob, frames, mime, W, H} | null (цуцалсан / дэмжихгүй) */
+async function renderVideoBlob(opts) {
+  if (rendering) { toast('Рендер явж байна', 'err'); return null; }
+  if (keys.length < 2) { toast('Дор хаяж 2 түлхүүр кадр хэрэгтэй', 'err'); return null; }
+  if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) { toast('Энэ хөтөч видео бичихийг дэмжихгүй — Chrome / Edge ашиглана уу', 'err'); return null; }
+  const mime = VID_MIMES.find(m => { try { return MediaRecorder.isTypeSupported(m); } catch (e) { return false; } });
+  if (!mime) { toast('Энэ хөтөч видео бичихийг дэмжихгүй — Chrome / Edge ашиглана уу', 'err'); return null; }
+  const W = opts.W, H = opts.H;
+  const off = document.createElement('canvas'); off.width = W; off.height = H;
+  const ctx = off.getContext('2d');
+  const stream = off.captureStream(0), track = stream.getVideoTracks()[0];
+  /* requestFrame() — Chrome/Edge/Safari-д трак дээр, Firefox-д stream дээр байдаг */
+  const reqFrame = typeof track.requestFrame === 'function' ? () => track.requestFrame()
+    : (typeof stream.requestFrame === 'function' ? () => stream.requestFrame() : null);
+  if (!reqFrame) { track.stop(); toast('Энэ хөтөч видео бичихийг дэмжихгүй — Chrome / Edge ашиглана уу', 'err'); return null; }
+  const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: H >= 1080 ? 12e6 : 7e6 });
+  const chunks = [];
+  rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+  const stopped = new Promise(r => { rec.onstop = r; rec.onerror = r; });
+  rec.start();
+  let frames = null, secs = 0;
+  const t0 = performance.now();
+  try {
+    frames = await renderFrames({
+      W, H, f0: opts.f0, f1: opts.f1, pace: true,
+      /* Төгсгөл (rendering=true хэвээр): сүүлийн фреймийг дахин зураад
+         (канвас «бохирдсон» байх ёстой, үгүй бол requestFrame юу ч өгөхгүй)
+         түүнд урт өгөөд бичигчийг бүрэн зогсооно. */
+      onDone: async () => {
+        secs = (performance.now() - t0) / 1000;   /* бодит зарцуулсан хугацаа */
+        ctx.drawImage(off, 0, 0); reqFrame();
+        await sleep(Math.max(Math.round(2000 / fps), 120));
+        if (rec.state !== 'inactive') rec.stop();
+        await stopped;
+      }
+    }, () => {
+      ctx.drawImage(renderer.domElement, 0, 0, W, H);
+      reqFrame();
+    });
+  } finally {
+    if (rec.state !== 'inactive') rec.stop();
+    await stopped;
+    track.stop();
+  }
+  if (frames === null) { toast('Рендер цуцлагдлаа'); return null; }
+  return { blob: new Blob(chunks, { type: mime }), frames, mime, W, H, secs };
+}
+async function exportVideo() {
+  if (rendering) { toast('Рендер явж байна', 'err'); return; }
+  try {
+    const r = await renderVideoBlob(vidSize(($('vidRes') && $('vidRes').value) || '1080p'));
+    if (!r) return;
+    dl('1st-studio-previz-' + stamp() + (/mp4/.test(r.mime) ? '.mp4' : '.webm'), r.blob);
+    const nominal = r.frames / fps, lag = nominal > 0 ? r.secs / nominal : 1;
+    toast('🎬 Видео бэлэн · ' + r.frames + ' фрейм · ' + r.secs.toFixed(1) + ' сек · ' + r.W + '×' + r.H, 'ok');
+    if (lag > 1.2) {   /* компьютер fps-д хүрээгүй — видео шотоос удаан гарсан */
+      setTimeout(() => toast('⚠ Компьютер хоцорлоо — видео шотоос ' + lag.toFixed(1) + ' дахин удаан гарлаа (' + r.secs.toFixed(1) + ' сек, шот ' + nominal.toFixed(1) + ' сек). 720p сонгох эсвэл PNG цуваа ашиглаарай', 'err', 7000), 2300);
+    }
+  } catch (e) { toast('Видео рендер бүтсэнгүй: ' + (e && e.message || e), 'err', 5000); }
+}
+
+/* ── ZIP (зөвхөн STORE, шахалтгүй) — гадны сангүй ── */
+const CRC_T = (() => {
+  const t = new Uint32Array(256);
+  for (let i = 0; i < 256; i++) { let c = i; for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1); t[i] = c >>> 0; }
+  return t;
+})();
+function crc32(u8) {
+  let c = 0xFFFFFFFF;
+  for (let i = 0; i < u8.length; i++) c = CRC_T[(c ^ u8[i]) & 255] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+/** files = [{name, data:Uint8Array}] → Blob (application/zip) */
+function zipStore(files) {
+  const enc = new TextEncoder(), d = new Date();
+  const dosTime = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1);
+  const dosDate = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate();
+  const u16 = v => [v & 255, (v >> 8) & 255];
+  const u32 = v => [v & 255, (v >>> 8) & 255, (v >>> 16) & 255, (v >>> 24) & 255];
+  const parts = [], cd = []; let off = 0, cdLen = 0;
+  files.forEach(f => {
+    const name = enc.encode(f.name), data = f.data, crc = crc32(data), len = data.length;
+    const lh = new Uint8Array([...u32(0x04034b50), ...u16(20), ...u16(0x800), ...u16(0), ...u16(dosTime), ...u16(dosDate),
+      ...u32(crc), ...u32(len), ...u32(len), ...u16(name.length), ...u16(0)]);
+    const ch = new Uint8Array([...u32(0x02014b50), ...u16(20), ...u16(20), ...u16(0x800), ...u16(0), ...u16(dosTime), ...u16(dosDate),
+      ...u32(crc), ...u32(len), ...u32(len), ...u16(name.length), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(0), ...u32(off)]);
+    parts.push(lh, name, data); cd.push(ch, name);
+    off += lh.length + name.length + len; cdLen += ch.length + name.length;
+  });
+  const eocd = new Uint8Array([...u32(0x06054b50), ...u16(0), ...u16(0), ...u16(files.length), ...u16(files.length), ...u32(cdLen), ...u32(off), ...u16(0)]);
+  return new Blob(parts.concat(cd, [eocd]), { type: 'application/zip' });
+}
+/** PNG цуваа → ZIP Blob | null */
+async function renderFramesZip(opts) {
+  if (rendering) { toast('Рендер явж байна', 'err'); return null; }
+  if (keys.length < 2) { toast('Дор хаяж 2 түлхүүр кадр хэрэгтэй', 'err'); return null; }
+  const W = opts.W, H = opts.H;
+  const f0 = opts.f0 === undefined ? fStart : opts.f0, f1 = opts.f1 === undefined ? fEnd : opts.f1;
+  const off = document.createElement('canvas'); off.width = W; off.height = H;
+  const ctx = off.getContext('2d');
+  const files = [];
+  const frames = await renderFrames({ W, H, f0, f1, pace: false }, async (f, i) => {
+    ctx.drawImage(renderer.domElement, 0, 0, W, H);
+    const b = await new Promise(r => off.toBlob(r, 'image/png'));
+    files.push({ name: 'frame_' + String(i + 1).padStart(4, '0') + '.png', data: new Uint8Array(await b.arrayBuffer()) });
+  });
+  if (frames === null) { toast('Рендер цуцлагдлаа'); return null; }
+  const readme = '1st Studio — Camera Director · previz PNG цуваа\n' +
+    'Фрейм: ' + frames + ' (frame_0001.png … frame_' + String(frames).padStart(4, '0') + '.png)\n' +
+    'Шотын фрейм: ' + f0 + ' … ' + f1 + '\n' +
+    'fps: ' + fps + '\n' +
+    'Хэмжээ: ' + W + '×' + H + '\n' +
+    'Шотын урт: ' + (frames / fps).toFixed(2) + ' сек\n' +
+    'Огноо: ' + new Date().toISOString() + '\n' +
+    'Энэ бол урьдчилсан (previz) зураг — жинхэнэ рендерийг Blender дээр хийнэ.\n';
+  files.push({ name: 'README.txt', data: new TextEncoder().encode(readme) });
+  return zipStore(files);
+}
+async function exportFrames() {
+  if (rendering) { toast('Рендер явж байна', 'err'); return; }
+  if (keys.length < 2) { toast('Дор хаяж 2 түлхүүр кадр хэрэгтэй', 'err'); return; }
+  const sz = vidSize(($('vidRes') && $('vidRes').value) || '1080p');
+  const n = fEnd - fStart + 1;
+  if (n > 300 && !confirm(n + ' фрейм — ' + Math.round(n * sz.W * sz.H * .6 / 1e6) + ' МБ орчим, үргэлжлүүлэх үү?')) return;
+  try {
+    const blob = await renderFramesZip(sz);
+    if (!blob) return;
+    dl('1st-studio-frames-' + stamp() + '.zip', blob, 'application/zip');
+    toast('🖼 PNG цуваа бэлэн · ' + n + ' фрейм · ' + sz.W + '×' + sz.H, 'ok');
+  } catch (e) { toast('PNG цуваа бүтсэнгүй: ' + (e && e.message || e), 'err', 5000); }
+}
+if ($('renderCancel')) $('renderCancel').onclick = () => { cancelRender = true; };
 
 /* ══ BLENDER_TPL эхлэл — tools/blender-template.py-ээс автоматаар үүснэ ══
    ГАРААР БҮҮ ЗАСААРАЙ.  Засварлахдаа .py файлыг засаад:
@@ -4183,6 +4414,7 @@ function runParse() {
 }
 function doAct(a, d) {
   if (!a) return;
+  if (rendering) { toast('Рендер явж байна', 'err'); return; }   /* 🎬 рендер дуустал өөр үйлдэл хийхгүй */
   if (a === 'aiPick') { aiPick((d && d.idea) || 0); return; }
   if (a.indexOf('p:') === 0) { addProp(a.slice(2)); return; }
   if (a.indexOf('a:') === 0) { arrange(a.slice(2)); return; }
@@ -4192,6 +4424,8 @@ function doAct(a, d) {
     case 'save': dl('1st-studio-project-' + stamp() + '.json', serialize(), 'application/json'); break;
     case 'png': exportPNG(); break;
     case 'board': exportBoard(); break;
+    case 'video': exportVideo(); break;
+    case 'frames': exportFrames(); break;
     case 'py': exportPY(); break;
     case 'csv': exportCSV(); break;
     case 'txt': dl('1st-studio-prompt-' + stamp() + '.txt', $('promptOut').textContent); break;
@@ -4243,6 +4477,9 @@ function gotoPage(id) {
   if (t) t.scrollIntoView({ block: 'nearest' });
 }
 document.addEventListener('click', e => {
+  if (rendering && !e.target.closest('#renderCancel')) {   /* 🎬 рендер явж байна — зөвхөн ✕ Цуцлах ажиллана */
+    e.preventDefault(); toast('Рендер явж байна', 'err'); return;
+  }
   const t = e.target.closest('[data-act],[data-preset],[data-dir],[data-env],[data-ex],[data-k],[data-kdel],[data-p],[data-r],[data-eye],[data-view],[data-shade],[data-tool],[data-tr],[data-pop],[data-page],[data-fix],[data-enh],[data-hist],[data-asr],[data-asd],[data-man],[data-mfocus]');
   // цэс хаах
   if (!e.target.closest('.pop') && !e.target.closest('[data-pop]')) closePops();
@@ -4402,6 +4639,10 @@ if (manualReady()) {
 
 /* ─────────── 25. Гарын товчлуур ─────────── */
 document.addEventListener('keydown', e => {
+  if (rendering) {   /* 🎬 previz рендер: Esc цуцална, бусад товч хүлээнэ */
+    if (e.key === 'Escape') { e.preventDefault(); cancelRender = true; }
+    return;
+  }
   if (toliOpen) {
     if (e.key === 'Escape') { if (toli && toli.onKey(e)) return; e.preventDefault(); closeToli(); return; }
     if (e.key === 'F2') { e.preventDefault(); closeToli(); return; }

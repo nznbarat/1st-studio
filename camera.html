@@ -228,6 +228,18 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
 #recbar b{color:var(--warn-t);font-weight:600}
 #recbar button{padding:4px 10px;font-size:11px}
 
+/* ── Previz видео рендерийн явц (Blender-ийн рендер цонх шиг) ── */
+#renderBar{position:absolute;top:32px;left:50%;transform:translateX(-50%);display:none;align-items:center;gap:10px;
+  background:var(--menu);border:1px solid var(--acc);border-left:3px solid var(--acc);border-radius:var(--r-wid);
+  padding:7px 10px 7px 12px;font-size:11.5px;z-index:9;box-shadow:var(--shadow);max-width:92%;color:var(--menu-txt);white-space:nowrap}
+#renderBar.show{display:flex}
+#renderBar .fill{width:150px;height:6px;flex:none;background:var(--wid-in);border:1px solid var(--wid-out);border-radius:3px;overflow:hidden}
+#renderBar .fill i{display:block;height:100%;width:0;background:var(--acc);transition:width .08s linear}
+#renderBar button{padding:4px 10px;font-size:11px}
+/* рендер явж байхад док, дээд цэс, багаж, цагийн шугам түр идэвхгүй; ✕ Цуцлах л ажиллана */
+body.rendering #dock,body.rendering #topbar,body.rendering #tools,body.rendering #tl{pointer-events:none;opacity:.55}
+body.rendering #renderBar{pointer-events:auto}
+
 /* ═══ Баруун док ═══ */
 #dock{width:352px;flex:none;display:flex;flex-direction:column;min-height:0;gap:var(--gap)}
 #outl{height:176px;flex:none;display:flex;flex-direction:column;background:var(--outliner)}
@@ -476,6 +488,8 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
       <div class="lbl">Экспорт</div>
       <button data-act="png">Одоогийн кадр → PNG<i>E</i></button>
       <button data-act="board">Storyboard → PNG<i></i></button>
+      <button data-act="video">Previz видео → .webm/.mp4<i></i></button>
+      <button data-act="frames">PNG цуваа → .zip<i></i></button>
       <button data-act="py">Blender скрипт → .py<i></i></button>
       <button data-act="csv">Кадрын өгөгдөл → .csv<i></i></button>
       <button data-act="txt">Промт → .txt<i></i></button>
@@ -644,6 +658,11 @@ input[type=checkbox]{accent-color:var(--acc);width:13px;height:13px;cursor:point
       <span id="recTxt"></span>
       <button class="w on" id="recYes">⟲ Сэргээх</button>
       <button class="w" id="recNo">Үгүй</button>
+    </div>
+    <div id="renderBar">
+      <span id="renderTxt">🎬 Рендер…</span>
+      <div class="fill"><i id="renderFill"></i></div>
+      <button class="w" id="renderCancel">✕ Цуцлах (Esc)</button>
     </div>
     <div id="xhint"></div>
     <div id="pip"><span>SHOT</span></div>
