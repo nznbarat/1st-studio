@@ -35,8 +35,9 @@ set "TRANSLATE=1"
 set "TR_LANG=Mongolian"
 set "TR_MODEL=claude-opus-5"
 
-:: Хөгжмийн нэр томьёо — Whisper-т урьдчилан сануулж, буруу сонсохоос сэргийлнэ
-set "IPROMPT=This is a video about music production and AI music tools. Terms that appear: Suno, Udio, ElevenLabs, DAW, stem, stems, BPM, tempo, key, mixdown, mastering, EQ, compressor, limiter, reverb, delay, sidechain, LUFS, headroom, MIDI, VST, plugin, arrangement, intro, verse, chorus, bridge, hook, riff, sample, loop, quantize, transient, waveform, timeline, track, automation, gain staging, dry, wet, prompt, seed, extend, remix, cover, persona, workspace, render, export."
+:: Нэр томьёо — Whisper-т урьдчилан сануулж, буруу сонсохоос сэргийлнэ.
+:: Whisper зөвхөн сүүлийн ~224 токеныг уншдаг тул энгийн англи үг бүү нэм — ховор нэр л хэрэгтэй.
+set "IPROMPT=This video is about AI music, AI video and creator tools. Names and terms that appear: Suno, Udio, ElevenLabs, Higgsfield, Claude, Claude Code, ChatGPT, Gemini, Midjourney, Kling, Veo, Runway, Sora, Seedance, Nano Banana, HeyGen, CapCut, DaVinci Resolve, Cubase, MCP, LoRA, DAW, stems, BPM, mixdown, mastering, EQ, sidechain, LUFS, headroom, MIDI, VST, plugin, quantize, transient, gain staging, prompt, seed, faceless channel, AI influencer, thumbnail, B-roll, voiceover, lip sync, render, export."
 
 echo.
 echo   ============================================

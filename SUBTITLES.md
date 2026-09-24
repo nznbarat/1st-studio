@@ -100,7 +100,7 @@ yt-dlp --write-auto-subs --sub-lang en --skip-download --convert-subs srt "ХО�
 | `TR_LANG` | `Mongolian` |
 | `TR_MODEL` | `claude-opus-5` *(хямд бол `claude-haiku-4-5`)* |
 | `KEEP_AUDIO` | `1` — татсан аудиог үлдээнэ, `0` — устгана |
-| `IPROMPT` | Хөгжмийн нэр томьёо — Whisper буруу сонсохоос сэргийлнэ |
+| `IPROMPT` | Хөгжим ба AI хэрэгслийн нэрс — Whisper буруу сонсохоос сэргийлнэ |
 
 **Татаж чадахгүй бол** `.bat` гурван удаа оролдоно: энгийнээр → `yt-dlp -U`
 хийгээд дахин → Chrome-ийн cookie-гоор. Гуравдугаарт нь Chrome бүрэн
@@ -111,9 +111,12 @@ yt-dlp --write-auto-subs --sub-lang en --skip-download --convert-subs srt "ХО�
 Anthropic түлхүүр зөвхөн орчуулгын алхамд хэрэгтэй. `TRANSLATE=0` болговол
 түлхүүр огт хэрэггүй, гарсан `.srt`-г `subtitles.html` руу гараар чирж болно.
 
-`IPROMPT` дотор Suno, Udio, DAW, stem, BPM, LUFS, sidechain, VST зэрэг үг
-урьдчилан өгөгдсөн. Өөр сэдвийн видео бол тэр мөрийг сольж бич — таних
-нарийвчлал мэдэгдэхүйц дээшилнэ.
+`IPROMPT` дотор хөгжмийн (Suno, Udio, DAW, stems, LUFS, sidechain, VST) ба AI
+видеоны (Higgsfield, Claude Code, Midjourney, Kling, Veo, Runway, HeyGen)
+нэрс урьдчилан өгөгдсөн. Өөр сэдвийн видео бол тэр мөрийг сольж бич — таних
+нарийвчлал мэдэгдэхүйц дээшилнэ. **Whisper зөвхөн сүүлийн ~224 токеныг
+уншдаг** тул жагсаалтыг урт болгох хэрэггүй: энгийн англи үгийг Whisper
+өөрөө сайн сонсдог, зөвхөн ховор нэр, брэнд л хэрэгтэй.
 
 > **Аюулгүй байдал.** `anthropic-key.txt` нь энгийн бичвэр файл. Тэр хавтсаа
 > хуваалцаж болохгүй. Репод `.gitignore`-т нэмсэн тул санамсаргүй push хийгдэхгүй.
