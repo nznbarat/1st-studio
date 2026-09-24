@@ -106,6 +106,8 @@
     char: "a film character description — a concrete English image-prompt fragment",
     loc: "a film location description — a concrete English image-prompt fragment",
     shot: "a single camera shot description for a video generator",
+    brand: "a channel style-guide fragment — a reusable English descriptor for look, lighting, palette, camera or narration tone",
+    topics: "a list of YouTube video topics, one per line — translate every line on its own as a short English video title, keep exactly the same number of lines and the same order",
     plain: "general descriptive text"
   };
 

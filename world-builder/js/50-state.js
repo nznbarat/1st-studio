@@ -25,6 +25,78 @@
     { k: "detail", lb: "Нарийн деталь", ph: "салхинд давалгаалах өвс, холын гэрийн утаа, морины мөр" }
   ];
 
+  /* ── Брэнд файл: сувгийн гарын үсэг ──────────────────────
+     layer 2 — харагдац (промт болгонд шингэнэ)
+     layer 3 — хоолой (скрипт, дуу оруулгад шингэнэ)
+     need    — «Нэг фрэйм дүрэм»‑ийг түгжихэд заавал шаардлагатай  */
+  /* Давхарга 1 — судалгаа. Эдгээр нь мастер промтод англиар орох тул
+     бусад талбарын адил хос хэлтэй байна. */
+  S.BRAND_META_FIELDS = [
+    {
+      k: "niche", lb: "Сувгийн ниш — нэг өгүүлбэр",
+      ph: "Монголын түүхэн үйл явдлыг кино маягийн богино өгүүлэмжээр тайлбарладаг суваг"
+    },
+    {
+      k: "titleFmt", lb: "Батлагдсан гарчгийн формат",
+      ph: "«Хэн ч мэддэггүй …», «… яагаад мартагдсан бэ»"
+    },
+    /* Жагсаалт — мөр бүр тусдаа сэдэв. Орчуулахдаа мөрийн тоог хадгална.
+       box: «5 сэдэв санал болгох» товчны доор тусад нь зурагдана. */
+    {
+      k: "topics", kind: "topics", box: "brandTopicsField",
+      lb: "Сэдвийн жагсаалт — мөр бүрд нэг",
+      ph: "Чингисийн булш яагаад олдоогүй вэ\nХар хэрэм — үнэхээр байсан уу"
+    }
+  ];
+
+  S.BRAND_FIELDS = [
+    {
+      k: "look", layer: 2, need: true, lb: "Визуал гарын үсэг",
+      ph: "бодит кино дүрслэл, 35мм хальсны ширхэг, гүехэн фокус, бага зэрэг гар камерын хөдөлгөөн",
+      hint: "сувгийн ерөнхий харагдац — техник, материал, өнгө аяс"
+    },
+    {
+      k: "light", layer: 2, need: true, lb: "Гэрэлтүүлэг",
+      ph: "нам дор алтан гэрэл, хатуу урт сүүдэр, арын туяа, утаан дундах гэрлийн багана",
+      hint: "гэрлийн чиглэл, зөөлөн/хатуу, цагийн үе"
+    },
+    {
+      k: "palette", layer: 2, need: true, lb: "Өнгөний палетт",
+      ph: "бүдэг хүрэн, шатсан улбар шар, гүн индиго, цайвар элсэн өнгө",
+      hint: "3–4 нэрлэсэн өнгө, давамгайлах нь эхэнд"
+    },
+    {
+      k: "camera", layer: 2, need: true, lb: "Камерын дүрэм",
+      ph: "удаан дөхөж орох кадр, зогсонги трипод, огцом зүсэлт байхгүй, нүдний түвшин",
+      hint: "хөдөлгөөн, өндөр, линз, хэмнэл"
+    },
+    {
+      k: "avoid", layer: 2, need: false, lb: "Хэзээ ч гаргахгүй",
+      ph: "орчин үеийн хувцас, машин, неон өнгө, дэлгэц дээрх текст, лого",
+      hint: "энэ сувагт хэзээ ч харагдах ёсгүй зүйлс"
+    },
+    {
+      k: "voice", layer: 3, need: true, lb: "Өгүүлэгчийн өнгө аяс",
+      ph: "намуухан, өөртөө итгэлтэй, богино өгүүлбэр, яарахгүй, сүржин үггүй",
+      hint: "хоолойны өнгө, өгүүлбэрийн урт, хурд"
+    },
+    {
+      k: "words", layer: 3, need: false, lb: "Хэрэглэдэг үг, хэллэг",
+      ph: "«энэ л мөч», «одоо ажигла», «жаахан ухаж үзье»",
+      hint: "сувгийн давтагддаг 3–5 хэллэг"
+    },
+    {
+      k: "nowords", layer: 3, need: false, lb: "Хэрэглэдэггүй үг",
+      ph: "«гайхалтай», «хувьсгал», «шок», хэт сэтгэл хөдлөлийн хэллэг",
+      hint: "хориотой үг, хэллэг"
+    },
+    {
+      k: "audio", layer: 3, need: false, lb: "Дуу авианы палетт",
+      ph: "морин хуурын ганц шугам, гүн sub bass, амьсгалын өргөлт, 3 секундын sting",
+      hint: "хөгжмийн зэмсэг, темп, sting, чимээний давхарга"
+    }
+  ];
+
   S.STYLE_PRESETS = [
     { id: "anime", lb: "Аниме", v: "anime style, clean line art, vivid colours, cel shading" },
     { id: "cine", lb: "Кино гэрэлтүүлэг", v: "cinematic lighting, film grain, shallow depth of field, anamorphic" },
@@ -43,12 +115,31 @@
     { id: "sora", lb: "Sora — урт өгүүлэмжтэй" }
   ];
 
+  /** Хоосон брэнд файл. */
+  S.blankBrand = function () {
+    const f = {};
+    S.BRAND_FIELDS.forEach((d) => (f[d.k] = F("")));
+    const meta = {};
+    S.BRAND_META_FIELDS.forEach((d) => (meta[d.k] = F("")));
+    return {
+      meta: meta,
+      f: f,
+      frameSubject: "",
+      ref: "",
+      locked: false,
+      lockedAt: 0,
+      checkpoint: true,
+      direction: null
+    };
+  };
+
   S.blank = function () {
     return {
       v: 3,
       id: U.uid(),
       title: "Нэргүй төсөл",
       logline: F(),
+      brand: S.blankBrand(),
       scenes: [],
       cast: [],
       locs: [],
@@ -59,7 +150,8 @@
         ar: "16:9",
         negative: "",
         continuity: true,
-        autoTranslate: true
+        autoTranslate: true,
+        brandOn: true
       },
       updated: Date.now()
     };
@@ -75,6 +167,7 @@
     p.id = d.id || p.id;
     p.title = d.title || p.title;
     p.logline = fixField(d.logline);
+    p.brand = fixBrand(d.brand);
     p.custom = d.custom && typeof d.custom === "object" ? d.custom : {};
     p.scenes = (Array.isArray(d.scenes) ? d.scenes : []).map((s) => ({
       id: s.id || U.uid(),
@@ -113,6 +206,25 @@
     if (!f || typeof f !== "object") return F(typeof f === "string" ? f : "");
     return { mn: f.mn || "", en: f.en || "", auto: f.auto !== false, unk: f.unk || [], src: f.src || "" };
   }
+  function fixBrand(b) {
+    const out = S.blankBrand();
+    if (!b || typeof b !== "object") return out;
+    if (b.meta && typeof b.meta === "object") {
+      /* v1 брэнд файлд niche / titleFmt / topics нь энгийн мөр байсан */
+      S.BRAND_META_FIELDS.forEach((d) => {
+        const v = b.meta[d.k];
+        out.meta[d.k] = typeof v === "string" ? F(v) : fixField(v);
+      });
+    }
+    out.f = fixFieldSet(b.f, S.BRAND_FIELDS);
+    out.frameSubject = b.frameSubject || "";
+    out.ref = b.ref || "";
+    out.locked = !!b.locked;
+    out.lockedAt = b.lockedAt || 0;
+    out.checkpoint = b.checkpoint !== false;
+    out.direction = b.direction && typeof b.direction === "object" ? b.direction : null;
+    return out;
+  }
   function fixFieldSet(obj, defs) {
     const out = {};
     defs.forEach((d) => (out[d.k] = fixField(obj && obj[d.k])));
@@ -125,6 +237,14 @@
     const out = [];
     const want = (k) => !kinds || kinds.includes(k);
     if (want("logline")) out.push({ field: P.logline, kind: "logline", label: "Логлайн" });
+    if (want("brand")) {
+      S.BRAND_META_FIELDS.forEach((d) =>
+        out.push({ field: P.brand.meta[d.k], kind: d.kind || "brand", label: "Брэнд · " + d.lb })
+      );
+      S.BRAND_FIELDS.forEach((d) =>
+        out.push({ field: P.brand.f[d.k], kind: "brand", label: "Брэнд · " + d.lb })
+      );
+    }
     if (want("scene"))
       P.scenes.forEach((s, i) => out.push({ field: s.body, kind: "scene", label: s.name || "Үзэгдэл " + (i + 1) }));
     if (want("char"))

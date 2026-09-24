@@ -23,6 +23,7 @@
     WB.store.set("panel", p);
     if (p === "dict") UI.renderDict();
     if (p === "out") UI.renderOut();
+    if (p === "brand" && WB.brand) WB.brand.paintOutputs();
   };
 
   /* ── хос хэлний талбар ──────────────────────────────────── */
@@ -639,6 +640,7 @@
   /* ── бүх зүйлийг дахин зурах ────────────────────────────── */
   UI.renderAll = function () {
     duals = [];
+    if (WB.brand) WB.brand.render();
     UI.renderStory();
     UI.renderCards(S.P.cast, S.CAST_FIELDS, "castList", "char", "Дүр", "Дүрийн нэр…");
     UI.renderCards(S.P.locs, S.LOC_FIELDS, "locList", "loc", "Байршил", "Байршлын нэр…");
@@ -662,6 +664,8 @@
     if (cont) cont.checked = !!o.continuity;
     const at = el("autoTrChk");
     if (at) at.checked = !!o.autoTranslate;
+    const br = el("brandChk");
+    if (br) br.checked = o.brandOn !== false;
   };
 
   /* ── багц орчуулга ──────────────────────────────────────── */
