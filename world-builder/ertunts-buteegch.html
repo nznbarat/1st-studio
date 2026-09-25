@@ -943,7 +943,25 @@ textarea.lineIn.ta{resize:vertical;line-height:1.6;font-family:inherit}
     дагуу: "along", дамжин: "through", туршид: "throughout", хажуугаас: "from the side",
     хүрэх: "reaching", "дээрээ": "on top", "доороо": "underneath", "цаана": "beyond",
     "өөд": "up toward", "уруу": "down toward", "тийш": "in the direction of",
-    "нааш": "hither", "цааш": "onward", "хамаагүй": "regardless of"
+    "нааш": "hither", "цааш": "onward", "хамаагүй": "regardless of",
+    /* харьцуулалт: «тоос шиг» → «like dust», «хөшөө мэт» → «like a monument» */
+    "шиг": "like", "мэт": "like"
+  };
+
+  /* ── тоо ба нэгж: «35мм» → 35mm, «1-р» → 1st, «8с» → 8s ───── */
+  G.ordinal = function (n) {
+    const k = n % 100;
+    if (k >= 11 && k <= 13) return n + "th";
+    return n + ({ 1: "st", 2: "nd", 3: "rd" }[n % 10] || "th");
+  };
+  G.numeric = function (w) {
+    let m = /^(\d+(?:[.,]\d+)?)мм$/.exec(w);
+    if (m) return m[1].replace(",", ".") + "mm";
+    m = /^(\d+)-?р$/.exec(w);
+    if (m) return G.ordinal(+m[1]);
+    m = /^(\d+(?:[.,]\d+)?)с$/.exec(w);
+    if (m) return m[1].replace(",", ".") + "s";
+    return null;
   };
 
   /* ── дагаварын хүснэгт: {дагавар, тэмдэг} ───────────────
@@ -986,6 +1004,9 @@ textarea.lineIn.ta{resize:vertical;line-height:1.6;font-family:inherit}
        дагаваруудын ДАРАА байрлана — эс бөгөөс «дуулаа» → «дуу» болно. */
     ["аа", ["poss"]], ["ээ", ["poss"]], ["оо", ["poss"]], ["өө", ["poss"]],
     ["ийн", ["gen"]], ["ний", ["gen"]], ["ын", ["gen"]], ["ны", ["gen"]],
+    /* ь‑ээр төгссөн үг: морь → морины, хонь → хонины, морь → морьд.
+       Гурав дахь элемент нь хассаны дараа үндэст буцааж залгах үсэг. */
+    ["ины", ["gen"], "ь"], ["ьд", ["pl"], "ь"],
     ["тай", ["com"]], ["тэй", ["com"]], ["той", ["com"]], ["төй", ["com"]],
     ["аас", ["abl"]], ["ээс", ["abl"]], ["оос", ["abl"]], ["өөс", ["abl"]],
     ["аар", ["ins"]], ["ээр", ["ins"]], ["оор", ["ins"]], ["өөр", ["ins"]],
@@ -994,9 +1015,17 @@ textarea.lineIn.ta{resize:vertical;line-height:1.6;font-family:inherit}
     ["на", ["v"]], ["нэ", ["v"]], ["но", ["v"]], ["нө", ["v"]],
     ["в", ["v"]], /* энгийн өнгөрсөн цаг: харав, ирэв */
     ["ж", ["v"]], ["ч", ["v"]],
+    /* далд «н»‑тэй өгөх орших: нүүр → нүүрэнд, шил → шилэнд */
+    ["анд", ["dat"]], ["энд", ["dat"]], ["онд", ["dat"]], ["өнд", ["dat"]],
+    /* гийгүүлэгчийн араас: секунд → секундэд */
+    ["ад", ["dat"]], ["эд", ["dat"]], ["од", ["dat"]], ["өд", ["dat"]],
     ["д", ["dat"]], ["т", ["dat"]],
     ["ий", ["gen"]],
-    ["н", []], ["г", ["acc"]]
+    ["н", []],
+    /* материалын тэмдэг нэр: цас → цасан, мод → модон. «н»‑ээс хойш байх ёстой —
+       эс бөгөөс нөхцөл үйл үг «харан» (харж) нь «хар» (black) болж таарна. */
+    ["ан", []], ["эн", []], ["он", []], ["өн", []],
+    ["г", ["acc"]]
   ];
 
   /* Дагавар залгахад дундах богино эгшиг унана: намар→намр‑, өвөл→өвл‑ */
@@ -1023,9 +1052,9 @@ textarea.lineIn.ta{resize:vertical;line-height:1.6;font-family:inherit}
     for (let depth = 0; depth < 2; depth++) {
       const next = [];
       for (const cur of layer) {
-        for (const [suf, tags] of SUF) {
+        for (const [suf, tags, restore] of SUF) {
           if (cur.stem.length > suf.length + 1 && cur.stem.endsWith(suf)) {
-            const base = cur.stem.slice(0, cur.stem.length - suf.length);
+            const base = cur.stem.slice(0, cur.stem.length - suf.length) + (restore || "");
             const item = { stem: base, tags: cur.tags.concat(tags) };
             next.push(item);
             /* Үйл үгийн дагавартай бол эхлээд ‑х төгсгөлтэй хэлбэрийг оролдоно.
@@ -1391,7 +1420,7 @@ WB.dict.add({ id:"haragdats", label:"Харагдац, царайны шинж",
 "үймсэн үс":"tousled hair","буржгар үс":"curly hair","долгиолсон үс":"wavy hair","шулуун үс":"straight hair",
 "өтгөн үс":"thick hair","сийрэг үс":"thinning hair","хар үс":"black hair","бор үс":"brown hair",
 "шаргал үс":"blonde hair","улаан үс":"red hair","буурал үс":"greying hair","цагаан үс":"white hair",
-"мөнгөлөг үс":"silvery hair","хусуулсан толгой":"shaved head","халзан":"bald","гэзэг":"queue braid",
+"мөнгөлөг үс":"silvery hair","хусуулсан толгой":"shaved head","халзан":"bald","гэзэг":"braid",
 "хар нүд":"dark eyes","хүрэн нүд":"brown eyes","хөх нүд":"blue eyes","саарал нүд":"grey eyes",
 "ногоон нүд":"green eyes","нарийн нүд":"narrow eyes","том нүд":"large eyes","гүн нүд":"deep-set eyes",
 "хурц харц":"piercing gaze","дулаан харц":"warm gaze","хүйтэн харц":"cold stare","ядарсан харц":"weary look",
@@ -1437,7 +1466,7 @@ WB.dict.add({ id:"huvtsas", label:"Хувцас, гутал, малгай", icon
 "шаахай гутал":"sandals","цасны гутал":"snow boots","улавч":"felt boot liner","хөлийн өмсгөл":"footwear",
 "бүс":"sash belt","мөнгөн бүс":"silver-studded belt","бүсний тоноглол":"belt fittings","товч":"button",
 "гогцоо":"loop fastening","зах":"collar","зогдор зах":"standing collar","ханцуй":"sleeve",
-"нударга":"cuff","энгэр":"front lapel of a deel","хормой":"skirt of a robe","хумигдсан ханцуй":"rolled-up sleeve",
+"нударга":"cuff","энгэр":"front lapel of a deel","хормой":"hem","хумигдсан ханцуй":"rolled-up sleeve",
 "хатгамал":"embroidery","хатгамалтай":"embroidered","угалз":"scroll ornament","хээ":"pattern",
 "хээтэй":"patterned","цоолбор":"openwork","судалтай":"striped","цэцэгтэй":"floral","цэвэрхэн хувцас":"neat clothes",
 "хуучирсан хувцас":"worn clothes","урагдсан":"torn","нөхөөстэй":"patched","шороотой хувцас":"dusty clothes",
@@ -1707,7 +1736,7 @@ WB.dict.add({ id:"shuvuu", label:"Шувуу, шавьж", icon:"🦅", w:{
 "хун":"swan","цахлай":"gull","хотон":"pelican","тоодог":"bustard","ятуу":"partridge","бөднө":"quail",
 "тахиа":"chicken","азарган тахиа":"rooster","дэгдээхэй":"chick","үүрлэх":"nesting","өндөг":"egg",
 "үүр (шувууны)":"bird's nest","далавч":"wing","өд":"feather","хушуу (шувууны)":"beak","сарвуу (шувууны)":"talon",
-"нисэх":"flying","хийсэх":"soaring","дэвэх":"flapping","буух (шувуу)":"alighting","жиргэх":"chirping",
+"нисэх":"flying","хийсэх":"fluttering","дэвэх":"flapping","буух (шувуу)":"alighting","жиргэх":"chirping",
 "донгодох":"crowing","ганганах":"honking","эгшиглэх":"warbling","нүүдлийн шувуу":"migratory bird",
 "шавьж":"insect","эрвээхэй":"butterfly","эрвээхэйн далавч":"butterfly wing","эрээн эрвээхэй":"moth",
 "зөгий":"bee","балт зөгий":"honeybee","татар зөгий":"wasp","ялаа":"fly","шумуул":"mosquito","бөөс":"flea",
@@ -1785,7 +1814,7 @@ WB.dict.add({ id:"teever", label:"Тээвэр, зам харилцаа", icon:"
 "замын тоос":"road dust","замын нүх":"pothole","хурд":"speed","хурдлах":"accelerating","удаашрах":"slowing",
 "зогсох (тээврийн)":"pulling up","гүйцэх":"overtaking","эргэх (замд)":"turning","буцах":"turning back",
 "аялал":"journey","аяны зам":"travel route","зорчигч":"passenger","ачаа тээш":"luggage","тасалбар":"ticket",
-"хуваарь":"timetable","хоцрох":"being late","хүрэлцэн ирэх":"arriving","хөдлөх":"departing","зам гарах":"setting off"
+"хуваарь":"timetable","хоцрох":"being late","хүрэлцэн ирэх":"arriving","хөдлөх":"moving","зам гарах":"setting off"
 }});
 
 </script>
@@ -1972,7 +2001,7 @@ WB.dict.add({ id:"verb-move", label:"Үйл үг · хөдөлгөөн", icon:"�
 "ухрах":"backing away","эргэх":"turning","эргэлдэх":"spinning","тойрох":"circling","дайран өнгөрөх":"sweeping past",
 "зогсох":"standing","суух":"sitting","хэвтэх":"lying down","бөхийх":"bending down","сөгдөх":"kneeling",
 "тонгойх":"stooping","тэнийх":"straightening up","босох":"rising","үсрэх":"leaping","харайх":"jumping",
-"унах":"falling","бүдрэх":"stumbling","гулсах":"slipping","эргэлдэн унах":"tumbling","нурах":"collapsing",
+"унах":"falling","бүдрэх":"stumbling","гулсах":"sliding","эргэлдэн унах":"tumbling","нурах":"collapsing",
 "нисэх (агаарт)":"flying","хөвөх":"drifting","сэлэх":"swimming","живэх":"sinking","хөвж гарах":"surfacing",
 "мацах":"climbing","өгсөх":"ascending","буух":"descending","уруудах":"going downhill","гүйлгэх":"letting run",
 "мордох (морь)":"mounting","давхих (морьтой)":"riding at a gallop","жолоодох":"driving","хөтлөх":"leading by hand",
@@ -2264,7 +2293,7 @@ WB.dict.add({ id:"domog", label:"Домог, үлгэр, түүх", icon:"📜",
 "булш":"tomb","хиргисүүр":"burial mound","хүн чулуу":"stone figure","эртний хот":"ancient city",
 "балгас (эртний)":"ancient ruins","малтлага":"excavation","олдвор":"artefact","эрдэнэсийн сан":"treasury",
 "эзэнт гүрэн":"empire","хаант улс":"kingdom","улс":"state","нутаг дэвсгэр":"territory","хилийн чанад":"beyond the border",
-"хаан":"khan","их хаан":"great khan","хатан":"queen consort","ханхүү":"prince","гүнж":"princess",
+"хаан":"khan","их хаан":"great khan","хатан":"queen","ханхүү":"prince","гүнж":"princess",
 "тайж":"noble prince","ноёд":"lords","язгуур":"noble descent","өв залгамжлал":"succession",
 "төрийн тамга":"state seal","алтан ургийн":"of the golden lineage","цэргийн жагсаал (түүх)":"military campaign",
 "аян дайн":"military expedition","байлдан дагуулалт":"conquest","эзлэгдсэн":"conquered","бослого":"uprising",
@@ -2406,7 +2435,7 @@ WB.dict.add({ id:"holboos", label:"Холбоос үг, өгүүлбэрийн �
 "гэсэн хэдий ч":"nevertheless","тэгэхээр":"so then","иймээс":"hence","улмаар":"subsequently",
 "нэгэнт":"since already","болохоор":"because of","улмаас":"as a result of","зорилгоор":"for the purpose of",
 "төлөө":"for the sake of","тухайд":"as for","талаар":"about","хувьд":"in terms of","хэрээр":"in proportion to",
-"мэт":"like","шиг":"as if","адил":"just as","гэж":"saying that","гэсэн":"called","гэдэг":"which is called",
+"мэт":"like","шиг":"like","адил":"just as","гэж":"saying that","гэсэн":"called","гэдэг":"which is called",
 "буюу":"or rather","юм уу":"or maybe","эсхүл":"otherwise","хэрэв бол":"in case","болбол":"as regards",
 "тэгээд":"and then","дараа нь (холбоос)":"after that","эцэст нь (холбоос)":"at last","эхэндээ":"at first",
 "хожим нь":"later still","тэр үед":"at that time","энэ үед":"meanwhile","тэгтэл":"whereupon",
@@ -4728,6 +4757,275 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
 
 </script>
 <script>
+/* ── js/dict/d47-brand-kino.js ── */
+/* ═══ 47 · Брэнд файл: кино техник, гэрэл, өнгө засвар ═══
+   Брэнд файлын «Харагдац» давхаргад хамгийн их бичигддэг үгс.
+   Бодит төслийн текстэд таарахгүй байсан үгсээс эхэлж нөхсөн. */
+WB.dict.add({ id:"brand-look", label:"Брэнд · харагдац, хальс, зохиомж", icon:"🎞", w:{
+"хальс":"film stock","хальсны ширхэг":"film grain","нарийн ширхэг":"fine grain","бүдүүн ширхэг":"coarse grain",
+"ширхэг":"grain","хальсан дүрс":"filmic look","кино хальс":"motion-picture film","35мм хальс":"35mm film",
+"16мм хальс":"16mm film","анаморф":"anamorphic","анаморф хальс":"anamorphic film","дижитал":"digital",
+"статик":"static","статик кадр":"static shot","тасралтгүй кадр":"continuous shot","огтлол":"cut",
+"огтлолгүй":"without cuts","огтлол хийхгүй":"no cuts","хурдан огтлол":"fast cuts","уусах":"dissolving",
+"дүрс уусах":"cross-dissolving","уусалтаар":"with a dissolve","бүдгэрүүлэх":"fading out","намиралт":"fluttering",
+"урагш гулсах":"gliding forward","урагш гулсалт":"forward glide","дүрслэл":"depiction","дүрсийн хэв":"visual style",
+"харагдах байдал":"appearance","гадаад төрх":"outward look","зохиомж":"composition","төвлөрсөн зохиомж":"centered composition",
+"тэгш хэмтэй":"symmetrical","гуравны нэгийн дүрэм":"rule of thirds","тэргүүлэх шугам":"leading lines","сөрөг орон зай":"negative space",
+"урд план":"foreground","дунд план":"middle ground","ард план":"background plane","кадрын хүрээ":"frame edge",
+"кадрын гол":"center of frame","кадрын голд":"in the center of the frame","хоёр талд":"on both sides","хоёр талд нь":"on either side",
+"зүүн талд":"on the left","баруун талд":"on the right","агаарын гүн":"atmospheric depth","агаарын хэтийн төлөв":"aerial perspective",
+"хэтийн төлөв":"perspective","дэвсгэрт":"in the background","тэнгэрийн дэвсгэр":"sky backdrop","дэвсгэр тэнгэр":"backdrop sky",
+"хөшөө мэт":"like a monument","хөшөө шиг":"statuesque","хөшөөлөг":"monumental","хөдөлгөөнгүй":"motionless",
+"хөдөлгөөнгүй зогсох":"standing motionless","хөдөлгөөн":"movement","хөдөлгөөнт":"moving","хөдөлгөөнт дүрс":"moving image",
+"зогсонги":"static","зогсонги мэт":"seemingly frozen","амьгүй":"lifeless","амьд мэт":"lifelike",
+"бодит мэт":"realistic","дэлгэц дээрх бичиг":"on-screen text","бичиг":"text","лого":"logo",
+"босоо":"vertical","босоо кадр":"vertical frame","хэвтээ":"horizontal","хэвтээ кадр":"horizontal frame",
+"дэлгэцийн харьцаа":"aspect ratio","формат":"format","секундын":"second-long","кадрын тоо":"shot count",
+"кадрын урт":"shot length","кадр бүр":"every shot","кадр тус бүр":"each shot","тус бүр":"each",
+"нийт":"in total","мм":"mm","фокусын зай":"focal length","гүехэн фокус":"shallow focus",
+"фокус шилжих":"focus shift","секундэд 24 кадр":"24 frames per second","удаашруулалт":"slow motion","хурдасгалт":"speed ramp"
+}});
+
+WB.dict.add({ id:"brand-light", label:"Брэнд · гэрэл, өнгө засвар", icon:"🌅", w:{
+"арын гэрэлтүүлэг":"backlighting","хажуу талаас":"from the side","хажуу талаас туссан":"raking in from the side","дээрээс тусах гэрэл":"top light",
+"доороос тусах гэрэл":"underlight","нүүрний гэрэл":"key light","нөхөх гэрэл":"fill light","ирмэгийн гэрэл":"rim light",
+"тархсан гэрэл":"diffused light","зөөлөн тархсан":"softly diffused","шууд гэрэл":"direct light","тусгасан гэрэл":"bounced light",
+"одны гэрэл":"starlight","гэрлийн багана":"shaft of light","гэрлийн туяа":"ray of light","бурхны туяа":"god rays",
+"эзлэхүүн гэрэл":"volumetric light","гэрэл сүүдрийн тоглоом":"interplay of light and shadow","нар жаргахын өмнө":"just before sunset","нар мандахын өмнө":"just before sunrise",
+"өдрийн хагас":"midday","үүлэрхэг өдөр":"overcast day","нам дор":"low","нам дор өнцөг":"low angle",
+"нам дор өнцгөөс":"from a low angle","нам дор гэрэл":"low-angle light","гялалзуулах":"making it shimmer","линзний гялбаа":"lens flare",
+"бүдэгрэл":"haze","зөөлөн бүдэгрэл":"soft haze","гэрлийн бүдэгрэл":"halation","үүлний завсраар":"through gaps in the clouds",
+"завсраар":"through the gaps","чичирнэ":"trembles","тусгал ус дээр":"reflection on the water","өнгө засварлалт":"colour grading",
+"өнгөний засвар":"colour correction","ханалт":"saturation","намдуу ханалт":"muted saturation","бага ханалт":"low saturation",
+"өндөр ханалт":"high saturation","контраст":"contrast","бага контраст":"low contrast","өндөр контраст":"high contrast",
+"бүлээн сүүдэр":"warm shadows","бүлээн өнгө":"warm tones","өнгөний хэм":"colour scheme","өнгөний палетт":"colour palette",
+"палетт":"palette","хэм":"scheme","давамгайлах өнгө":"dominant colour","нэмэлт өнгө":"accent colour",
+"тод өнгийн судал":"streaks of bright colour","өнгийн судал":"colour streaks","неон":"neon","гүн ягаан":"deep magenta",
+"зэс алт":"copper gold","зэс алтан":"copper-gold","зэвэрсэн улаан":"rust red","тоостой цайвар хөх":"dusty pale blue",
+"шатсан улбар шар":"burnt orange","бүдэг хүрэн":"muted brown","гүн индиго":"deep indigo","индиго":"indigo",
+"терракот":"terracotta","гүн ногоон":"deep green","хүрэн улаан сүүдэр":"russet shadows","сүүдэр тархах":"shadows spreading"
+}});
+
+</script>
+<script>
+/* ── js/dict/d48-undesnii-huvtsas.js ── */
+/* ═══ 48 · Үндэсний хувцас, гоёл, угсаатан ═══
+   Дээлийн хэсэг, гоёл чимэглэл, материал ба угсаатны хэв маяг.
+   Угсаатны нэрийг хувцасны хэв маягийг заахад хэрэглэдэг тул
+   «халх дээл» → «Khalkha-style deel» гэх мэтээр орчуулна. */
+WB.dict.add({ id:"deel", label:"Үндэсний хувцас · дээлийн хэсэг", icon:"🥻", w:{
+"үндэсний хувцас":"traditional Mongolian dress","монгол үндэсний хувцас":"traditional Mongolian dress","үндэсний хувцастай":"in traditional Mongolian dress","монгол хувцас":"Mongolian clothing",
+"энгэртэй":"with a front flap","хатгамал энгэр":"embroidered front flap","зүүн энгэр":"left breast","урт ханцуй":"long sleeves",
+"ханцуйн нугалаас":"sleeve cuff","нугалаас":"cuff","нугалаастай":"with cuffs","туурай ханцуй":"hoof-shaped cuffs",
+"хийвэр":"raised shoulders","хөвөө":"trim","хөвөөтэй":"trimmed","алтан хөвөө":"gold trim",
+"эмжээр":"piping","эмжээртэй":"piped","хормойн":"hem","хормойн ирмэг":"edge of the hem",
+"хормойн доод ирмэг":"bottom edge of the hem","захтай":"collared","босоо зах":"stand-up collar","мөнгөн товч":"silver buttons",
+"товчтой":"buttoned","өргөн бүс":"wide sash","торгон бүс":"silk sash","тэрлэг":"unlined summer deel",
+"уужаа":"long sleeveless overcoat","ууж":"sleeveless overcoat","уужийн":"overcoat","ноосон ороолт":"woolen scarf",
+"дотуур":"inner","доторлогоо":"lining","гадуур хувцас":"outerwear","хувцасны даавуу":"clothing fabric",
+"халх":"Khalkha","халх дээл":"Khalkha-style deel","буриад":"Buryat","буриад дээл":"Buryat-style deel",
+"дөрвөд":"Dörvöd","ойрад":"Oirat","дарьганга":"Dariganga","барга":"Barga",
+"торгууд":"Torguud","захчин":"Zakhchin","өөлд":"Ööld","мянгад":"Myangad",
+"үзэмчин":"Üzemchin","хотгойд":"Khotgoid","урианхай":"Uriankhai","цаатан":"Tsaatan",
+"казах":"Kazakh","ханхар":"Khankhar"
+}});
+
+WB.dict.add({ id:"goyol-3", label:"Үндэсний гоёл, малгай, гутал", icon:"👑", w:{
+"магнай":"forehead","магнайн гоёл":"forehead ornament","толгойн гоёлын":"headdress","хиймэл үс":"hair-wing headdress",
+"шанх":"hair clasp","шигтгээ":"inlay","шигтгээтэй":"inlaid","шигтгэх":"inlaying",
+"шигтгэсэн":"inlaid","унжлага":"pendant","унжлагатай":"with pendants","сувдан унжлага":"pearl pendants",
+"унжих":"dangling","унжина":"dangles","шүрэн":"coral","мөнгөн шигтгээ":"silver inlay",
+"хас тэмдэг":"khas auspicious symbol","өлзий":"endless knot","өлзий хээ":"endless-knot pattern","үлэмжийн чимэг":"auspicious ornament",
+"хатан хааны титэм":"queen's crown","титэм":"crown","үзүүр малгай":"pointed hat","залаа":"tassel",
+"улаан залаа":"red tassel","залаатай":"tasselled","жинс":"hat finial","булган":"sable",
+"булган малгай":"sable fur hat","үнэгэн":"fox fur","үнэгэн захтай":"with a fox-fur collar","хурганы арьс":"lambskin",
+"ирвэсэн":"snow leopard fur","гутлын хоншоор":"upturned boot toe","хоншоор":"upturned toe","түрий":"boot shaft",
+"түрийтэй":"with boot shafts","хатгамал түрий":"embroidered boot shaft","ноосон":"woolen","арьсан":"leather",
+"хар хилэн":"black velvet","торгон":"silk","гүн ягаан торго":"deep magenta silk","торго гялалзах":"silk shimmering",
+"брокад":"brocade","утсаар":"with thread","алтан утас":"gold thread","алтан утсаар":"with gold thread",
+"хатгасан":"embroidered","хатгах":"embroidering","хуяг дуулгатай":"in armour and helmet","хялгас":"horsehair",
+"тугийн хялгас":"banner's horsehair tassels"
+}});
+
+</script>
+<script>
+/* ── js/dict/d49-hugjim-produce.js ── */
+/* ═══ 49 · Хөгжим, дуу бичлэг, продакшн ═══
+   Брэнд файлын «Дуу авианы палетт» талбар ба FL Studio / Kontakt
+   дээр ажиллахад хэрэглэгддэг үгс. */
+WB.dict.add({ id:"produce", label:"Хөгжим · продакшн, микс", icon:"🎛", w:{
+"басс":"bass","гүн басс":"deep bass","суб басс":"sub bass","басс гитар":"bass guitar",
+"минутад":"per minute","минутад цохилт":"beats per minute","темп":"tempo","удаан темп":"slow tempo",
+"такт":"bar","хэмнэл удаашрах":"the rhythm slowing","аккорд":"chord","аккордын":"chord",
+"минор":"minor key","мажор":"major key","тон":"key","түлхүүр тон":"musical key",
+"эв зохирол":"harmony","аялгуу бичих":"writing a melody","дээж":"sample","сэмпл":"sample",
+"давтамж шүүлтүүр":"frequency filter","эквалайзер":"equaliser","цуурайтах":"reverberating","цуурайтсан":"reverberant",
+"эхо":"echo","хоцролт":"delay","шахалт":"compression","холигч":"mixer",
+"холих":"mixing","миксжүүлэх":"mixing","мастеринг":"mastering","дууны зам":"audio track",
+"дуу бичлэг":"sound recording","дуу хоолойн бичлэг":"vocal recording","чимээ багасгах":"noise reduction","намжина":"fades away",
+"удааширна":"slows down","синтезатор":"synthesizer","синт":"synth","пад":"synth pad",
+"виртуал зэмсэг":"virtual instrument","студи":"studio","бит":"beat","интро":"intro",
+"аутро":"outro","дроп":"drop","нэмэгдэл":"build-up","давхарга дуу":"layered sound",
+"салхины давхарга":"layers of wind","исгэрээ":"whistle","туурайн төвөргөөн":"clatter of hooves","морины туурайн төвөргөөн":"clatter of horse hooves",
+"төвөргөөн":"clatter","шаржигнах чимээ":"rustling sound","торгоны шаржигнаан":"rustle of silk","шаржигнаан":"rustle",
+"дууны тэмдэг":"sonic logo","сувгийн дууны тэмдэг":"channel sonic logo","жингл":"jingle","3 секундын дуудлага":"3-second sting",
+"зүрхний цохилт шиг":"like a heartbeat"
+}});
+
+WB.dict.add({ id:"hugjim-mn", label:"Хөгжим · монгол зэмсэг, урлаг", icon:"🎻", w:{
+"шанз":"shanz three-stringed lute","ёочин":"yoochin hammered dulcimer","хуучир":"khuuchir two-stringed fiddle","товшуур":"tovshuur lute",
+"аман хуур":"jaw harp","хөөмийн":"throat-singing","хархираа":"kharkhiraa deep throat singing","исгэрээ хөөмий":"whistle khöömei",
+"уртын дуу":"long song","татлага":"instrumental tune","биелгээ":"biyelgee dance","хуурын аялгуу":"fiddle melody",
+"урт нум":"long bow stroke","нум татах":"drawing the bow","ганц нум":"single bow stroke"
+}});
+
+</script>
+<script>
+/* ── js/dict/d50-youtube.js ── */
+/* ═══ 50 · YouTube, контент бүтээх ═══ */
+WB.dict.add({ id:"youtube", label:"YouTube, контент бүтээх", icon:"▶", w:{
+"видео":"video","видеоны":"video's","богино видео":"short video","урт видео":"long-form video",
+"шортс":"Shorts","босоо формат":"vertical format","хэвтээ формат":"horizontal format","нүүр зураг":"thumbnail",
+"нүүр зургийн":"thumbnail","гарчигт":"in the title","тайлбарт":"in the description","хаштаг":"hashtag",
+"үзэлт":"views","үзэгчийн тоо":"viewer count","захиалагч":"subscriber","захиалагчид":"subscribers",
+"захиалах":"subscribing","үзэх хугацаа":"watch time","эргэн ирэлт":"returning viewers","үзэгчийн хадгалалт":"audience retention",
+"сувгийн":"channel's","сувгийн ниш":"channel niche","ниш":"niche","анги":"episode",
+"анги бүр":"every episode","эхний анги":"first episode","цуврал анги":"series episode","контент":"content",
+"контент бүтээгч":"content creator","санал болголт":"recommendation","трэнд":"trend","вирал":"viral",
+"анхаарал татна":"grabs attention","сонирхол татах":"sparking curiosity","дэгээ":"hook","эхний 3 секунд":"first 3 seconds",
+"эхэнд":"at the start","төгсгөлд":"at the end","дунд хэсэгт":"in the middle","давтагдах":"recurring",
+"давтагдах гарчиг":"recurring title","гарчгийн загвар":"title template","нийтлэх":"publishing","лайк":"like",
+"монтажлах":"editing","дуу оруулах":"adding audio","богино хувилбар":"short version","эх хувилбар":"original version",
+"урьдчилсан харагдац":"preview","захиалахыг бүү гуй":"never beg for subscriptions","бүү гуй":"never beg","асуулт тавих":"posing a question",
+"гарчигт тоо бүү ашигла":"do not use numbers in the title","тоо бүү ашигла":"do not use numbers","мөнгө олох":"monetising","орлого":"revenue"
+}});
+
+</script>
+<script>
+/* ── js/dict/d51-uil-hellet.js ── */
+/* ═══ 51 · Дүрслэлийн үйл үг, дайвар үг, хэллэг ═══
+   Үзэгдэл, кадрын тайлбарт хамгийн их тохиолддог үгс.
+   Эгшиг унадаг үйл үгсийн (хөдлөх → хөдөлнө) нийтлэг хэлбэрийг
+   шууд оруулсан — морфологи тэдгээрийг үндсэнд нь буцааж чаддаггүй. */
+WB.dict.add({ id:"verb-scene", label:"Үйл үг · үзэгдлийн дүрслэл", icon:"🎬", w:{
+"хөдөлнө":"moves","хөдөлж":"moving","хөдөлсөн":"moved","шилжих":"shifting",
+"нэвтэрнэ":"pierces through","нэвтэрч":"piercing through","шилжинэ":"shifts","эхэлж":"starting",
+"эхэлнэ":"begins","эхэлсэн":"began","дуусна":"ends","өргөгдөх":"rising up",
+"өргөгдөнө":"rises up","дээшлэх":"rising","дээшилнэ":"rises","доошлох":"lowering",
+"доошилно":"lowers","давалгаалах":"undulating","давалгаална":"ripples","бужигнах":"swirling up",
+"бужигнана":"swirls up","намиран":"fluttering","намирч":"fluttering","сэвэлзэж":"stirring gently",
+"хийснэ":"flutters","уртсана":"lengthens","гялалзаж":"glittering","гялалзана":"glitters",
+"гялбана":"gleams","бүдгэрч":"fading","байрлана":"is positioned","зогсоход":"as they stand",
+"зогсож":"standing","тэврэх":"hugging","тэврээд":"hugging","хөтлөлцөх":"holding hands",
+"хөтлөлцөн":"hand in hand","инээлдэх":"laughing together","инээлдэнэ":"laugh together","санаа алдана":"sighs",
+"нүдээ нээх":"opening the eyes","аних":"closing","аниад":"closing","бөхийлгөх":"bowing",
+"бөхийлгөнө":"bows","толгой дохино":"nod","камер руу эргэх":"turning to camera","эгнэх":"lining up",
+"эгнэн":"in a row","эгнэн зогсох":"standing in a row","дугаарлах":"taking turns","дугаарлан":"one after another",
+"удирдан":"leading","тулгуурлах":"relying on","тулгуурлана":"is grounded in","ашиглах":"using",
+"ашигла":"use","гарга":"show","бүү гарга":"do not show","бүү ашигла":"do not use",
+"бүү хэрэглэ":"do not use","бүү":"do not","хийхгүй":"without","тасрах":"breaking off",
+"анхаарал тасрах":"losing attention","мэт санагдах":"seeming like","мэт санагдаж":"seeming like","барих ёстой":"must hold",
+"ёстой":"must","өөрчлөгдөхгүй":"does not change"
+}});
+
+WB.dict.add({ id:"dair-scene", label:"Дайвар үг, тоо, хэллэг", icon:"〰", w:{
+"удаан":"slow","удаанхан":"slowly","аажуухан":"gently","аяархан":"softly",
+"зөөлхөн":"gently","нэг нэгээрээ":"one by one","нэг зүг":"one direction","нэг зүг рүү":"in one direction",
+"зүг":"direction","алс":"distance","алс руу":"into the distance","алсын":"distant",
+"гурвуулан":"all three","гурвуулангийнх":"all three","дөрвүүлээ":"all four","бусад бүх зүйл":"everything else",
+"бүх зүйл":"everything","нөгөө":"the other","нөгөө рүү":"to the other","нэгээс нөгөө рүү":"from one to the other",
+"зургаа дахин":"six times","хоёр дахин":"twice","гурав дахин":"three times","дахин өндөр":"times taller",
+"эцэс":"end","үүнийг":"this","түүнийг":"it","тэднийг":"them",
+"үйлдэл":"action","ямар ч үйлдэл":"any action","эмзэг тал":"weak point","хамгийн гол":"the most important",
+"түүхэн":"historical","түүхэн баримт":"historical fact","үзэгчийн сонирхол":"viewer's interest","уудам":"vast",
+"уудам тал":"vast steppe","хад асга":"rocky outcrops","асга":"scree","цэх":"upright",
+"нуруугаа цэх барих":"standing up straight","барьж":"holding","барьсан":"holding","чимэглэсэн":"adorned",
+"чимэглэх":"adorning","хар гэзэг":"black braid","хатны":"queen's","мандухай":"Mandukhai",
+"мандухай хатан":"Queen Mandukhai","сур":"archery target","сур харваа":"archery","хийморь":"wind-horse spirit",
+"хийморь сэргээх":"raising the wind-horse","аврага":"giant","аврага хүмүүс":"giants among people","хот балгас":"ruined city"
+}});
+
+</script>
+<script>
+/* ── js/dict/d52-tsum-uil-ug.js ── */
+/* ═══ 52 · Цөм · түгээмэл үйл үг ═══
+   Монгол хэлний хамгийн өргөн хэрэглэгддэг үйл үгс. Шалгалтаар толинд
+   түгээмэл үйл үгсийн дөнгөж 46% нь байсныг илрүүлж нөхсөн. */
+WB.dict.add({ id:"verb-core", label:"Цөм · түгээмэл үйл үг", icon:"🔁", w:{
+"ярьж":"telling","ярина":"tells","буцална":"boils","хөгжилдөх":"having fun",
+"хөгжилдөнө":"have fun","сүлжиж":"braiding","хөлбөрөх":"rolling","сөхрөх":"kneeling",
+"агших":"shrinking","дагжих":"shivering","хөлрөх":"sweating","эвшээх":"yawning",
+"долоох":"licking","илэх":"stroking","чимхэх":"pinching","маажих":"scratching",
+"чирэх":"dragging","сэгсрэх":"shaking","мэхийх":"bowing slightly","алга таших":"clapping",
+"ажиллах":"working","тоглох":"playing","бүжиглэх":"dancing","бичих":"writing",
+"унших":"reading","жигнэх":"steaming","самрах":"tossing milk with a ladle","малчлах":"herding",
+"тэжээх":"feeding","бэлчээх":"grazing","самнах":"combing","наймаалах":"trading",
+"худалдаж авах":"buying","барилдах":"wrestling","уралдах":"racing","харвах":"shooting arrows",
+"ан агнах":"hunting","загасчлах":"fishing","ярилцах":"conversing","хэлэлцэх":"discussing",
+"зэмлэх":"scolding","талархах":"thanking","уйтгарлах":"being bored","мөрөөдөх":"dreaming",
+"багасах":"decreasing","гүнзгийрэх":"deepening","харлах":"blackening","цайрах":"whitening",
+"хагарах":"cracking","урагдах":"tearing","хөгшрөх":"growing old","тогтох":"settling",
+"тогтворжих":"stabilising","үүсгэх":"creating","бууруулах":"reducing","өсгөх":"raising",
+"нэмэх":"adding","хасах":"removing","үлдэх":"remaining","цуглах":"gathering",
+"цуглуулах":"collecting","бэлдэх":"preparing","бэлтгэх":"preparing","асах":"lighting up",
+"зэрэгцэх":"moving side by side","зэрэгцэн":"side by side","доргих":"shaking","доргиох":"jolting",
+"сойх":"training horses","сэлгэх":"alternating","үзэгдэх":"being seen","гуниглах":"grieving",
+"сандрах":"panicking","ичих":"being ashamed","нуух":"hiding","хөвөрөх":"bobbing",
+"өндийх":"rising up","авирах":"climbing","шатах":"burning","дулаарах":"warming up",
+"хүйтрэх":"getting cold","гэгээрэх":"brightening","арилах":"disappearing","гарч ирэх":"emerging",
+"цаашлах":"moving on","хуваах":"dividing","жинлэх":"weighing","довтлох":"attacking",
+"ялах":"winning","ялагдах":"being defeated","тахих":"making offerings","ерөөх":"blessing",
+"адислах":"consecrating","ачих":"loading","тэнүүчлэх":"wandering","шумбах":"diving",
+"гулгах":"skating","чаргалах":"sledding","морь унах":"riding a horse","сүүдэрлүүлэх":"casting shade",
+"тусгах":"reflecting","гялтганах":"sparkling","дүрэлзэнэ":"blazes","шуугих":"rustling",
+"хангинах":"ringing","жингэнэх":"jingling","нам жим болох":"going quiet","нүргэлэх":"rumbling",
+"исгэрэх":"whistling","салхилах":"getting windy","бороо орох":"raining","мөндөр орох":"hailing",
+"манантах":"getting foggy","үүлших":"clouding over","унтарна":"goes out","үлдэнэ":"remains",
+"үүсгэнэ":"creates","өсгөнө":"raises","бууруулж":"reducing","цуглаж":"gathering",
+"бэлдэнэ":"prepares","доргино":"shakes","сойж":"training"
+}});
+
+</script>
+<script>
+/* ── js/dict/d53-tsum-temdeg.js ── */
+/* ═══ 53 · Цөм · тэмдэг нэр, дайвар, туслах үг ═══
+   «биш», «хэт», «энд», «тэнд» гэх мэт өдөр бүр хэрэглэгддэг атлаа
+   толинд байгаагүй үгс. */
+WB.dict.add({ id:"adj-core", label:"Цөм · тэмдэг нэр, дайвар, туслах үг", icon:"🔤", w:{
+"биш":"not","өнгийн":"coloured","улаан өнгийн":"red","алтан өнгийн":"golden",
+"цэнхэр өнгийн":"blue","гадагш":"outward","эхнийх":"the first one","өнөөгийн":"present-day",
+"бурхны":"Buddhist","бурхны шүүгээ":"Buddhist altar cabinet","ээрүүл":"spindle","зүүн гар":"left hand",
+"баруун гар":"right hand","эхэн":"beginning","эхэн сар":"first month","биш юм":"is not",
+"хэт":"overly","хэт их":"too much","хэт тод":"too bright","хэт ханасан":"oversaturated",
+"дэндүү":"too","нам":"low","баян":"rich","ядуу":"poor",
+"гэгээлэг":"bright","ер бусын":"extraordinary","түгээмэл":"common","гайхамшигтай":"wonderful",
+"ууртай":"angry","түгшүүртэй":"anxious","ухаалаг":"wise","зэрлэг":"wild",
+"номхон":"gentle","томоор":"large","жижгээр":"small","холоос":"from afar",
+"дээрээс нь":"from above it","сүүлдээ":"eventually","одоохондоо":"for now","ганцаараа":"alone",
+"юу ч":"nothing","энд":"here","тэнд":"there","наана":"on this side",
+"аль хэдийн":"already","дахиад":"again","хэдхэн":"only a few","ч бас":"as well",
+"хэдий":"although","харин ч":"on the contrary","заавал":"necessarily","арай л":"just slightly",
+"яг л":"exactly like","шиг л":"just like","мэт л":"just like","тэгж":"like that",
+"ингэж":"this way","тэр мөчид":"at that moment","энэ мөчид":"at this moment","нэгэн цагт":"once upon a time",
+"эрт дээр үед":"long ago"
+}});
+
+</script>
+<script>
+/* ── js/dict/d54-tsum-ner-ug.js ── */
+/* ═══ 54 · Цөм · гэр ахуй, байгаль, хүмүүс ═══
+   Гэрийн дотор, мал аж ахуй, байгалийн өдөр тутмын нэр үгс. */
+WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, хүмүүс", icon:"🏕", w:{
+"толь":"mirror","шалан дээр":"on the floor","ханан дээр":"on the wall","хээтэй эсгий":"patterned felt",
+"будагтай авдар":"painted chest","морьтон":"horseman","морьтнууд":"riders","уяачид":"horse trainers",
+"клип":"music video","хөгжмийн клип":"music video","дугуй толбо":"round patch","морины дэл":"horse's mane",
+"боорцог":"boortsog fried dough","хоймор":"place of honour in the ger","үүдэнд":"at the doorway","зүүн хана":"eastern wall",
+"баруун хана":"western wall","гэрийн дотор":"inside the ger","гэрийн гадна":"outside the ger","хорго":"animal pen",
+"гол мөрөн":"rivers","хадан дээр":"on the rock"
+}});
+
+</script>
+<script>
 /* ── js/30-api.js ── */
 /* ═════════════════════════════════════════════════════════════
    Claude‑ийн холболт.
@@ -5027,7 +5325,9 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
   /** Англид дүйцэлгүй бөөмс, тодотгол үгс — орчуулгаас гээгдэнэ. */
   const PARTICLES = new Set([
     "нь", "бол", "юм", "билээ", "буй", "бөгөөд", "аж", "гэнэ", "шүү",
-    "л", "уу", "үү", "вэ", "бэ", "хэмээн"
+    "л", "уу", "үү", "вэ", "бэ", "хэмээн",
+    /* туслах үйл үг: «хатааж байна» → «drying» */
+    "байна", "байлаа", "байв"
   ]);
 
   T.offline = function (text) {
@@ -5049,6 +5349,12 @@ WB.dict.add({ id:"nohholt-8", label:"Эцсийн нөхөлт VIII", icon:"🗂
             let i = 0;
             while (i < words.length) {
               if (PARTICLES.has(words[i])) {
+                i++;
+                continue;
+              }
+              const num = G.numeric(words[i]);
+              if (num) {
+                out.push(num);
                 i++;
                 continue;
               }

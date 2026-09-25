@@ -13,7 +13,7 @@ WB.dict.add({ id:"huvtsas", label:"Хувцас, гутал, малгай", icon
 "шаахай гутал":"sandals","цасны гутал":"snow boots","улавч":"felt boot liner","хөлийн өмсгөл":"footwear",
 "бүс":"sash belt","мөнгөн бүс":"silver-studded belt","бүсний тоноглол":"belt fittings","товч":"button",
 "гогцоо":"loop fastening","зах":"collar","зогдор зах":"standing collar","ханцуй":"sleeve",
-"нударга":"cuff","энгэр":"front lapel of a deel","хормой":"skirt of a robe","хумигдсан ханцуй":"rolled-up sleeve",
+"нударга":"cuff","энгэр":"front lapel of a deel","хормой":"hem","хумигдсан ханцуй":"rolled-up sleeve",
 "хатгамал":"embroidery","хатгамалтай":"embroidered","угалз":"scroll ornament","хээ":"pattern",
 "хээтэй":"patterned","цоолбор":"openwork","судалтай":"striped","цэцэгтэй":"floral","цэвэрхэн хувцас":"neat clothes",
 "хуучирсан хувцас":"worn clothes","урагдсан":"torn","нөхөөстэй":"patched","шороотой хувцас":"dusty clothes",

@@ -8,7 +8,7 @@ WB.dict.add({ id:"verb-move", label:"Үйл үг · хөдөлгөөн", icon:"�
 "ухрах":"backing away","эргэх":"turning","эргэлдэх":"spinning","тойрох":"circling","дайран өнгөрөх":"sweeping past",
 "зогсох":"standing","суух":"sitting","хэвтэх":"lying down","бөхийх":"bending down","сөгдөх":"kneeling",
 "тонгойх":"stooping","тэнийх":"straightening up","босох":"rising","үсрэх":"leaping","харайх":"jumping",
-"унах":"falling","бүдрэх":"stumbling","гулсах":"slipping","эргэлдэн унах":"tumbling","нурах":"collapsing",
+"унах":"falling","бүдрэх":"stumbling","гулсах":"sliding","эргэлдэн унах":"tumbling","нурах":"collapsing",
 "нисэх (агаарт)":"flying","хөвөх":"drifting","сэлэх":"swimming","живэх":"sinking","хөвж гарах":"surfacing",
 "мацах":"climbing","өгсөх":"ascending","буух":"descending","уруудах":"going downhill","гүйлгэх":"letting run",
 "мордох (морь)":"mounting","давхих (морьтой)":"riding at a gallop","жолоодох":"driving","хөтлөх":"leading by hand",

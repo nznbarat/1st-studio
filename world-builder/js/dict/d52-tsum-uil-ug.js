@@ -1,0 +1,36 @@
+/* ═══ 52 · Цөм · түгээмэл үйл үг ═══
+   Монгол хэлний хамгийн өргөн хэрэглэгддэг үйл үгс. Шалгалтаар толинд
+   түгээмэл үйл үгсийн дөнгөж 46% нь байсныг илрүүлж нөхсөн. */
+WB.dict.add({ id:"verb-core", label:"Цөм · түгээмэл үйл үг", icon:"🔁", w:{
+"ярьж":"telling","ярина":"tells","буцална":"boils","хөгжилдөх":"having fun",
+"хөгжилдөнө":"have fun","сүлжиж":"braiding","хөлбөрөх":"rolling","сөхрөх":"kneeling",
+"агших":"shrinking","дагжих":"shivering","хөлрөх":"sweating","эвшээх":"yawning",
+"долоох":"licking","илэх":"stroking","чимхэх":"pinching","маажих":"scratching",
+"чирэх":"dragging","сэгсрэх":"shaking","мэхийх":"bowing slightly","алга таших":"clapping",
+"ажиллах":"working","тоглох":"playing","бүжиглэх":"dancing","бичих":"writing",
+"унших":"reading","жигнэх":"steaming","самрах":"tossing milk with a ladle","малчлах":"herding",
+"тэжээх":"feeding","бэлчээх":"grazing","самнах":"combing","наймаалах":"trading",
+"худалдаж авах":"buying","барилдах":"wrestling","уралдах":"racing","харвах":"shooting arrows",
+"ан агнах":"hunting","загасчлах":"fishing","ярилцах":"conversing","хэлэлцэх":"discussing",
+"зэмлэх":"scolding","талархах":"thanking","уйтгарлах":"being bored","мөрөөдөх":"dreaming",
+"багасах":"decreasing","гүнзгийрэх":"deepening","харлах":"blackening","цайрах":"whitening",
+"хагарах":"cracking","урагдах":"tearing","хөгшрөх":"growing old","тогтох":"settling",
+"тогтворжих":"stabilising","үүсгэх":"creating","бууруулах":"reducing","өсгөх":"raising",
+"нэмэх":"adding","хасах":"removing","үлдэх":"remaining","цуглах":"gathering",
+"цуглуулах":"collecting","бэлдэх":"preparing","бэлтгэх":"preparing","асах":"lighting up",
+"зэрэгцэх":"moving side by side","зэрэгцэн":"side by side","доргих":"shaking","доргиох":"jolting",
+"сойх":"training horses","сэлгэх":"alternating","үзэгдэх":"being seen","гуниглах":"grieving",
+"сандрах":"panicking","ичих":"being ashamed","нуух":"hiding","хөвөрөх":"bobbing",
+"өндийх":"rising up","авирах":"climbing","шатах":"burning","дулаарах":"warming up",
+"хүйтрэх":"getting cold","гэгээрэх":"brightening","арилах":"disappearing","гарч ирэх":"emerging",
+"цаашлах":"moving on","хуваах":"dividing","жинлэх":"weighing","довтлох":"attacking",
+"ялах":"winning","ялагдах":"being defeated","тахих":"making offerings","ерөөх":"blessing",
+"адислах":"consecrating","ачих":"loading","тэнүүчлэх":"wandering","шумбах":"diving",
+"гулгах":"skating","чаргалах":"sledding","морь унах":"riding a horse","сүүдэрлүүлэх":"casting shade",
+"тусгах":"reflecting","гялтганах":"sparkling","дүрэлзэнэ":"blazes","шуугих":"rustling",
+"хангинах":"ringing","жингэнэх":"jingling","нам жим болох":"going quiet","нүргэлэх":"rumbling",
+"исгэрэх":"whistling","салхилах":"getting windy","бороо орох":"raining","мөндөр орох":"hailing",
+"манантах":"getting foggy","үүлших":"clouding over","унтарна":"goes out","үлдэнэ":"remains",
+"үүсгэнэ":"creates","өсгөнө":"raises","бууруулж":"reducing","цуглаж":"gathering",
+"бэлдэнэ":"prepares","доргино":"shakes","сойж":"training"
+}});

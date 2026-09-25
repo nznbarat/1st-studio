@@ -48,7 +48,7 @@ WB.dict.add({ id:"shuvuu", label:"Шувуу, шавьж", icon:"🦅", w:{
 "хун":"swan","цахлай":"gull","хотон":"pelican","тоодог":"bustard","ятуу":"partridge","бөднө":"quail",
 "тахиа":"chicken","азарган тахиа":"rooster","дэгдээхэй":"chick","үүрлэх":"nesting","өндөг":"egg",
 "үүр (шувууны)":"bird's nest","далавч":"wing","өд":"feather","хушуу (шувууны)":"beak","сарвуу (шувууны)":"talon",
-"нисэх":"flying","хийсэх":"soaring","дэвэх":"flapping","буух (шувуу)":"alighting","жиргэх":"chirping",
+"нисэх":"flying","хийсэх":"fluttering","дэвэх":"flapping","буух (шувуу)":"alighting","жиргэх":"chirping",
 "донгодох":"crowing","ганганах":"honking","эгшиглэх":"warbling","нүүдлийн шувуу":"migratory bird",
 "шавьж":"insect","эрвээхэй":"butterfly","эрвээхэйн далавч":"butterfly wing","эрээн эрвээхэй":"moth",
 "зөгий":"bee","балт зөгий":"honeybee","татар зөгий":"wasp","ялаа":"fly","шумуул":"mosquito","бөөс":"flea",

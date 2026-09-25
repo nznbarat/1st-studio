@@ -22,7 +22,7 @@ WB.dict.add({ id:"holboos", label:"Холбоос үг, өгүүлбэрийн �
 "гэсэн хэдий ч":"nevertheless","тэгэхээр":"so then","иймээс":"hence","улмаар":"subsequently",
 "нэгэнт":"since already","болохоор":"because of","улмаас":"as a result of","зорилгоор":"for the purpose of",
 "төлөө":"for the sake of","тухайд":"as for","талаар":"about","хувьд":"in terms of","хэрээр":"in proportion to",
-"мэт":"like","шиг":"as if","адил":"just as","гэж":"saying that","гэсэн":"called","гэдэг":"which is called",
+"мэт":"like","шиг":"like","адил":"just as","гэж":"saying that","гэсэн":"called","гэдэг":"which is called",
 "буюу":"or rather","юм уу":"or maybe","эсхүл":"otherwise","хэрэв бол":"in case","болбол":"as regards",
 "тэгээд":"and then","дараа нь (холбоос)":"after that","эцэст нь (холбоос)":"at last","эхэндээ":"at first",
 "хожим нь":"later still","тэр үед":"at that time","энэ үед":"meanwhile","тэгтэл":"whereupon",

@@ -63,5 +63,5 @@ WB.dict.add({ id:"teever", label:"Тээвэр, зам харилцаа", icon:"
 "замын тоос":"road dust","замын нүх":"pothole","хурд":"speed","хурдлах":"accelerating","удаашрах":"slowing",
 "зогсох (тээврийн)":"pulling up","гүйцэх":"overtaking","эргэх (замд)":"turning","буцах":"turning back",
 "аялал":"journey","аяны зам":"travel route","зорчигч":"passenger","ачаа тээш":"luggage","тасалбар":"ticket",
-"хуваарь":"timetable","хоцрох":"being late","хүрэлцэн ирэх":"arriving","хөдлөх":"departing","зам гарах":"setting off"
+"хуваарь":"timetable","хоцрох":"being late","хүрэлцэн ирэх":"arriving","хөдлөх":"moving","зам гарах":"setting off"
 }});

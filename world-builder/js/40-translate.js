@@ -27,7 +27,9 @@
   /** Англид дүйцэлгүй бөөмс, тодотгол үгс — орчуулгаас гээгдэнэ. */
   const PARTICLES = new Set([
     "нь", "бол", "юм", "билээ", "буй", "бөгөөд", "аж", "гэнэ", "шүү",
-    "л", "уу", "үү", "вэ", "бэ", "хэмээн"
+    "л", "уу", "үү", "вэ", "бэ", "хэмээн",
+    /* туслах үйл үг: «хатааж байна» → «drying» */
+    "байна", "байлаа", "байв"
   ]);
 
   T.offline = function (text) {
@@ -49,6 +51,12 @@
             let i = 0;
             while (i < words.length) {
               if (PARTICLES.has(words[i])) {
+                i++;
+                continue;
+              }
+              const num = G.numeric(words[i]);
+              if (num) {
+                out.push(num);
                 i++;
                 continue;
               }
