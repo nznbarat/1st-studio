@@ -136,7 +136,7 @@
       );
     }
     const b = S.P.brand;
-    if (b && b.locked && o.brandOn !== false) {
+    if (b && WB.brand && WB.brand.isLocked() && o.brandOn !== false) {
       addImg(
         "defines the colour grade, film grain and lighting style only — do not copy its subjects or composition.",
         "Брэндийн түгжсэн фрэйм",

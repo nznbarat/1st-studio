@@ -12,6 +12,9 @@
   const el = U.el;
 
   let duals = [];
+  /* Талбар → гараар засаж байсан англи (↶ сэргээх). WeakMap тул талбар
+     устахад өөрөө цэвэрлэгдэнэ, хадгалалт руу орохгүй. */
+  const manualBackup = new WeakMap();
 
   /* ── самбар солих ───────────────────────────────────────── */
   UI.goto = function (p) {
@@ -33,6 +36,10 @@
   }
 
   function statusLabel(field) {
+    if (!field.auto && (field.en || "").trim()) {
+      if (field.src === "camera-director") return { t: "🎥 CAMERA DIRECTOR · 🔒", c: "st done" };
+      if (field.src === "manual") return { t: "ГАРААР ЗАССАН · 🔒", c: "st done" };
+    }
     if (!field.src) return { t: "", c: "st" };
     if (field.src === "ai") return { t: "AI ОРЧУУЛСАН ✓", c: "st done" };
     if ((field.unk || []).length) return { t: "ТОЛЬ · ЗАРИМ ҮГ ТАНИАГҮЙ", c: "st warn" };
@@ -59,8 +66,15 @@
     const unkEl = wrap.querySelector(".unk");
     const rev = wrap.querySelector(".rev");
     /* Гараар зассан (түгжсэн) англи — монгол тал засагдахад солигдоно,
-       гэхдээ «сэргээх» товчоор буцаах боломжтой хадгална. */
-    let manualEN = null;
+       гэхдээ «сэргээх» товчоор буцаах боломжтой хадгална. Талбарын объект
+       дээр түлхүүрлэсэн тул дэлгэц дахин зурагдсан ч алга болохгүй. */
+    const backup = {
+      get: () => (manualBackup.has(field) ? manualBackup.get(field) : null),
+      set: (v) => (v === null ? manualBackup.delete(field) : manualBackup.set(field, v))
+    };
+    /* Орчуулгын дуудлага бүрийн дугаар — хариу ирэхээс өмнө англи талыг
+       гараар засвал хоцорсон хариу түүнийг дарж бичихгүй. */
+    let gen = 0;
 
     taMN.placeholder = placeholder ? "Жишээ: " + placeholder : "Монголоор бич…";
     taEN.placeholder = "English appears here…";
@@ -79,6 +93,12 @@
       autoGrow(taEN);
     }, 0);
 
+    const paintRev = () => {
+      const m = backup.get();
+      rev.hidden = !(m !== null && field.auto && m !== field.en);
+    };
+    paintRev();
+
     const sync = () => {
       taEN.value = field.en;
       autoGrow(taEN);
@@ -86,16 +106,34 @@
       const s2 = statusLabel(field);
       stat.textContent = s2.t;
       stat.className = s2.c;
-      rev.hidden = !(manualEN !== null && field.auto && manualEN !== field.en);
+      paintRev();
       paintUnknown(unkEl, field);
       UI.renderOut();
       UI.updateCounts();
     };
 
+    const lockIcon = () => {
+      lk.classList.toggle("on", !field.auto);
+      lk.textContent = field.auto ? "🔓" : "🔒";
+    };
+    /* Түгжсэн англиг орчуулгаар солихын өмнө нөөцөлж, түгжээг тайлна. */
+    const unlockForTranslate = () => {
+      if (field.auto) return;
+      if (backup.get() === null && (field.en || "").trim()) backup.set(field.en);
+      field.auto = true;
+      lockIcon();
+    };
     const doTranslate = async () => {
+      const my = ++gen;
       stat.textContent = "ОРЧУУЛЖ БАЙНА…";
       stat.className = "st go";
-      await T.field(field, kind);
+      const tmp = { mn: field.mn, en: "", auto: true, unk: [], src: "" };
+      await T.field(tmp, kind);
+      /* Энэ хооронд англи талыг гараар зассан, эсвэл шинэ дуудлага гарсан */
+      if (my !== gen || !field.auto || field.mn !== tmp.mn) return;
+      field.en = tmp.en;
+      field.unk = tmp.unk;
+      field.src = tmp.src;
       sync();
       S.touch();
     };
@@ -109,50 +147,62 @@
       /* Монгол тал бол эх сурвалж — засагдахад англи тал нь дагах ёстой.
          Түгжигдсэн байсан ч (англи талд санамсаргүй бичсэн, Camera Director
          бичсэн) түгжээг тайлж дахин орчуулна. */
-      if (!field.auto) {
-        if (manualEN === null) manualEN = field.en;
-        field.auto = true;
-        lk.classList.remove("on");
-        lk.textContent = "🔓";
-      }
+      unlockForTranslate();
       stat.textContent = "…";
       stat.className = "st";
       clearTimeout(timer);
       timer = setTimeout(doTranslate, 1200);
     });
     taEN.addEventListener("input", () => {
+      /* Хүлээгдэж буй орчуулга гар засварыг дарахгүй */
+      clearTimeout(timer);
+      gen++;
       field.en = taEN.value;
-      manualEN = null; /* шинэ гар засвар өмнөхийг орлоно */
+      backup.set(null); /* шинэ гар засвар өмнөхийг орлоно */
       rev.hidden = true;
-      field.auto = false;
-      field.src = "manual";
-      lk.classList.add("on");
-      lk.textContent = "🔒";
-      stat.textContent = "ГАРААР ЗАССАН";
-      stat.className = "st";
+      if (taEN.value.trim()) {
+        field.auto = false;
+        field.src = "manual";
+      } else {
+        /* Англиг бүр арилгавал түгжээгүй болгоно — эс тэгвээс хоосон
+           хэвээр түгжигдэж, дахин хэзээ ч орчуулагдахгүй. */
+        field.auto = true;
+        field.src = "";
+      }
+      lockIcon();
+      const sl2 = statusLabel(field);
+      stat.textContent = sl2.t;
+      stat.className = sl2.c;
       autoGrow(taEN);
       S.touch();
       UI.renderOut();
     });
     rev.onclick = () => {
-      if (manualEN === null) return;
+      const m = backup.get();
+      if (m === null) return;
       clearTimeout(timer);
-      field.en = manualEN;
+      gen++;
+      field.en = m;
       field.auto = false;
       field.src = "manual";
-      manualEN = null;
-      lk.classList.add("on");
-      lk.textContent = "🔒";
+      backup.set(null);
+      lockIcon();
       sync();
-      stat.textContent = "ГАРААР ЗАССАН";
-      stat.className = "st";
       S.touch();
     };
-    wrap.querySelector(".go").onclick = doTranslate;
+    wrap.querySelector(".go").onclick = () => {
+      /* Монгол тал хоосон бол орчуулах юм алга — англиар шууд бичсэнийг арилгахгүй */
+      if (!(field.mn || "").trim()) return;
+      clearTimeout(timer);
+      unlockForTranslate();
+      return doTranslate();
+    };
     lk.onclick = () => {
       field.auto = !field.auto;
-      lk.classList.toggle("on", !field.auto);
-      lk.textContent = field.auto ? "🔓" : "🔒";
+      lockIcon();
+      const sl3 = statusLabel(field);
+      stat.textContent = sl3.t;
+      stat.className = sl3.c;
       S.touch();
     };
 

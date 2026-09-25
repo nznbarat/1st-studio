@@ -16,7 +16,7 @@
  */
 
 const ALLOWED_MODEL = /^claude-[a-z0-9.\-]+$/i;
-const DEFAULT_MODEL = process.env.WB_MODEL || "claude-sonnet-4-6";
+const DEFAULT_MODEL = process.env.WB_MODEL || "claude-opus-5-5";
 const MAX_TOKENS_CAP = Number(process.env.WB_MAX_TOKENS || 8000);
 /* Лавлагаа зурагтай хүсэлт: 1568px JPEG нэг бүр base64‑ээр ~0.3–0.7 MB.
    Vercel‑ийн хүсэлтийн хязгаар 4.5 MB тул түүнээс доош байлгана. */

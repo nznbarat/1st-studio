@@ -978,7 +978,7 @@ function buildPrompt() {
             palette: bf('palette') || undefined,
             camera_rule: bf('camera') || undefined,
             never_render: bf('avoid') || undefined,
-            style_locked: !!brand.locked
+            style_locked: brandLocked(brand)
           } : undefined
         }, null, 2);
       } else {
@@ -2242,6 +2242,27 @@ let brandOn = true;        // промтод шингээх эсэх
 let brandCheckOn = true;   // камерын дүрмийн шалгалт
 let brandSrc = '';         // хаанаас ирсэн
 
+/* Стилийн түгжээ юун дээр тогтсон бэ — Ертөнц Бүтээгчийн S.lockSnap‑тай
+   яг ижил дүрэм (камер ороогүй: Camera Director өөрөө хариуцна). */
+const LOCK_KEYS = ['look', 'light', 'palette', 'avoid'];
+function lockSnapOf(b) {
+  const out = {};
+  LOCK_KEYS.forEach(k => {
+    const x = (b && b.f && b.f[k]) || {};
+    const v = String(x.mn || '').trim() || String(x.en || '').trim();
+    out[k] = v.toLowerCase().replace(/\s+/g, ' ').replace(/[\s.,;]+$/, '');
+  });
+  return out;
+}
+/** Түгжсэний дараа өөрчлөгдсөн харагдацын мөрүүд. */
+function lockDrift(b) {
+  if (!b || !b.locked || !b.lockSnap) return [];
+  const now = lockSnapOf(b);
+  return LOCK_KEYS.filter(k => (b.lockSnap[k] || '') !== now[k]);
+}
+/** Түгжсэн бөгөөд тэр үеэс хойш харагдац өөрчлөгдөөгүй. */
+function brandLocked(b) { return !!(b && b.locked && !lockDrift(b).length); }
+
 /** Талбарын англи хувилбар (байхгүй бол монгол). */
 function bf(k) { if (!brand) return ''; const v = brand.f[k] || {}; return (v.en || v.mn || '').trim(); }
 /** Судалгааны талбар. v1‑д энгийн мөр, v2‑оос хойш {mn,en} объект. */
@@ -2268,14 +2289,17 @@ function normalizeBrand(x) {
   if (!src.f || typeof src.f !== 'object') return null;
   const f = {};
   BKEYS.forEach(k => { const v = src.f[k] || {}; f[k] = { mn: v.mn || '', en: v.en || '' }; });
+  const locked = !!src.locked;
   const m = src.meta && typeof src.meta === 'object' ? src.meta : {};
   return {
     /* meta‑г эх хэлбэрээр нь хадгална — Camera Director үүнийг заддаггүй */
     meta: { niche: m.niche || '', titleFmt: m.titleFmt || '', topics: m.topics || '' },
     f: f,
     ref: src.ref || '',
-    locked: !!src.locked,
+    locked: locked,
     lockedAt: src.lockedAt || 0,
+    /* Хуучин файлд агшин зураг байхгүй — одоогийн харагдацад итгэнэ */
+    lockSnap: locked ? (src.lockSnap && typeof src.lockSnap === 'object' ? src.lockSnap : lockSnapOf({ f: f })) : null,
     ar: x.ar || (x.opts && x.opts.ar) || src.ar || ''
   };
 }
@@ -2296,7 +2320,7 @@ function setBrand(b, src) {
     /* Дэлгэцийн харьцааг брэндээс мөрдөнө — тухайн сонголт байвал */
     if (b.ar && Array.from($('aspect').options).some(o => o.value === b.ar)) $('aspect').value = b.ar;
     /* Нэг фрэйм дүрэм: стиль түгжигдээгүй бол автоматаар промтод шингээхгүй */
-    brandOn = !!b.locked;
+    brandOn = brandLocked(b);
   }
   renderBrand(); schedulePrompt();
 }
@@ -2473,7 +2497,7 @@ function brandJSON() {
     exported: new Date().toISOString(),
     brand: {
       meta: brand.meta, f: brand.f, ref: brand.ref,
-      locked: brand.locked, lockedAt: brand.lockedAt
+      locked: brand.locked, lockedAt: brand.lockedAt, lockSnap: brand.lockSnap
     }
   };
   return JSON.stringify(b, null, 1);
@@ -2525,16 +2549,21 @@ function renderBrand() {
   }
   const rows = [['niche', 'Ниш', bmeta('niche')]]
     .concat(BKEYS.filter(k => bf(k)).map(k => [k, BLABEL[k], bf(k)]));
+  const locked = brandLocked(brand);
+  const drift = lockDrift(brand).map(k => BLABEL[k]);
   el.innerHTML =
-    '<div class="blk ' + (brand.locked ? 'on' : 'off') + '">' +
-    (brand.locked ? '🔒 Стиль тогтоосон' + (brand.lockedAt ? ' · ' + new Date(brand.lockedAt).toLocaleDateString('mn-MN') : '')
+    '<div class="blk ' + (locked ? 'on' : 'off') + '">' +
+    (locked ? '🔒 Стиль тогтоосон' + (brand.lockedAt ? ' · ' + new Date(brand.lockedAt).toLocaleDateString('mn-MN') : '')
+      : drift.length ? '⚠ Түгжээ хуучирсан — ' + esc(drift.join(', ')) + ' өөрчлөгдсөн'
       : '🔓 Стиль түгжигдээгүй') + '</div>' +
     (brandSrc ? '<p class="hint" style="margin:0 0 7px">Эх сурвалж: ' + esc(brandSrc) + '</p>' : '') +
     rows.map(r => '<div class="bkv"><b>' + r[1] + '</b><span>' + esc(r[2]) + '</span></div>').join('') +
     '<div class="styles" style="margin:9px 0 8px">' +
     '<label><input type="checkbox" id="bOn"' + (brandOn ? ' checked' : '') + '> Промтод шингээх</label>' +
     '<label><input type="checkbox" id="bChk"' + (brandCheckOn ? ' checked' : '') + '> Дүрмийг шалгах</label></div>' +
-    (brand.locked ? '' : '<p class="hint" style="margin:0 0 8px;color:#e6c887">Стиль түгжигдээгүй тул промтод автоматаар шингээгүй. Ертөнц Бүтээгч дээр нэг фрэймээ баталгаажуулаад түгжээрэй.</p>') +
+    (locked ? '' : drift.length
+      ? '<p class="hint" style="margin:0 0 8px;color:#e6c887">Түгжсэний дараа харагдац өөрчлөгдсөн тул баталсан кадр хуучирсан — промтод автоматаар шингээгүй. Ертөнц Бүтээгч дээр шинэ туршилтын кадраа шалгаад дахин түгжээрэй.</p>'
+      : '<p class="hint" style="margin:0 0 8px;color:#e6c887">Стиль түгжигдээгүй тул промтод автоматаар шингээгүй. Ертөнц Бүтээгч дээр нэг фрэймээ баталгаажуулаад түгжээрэй.</p>') +
     '<div id="brandAudit"></div>' +
     '<div class="g3" style="margin-top:8px">' +
     '<button class="w" data-act="bwrite">🎥 Камер → дүрэм</button>' +
@@ -2547,7 +2576,11 @@ function renderBrand() {
 
 function brandInit() {
   const b = brandFromWB();
-  if (b) { setBrand(b, 'Ертөнц Бүтээгч (энэ хөтөч)'); toast('Брэнд файл ачааллаа' + (b.locked ? '' : ' — стиль түгжигдээгүй'), b.locked ? 'ok' : ''); }
+  if (b) {
+    const on = brandLocked(b);
+    setBrand(b, 'Ертөнц Бүтээгч (энэ хөтөч)');
+    toast('Брэнд файл ачааллаа' + (on ? '' : b.locked ? ' — түгжээ хуучирсан' : ' — стиль түгжигдээгүй'), on ? 'ok' : '');
+  }
   else renderBrand();
 }
 

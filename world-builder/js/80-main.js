@@ -56,14 +56,22 @@
     U.toast(e.target.checked ? "Түлхүүрийг энэ хөтчид хадгална" : "Түлхүүрийг хадгалахаа болилоо", "info");
   });
   const modelSel = el("modelIn");
-  WB.api.MODELS.forEach(([id, lb]) => {
+  const addModel = (id, lb) => {
     const o = document.createElement("option");
     o.value = id;
     o.textContent = lb;
     modelSel.appendChild(o);
-  });
-  modelSel.value = WB.api.state.model;
-  modelSel.addEventListener("change", (e) => WB.api.setModel(e.target.value));
+  };
+  WB.api.MODELS.forEach(([id, lb]) => addModel(id, lb));
+  /* Жагсаалтад байхгүй загвар (серверийн WB_MODEL г.м.) ч харагдана */
+  const showModel = (m) => {
+    if (m && !WB.api.MODELS.some(([id]) => id === m) && !modelSel.querySelector('option[value="' + m + '"]'))
+      addModel(m, m + " — серверийн тохиргоо");
+    modelSel.value = m;
+  };
+  showModel(WB.api.state.model);
+  WB.on("api:model", showModel);
+  modelSel.addEventListener("change", (e) => WB.api.setModel(e.target.value, true));
 
   el("testBtn").onclick = async (e) => {
     const out = el("testOut");
@@ -202,7 +210,7 @@
   el("retrAll").onclick = async () => {
     if (await U.confirm("Бүх талбарыг дахин орчуулах уу? Гараар зассан хэсэг ч дарагдана.", "Дахин орчуулах")) {
       S.pushHistory();
-      UI.translatePending(null, true);
+      UI.translatePending(null, "all");
     }
   };
 

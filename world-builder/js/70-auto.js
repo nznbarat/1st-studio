@@ -418,7 +418,12 @@
       AU.autoLink();
 
       step("Англи руу орчуулж байна…", ++n, total);
-      await T.run(S.pending(null, true), (d, t) => step("Орчуулга " + d + "/" + t, n, total));
+      /* Ертөнцийн шинэ текстийг бүгдийг, брэндээс зөвхөн орчуулагдаагүйг нь —
+         брэндийн бэлэн мөрүүдийг дахин орчуулж зардал гаргахгүй. */
+      await T.run(
+        S.pending(["logline", "scene", "char", "loc", "shot"], true).concat(S.pending(["brand"])),
+        (d, t) => step("Орчуулга " + d + "/" + t, n, total)
+      );
       checkCancel();
       S.touch();
       WB.emit("state:replaced", S.P);

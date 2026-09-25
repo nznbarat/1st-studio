@@ -258,6 +258,9 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
 .lockbar.ok{border-color:rgba(87,217,138,.45);background:rgba(87,217,138,.07)} .lockbar.ok b{color:var(--ok)}
 .lockbar.warn{border-color:rgba(224,162,74,.45);background:rgba(224,162,74,.07)} .lockbar.warn b{color:var(--warn)}
 .lockbar.idle b{color:var(--dim)}
+.lockbar span b{font-family:inherit;font-size:inherit;color:var(--warn)}
+.lockbar .lockact{display:flex;flex-wrap:wrap;gap:6px;width:100%}
+.lockbar .lockact button{font-size:12px}
 .layerhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--line)}
 .layerhead b{font-family:'Oswald';font-size:16px;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
 .layerhead i{font-style:normal;font-size:11.5px;color:var(--dim)}
@@ -5151,18 +5154,31 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
   const A = (WB.api = {});
   const U = WB.util;
 
+  A.DEFAULT_MODEL = "claude-opus-5-5";
   A.MODELS = [
-    ["claude-sonnet-4-6", "Sonnet 4.6 — тэнцвэртэй"],
-    ["claude-opus-5", "Opus 5 — хамгийн чадвартай"],
+    [A.DEFAULT_MODEL, "Opus 5.5 — хамгийн чадвартай (анхдагч)"],
     ["claude-sonnet-5", "Sonnet 5 — хурдан, чанартай"],
+    ["claude-sonnet-4-6", "Sonnet 4.6 — тэнцвэртэй"],
     ["claude-haiku-4-5-20251001", "Haiku 4.5 — хямд, маш хурдан"]
   ];
+
+  /* Нэг удаагийн шилжүүлэг: өмнөх анхдагч (эсвэл прокси тавьсан) загвартай
+     хөтчийг шинэ анхдагч руу шилжүүлнэ. Дараа нь хэрэглэгчийн сонголт
+     хэвээр үлдэнэ. */
+  const MODEL_V = 2;
+  if ((WB.store.get("modelV", 0) || 0) < MODEL_V) {
+    if (WB.store.get("model", null)) {
+      WB.store.set("model", A.DEFAULT_MODEL);
+      WB.store.set("modelPicked", true);
+    }
+    WB.store.set("modelV", MODEL_V);
+  }
 
   A.state = {
     mode: "unknown",     /* unknown | proxy | key | off */
     forceOffline: false,
     key: "",
-    model: WB.store.get("model", "claude-sonnet-4-6"),
+    model: WB.store.get("model", A.DEFAULT_MODEL),
     proxyPath: "/api/claude",
     busy: 0,
     calls: 0,
@@ -5186,9 +5202,16 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     if (WB.store.get(REMEMBER, false)) WB.store.set("key", A.state.key);
   };
 
-  A.setModel = function (m) {
-    A.state.model = (m || "").trim() || "claude-sonnet-4-6";
+  /**
+   * @param {string} m загварын id
+   * @param {boolean} [byUser] хэрэглэгч өөрөө сонгосон — серверийн прокси
+   *   цаашид түүнийг өөрийн анхдагчаар дарахгүй
+   */
+  A.setModel = function (m, byUser) {
+    A.state.model = (m || "").trim() || A.DEFAULT_MODEL;
     WB.store.set("model", A.state.model);
+    if (byUser) WB.store.set("modelPicked", true);
+    WB.emit("api:model", A.state.model);
   };
 
   A.live = function () {
@@ -5403,7 +5426,8 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
         const j = await res.json().catch(() => ({}));
         if (j && j.ok) {
           A.state.mode = "proxy";
-          if (j.model) A.setModel(j.model);
+          /* Серверийн анхдагчийг зөвхөн хэрэглэгч өөрөө сонгоогүй үед авна */
+          if (j.model && !WB.store.get("modelPicked", false)) A.setModel(j.model);
           WB.emit("api:mode", A.state);
           return A.state.mode;
         }
@@ -5649,6 +5673,21 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     let ai = 0;
     let dict = 0;
 
+    /* Дуудлага явж байх хооронд хэрэглэгч тухайн мөрийг засвал (монгол
+       эсвэл англи тал) хоцорсон хариугаар дарж бичихгүй. */
+    const snap = new Map(jobs.map((j) => [j, { mn: j.field.mn, en: j.field.en }]));
+    const fresh = (j) => {
+      const o = snap.get(j);
+      return j.field.mn === o.mn && j.field.en === o.en;
+    };
+    /* «Бүгдийг дахин орчуулах» 🔒 мөрийг дарсан бол түгжээг нь тайлна */
+    const put = (j, en, unk, src) => {
+      j.field.en = en;
+      j.field.unk = unk;
+      j.field.src = src;
+      j.field.auto = true;
+    };
+
     if (WB.api.live()) {
       const items = jobs.map((j, i) => ({ id: "b" + i, kind: j.kind, mn: j.field.mn.trim(), job: j }));
       const groups = T.chunk(items);
@@ -5669,16 +5708,14 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
         const grp = (r && r.grp) || [];
         for (const it of grp) {
           const en = r && r.map && r.map[it.id];
-          if (en) {
-            it.job.field.en = en;
-            it.job.field.unk = [];
-            it.job.field.src = "ai";
+          if (!fresh(it.job)) {
+            /* алгасна — хэрэглэгч энэ хооронд зассан */
+          } else if (en) {
+            put(it.job, en, [], "ai");
             ai++;
           } else {
             const off = T.offline(it.mn);
-            it.job.field.en = off.en;
-            it.job.field.unk = off.unknown;
-            it.job.field.src = "dict";
+            put(it.job, off.en, off.unknown, "dict");
             dict++;
           }
           done++;
@@ -5692,9 +5729,7 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     } else {
       jobs.forEach((j, i) => {
         const off = T.offline(j.field.mn);
-        j.field.en = off.en;
-        j.field.unk = off.unknown;
-        j.field.src = "dict";
+        put(j, off.en, off.unknown, "dict");
         dict++;
         if (onProgress) onProgress(i + 1, jobs.length);
       });
@@ -5905,6 +5940,7 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
       ref: "",
       locked: false,
       lockedAt: 0,
+      lockSnap: null,
       checkpoint: true,
       direction: null
     };
@@ -6003,6 +6039,32 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     return any ? out : null;
   }
   S.fixDirection = fixDirection;
+
+  /**
+   * Стилийн түгжээ юун дээр тогтсон бэ — харагдац, гэрэл, палетт,
+   * «хэзээ ч гаргахгүй». Камер ороогүй: хөдөлгөөнийг ганц зураг
+   * дээр шалгах боломжгүй, түүнийг Camera Director хариуцна.
+   * Монгол тал нь утгын эх сурвалж тул англи орчуулгыг гараар засахад
+   * түгжээ эвдрэхгүй; монгол нь хоосон (англиар шууд бичсэн) бол англиар.
+   * Camera Director (app.js · lockSnapOf) яг ижил дүрмээр тооцдог.
+   */
+  S.LOCK_KEYS = ["look", "light", "palette", "avoid"];
+  S.lockSnap = function (b) {
+    const out = {};
+    S.LOCK_KEYS.forEach((k) => {
+      const x = (b && b.f && b.f[k]) || {};
+      const v = String(x.mn || "").trim() || String(x.en || "").trim();
+      out[k] = v.toLowerCase().replace(/\s+/g, " ").replace(/[\s.,;]+$/, "");
+    });
+    return out;
+  };
+  /** Түгжсэний дараа өөрчлөгдсөн мөрүүдийн түлхүүр (түгжээгүй бол []). */
+  S.lockDrift = function (b) {
+    if (!b || !b.locked || !b.lockSnap) return [];
+    const now = S.lockSnap(b);
+    return S.LOCK_KEYS.filter((k) => (b.lockSnap[k] || "") !== now[k]);
+  };
+
   function fixBrand(b) {
     const out = S.blankBrand();
     if (!b || typeof b !== "object") return out;
@@ -6024,6 +6086,10 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     out.ref = b.ref || "";
     out.locked = !!b.locked;
     out.lockedAt = b.lockedAt || 0;
+    /* Хуучин хадгалалтад агшин зураг байхгүй — одоогийн харагдацад итгэнэ */
+    out.lockSnap = out.locked
+      ? b.lockSnap && typeof b.lockSnap === "object" ? Object.assign({}, b.lockSnap) : S.lockSnap(out)
+      : null;
     out.checkpoint = b.checkpoint !== false;
     out.direction = fixDirection(b.direction);
     return out;
@@ -6072,12 +6138,17 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     return out;
   };
 
-  /** Орчуулах шаардлагатай талбарууд (монгол бичигтэй, авто, англи нь хоцорсон). */
+  /**
+   * Орчуулах шаардлагатай талбарууд (монгол бичигтэй, авто, англи нь хоцорсон).
+   * force === true — орчуулсан ч дахин орчуулна, гэхдээ гараар зассан 🔒
+   * мөрийг ХЭЗЭЭ Ч хөндөхгүй. force === "all" — 🔒 мөрийг ч дарна
+   * (хэрэглэгч «Бүгдийг дахин орчуулах»‑ыг баталсан үед л).
+   */
   S.pending = function (kinds, force) {
     return S.allFields(kinds).filter((t) => {
       const f = t.field;
       if (!(f.mn || "").trim()) return false;
-      if (!force && !f.auto) return false;
+      if (force !== "all" && !f.auto) return false;
       if (!force && f.en && f.src) return false;
       return true;
     });
@@ -6399,10 +6470,34 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
   /** Стилийг «түгжих» — нэг фрэйм баталгаажсаны дараа. */
   B.lock = function (on) {
     const b = S.P.brand;
+    S.pushHistory();
     b.locked = !!on;
     b.lockedAt = on ? Date.now() : 0;
+    b.lockSnap = on ? S.lockSnap(b) : null;
     S.touch();
   };
+
+  /** Түгжсэний дараа өөрчлөгдсөн харагдацын мөрүүдийн нэр. */
+  B.lockDrift = function () {
+    const keys = S.lockDrift(S.P.brand);
+    return keys.map((k) => (S.BRAND_FIELDS.find((d) => d.k === k) || { lb: k }).lb);
+  };
+
+  /**
+   * Стиль үнэхээр түгжигдсэн үү — түгжсэн ба тэр үеэс хойш харагдац
+   * өөрчлөгдөөгүй. Өөрчлөгдсөн бол баталсан кадр хуучирсан гэсэн үг.
+   */
+  B.isLocked = function () {
+    const b = S.P.brand;
+    return !!(b && b.locked && !S.lockDrift(b).length);
+  };
+
+  /** Огноо — орон нутгийн цагаар (UTC биш), YYYY-MM-DD. */
+  function ymd(ts) {
+    const d = new Date(ts);
+    const p = (n) => String(n).padStart(2, "0");
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+  }
 
   /**
    * Юу үүсгэхийн өмнөх сануулга. Брэнд файл хоосон бол чимээгүй.
@@ -6411,6 +6506,14 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
   B.gate = function () {
     if (B.untouched()) return "";
     const b = S.P.brand;
+    const drift = B.lockDrift();
+    if (b.locked && drift.length) {
+      return (
+        "Стилийг түгжсэний дараа брэндийн " + drift.join(", ") + " өөрчлөгдсөн тул " +
+        "баталсан кадр хуучирсан. Шинэ харагдацаар ганц зураг гаргаж шалгаад " +
+        "дахин баталгаажуулбал кредит хэмнэнэ. Үргэлжлүүлэх үү?"
+      );
+    }
     if (!b.locked) {
       return (
         "Стиль нэг фрэйм дээр хараахан тогтоогүй байна. " +
@@ -6450,13 +6553,18 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     if (txt(b.f.camera)) L.push("Camera: " + txt(b.f.camera) + ".");
     if (txt(b.f.avoid)) L.push("Never render: " + txt(b.f.avoid) + ".");
     L.push("Aspect ratio: " + (P.opts.ar || "16:9") + ".");
-    if (b.locked) {
+    if (B.isLocked()) {
       L.push(
         "Style is LOCKED — approved on a single reference frame" +
-          (b.lockedAt ? " (" + new Date(b.lockedAt).toISOString().slice(0, 10) + ")" : "") +
+          (b.lockedAt ? " (" + ymd(b.lockedAt) + ")" : "") +
           "."
       );
       if ((b.ref || "").trim()) L.push("Reference frame: " + b.ref.trim());
+    } else if (b.locked) {
+      L.push(
+        "Style CHANGED after it was locked — the approved frame is out of date. " +
+          "Generate ONE new still image with this look and wait for approval before any video."
+      );
     } else {
       L.push("Style is NOT locked yet — generate ONE still image first and wait for approval.");
     }
@@ -6754,9 +6862,27 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     if (!bar) return;
     const b = S.P.brand;
     const r = B.ready();
-    bar.className = "lockbar " + (b.locked ? "ok" : r.ok ? "warn" : "idle");
+    const drift = B.lockDrift();
+    bar.className = "lockbar " + (drift.length ? "warn" : b.locked ? "ok" : r.ok ? "warn" : "idle");
     const when = b.lockedAt ? new Date(b.lockedAt).toLocaleDateString("mn-MN") : "";
-    if (b.locked) {
+    if (drift.length) {
+      bar.innerHTML =
+        "<b>⚠ Түгжээ хуучирсан</b><span>" +
+        U.esc(when) +
+        " түгжсэний дараа өөрчлөгдсөн: <b>" +
+        U.esc(drift.join(", ")) +
+        "</b>. Шинэ туршилтын кадр гаргаж шалгаад дахин түгжинэ үү — тэр болтол промтод «түгжсэн» гэж бичигдэхгүй." +
+        '</span><span class="lockact"><button class="tbtn2 acc" data-lock="relock">🔒 Шинэ харагдацаар түгжих</button>' +
+        '<button class="tbtn2" data-lock="unlock">🔓 Түгжээ тайлах</button></span>';
+      bar.querySelector('[data-lock="relock"]').onclick = () => {
+        B.lock(true);
+        B.render();
+      };
+      bar.querySelector('[data-lock="unlock"]').onclick = () => {
+        B.lock(false);
+        B.render();
+      };
+    } else if (b.locked) {
       bar.innerHTML =
         "<b>🔒 Стиль тогтсон</b><span>" +
         U.esc(when) +
@@ -6806,7 +6932,7 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
 
     const lockChk = el("lockChk");
     if (lockChk) {
-      lockChk.checked = !!b.locked;
+      lockChk.checked = B.isLocked();
       lockChk.onchange = () => {
         B.lock(lockChk.checked);
         paintLock();
@@ -6838,6 +6964,8 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     }
     const mo = el("masterOut");
     if (mo) mo.textContent = B.masterPrompt();
+    const lockChk = el("lockChk");
+    if (lockChk) lockChk.checked = B.isLocked();
     paintLock();
   };
 
@@ -7277,7 +7405,7 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
       );
     }
     const b = S.P.brand;
-    if (b && b.locked && o.brandOn !== false) {
+    if (b && WB.brand && WB.brand.isLocked() && o.brandOn !== false) {
       addImg(
         "defines the colour grade, film grain and lighting style only — do not copy its subjects or composition.",
         "Брэндийн түгжсэн фрэйм",
@@ -7412,6 +7540,9 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
   const el = U.el;
 
   let duals = [];
+  /* Талбар → гараар засаж байсан англи (↶ сэргээх). WeakMap тул талбар
+     устахад өөрөө цэвэрлэгдэнэ, хадгалалт руу орохгүй. */
+  const manualBackup = new WeakMap();
 
   /* ── самбар солих ───────────────────────────────────────── */
   UI.goto = function (p) {
@@ -7433,6 +7564,10 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
   }
 
   function statusLabel(field) {
+    if (!field.auto && (field.en || "").trim()) {
+      if (field.src === "camera-director") return { t: "🎥 CAMERA DIRECTOR · 🔒", c: "st done" };
+      if (field.src === "manual") return { t: "ГАРААР ЗАССАН · 🔒", c: "st done" };
+    }
     if (!field.src) return { t: "", c: "st" };
     if (field.src === "ai") return { t: "AI ОРЧУУЛСАН ✓", c: "st done" };
     if ((field.unk || []).length) return { t: "ТОЛЬ · ЗАРИМ ҮГ ТАНИАГҮЙ", c: "st warn" };
@@ -7459,8 +7594,15 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     const unkEl = wrap.querySelector(".unk");
     const rev = wrap.querySelector(".rev");
     /* Гараар зассан (түгжсэн) англи — монгол тал засагдахад солигдоно,
-       гэхдээ «сэргээх» товчоор буцаах боломжтой хадгална. */
-    let manualEN = null;
+       гэхдээ «сэргээх» товчоор буцаах боломжтой хадгална. Талбарын объект
+       дээр түлхүүрлэсэн тул дэлгэц дахин зурагдсан ч алга болохгүй. */
+    const backup = {
+      get: () => (manualBackup.has(field) ? manualBackup.get(field) : null),
+      set: (v) => (v === null ? manualBackup.delete(field) : manualBackup.set(field, v))
+    };
+    /* Орчуулгын дуудлага бүрийн дугаар — хариу ирэхээс өмнө англи талыг
+       гараар засвал хоцорсон хариу түүнийг дарж бичихгүй. */
+    let gen = 0;
 
     taMN.placeholder = placeholder ? "Жишээ: " + placeholder : "Монголоор бич…";
     taEN.placeholder = "English appears here…";
@@ -7479,6 +7621,12 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
       autoGrow(taEN);
     }, 0);
 
+    const paintRev = () => {
+      const m = backup.get();
+      rev.hidden = !(m !== null && field.auto && m !== field.en);
+    };
+    paintRev();
+
     const sync = () => {
       taEN.value = field.en;
       autoGrow(taEN);
@@ -7486,16 +7634,34 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
       const s2 = statusLabel(field);
       stat.textContent = s2.t;
       stat.className = s2.c;
-      rev.hidden = !(manualEN !== null && field.auto && manualEN !== field.en);
+      paintRev();
       paintUnknown(unkEl, field);
       UI.renderOut();
       UI.updateCounts();
     };
 
+    const lockIcon = () => {
+      lk.classList.toggle("on", !field.auto);
+      lk.textContent = field.auto ? "🔓" : "🔒";
+    };
+    /* Түгжсэн англиг орчуулгаар солихын өмнө нөөцөлж, түгжээг тайлна. */
+    const unlockForTranslate = () => {
+      if (field.auto) return;
+      if (backup.get() === null && (field.en || "").trim()) backup.set(field.en);
+      field.auto = true;
+      lockIcon();
+    };
     const doTranslate = async () => {
+      const my = ++gen;
       stat.textContent = "ОРЧУУЛЖ БАЙНА…";
       stat.className = "st go";
-      await T.field(field, kind);
+      const tmp = { mn: field.mn, en: "", auto: true, unk: [], src: "" };
+      await T.field(tmp, kind);
+      /* Энэ хооронд англи талыг гараар зассан, эсвэл шинэ дуудлага гарсан */
+      if (my !== gen || !field.auto || field.mn !== tmp.mn) return;
+      field.en = tmp.en;
+      field.unk = tmp.unk;
+      field.src = tmp.src;
       sync();
       S.touch();
     };
@@ -7509,50 +7675,62 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
       /* Монгол тал бол эх сурвалж — засагдахад англи тал нь дагах ёстой.
          Түгжигдсэн байсан ч (англи талд санамсаргүй бичсэн, Camera Director
          бичсэн) түгжээг тайлж дахин орчуулна. */
-      if (!field.auto) {
-        if (manualEN === null) manualEN = field.en;
-        field.auto = true;
-        lk.classList.remove("on");
-        lk.textContent = "🔓";
-      }
+      unlockForTranslate();
       stat.textContent = "…";
       stat.className = "st";
       clearTimeout(timer);
       timer = setTimeout(doTranslate, 1200);
     });
     taEN.addEventListener("input", () => {
+      /* Хүлээгдэж буй орчуулга гар засварыг дарахгүй */
+      clearTimeout(timer);
+      gen++;
       field.en = taEN.value;
-      manualEN = null; /* шинэ гар засвар өмнөхийг орлоно */
+      backup.set(null); /* шинэ гар засвар өмнөхийг орлоно */
       rev.hidden = true;
-      field.auto = false;
-      field.src = "manual";
-      lk.classList.add("on");
-      lk.textContent = "🔒";
-      stat.textContent = "ГАРААР ЗАССАН";
-      stat.className = "st";
+      if (taEN.value.trim()) {
+        field.auto = false;
+        field.src = "manual";
+      } else {
+        /* Англиг бүр арилгавал түгжээгүй болгоно — эс тэгвээс хоосон
+           хэвээр түгжигдэж, дахин хэзээ ч орчуулагдахгүй. */
+        field.auto = true;
+        field.src = "";
+      }
+      lockIcon();
+      const sl2 = statusLabel(field);
+      stat.textContent = sl2.t;
+      stat.className = sl2.c;
       autoGrow(taEN);
       S.touch();
       UI.renderOut();
     });
     rev.onclick = () => {
-      if (manualEN === null) return;
+      const m = backup.get();
+      if (m === null) return;
       clearTimeout(timer);
-      field.en = manualEN;
+      gen++;
+      field.en = m;
       field.auto = false;
       field.src = "manual";
-      manualEN = null;
-      lk.classList.add("on");
-      lk.textContent = "🔒";
+      backup.set(null);
+      lockIcon();
       sync();
-      stat.textContent = "ГАРААР ЗАССАН";
-      stat.className = "st";
       S.touch();
     };
-    wrap.querySelector(".go").onclick = doTranslate;
+    wrap.querySelector(".go").onclick = () => {
+      /* Монгол тал хоосон бол орчуулах юм алга — англиар шууд бичсэнийг арилгахгүй */
+      if (!(field.mn || "").trim()) return;
+      clearTimeout(timer);
+      unlockForTranslate();
+      return doTranslate();
+    };
     lk.onclick = () => {
       field.auto = !field.auto;
-      lk.classList.toggle("on", !field.auto);
-      lk.textContent = field.auto ? "🔓" : "🔒";
+      lockIcon();
+      const sl3 = statusLabel(field);
+      stat.textContent = sl3.t;
+      stat.className = sl3.c;
       S.touch();
     };
 
@@ -8924,7 +9102,12 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
       AU.autoLink();
 
       step("Англи руу орчуулж байна…", ++n, total);
-      await T.run(S.pending(null, true), (d, t) => step("Орчуулга " + d + "/" + t, n, total));
+      /* Ертөнцийн шинэ текстийг бүгдийг, брэндээс зөвхөн орчуулагдаагүйг нь —
+         брэндийн бэлэн мөрүүдийг дахин орчуулж зардал гаргахгүй. */
+      await T.run(
+        S.pending(["logline", "scene", "char", "loc", "shot"], true).concat(S.pending(["brand"])),
+        (d, t) => step("Орчуулга " + d + "/" + t, n, total)
+      );
       checkCancel();
       S.touch();
       WB.emit("state:replaced", S.P);
@@ -9080,14 +9263,22 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     U.toast(e.target.checked ? "Түлхүүрийг энэ хөтчид хадгална" : "Түлхүүрийг хадгалахаа болилоо", "info");
   });
   const modelSel = el("modelIn");
-  WB.api.MODELS.forEach(([id, lb]) => {
+  const addModel = (id, lb) => {
     const o = document.createElement("option");
     o.value = id;
     o.textContent = lb;
     modelSel.appendChild(o);
-  });
-  modelSel.value = WB.api.state.model;
-  modelSel.addEventListener("change", (e) => WB.api.setModel(e.target.value));
+  };
+  WB.api.MODELS.forEach(([id, lb]) => addModel(id, lb));
+  /* Жагсаалтад байхгүй загвар (серверийн WB_MODEL г.м.) ч харагдана */
+  const showModel = (m) => {
+    if (m && !WB.api.MODELS.some(([id]) => id === m) && !modelSel.querySelector('option[value="' + m + '"]'))
+      addModel(m, m + " — серверийн тохиргоо");
+    modelSel.value = m;
+  };
+  showModel(WB.api.state.model);
+  WB.on("api:model", showModel);
+  modelSel.addEventListener("change", (e) => WB.api.setModel(e.target.value, true));
 
   el("testBtn").onclick = async (e) => {
     const out = el("testOut");
@@ -9226,7 +9417,7 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
   el("retrAll").onclick = async () => {
     if (await U.confirm("Бүх талбарыг дахин орчуулах уу? Гараар зассан хэсэг ч дарагдана.", "Дахин орчуулах")) {
       S.pushHistory();
-      UI.translatePending(null, true);
+      UI.translatePending(null, "all");
     }
   };
 

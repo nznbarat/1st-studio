@@ -10,18 +10,31 @@
   const A = (WB.api = {});
   const U = WB.util;
 
+  A.DEFAULT_MODEL = "claude-opus-5-5";
   A.MODELS = [
-    ["claude-sonnet-4-6", "Sonnet 4.6 — тэнцвэртэй"],
-    ["claude-opus-5", "Opus 5 — хамгийн чадвартай"],
+    [A.DEFAULT_MODEL, "Opus 5.5 — хамгийн чадвартай (анхдагч)"],
     ["claude-sonnet-5", "Sonnet 5 — хурдан, чанартай"],
+    ["claude-sonnet-4-6", "Sonnet 4.6 — тэнцвэртэй"],
     ["claude-haiku-4-5-20251001", "Haiku 4.5 — хямд, маш хурдан"]
   ];
+
+  /* Нэг удаагийн шилжүүлэг: өмнөх анхдагч (эсвэл прокси тавьсан) загвартай
+     хөтчийг шинэ анхдагч руу шилжүүлнэ. Дараа нь хэрэглэгчийн сонголт
+     хэвээр үлдэнэ. */
+  const MODEL_V = 2;
+  if ((WB.store.get("modelV", 0) || 0) < MODEL_V) {
+    if (WB.store.get("model", null)) {
+      WB.store.set("model", A.DEFAULT_MODEL);
+      WB.store.set("modelPicked", true);
+    }
+    WB.store.set("modelV", MODEL_V);
+  }
 
   A.state = {
     mode: "unknown",     /* unknown | proxy | key | off */
     forceOffline: false,
     key: "",
-    model: WB.store.get("model", "claude-sonnet-4-6"),
+    model: WB.store.get("model", A.DEFAULT_MODEL),
     proxyPath: "/api/claude",
     busy: 0,
     calls: 0,
@@ -45,9 +58,16 @@
     if (WB.store.get(REMEMBER, false)) WB.store.set("key", A.state.key);
   };
 
-  A.setModel = function (m) {
-    A.state.model = (m || "").trim() || "claude-sonnet-4-6";
+  /**
+   * @param {string} m загварын id
+   * @param {boolean} [byUser] хэрэглэгч өөрөө сонгосон — серверийн прокси
+   *   цаашид түүнийг өөрийн анхдагчаар дарахгүй
+   */
+  A.setModel = function (m, byUser) {
+    A.state.model = (m || "").trim() || A.DEFAULT_MODEL;
     WB.store.set("model", A.state.model);
+    if (byUser) WB.store.set("modelPicked", true);
+    WB.emit("api:model", A.state.model);
   };
 
   A.live = function () {
@@ -262,7 +282,8 @@
         const j = await res.json().catch(() => ({}));
         if (j && j.ok) {
           A.state.mode = "proxy";
-          if (j.model) A.setModel(j.model);
+          /* Серверийн анхдагчийг зөвхөн хэрэглэгч өөрөө сонгоогүй үед авна */
+          if (j.model && !WB.store.get("modelPicked", false)) A.setModel(j.model);
           WB.emit("api:mode", A.state);
           return A.state.mode;
         }

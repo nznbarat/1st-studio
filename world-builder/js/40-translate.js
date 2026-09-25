@@ -217,6 +217,21 @@
     let ai = 0;
     let dict = 0;
 
+    /* Дуудлага явж байх хооронд хэрэглэгч тухайн мөрийг засвал (монгол
+       эсвэл англи тал) хоцорсон хариугаар дарж бичихгүй. */
+    const snap = new Map(jobs.map((j) => [j, { mn: j.field.mn, en: j.field.en }]));
+    const fresh = (j) => {
+      const o = snap.get(j);
+      return j.field.mn === o.mn && j.field.en === o.en;
+    };
+    /* «Бүгдийг дахин орчуулах» 🔒 мөрийг дарсан бол түгжээг нь тайлна */
+    const put = (j, en, unk, src) => {
+      j.field.en = en;
+      j.field.unk = unk;
+      j.field.src = src;
+      j.field.auto = true;
+    };
+
     if (WB.api.live()) {
       const items = jobs.map((j, i) => ({ id: "b" + i, kind: j.kind, mn: j.field.mn.trim(), job: j }));
       const groups = T.chunk(items);
@@ -237,16 +252,14 @@
         const grp = (r && r.grp) || [];
         for (const it of grp) {
           const en = r && r.map && r.map[it.id];
-          if (en) {
-            it.job.field.en = en;
-            it.job.field.unk = [];
-            it.job.field.src = "ai";
+          if (!fresh(it.job)) {
+            /* алгасна — хэрэглэгч энэ хооронд зассан */
+          } else if (en) {
+            put(it.job, en, [], "ai");
             ai++;
           } else {
             const off = T.offline(it.mn);
-            it.job.field.en = off.en;
-            it.job.field.unk = off.unknown;
-            it.job.field.src = "dict";
+            put(it.job, off.en, off.unknown, "dict");
             dict++;
           }
           done++;
@@ -260,9 +273,7 @@
     } else {
       jobs.forEach((j, i) => {
         const off = T.offline(j.field.mn);
-        j.field.en = off.en;
-        j.field.unk = off.unknown;
-        j.field.src = "dict";
+        put(j, off.en, off.unknown, "dict");
         dict++;
         if (onProgress) onProgress(i + 1, jobs.length);
       });

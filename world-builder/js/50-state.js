@@ -130,6 +130,7 @@
       ref: "",
       locked: false,
       lockedAt: 0,
+      lockSnap: null,
       checkpoint: true,
       direction: null
     };
@@ -228,6 +229,32 @@
     return any ? out : null;
   }
   S.fixDirection = fixDirection;
+
+  /**
+   * Стилийн түгжээ юун дээр тогтсон бэ — харагдац, гэрэл, палетт,
+   * «хэзээ ч гаргахгүй». Камер ороогүй: хөдөлгөөнийг ганц зураг
+   * дээр шалгах боломжгүй, түүнийг Camera Director хариуцна.
+   * Монгол тал нь утгын эх сурвалж тул англи орчуулгыг гараар засахад
+   * түгжээ эвдрэхгүй; монгол нь хоосон (англиар шууд бичсэн) бол англиар.
+   * Camera Director (app.js · lockSnapOf) яг ижил дүрмээр тооцдог.
+   */
+  S.LOCK_KEYS = ["look", "light", "palette", "avoid"];
+  S.lockSnap = function (b) {
+    const out = {};
+    S.LOCK_KEYS.forEach((k) => {
+      const x = (b && b.f && b.f[k]) || {};
+      const v = String(x.mn || "").trim() || String(x.en || "").trim();
+      out[k] = v.toLowerCase().replace(/\s+/g, " ").replace(/[\s.,;]+$/, "");
+    });
+    return out;
+  };
+  /** Түгжсэний дараа өөрчлөгдсөн мөрүүдийн түлхүүр (түгжээгүй бол []). */
+  S.lockDrift = function (b) {
+    if (!b || !b.locked || !b.lockSnap) return [];
+    const now = S.lockSnap(b);
+    return S.LOCK_KEYS.filter((k) => (b.lockSnap[k] || "") !== now[k]);
+  };
+
   function fixBrand(b) {
     const out = S.blankBrand();
     if (!b || typeof b !== "object") return out;
@@ -249,6 +276,10 @@
     out.ref = b.ref || "";
     out.locked = !!b.locked;
     out.lockedAt = b.lockedAt || 0;
+    /* Хуучин хадгалалтад агшин зураг байхгүй — одоогийн харагдацад итгэнэ */
+    out.lockSnap = out.locked
+      ? b.lockSnap && typeof b.lockSnap === "object" ? Object.assign({}, b.lockSnap) : S.lockSnap(out)
+      : null;
     out.checkpoint = b.checkpoint !== false;
     out.direction = fixDirection(b.direction);
     return out;
@@ -297,12 +328,17 @@
     return out;
   };
 
-  /** Орчуулах шаардлагатай талбарууд (монгол бичигтэй, авто, англи нь хоцорсон). */
+  /**
+   * Орчуулах шаардлагатай талбарууд (монгол бичигтэй, авто, англи нь хоцорсон).
+   * force === true — орчуулсан ч дахин орчуулна, гэхдээ гараар зассан 🔒
+   * мөрийг ХЭЗЭЭ Ч хөндөхгүй. force === "all" — 🔒 мөрийг ч дарна
+   * (хэрэглэгч «Бүгдийг дахин орчуулах»‑ыг баталсан үед л).
+   */
   S.pending = function (kinds, force) {
     return S.allFields(kinds).filter((t) => {
       const f = t.field;
       if (!(f.mn || "").trim()) return false;
-      if (!force && !f.auto) return false;
+      if (force !== "all" && !f.auto) return false;
       if (!force && f.en && f.src) return false;
       return true;
     });

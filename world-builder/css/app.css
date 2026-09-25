@@ -244,6 +244,9 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
 .lockbar.ok{border-color:rgba(87,217,138,.45);background:rgba(87,217,138,.07)} .lockbar.ok b{color:var(--ok)}
 .lockbar.warn{border-color:rgba(224,162,74,.45);background:rgba(224,162,74,.07)} .lockbar.warn b{color:var(--warn)}
 .lockbar.idle b{color:var(--dim)}
+.lockbar span b{font-family:inherit;font-size:inherit;color:var(--warn)}
+.lockbar .lockact{display:flex;flex-wrap:wrap;gap:6px;width:100%}
+.lockbar .lockact button{font-size:12px}
 .layerhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--line)}
 .layerhead b{font-family:'Oswald';font-size:16px;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
 .layerhead i{font-style:normal;font-size:11.5px;color:var(--dim)}

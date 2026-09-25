@@ -188,10 +188,34 @@
   /** Стилийг «түгжих» — нэг фрэйм баталгаажсаны дараа. */
   B.lock = function (on) {
     const b = S.P.brand;
+    S.pushHistory();
     b.locked = !!on;
     b.lockedAt = on ? Date.now() : 0;
+    b.lockSnap = on ? S.lockSnap(b) : null;
     S.touch();
   };
+
+  /** Түгжсэний дараа өөрчлөгдсөн харагдацын мөрүүдийн нэр. */
+  B.lockDrift = function () {
+    const keys = S.lockDrift(S.P.brand);
+    return keys.map((k) => (S.BRAND_FIELDS.find((d) => d.k === k) || { lb: k }).lb);
+  };
+
+  /**
+   * Стиль үнэхээр түгжигдсэн үү — түгжсэн ба тэр үеэс хойш харагдац
+   * өөрчлөгдөөгүй. Өөрчлөгдсөн бол баталсан кадр хуучирсан гэсэн үг.
+   */
+  B.isLocked = function () {
+    const b = S.P.brand;
+    return !!(b && b.locked && !S.lockDrift(b).length);
+  };
+
+  /** Огноо — орон нутгийн цагаар (UTC биш), YYYY-MM-DD. */
+  function ymd(ts) {
+    const d = new Date(ts);
+    const p = (n) => String(n).padStart(2, "0");
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+  }
 
   /**
    * Юу үүсгэхийн өмнөх сануулга. Брэнд файл хоосон бол чимээгүй.
@@ -200,6 +224,14 @@
   B.gate = function () {
     if (B.untouched()) return "";
     const b = S.P.brand;
+    const drift = B.lockDrift();
+    if (b.locked && drift.length) {
+      return (
+        "Стилийг түгжсэний дараа брэндийн " + drift.join(", ") + " өөрчлөгдсөн тул " +
+        "баталсан кадр хуучирсан. Шинэ харагдацаар ганц зураг гаргаж шалгаад " +
+        "дахин баталгаажуулбал кредит хэмнэнэ. Үргэлжлүүлэх үү?"
+      );
+    }
     if (!b.locked) {
       return (
         "Стиль нэг фрэйм дээр хараахан тогтоогүй байна. " +
@@ -239,13 +271,18 @@
     if (txt(b.f.camera)) L.push("Camera: " + txt(b.f.camera) + ".");
     if (txt(b.f.avoid)) L.push("Never render: " + txt(b.f.avoid) + ".");
     L.push("Aspect ratio: " + (P.opts.ar || "16:9") + ".");
-    if (b.locked) {
+    if (B.isLocked()) {
       L.push(
         "Style is LOCKED — approved on a single reference frame" +
-          (b.lockedAt ? " (" + new Date(b.lockedAt).toISOString().slice(0, 10) + ")" : "") +
+          (b.lockedAt ? " (" + ymd(b.lockedAt) + ")" : "") +
           "."
       );
       if ((b.ref || "").trim()) L.push("Reference frame: " + b.ref.trim());
+    } else if (b.locked) {
+      L.push(
+        "Style CHANGED after it was locked — the approved frame is out of date. " +
+          "Generate ONE new still image with this look and wait for approval before any video."
+      );
     } else {
       L.push("Style is NOT locked yet — generate ONE still image first and wait for approval.");
     }
@@ -543,9 +580,27 @@
     if (!bar) return;
     const b = S.P.brand;
     const r = B.ready();
-    bar.className = "lockbar " + (b.locked ? "ok" : r.ok ? "warn" : "idle");
+    const drift = B.lockDrift();
+    bar.className = "lockbar " + (drift.length ? "warn" : b.locked ? "ok" : r.ok ? "warn" : "idle");
     const when = b.lockedAt ? new Date(b.lockedAt).toLocaleDateString("mn-MN") : "";
-    if (b.locked) {
+    if (drift.length) {
+      bar.innerHTML =
+        "<b>⚠ Түгжээ хуучирсан</b><span>" +
+        U.esc(when) +
+        " түгжсэний дараа өөрчлөгдсөн: <b>" +
+        U.esc(drift.join(", ")) +
+        "</b>. Шинэ туршилтын кадр гаргаж шалгаад дахин түгжинэ үү — тэр болтол промтод «түгжсэн» гэж бичигдэхгүй." +
+        '</span><span class="lockact"><button class="tbtn2 acc" data-lock="relock">🔒 Шинэ харагдацаар түгжих</button>' +
+        '<button class="tbtn2" data-lock="unlock">🔓 Түгжээ тайлах</button></span>';
+      bar.querySelector('[data-lock="relock"]').onclick = () => {
+        B.lock(true);
+        B.render();
+      };
+      bar.querySelector('[data-lock="unlock"]').onclick = () => {
+        B.lock(false);
+        B.render();
+      };
+    } else if (b.locked) {
       bar.innerHTML =
         "<b>🔒 Стиль тогтсон</b><span>" +
         U.esc(when) +
@@ -595,7 +650,7 @@
 
     const lockChk = el("lockChk");
     if (lockChk) {
-      lockChk.checked = !!b.locked;
+      lockChk.checked = B.isLocked();
       lockChk.onchange = () => {
         B.lock(lockChk.checked);
         paintLock();
@@ -627,6 +682,8 @@
     }
     const mo = el("masterOut");
     if (mo) mo.textContent = B.masterPrompt();
+    const lockChk = el("lockChk");
+    if (lockChk) lockChk.checked = B.isLocked();
     paintLock();
   };
 
