@@ -447,9 +447,7 @@ textarea.lineIn.ta{resize:vertical;line-height:1.6;font-family:inherit}
         <div class="layerhead"><span class="lnum">◉</span><b>Нэг фрэйм дүрэм</b><i>Видео биш — эхлээд ГАНЦ зураг</i></div>
         <p class="note nb">Бүтэн видео үүсгээд дараа нь буруу байсныг ойлгохоос илүү, ганц зураг дээр стилээ тогтоох нь хамаагүй хямд, хурдан. Доорх промтыг зураг үүсгэгчид өгөөд, гарсан кадр таалагдвал доор нь түгжинэ.</p>
 
-        <label class="fld"><span class="flabel">Туршилтын кадрын агуулга — нэг өгүүлбэр</span>
-          <input id="frameSubject" class="lineIn" placeholder="Жишээ: хөгшин анчин үүрийн бүрийд говийн хадан дээр ганцаараа зогсож байна">
-        </label>
+        <div id="frameSubjectField"></div>
 
         <div class="out" id="frameOut"></div>
         <div class="toolrow" style="margin-top:10px">
@@ -1101,10 +1099,36 @@ textarea.lineIn.ta{resize:vertical;line-height:1.6;font-family:inherit}
       parts[i] = IRREG_PL[w.toLowerCase()];
       return parts.join(" ");
     }
+    if (/(horse|herds|crafts|fisher|noble|kins|swords|bow|clans|tribes|states|chair|police|fire|country|sports|gentle|sea|mad|business|camera|towns|wood|work)man$/i.test(w)) {
+      parts[i] = w.slice(0, -3) + "men";
+      return parts.join(" ");
+    }
     if (/[^aeiou]y$/.test(w)) parts[i] = w.slice(0, -1) + "ies";
     else if (/(s|x|z|ch|sh)$/.test(w)) parts[i] = w + "es";
     else if (/[^s]$/.test(w)) parts[i] = w + "s";
     return parts.join(" ");
+  };
+
+  /**
+   * Тооны араас орох нэр үгийг олон тоо болгоно — толгой үг нь англид
+   * СҮҮЛЧИЙН үг («older sister» → «older sisters»). Эргэлзээтэй үед
+   * (харьяалах 's, «of», хаалт, аль хэдийн олон тоо) хөндөхгүй.
+   */
+  G.pluralLast = function (en) {
+    if (!en || /'|\(| of /i.test(en)) return en;
+    const parts = en.split(" ");
+    const w = parts[parts.length - 1];
+    if (!/^[a-z-]+$/i.test(w)) return en;
+    if (/[^s]s$/i.test(w) && !/(us|is|as|ens)$/i.test(w)) return en;  /* siblings, clothes */
+    parts[parts.length - 1] = G.plural(w);
+    return parts.join(" ");
+  };
+
+  /** Англид араас нь олон тоо шаарддаг тоо үг үү (1‑ээс бусад). */
+  G.isCount = function (w) {
+    if (!w) return false;
+    if (/^\d+(\.\d+)?$/.test(w)) return parseFloat(w) !== 1;
+    return /^(two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|twenty|thirty|forty|fifty|hundred|thousand|many|several|few|numerous|countless)$/i.test(w);
   };
 
   G.possessive = function (en) {
@@ -5387,7 +5411,19 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
                 out.splice(out.length - back, 0, hit.post);
               } else if (hit) {
                 const isVerb = /ing$/.test(hit.en) || hit.cat === "verb";
-                out.push(G.applyTags(hit.en, hit.tags, isVerb));
+                let en = G.applyTags(hit.en, hit.tags, isVerb);
+                /* Монголд тооны араас ганц тоо хэрэглэдэг: «гурван эмэгтэй».
+                   Англид олон тоо болгоно → «three women». Харьяалахын тийн
+                   ялгалтай бол тодотгол тул хөндөхгүй: «5 секундын» → 5‑second. */
+                const src = words[i + used - 1];
+                /* Тийн ялгалын угтвар үгтэй бол («with part») хөндөхгүй — зөвхөн
+                   нэрлэх ба заах тийн: «гурван эмэгтэй», «гурван эмэгтэйг». */
+                const caseTags = (hit.tags || []).filter((t) => t !== "acc");
+                if (!isVerb && !caseTags.length && G.isCount(out[out.length - 1]) &&
+                    !/(ын|ийн|ны|ний|ины)$/.test(src)) {
+                  en = G.pluralLast(en);
+                }
+                out.push(en);
               } else {
                 const w = words[i];
                 if (CYR.test(w)) unknown.add(w);
@@ -5745,7 +5781,7 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     return {
       meta: meta,
       f: f,
-      frameSubject: "",
+      frameSubject: F(""),
       ref: "",
       locked: false,
       lockedAt: 0,
@@ -5839,7 +5875,12 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
       out.meta.topics = typeof b.meta.topics === "string" ? b.meta.topics : "";
     }
     out.f = fixFieldSet(b.f, S.BRAND_FIELDS);
-    out.frameSubject = b.frameSubject || "";
+    /* v1–v2 файлд энгийн мөр байсан. Кирилл агуулсан бол монгол тал руу,
+       эс бөгөөс (чиглэлээс автоматаар дүүрсэн англи) англи тал руу оруулна. */
+    const fs = b.frameSubject;
+    if (typeof fs === "string") {
+      out.frameSubject = /[а-яөүё]/i.test(fs) ? F(fs) : { mn: "", en: fs, auto: false, unk: [], src: "manual" };
+    } else out.frameSubject = fixField(fs);
     out.ref = b.ref || "";
     out.locked = !!b.locked;
     out.lockedAt = b.lockedAt || 0;
@@ -5866,6 +5907,7 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
       S.BRAND_FIELDS.forEach((d) =>
         out.push({ field: P.brand.f[d.k], kind: "brand", label: "Брэнд · " + d.lb })
       );
+      out.push({ field: P.brand.frameSubject, kind: "brand", label: "Брэнд · Туршилтын кадр" });
     }
     if (want("scene"))
       P.scenes.forEach((s, i) => out.push({ field: s.body, kind: "scene", label: s.name || "Үзэгдэл " + (i + 1) }));
@@ -6080,8 +6122,21 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
   ];
 
   /* ── туслахууд ──────────────────────────────────────────── */
+  const CYR = /[а-яөүё]/i;
+
+  /**
+   * Англи промтод монгол текст хэзээ ч орохгүй. Кирилл агуулсан бол
+   * (талбар хараахан орчуулагдаагүй, эсвэл AI англи хувилбар өгөөгүй)
+   * офлайн толиор тэр дороо орчуулна.
+   */
+  B.toEN = function (s) {
+    const t = String(s == null ? "" : s).trim();
+    if (!t || !CYR.test(t)) return t;
+    return WB.tr && WB.tr.offline ? WB.tr.offline(t).en.trim() : t;
+  };
+
   function txt(f) {
-    return ((f && (f.en || f.mn)) || "").trim().replace(/\s*\.?\s*$/, "");
+    return B.toEN((f && (f.en || f.mn)) || "").replace(/\s*\.?\s*$/, "");
   }
   /** Судалгааны талбар — mn (AI‑д монголоор өгөх) */
   function metaMN(k) {
@@ -6091,7 +6146,7 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
   /** Судалгааны талбар — en (мастер промтод) */
   function metaEN(k) {
     const v = S.P.brand.meta[k];
-    return ((v && (v.en || v.mn)) || "").trim();
+    return B.toEN((v && (v.en || v.mn)) || "");
   }
   function joinParts(arr) {
     const body = arr.filter(Boolean).join(". ");
@@ -6149,7 +6204,7 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
    */
   B.oneFramePrompt = function (subject) {
     const b = S.P.brand;
-    const subj = (subject != null ? subject : b.frameSubject || "").trim();
+    const subj = subject != null ? B.toEN(subject) : txt(b.frameSubject);
     const visual = B.visualLine();
     if (!visual && !subj) return "";
     const parts = [];
@@ -6235,12 +6290,12 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     L.push("", "=== LAYER 4 · CHECKPOINT ===");
     const d = b.direction;
     if (d) {
-      const de = (k) => (d[k + "_en"] || d[k] || "").trim();
+      const de = (k) => B.toEN(d[k + "_en"] || d[k] || "");
       L.push("Approved direction:");
       if (de("look")) L.push("  Look: " + de("look"));
       if (de("pacing")) L.push("  Pacing: " + de("pacing"));
       if (de("frame")) L.push("  Frame to approve first: " + de("frame"));
-      if ((d.risk_en || d.risk || "").trim()) L.push("  Known risk: " + (d.risk_en || d.risk).trim());
+      if (de("risk")) L.push("  Known risk: " + de("risk"));
       L.push("");
     }
     if (b.checkpoint !== false) {
@@ -6452,7 +6507,18 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
 
     bindPlain(el("brandTopics"), () => b.meta.topics, (v) => (b.meta.topics = v));
     bindPlain(el("brandRef"), () => b.ref, (v) => (b.ref = v));
-    bindPlain(el("frameSubject"), () => b.frameSubject, (v) => (b.frameSubject = v));
+    const frameBox = el("frameSubjectField");
+    if (frameBox) {
+      frameBox.innerHTML = "";
+      frameBox.appendChild(
+        WB.ui.dualField(
+          b.frameSubject,
+          "brand",
+          "Туршилтын кадрын агуулга — нэг өгүүлбэр",
+          "хөгшин анчин үүрийн бүрийд говийн хадан дээр ганцаараа зогсоно"
+        )
+      );
+    }
 
     const metaBox = el("brandMetaFields");
     if (metaBox) {
@@ -8502,12 +8568,15 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
       await B.direction();
       B.paintDirection();
       const d = S.P.brand.direction;
-      /* Туршилтын кадрын промт англи болох тул англи хувилбарыг нь авна */
-      const fr = d && (d.frame_en || d.frame);
-      if (fr && !(S.P.brand.frameSubject || "").trim()) {
-        S.P.brand.frameSubject = fr;
-        el("frameSubject").value = fr;
+      const fs = S.P.brand.frameSubject;
+      /* Чиглэл монгол ба англи хоёуланг нэг дуудлагаар өгдөг тул
+         нэмэлт орчуулгагүйгээр хоёр талыг зэрэг дүүргэнэ. */
+      if (d && d.frame && !fs.mn.trim() && !fs.en.trim()) {
+        fs.mn = d.frame;
+        fs.en = d.frame_en || "";
+        fs.src = d.frame_en ? "ai" : "";
         S.touch();
+        UI.renderAll();
       }
       B.paintOutputs();
       U.toast("Чиглэл бэлэн — доорх туршилтын кадрыг эхлээд шалгаарай", "good");

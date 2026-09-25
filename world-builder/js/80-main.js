@@ -482,12 +482,15 @@
       await B.direction();
       B.paintDirection();
       const d = S.P.brand.direction;
-      /* Туршилтын кадрын промт англи болох тул англи хувилбарыг нь авна */
-      const fr = d && (d.frame_en || d.frame);
-      if (fr && !(S.P.brand.frameSubject || "").trim()) {
-        S.P.brand.frameSubject = fr;
-        el("frameSubject").value = fr;
+      const fs = S.P.brand.frameSubject;
+      /* Чиглэл монгол ба англи хоёуланг нэг дуудлагаар өгдөг тул
+         нэмэлт орчуулгагүйгээр хоёр талыг зэрэг дүүргэнэ. */
+      if (d && d.frame && !fs.mn.trim() && !fs.en.trim()) {
+        fs.mn = d.frame;
+        fs.en = d.frame_en || "";
+        fs.src = d.frame_en ? "ai" : "";
         S.touch();
+        UI.renderAll();
       }
       B.paintOutputs();
       U.toast("Чиглэл бэлэн — доорх туршилтын кадрыг эхлээд шалгаарай", "good");

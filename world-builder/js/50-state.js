@@ -117,7 +117,7 @@
     return {
       meta: meta,
       f: f,
-      frameSubject: "",
+      frameSubject: F(""),
       ref: "",
       locked: false,
       lockedAt: 0,
@@ -211,7 +211,12 @@
       out.meta.topics = typeof b.meta.topics === "string" ? b.meta.topics : "";
     }
     out.f = fixFieldSet(b.f, S.BRAND_FIELDS);
-    out.frameSubject = b.frameSubject || "";
+    /* v1–v2 файлд энгийн мөр байсан. Кирилл агуулсан бол монгол тал руу,
+       эс бөгөөс (чиглэлээс автоматаар дүүрсэн англи) англи тал руу оруулна. */
+    const fs = b.frameSubject;
+    if (typeof fs === "string") {
+      out.frameSubject = /[а-яөүё]/i.test(fs) ? F(fs) : { mn: "", en: fs, auto: false, unk: [], src: "manual" };
+    } else out.frameSubject = fixField(fs);
     out.ref = b.ref || "";
     out.locked = !!b.locked;
     out.lockedAt = b.lockedAt || 0;
@@ -238,6 +243,7 @@
       S.BRAND_FIELDS.forEach((d) =>
         out.push({ field: P.brand.f[d.k], kind: "brand", label: "Брэнд · " + d.lb })
       );
+      out.push({ field: P.brand.frameSubject, kind: "brand", label: "Брэнд · Туршилтын кадр" });
     }
     if (want("scene"))
       P.scenes.forEach((s, i) => out.push({ field: s.body, kind: "scene", label: s.name || "Үзэгдэл " + (i + 1) }));

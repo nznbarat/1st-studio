@@ -200,10 +200,36 @@
       parts[i] = IRREG_PL[w.toLowerCase()];
       return parts.join(" ");
     }
+    if (/(horse|herds|crafts|fisher|noble|kins|swords|bow|clans|tribes|states|chair|police|fire|country|sports|gentle|sea|mad|business|camera|towns|wood|work)man$/i.test(w)) {
+      parts[i] = w.slice(0, -3) + "men";
+      return parts.join(" ");
+    }
     if (/[^aeiou]y$/.test(w)) parts[i] = w.slice(0, -1) + "ies";
     else if (/(s|x|z|ch|sh)$/.test(w)) parts[i] = w + "es";
     else if (/[^s]$/.test(w)) parts[i] = w + "s";
     return parts.join(" ");
+  };
+
+  /**
+   * Тооны араас орох нэр үгийг олон тоо болгоно — толгой үг нь англид
+   * СҮҮЛЧИЙН үг («older sister» → «older sisters»). Эргэлзээтэй үед
+   * (харьяалах 's, «of», хаалт, аль хэдийн олон тоо) хөндөхгүй.
+   */
+  G.pluralLast = function (en) {
+    if (!en || /'|\(| of /i.test(en)) return en;
+    const parts = en.split(" ");
+    const w = parts[parts.length - 1];
+    if (!/^[a-z-]+$/i.test(w)) return en;
+    if (/[^s]s$/i.test(w) && !/(us|is|as|ens)$/i.test(w)) return en;  /* siblings, clothes */
+    parts[parts.length - 1] = G.plural(w);
+    return parts.join(" ");
+  };
+
+  /** Англид араас нь олон тоо шаарддаг тоо үг үү (1‑ээс бусад). */
+  G.isCount = function (w) {
+    if (!w) return false;
+    if (/^\d+(\.\d+)?$/.test(w)) return parseFloat(w) !== 1;
+    return /^(two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|twenty|thirty|forty|fifty|hundred|thousand|many|several|few|numerous|countless)$/i.test(w);
   };
 
   G.possessive = function (en) {

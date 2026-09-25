@@ -89,7 +89,19 @@
                 out.splice(out.length - back, 0, hit.post);
               } else if (hit) {
                 const isVerb = /ing$/.test(hit.en) || hit.cat === "verb";
-                out.push(G.applyTags(hit.en, hit.tags, isVerb));
+                let en = G.applyTags(hit.en, hit.tags, isVerb);
+                /* Монголд тооны араас ганц тоо хэрэглэдэг: «гурван эмэгтэй».
+                   Англид олон тоо болгоно → «three women». Харьяалахын тийн
+                   ялгалтай бол тодотгол тул хөндөхгүй: «5 секундын» → 5‑second. */
+                const src = words[i + used - 1];
+                /* Тийн ялгалын угтвар үгтэй бол («with part») хөндөхгүй — зөвхөн
+                   нэрлэх ба заах тийн: «гурван эмэгтэй», «гурван эмэгтэйг». */
+                const caseTags = (hit.tags || []).filter((t) => t !== "acc");
+                if (!isVerb && !caseTags.length && G.isCount(out[out.length - 1]) &&
+                    !/(ын|ийн|ны|ний|ины)$/.test(src)) {
+                  en = G.pluralLast(en);
+                }
+                out.push(en);
               } else {
                 const w = words[i];
                 if (CYR.test(w)) unknown.add(w);

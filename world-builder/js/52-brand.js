@@ -55,8 +55,21 @@
   ];
 
   /* ── туслахууд ──────────────────────────────────────────── */
+  const CYR = /[а-яөүё]/i;
+
+  /**
+   * Англи промтод монгол текст хэзээ ч орохгүй. Кирилл агуулсан бол
+   * (талбар хараахан орчуулагдаагүй, эсвэл AI англи хувилбар өгөөгүй)
+   * офлайн толиор тэр дороо орчуулна.
+   */
+  B.toEN = function (s) {
+    const t = String(s == null ? "" : s).trim();
+    if (!t || !CYR.test(t)) return t;
+    return WB.tr && WB.tr.offline ? WB.tr.offline(t).en.trim() : t;
+  };
+
   function txt(f) {
-    return ((f && (f.en || f.mn)) || "").trim().replace(/\s*\.?\s*$/, "");
+    return B.toEN((f && (f.en || f.mn)) || "").replace(/\s*\.?\s*$/, "");
   }
   /** Судалгааны талбар — mn (AI‑д монголоор өгөх) */
   function metaMN(k) {
@@ -66,7 +79,7 @@
   /** Судалгааны талбар — en (мастер промтод) */
   function metaEN(k) {
     const v = S.P.brand.meta[k];
-    return ((v && (v.en || v.mn)) || "").trim();
+    return B.toEN((v && (v.en || v.mn)) || "");
   }
   function joinParts(arr) {
     const body = arr.filter(Boolean).join(". ");
@@ -124,7 +137,7 @@
    */
   B.oneFramePrompt = function (subject) {
     const b = S.P.brand;
-    const subj = (subject != null ? subject : b.frameSubject || "").trim();
+    const subj = subject != null ? B.toEN(subject) : txt(b.frameSubject);
     const visual = B.visualLine();
     if (!visual && !subj) return "";
     const parts = [];
@@ -210,12 +223,12 @@
     L.push("", "=== LAYER 4 · CHECKPOINT ===");
     const d = b.direction;
     if (d) {
-      const de = (k) => (d[k + "_en"] || d[k] || "").trim();
+      const de = (k) => B.toEN(d[k + "_en"] || d[k] || "");
       L.push("Approved direction:");
       if (de("look")) L.push("  Look: " + de("look"));
       if (de("pacing")) L.push("  Pacing: " + de("pacing"));
       if (de("frame")) L.push("  Frame to approve first: " + de("frame"));
-      if ((d.risk_en || d.risk || "").trim()) L.push("  Known risk: " + (d.risk_en || d.risk).trim());
+      if (de("risk")) L.push("  Known risk: " + de("risk"));
       L.push("");
     }
     if (b.checkpoint !== false) {
@@ -427,7 +440,18 @@
 
     bindPlain(el("brandTopics"), () => b.meta.topics, (v) => (b.meta.topics = v));
     bindPlain(el("brandRef"), () => b.ref, (v) => (b.ref = v));
-    bindPlain(el("frameSubject"), () => b.frameSubject, (v) => (b.frameSubject = v));
+    const frameBox = el("frameSubjectField");
+    if (frameBox) {
+      frameBox.innerHTML = "";
+      frameBox.appendChild(
+        WB.ui.dualField(
+          b.frameSubject,
+          "brand",
+          "Туршилтын кадрын агуулга — нэг өгүүлбэр",
+          "хөгшин анчин үүрийн бүрийд говийн хадан дээр ганцаараа зогсоно"
+        )
+      );
+    }
 
     const metaBox = el("brandMetaFields");
     if (metaBox) {
