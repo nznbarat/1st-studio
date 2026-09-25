@@ -666,6 +666,10 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
   .rs{min-width:940px;min-height:520px}
 }
 
+/* Жишээтэй заавар руу холбоос (fusion-zaavar.html) */
+.guide-link{display:inline-block;margin:10px 0 2px;padding:6px 12px;border:1px solid var(--ui-tungsten);border-radius:8px;color:var(--ui-tungsten);font-size:13px;font-weight:500}
+.guide-link:hover{background:var(--ui-tungsten);color:#1a1206;text-decoration:none}
+
 </style>
 </head>
 <body>
@@ -858,6 +862,23 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
   };
 
 })(window);
+
+</script>
+<script>
+/* ── js/15-guide-ids.js ── */
+/* ═══ 15 · Жишээтэй заавартай нэр томьёонууд ═══
+   Эдгээрийн картанд (толь) болон тайлбарт (загвар) "Жишээтэй заавар" холбоос гарна.
+   Эх нь fusion-zaavar.html — Fusion хэрэгслийн мөрийн 28 товч. */
+(function (RM) {
+  "use strict";
+  RM.guideFusion = ["background-node", "fastnoise", "text-plus-node", "paint",
+    "color-corrector-fusion", "color-curves-fusion", "brightness-contrast", "blur-fusion",
+    "merge", "multimerge", "channel-booleans", "matte-control", "transform-fusion",
+    "rectangle-mask", "ellipse-mask", "polygon-mask", "b-spline-mask", "multipoly",
+    "particle-emitter", "pdirectionalforce", "prender",
+    "image-plane-3d", "shape-3d", "text-3d", "merge-3d", "camera-3d", "spot-light", "renderer-3d"];
+  RM.guideLink = (id) => RM.guideFusion.indexOf(id) !== -1 ? "resolve-fusion-zaavar.html#" + id : null;
+})(window.RM);
 
 </script>
 <script>
@@ -1367,7 +1388,7 @@ note:"Гурван хэмжээст орчин, бөөмийн систем, ц�
 ["Grid Warp","Тор мушгилт","Торны цэгүүдийг чирж дүрсийг нарийвчлан мушгих."],
 ["Glow","Гэрэлтүүлэг","Гэгээн хэсгүүдээс гэрэл цацруулах эффект."],
 ["Soft Glow","Зөөлөн гэрэлтүүлэг","Дүрсийг зөөлрүүлж мөрөөдөл мэт харагдуулах."],
-["Blur (Fusion)","Бүдгэрүүлэлт","Дүрсийг зөөлрүүлэх. Gaussian, Directional, Radial, Zoom гэсэн төрлүүдтэй."],
+["Blur (Fusion)","Бүдгэрүүлэлт","Дүрсийг зөөлрүүлэх нод. Filter: Box, Bartlett, Multi-box, Gaussian. Нэг чиглэлийн, радиаль, zoom бүдгэрэл нь тусдаа Directional Blur нод."],
 ["Defocus","Фокус алдагдуулалт","Линзний бодит фокус алдалтыг дуурайлган бүдгэрүүлэх. Гэрлийн цэгүүд дугуй болно."],
 ["Color Corrector (Fusion)","Өнгө засагч нод","Fusion доторх өнгө засварын нод."],
 ["Brightness Contrast","Гэрэл, ялгарал","Гэрэлтүүлэг, ялгарлыг өөрчлөх энгийн нод."],
@@ -14488,7 +14509,7 @@ Fusion хуудасны **доод төлөвийн мөр** хоёр хэсэг
 (function (RM) {
   "use strict";
 
-  const S = RM.sim;
+  const S = (RM.sim = RM.sim || {});
   const DK = "#26262a";     /* товчны доторх бараан дүүргэлт */
   const FL = "#1a1a1d";     /* 3D дүрсний шал */
   const sw = (w) => `fill="none" stroke="currentColor" stroke-width="${w}"`;
@@ -14712,9 +14733,13 @@ Fusion хуудасны **доод төлөвийн мөр** хоёр хэсэг
       d.appendChild(L);
     }
 
+    const gl = RM.guideLink && RM.guideLink(id);
+    if (gl) d.appendChild(el("a", { class: "guide-link", href: gl, target: "_blank", rel: "noopener",
+      text: "▶ Жишээтэй заавар — бичлэгт хэрхэн нөлөөлдөг" }));
+
     d.appendChild(el("p", { class: "more", html:
-      'Бүрэн толиос энэ үгийг үзэх: <a href="resolve-toli.html?q=' +
-      encodeURIComponent(row.en) + '">' + RM.esc(row.en) + ' →</a>' }));
+      'Бүрэн толиос энэ үгийг үзэх: <a href="resolve-toli.html#' +
+      encodeURIComponent(id) + '">' + RM.esc(row.en) + ' →</a>' }));
 
     box.appendChild(d);
     box.scrollTop = 0;
@@ -15036,14 +15061,16 @@ Fusion хуудасны **доод төлөвийн мөр** хоёр хэсэг
 
   S.boot = function () {
     const q = new URLSearchParams(location.search);
-    const p = q.get("p");
+    /* Нийтэлсэн хуудсанд ?p= хүрдэггүй тул #хуудас эсвэл #хуудас.нэр-томьёо-г ч хүлээн авна */
+    const hm = /^#([a-z]+)(?:\.([a-z0-9-]+))?$/.exec(location.hash);
+    const p = q.get("p") || (hm && hm[1]);
     if (p && ORDER.indexOf(p) !== -1) S.state.page = p;
 
     S.render(S.state.page);
     S.bind();
     S.syncPageBtns();
 
-    const t = q.get("t");
+    const t = q.get("t") || (hm && hm[2]);
     if (t && RM.dict.byId[t]) {
       const node = $('#rsHost .hs[data-t="' + t + '"]');
       S.select(t, node);

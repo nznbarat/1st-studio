@@ -645,3 +645,7 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
   #stage{padding:10px;overflow-x:auto}
   .rs{min-width:940px;min-height:520px}
 }
+
+/* Жишээтэй заавар руу холбоос (fusion-zaavar.html) */
+.guide-link{display:inline-block;margin:10px 0 2px;padding:6px 12px;border:1px solid var(--ui-tungsten);border-radius:8px;color:var(--ui-tungsten);font-size:13px;font-weight:500}
+.guide-link:hover{background:var(--ui-tungsten);color:#1a1206;text-decoration:none}

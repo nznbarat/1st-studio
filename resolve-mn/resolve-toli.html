@@ -223,6 +223,10 @@ mark{background:rgba(245,168,60,.28);color:#ffd79a;border-radius:3px;padding:0 2
   .backlink .bl-ico{margin-right:0}
 }
 
+/* Жишээтэй заавар руу холбоос (fusion-zaavar.html) */
+.guide-link{display:inline-block;margin:10px 0 2px;padding:6px 12px;border:1px solid var(--tungsten);border-radius:8px;color:var(--tungsten);font-size:13px;font-weight:500}
+.guide-link:hover{background:var(--tungsten);color:#1a1206;text-decoration:none}
+
 </style>
 </head>
 <body>
@@ -501,6 +505,23 @@ mark{background:rgba(245,168,60,.28);color:#ffd79a;border-radius:3px;padding:0 2
   };
 
 })(window);
+
+</script>
+<script>
+/* ── js/15-guide-ids.js ── */
+/* ═══ 15 · Жишээтэй заавартай нэр томьёонууд ═══
+   Эдгээрийн картанд (толь) болон тайлбарт (загвар) "Жишээтэй заавар" холбоос гарна.
+   Эх нь fusion-zaavar.html — Fusion хэрэгслийн мөрийн 28 товч. */
+(function (RM) {
+  "use strict";
+  RM.guideFusion = ["background-node", "fastnoise", "text-plus-node", "paint",
+    "color-corrector-fusion", "color-curves-fusion", "brightness-contrast", "blur-fusion",
+    "merge", "multimerge", "channel-booleans", "matte-control", "transform-fusion",
+    "rectangle-mask", "ellipse-mask", "polygon-mask", "b-spline-mask", "multipoly",
+    "particle-emitter", "pdirectionalforce", "prender",
+    "image-plane-3d", "shape-3d", "text-3d", "merge-3d", "camera-3d", "spot-light", "renderer-3d"];
+  RM.guideLink = (id) => RM.guideFusion.indexOf(id) !== -1 ? "resolve-fusion-zaavar.html#" + id : null;
+})(window.RM);
 
 </script>
 <script>
@@ -1010,7 +1031,7 @@ note:"Гурван хэмжээст орчин, бөөмийн систем, ц�
 ["Grid Warp","Тор мушгилт","Торны цэгүүдийг чирж дүрсийг нарийвчлан мушгих."],
 ["Glow","Гэрэлтүүлэг","Гэгээн хэсгүүдээс гэрэл цацруулах эффект."],
 ["Soft Glow","Зөөлөн гэрэлтүүлэг","Дүрсийг зөөлрүүлж мөрөөдөл мэт харагдуулах."],
-["Blur (Fusion)","Бүдгэрүүлэлт","Дүрсийг зөөлрүүлэх. Gaussian, Directional, Radial, Zoom гэсэн төрлүүдтэй."],
+["Blur (Fusion)","Бүдгэрүүлэлт","Дүрсийг зөөлрүүлэх нод. Filter: Box, Bartlett, Multi-box, Gaussian. Нэг чиглэлийн, радиаль, zoom бүдгэрэл нь тусдаа Directional Blur нод."],
 ["Defocus","Фокус алдагдуулалт","Линзний бодит фокус алдалтыг дуурайлган бүдгэрүүлэх. Гэрлийн цэгүүд дугуй болно."],
 ["Color Corrector (Fusion)","Өнгө засагч нод","Fusion доторх өнгө засварын нод."],
 ["Brightness Contrast","Гэрэл, ялгарал","Гэрэлтүүлэг, ялгарлыг өөрчлөх энгийн нод."],
@@ -12755,6 +12776,10 @@ Fusion хуудасны **доод төлөвийн мөр** хоёр хэсэг
       c.appendChild(det);
     }
 
+    const gl = RM.guideLink && RM.guideLink(row.id);
+    if (gl) c.appendChild(el("a", { class: "guide-link", href: gl, target: "_blank", rel: "noopener",
+      text: "▶ Жишээтэй заавар — бичлэгт хэрхэн нөлөөлдөг" }));
+
     const foot = el("div", { class: "term-foot" });
     foot.appendChild(el("span", { class: "pg", text: page.icon + " " + page.label }));
     const cat = RM.dict.cat(row.cat);
@@ -12948,7 +12973,10 @@ Fusion хуудасны **доод төлөвийн мөр** хоёр хэсэг
     RM.ui.bind();
 
     /* Гаднаас ирсэн хайлт: ?q=... (интерфейсийн загвараас ийм холбоос ирдэг) */
-    const q = new URLSearchParams(location.search).get("q");
+    /* Нийтэлсэн хуудсанд ?q= хүрдэггүй тул #нэр-томьёоны-id-г ч хүлээн авна */
+    let q = new URLSearchParams(location.search).get("q");
+    const hid = decodeURIComponent(location.hash.slice(1));
+    if (!q && hid && RM.dict.byId[hid]) q = RM.dict.byId[hid].en;
     if (q) {
       RM.ui.state.view = "hailt";
       RM.ui.state.q = q;

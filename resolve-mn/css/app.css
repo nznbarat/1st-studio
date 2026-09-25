@@ -202,3 +202,7 @@ mark{background:rgba(245,168,60,.28);color:#ffd79a;border-radius:3px;padding:0 2
   .backlink{padding:6px 9px}
   .backlink .bl-ico{margin-right:0}
 }
+
+/* Жишээтэй заавар руу холбоос (fusion-zaavar.html) */
+.guide-link{display:inline-block;margin:10px 0 2px;padding:6px 12px;border:1px solid var(--tungsten);border-radius:8px;color:var(--tungsten);font-size:13px;font-weight:500}
+.guide-link:hover{background:var(--tungsten);color:#1a1206;text-decoration:none}

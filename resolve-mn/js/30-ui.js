@@ -167,6 +167,10 @@
       c.appendChild(det);
     }
 
+    const gl = RM.guideLink && RM.guideLink(row.id);
+    if (gl) c.appendChild(el("a", { class: "guide-link", href: gl, target: "_blank", rel: "noopener",
+      text: "▶ Жишээтэй заавар — бичлэгт хэрхэн нөлөөлдөг" }));
+
     const foot = el("div", { class: "term-foot" });
     foot.appendChild(el("span", { class: "pg", text: page.icon + " " + page.label }));
     const cat = RM.dict.cat(row.cat);

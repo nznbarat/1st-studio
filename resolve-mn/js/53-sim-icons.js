@@ -9,7 +9,7 @@
 (function (RM) {
   "use strict";
 
-  const S = RM.sim;
+  const S = (RM.sim = RM.sim || {});
   const DK = "#26262a";     /* товчны доторх бараан дүүргэлт */
   const FL = "#1a1a1d";     /* 3D дүрсний шал */
   const sw = (w) => `fill="none" stroke="currentColor" stroke-width="${w}"`;

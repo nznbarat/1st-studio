@@ -7,6 +7,7 @@
  * Ажиллуулах:  node tools/build-resolve-mn.mjs
  * Гаралт:      resolve-mn/resolve-toli.html    (толь)
  *              resolve-mn/resolve-dotor.html   (интерфейсийн загвар)
+ *              resolve-mn/resolve-fusion-zaavar.html (Fusion хэрэгслийн заавар)
  */
 import { readFileSync, writeFileSync, statSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -16,7 +17,8 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const base = join(root, "resolve-mn");
 
 /* Ганц файлын нэрс — хоорондоо холбогдоно */
-const OUT = { "index.html": "resolve-toli.html", "interface.html": "resolve-dotor.html" };
+const OUT = { "index.html": "resolve-toli.html", "interface.html": "resolve-dotor.html",
+              "fusion-zaavar.html": "resolve-fusion-zaavar.html" };
 
 function build(srcName) {
   let html = readFileSync(join(base, srcName), "utf8");

@@ -7,7 +7,10 @@
     RM.ui.bind();
 
     /* Гаднаас ирсэн хайлт: ?q=... (интерфейсийн загвараас ийм холбоос ирдэг) */
-    const q = new URLSearchParams(location.search).get("q");
+    /* Нийтэлсэн хуудсанд ?q= хүрдэггүй тул #нэр-томьёоны-id-г ч хүлээн авна */
+    let q = new URLSearchParams(location.search).get("q");
+    const hid = decodeURIComponent(location.hash.slice(1));
+    if (!q && hid && RM.dict.byId[hid]) q = RM.dict.byId[hid].en;
     if (q) {
       RM.ui.state.view = "hailt";
       RM.ui.state.q = q;

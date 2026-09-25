@@ -90,9 +90,13 @@
       d.appendChild(L);
     }
 
+    const gl = RM.guideLink && RM.guideLink(id);
+    if (gl) d.appendChild(el("a", { class: "guide-link", href: gl, target: "_blank", rel: "noopener",
+      text: "▶ Жишээтэй заавар — бичлэгт хэрхэн нөлөөлдөг" }));
+
     d.appendChild(el("p", { class: "more", html:
-      'Бүрэн толиос энэ үгийг үзэх: <a href="index.html?q=' +
-      encodeURIComponent(row.en) + '">' + RM.esc(row.en) + ' →</a>' }));
+      'Бүрэн толиос энэ үгийг үзэх: <a href="index.html#' +
+      encodeURIComponent(id) + '">' + RM.esc(row.en) + ' →</a>' }));
 
     box.appendChild(d);
     box.scrollTop = 0;
@@ -414,14 +418,16 @@
 
   S.boot = function () {
     const q = new URLSearchParams(location.search);
-    const p = q.get("p");
+    /* Нийтэлсэн хуудсанд ?p= хүрдэггүй тул #хуудас эсвэл #хуудас.нэр-томьёо-г ч хүлээн авна */
+    const hm = /^#([a-z]+)(?:\.([a-z0-9-]+))?$/.exec(location.hash);
+    const p = q.get("p") || (hm && hm[1]);
     if (p && ORDER.indexOf(p) !== -1) S.state.page = p;
 
     S.render(S.state.page);
     S.bind();
     S.syncPageBtns();
 
-    const t = q.get("t");
+    const t = q.get("t") || (hm && hm[2]);
     if (t && RM.dict.byId[t]) {
       const node = $('#rsHost .hs[data-t="' + t + '"]');
       S.select(t, node);
