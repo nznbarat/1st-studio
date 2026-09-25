@@ -484,6 +484,7 @@ textarea.lineIn.ta{resize:vertical;line-height:1.6;font-family:inherit}
       </div>
 
       <div id="lockBar" class="lockbar idle"></div>
+      <p class="note nb">✍️ <b>Орчуулга буруу эсвэл хэтрүүлэгтэй бол</b> мөр бүрийн баруун (<b>EN</b>) талд шууд засаарай — гар засвар 🔒 түгжигдэж хадгалагдана. Монгол талыг засвал англи нь дахин орчуулагдана (гар засвараа «↶ сэргээх»‑ээр буцаана).</p>
 
       <!-- ── Давхарга 1 ── -->
       <div class="card">
@@ -546,7 +547,7 @@ textarea.lineIn.ta{resize:vertical;line-height:1.6;font-family:inherit}
           <button class="aibtn" id="dirBtn">🧭 Чиглэл санал болгуул</button>
           <button class="tbtn2" id="dirClear">✖ Чиглэлийг арилгах</button>
         </div>
-        <p class="note nb">Санал болгосон чиглэл нь доорх <b>мастер промтын LAYER 4</b> дотор «Approved direction» болж англиар орно, мөн туршилтын кадрын агуулгыг автоматаар дүүргэнэ.</p>
+        <p class="note nb">Санал болгосон чиглэл нь доорх <b>мастер промтын LAYER 4</b> дотор «Approved direction» болж англиар орно, мөн туршилтын кадрын агуулгыг автоматаар дүүргэнэ. Бусад мөрийн адил <b>гараар засагдана</b> — хэтрүүлэг («зургаа дахин өндөр» гэх мэт) байвал шууд засаарай.</p>
         <div id="dirOut" class="checkout"></div>
       </div>
 
@@ -5103,7 +5104,7 @@ WB.dict.add({ id:"verb-core", label:"Цөм · түгээмэл үйл үг", ic
    «биш», «хэт», «энд», «тэнд» гэх мэт өдөр бүр хэрэглэгддэг атлаа
    толинд байгаагүй үгс. */
 WB.dict.add({ id:"adj-core", label:"Цөм · тэмдэг нэр, дайвар, туслах үг", icon:"🔤", w:{
-"биш":"not","өнгийн":"coloured","улаан өнгийн":"red","алтан өнгийн":"golden",
+"биш":"not","үлэмж":"immense","үлэмж том":"immensely large","үлэмж их":"immense","өнгийн":"coloured","улаан өнгийн":"red","алтан өнгийн":"golden",
 "цэнхэр өнгийн":"blue","гадагш":"outward","эхнийх":"the first one","өнөөгийн":"present-day",
 "бурхны":"Buddhist","бурхны шүүгээ":"Buddhist altar cabinet","ээрүүл":"spindle","зүүн гар":"left hand",
 "баруун гар":"right hand","эхэн":"beginning","эхэн сар":"first month","биш юм":"is not",
@@ -5564,6 +5565,7 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
   const RULES = [
     "Output English only. Never leave Cyrillic characters in the output.",
     "Keep it natural, visual and concrete — these become AI image/video prompts.",
+    "Translate faithfully: never exaggerate, intensify or add drama; keep sizes, proportions, numbers and quantities exactly as in the source.",
     "Preserve Mongolian cultural terms with a short clarifier on first use: deel (traditional Mongolian robe), ger (yurt), morin khuur (horsehead fiddle), airag (fermented mare's milk), ovoo (sacred cairn), khadag (ceremonial silk scarf), khuushuur, buuz, del (mane).",
     "Keep roughly the same length and the same line breaks as the input.",
     "Do not add commentary, quotes, numbering or explanation."
@@ -5815,6 +5817,15 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     }
   ];
 
+  /* Давхарга 4 — AI‑ийн санал болгосон чиглэл. Бусад мөрийн адил хос хэлтэй
+     тул хэтрүүлэг, буруу орчуулгыг гараар засна. */
+  S.DIRECTION_FIELDS = [
+    { k: "look", lb: "Чиглэл · Харагдац" },
+    { k: "pacing", lb: "Чиглэл · Хэмнэл" },
+    { k: "frame", lb: "Чиглэл · Эхлээд баталгаажуулах кадр" },
+    { k: "risk", lb: "Чиглэл · Эмзэг тал" }
+  ];
+
   S.BRAND_FIELDS = [
     {
       k: "look", layer: 2, need: true, lb: "Визуал гарын үсэг",
@@ -5974,6 +5985,24 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     if (!f || typeof f !== "object") return F(typeof f === "string" ? f : "");
     return { mn: f.mn || "", en: f.en || "", auto: f.auto !== false, unk: f.unk || [], src: f.src || "" };
   }
+  /** Хуучин чиглэл {look, look_en, …} (мөр) → хос хэлний талбарууд. */
+  function fixDirection(d) {
+    if (!d || typeof d !== "object") return null;
+    const out = {};
+    let any = false;
+    S.DIRECTION_FIELDS.forEach((x) => {
+      const v = d[x.k];
+      if (v && typeof v === "object") out[x.k] = fixField(v);
+      else {
+        const mn = typeof v === "string" ? v : "";
+        const en = typeof d[x.k + "_en"] === "string" ? d[x.k + "_en"] : "";
+        out[x.k] = { mn: mn, en: en, auto: true, unk: [], src: en ? "ai" : "" };
+      }
+      if (out[x.k].mn || out[x.k].en) any = true;
+    });
+    return any ? out : null;
+  }
+  S.fixDirection = fixDirection;
   function fixBrand(b) {
     const out = S.blankBrand();
     if (!b || typeof b !== "object") return out;
@@ -5996,7 +6025,7 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     out.locked = !!b.locked;
     out.lockedAt = b.lockedAt || 0;
     out.checkpoint = b.checkpoint !== false;
-    out.direction = b.direction && typeof b.direction === "object" ? b.direction : null;
+    out.direction = fixDirection(b.direction);
     return out;
   }
   function fixFieldSet(obj, defs) {
@@ -6019,6 +6048,10 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
         out.push({ field: P.brand.f[d.k], kind: "brand", label: "Брэнд · " + d.lb })
       );
       out.push({ field: P.brand.frameSubject, kind: "brand", label: "Брэнд · Туршилтын кадр" });
+      if (P.brand.direction)
+        S.DIRECTION_FIELDS.forEach((d) =>
+          out.push({ field: P.brand.direction[d.k], kind: "brand", label: "Брэнд · " + d.lb })
+        );
     }
     if (want("scene"))
       P.scenes.forEach((s, i) => out.push({ field: s.body, kind: "scene", label: s.name || "Үзэгдэл " + (i + 1) }));
@@ -6232,6 +6265,16 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     }
   ];
 
+  /**
+   * Хэтрүүлгээс сэргийлэх дүрэм — монгол текст зохиодог бүх AI дуудлагад.
+   * «аврага хүмүүс» мэт гарчгийг үгчлэн ойлгож хүмүүсийг «зургаа дахин
+   * өндөр» болгодог байсан.
+   */
+  B.REAL_RULE =
+    "- Бодит байдлаас бүү хазай: хүний биеийн хэмжээ, харьцаа, тоо ширхэг бодит байна. " +
+    "«зургаа дахин өндөр», «тэнгэр шүргэсэн» мэт хэтрүүлэг, санаанд үгчлэн ойлгох зүйрлэл бүү бич. " +
+    "Нишийн болон гарчгийн «аврага», «агуу» мэт үгийг утгаар нь (алдартай, хүндтэй) ойлго — биеийн хэмжээ гэж бүү ойлго.\n";
+
   /* ── туслахууд ──────────────────────────────────────────── */
   const CYR = /[а-яөүё]/i;
 
@@ -6427,12 +6470,12 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     L.push("", "=== LAYER 4 · CHECKPOINT ===");
     const d = b.direction;
     if (d) {
-      const de = (k) => B.toEN(d[k + "_en"] || d[k] || "");
+      const de = (k) => (d[k] ? txt(d[k]) : "");
       L.push("Approved direction:");
-      if (de("look")) L.push("  Look: " + de("look"));
-      if (de("pacing")) L.push("  Pacing: " + de("pacing"));
-      if (de("frame")) L.push("  Frame to approve first: " + de("frame"));
-      if (de("risk")) L.push("  Known risk: " + de("risk"));
+      if (de("look")) L.push("  Look: " + de("look") + ".");
+      if (de("pacing")) L.push("  Pacing: " + de("pacing") + ".");
+      if (de("frame")) L.push("  Frame to approve first: " + de("frame") + ".");
+      if (de("risk")) L.push("  Known risk: " + de("risk") + ".");
       L.push("");
     }
     if (b.checkpoint !== false) {
@@ -6502,6 +6545,7 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
       "- Ерөнхий үг бүү хэрэглэ («гоё», «сайхан», «мэргэжлийн»). Өнгө, материал, " +
       "линз, гэрлийн чиглэл, багажийн нэр гэх мэт бодит зүйл нэрлэ.\n" +
       "- Энэ суваг бусдаас ЯЛГАРАХ ёстой. Хамгийн ердийн хувилбарыг бүү сонго.\n" +
+      B.REAL_RULE +
       "- Формат:\n{\n" +
       '  "titleFmt": "энэ нишид ажилладаг гарчгийн давтагдах загвар, нэг мөр",\n' +
       keys +
@@ -6593,6 +6637,7 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
       "; хоолой, дуу авианы талбарыг ертөнцийн уур амьсгалд тохируулж санал болго.\n" +
       "- Энэ бол нэг ангийн биш, СУВГИЙН тогтмол хэв маяг — бүх ангид давтагдах зүйлийг бич.\n" +
       "- «гоё», «мэргэжлийн» зэрэг ерөнхий үг бүү хэрэглэ.\n" +
+      B.REAL_RULE +
       "- Формат:\n{\n" + fmt + "\n}\n\n" +
       "Ертөнц:\n" + (world.join("\n") || "(зөвхөн зураг)");
 
@@ -6669,15 +6714,17 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
       '  "risk_en": "risk‑ийн англи хувилбар" }\n' +
       "- «_en» талбарууд нь монгол эхийнхээ ЯГ орчуулга байна, шинэ зүйл бүү нэм.\n" +
       "- Монгол талбарууд бүгд МОНГОЛ, тодорхой шийдэл болгож бич. Асуулт бүү тавь.\n" +
-      "- Брэнд файлаас гажсан зүйл бүү санал болго.\n\n" +
+      "- Брэнд файлаас гажсан зүйл бүү санал болго.\n" +
+      B.REAL_RULE + "\n" +
       B.autoContext() +
       "\nСанаа: " + idea;
 
     const o = await WB.api.askJSON(prompt, 2200);
     if (!o || typeof o !== "object") throw new Error("хариу таарсангүй");
-    b.direction = o;
+    S.pushHistory();
+    b.direction = S.fixDirection(o);
     S.touch();
-    return o;
+    return b.direction;
   };
 
   /* ═════════════════ ДЭЛГЭЦ ═════════════════════════════════ */
@@ -6803,22 +6850,17 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
       box.innerHTML = "";
       return;
     }
-    const rows = [
-      ["Харагдац", d.look],
-      ["Хэмнэл", d.pacing],
-      ["Эхлээд баталгаажуулах кадр", d.frame],
-      ["Эмзэг тал", d.risk]
-    ];
     box.classList.add("on");
-    box.innerHTML = rows
-      .filter((r) => r[1])
-      .map((r) => '<div class="issue tip"><b>' + U.esc(r[0]) + ":</b> " + U.esc(r[1]) + "</div>")
-      .join("");
+    box.innerHTML = "";
+    S.DIRECTION_FIELDS.forEach((x) => {
+      box.appendChild(WB.ui.dualField(d[x.k], "brand", x.lb.replace("Чиглэл · ", ""), ""));
+    });
   }
   B.paintDirection = paintDirection;
 
   /** Санал болгосон чиглэлийг устгана — мастер промтоос мөн хасагдана. */
   B.clearDirection = function () {
+    S.pushHistory();
     S.P.brand.direction = null;
     S.touch();
     paintDirection();
@@ -8541,6 +8583,7 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
       "- cast дотор яг " + nCast + " дүр, locs дотор " + nLocs + " байршил, scenes дотор " + nScenes + " үзэгдэл байна.\n" +
       '- scenes доторх "cast" ба "loc" талбарууд нь дээр зохиосон нэрсийг ЯГ давтаж бичнэ.\n' +
       "- Үзэгдлүүд цаг хугацааны дарааллаар, эхлэл–тэмцэл–шийдэл бүхий бүтэцтэй.\n" +
+      (WB.brand ? WB.brand.REAL_RULE : "") +
       imgRules +
       (WB.brand ? WB.brand.autoContext() : "") +
       "\nСанаа: " + (idea || "(өгөөгүй — зурган дээрх агшнаас түүхээ эхлүүл)");
@@ -8594,7 +8637,8 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
       "- Зөвхөн JSON массив буцаа.\n" +
       '- Формат: [{"cam":"англи камерын заавар, ж: slow dolly in, low angle","dur":"3s","body":"монголоор тухайн кадрт юу харагдаж, юу хөдөлж байгаа"}]\n' +
       "- cam талбар АНГЛИ, body талбар МОНГОЛ хэлээр.\n" +
-      "- Кадрууд давхардахгүй, үзэгдлийн явцыг бүрэн харуулна.\n\n" +
+      "- Кадрууд давхардахгүй, үзэгдлийн явцыг бүрэн харуулна.\n" +
+      (WB.brand ? WB.brand.REAL_RULE : "") + "\n" +
       "Үзэгдэл: " + (scene.name || "") + "\n" + (scene.body.mn || scene.body.en || "");
     const arr = await WB.api.askJSON(prompt, 2000);
     if (!Array.isArray(arr)) throw new Error("кадрын жагсаалт буруу форматтай");
@@ -8784,6 +8828,7 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
         "- Keep every concrete detail from the original; add precision, never invent contradictions.\n" +
         "- Keep Mongolian cultural terms and their clarifiers intact.\n" +
         "- One paragraph each, under 110 words, English only.\n" +
+        "- Do not exaggerate: keep human scale, sizes, numbers and physical proportions realistic and exactly as given — no hyperbole.\n" +
         (WB.brand && WB.brand.polishHint()
           ? "- The channel style is appended automatically after your text — do NOT restate it. " +
             "Only keep the prompt consistent with it, never contradicting it: " + WB.brand.polishHint() + ".\n"
@@ -9508,20 +9553,17 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
   el("dirBtn").onclick = async (e) => {
     if (!AU.needAI()) return;
     await UI.withBtn(e.target, "Бодож байна…", async () => {
-      await B.direction();
-      B.paintDirection();
-      const d = S.P.brand.direction;
+      const d = await B.direction();
       const fs = S.P.brand.frameSubject;
       /* Чиглэл монгол ба англи хоёуланг нэг дуудлагаар өгдөг тул
          нэмэлт орчуулгагүйгээр хоёр талыг зэрэг дүүргэнэ. */
-      if (d && d.frame && !fs.mn.trim() && !fs.en.trim()) {
-        fs.mn = d.frame;
-        fs.en = d.frame_en || "";
-        fs.src = d.frame_en ? "ai" : "";
+      if (d && d.frame && (d.frame.mn || d.frame.en) && !fs.mn.trim() && !fs.en.trim()) {
+        fs.mn = d.frame.mn;
+        fs.en = d.frame.en;
+        fs.src = d.frame.src;
         S.touch();
-        UI.renderAll();
       }
-      B.paintOutputs();
+      UI.renderAll();
       U.toast("Чиглэл бэлэн — доорх туршилтын кадрыг эхлээд шалгаарай", "good");
     });
   };

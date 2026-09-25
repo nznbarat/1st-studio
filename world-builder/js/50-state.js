@@ -42,6 +42,15 @@
     }
   ];
 
+  /* Давхарга 4 — AI‑ийн санал болгосон чиглэл. Бусад мөрийн адил хос хэлтэй
+     тул хэтрүүлэг, буруу орчуулгыг гараар засна. */
+  S.DIRECTION_FIELDS = [
+    { k: "look", lb: "Чиглэл · Харагдац" },
+    { k: "pacing", lb: "Чиглэл · Хэмнэл" },
+    { k: "frame", lb: "Чиглэл · Эхлээд баталгаажуулах кадр" },
+    { k: "risk", lb: "Чиглэл · Эмзэг тал" }
+  ];
+
   S.BRAND_FIELDS = [
     {
       k: "look", layer: 2, need: true, lb: "Визуал гарын үсэг",
@@ -201,6 +210,24 @@
     if (!f || typeof f !== "object") return F(typeof f === "string" ? f : "");
     return { mn: f.mn || "", en: f.en || "", auto: f.auto !== false, unk: f.unk || [], src: f.src || "" };
   }
+  /** Хуучин чиглэл {look, look_en, …} (мөр) → хос хэлний талбарууд. */
+  function fixDirection(d) {
+    if (!d || typeof d !== "object") return null;
+    const out = {};
+    let any = false;
+    S.DIRECTION_FIELDS.forEach((x) => {
+      const v = d[x.k];
+      if (v && typeof v === "object") out[x.k] = fixField(v);
+      else {
+        const mn = typeof v === "string" ? v : "";
+        const en = typeof d[x.k + "_en"] === "string" ? d[x.k + "_en"] : "";
+        out[x.k] = { mn: mn, en: en, auto: true, unk: [], src: en ? "ai" : "" };
+      }
+      if (out[x.k].mn || out[x.k].en) any = true;
+    });
+    return any ? out : null;
+  }
+  S.fixDirection = fixDirection;
   function fixBrand(b) {
     const out = S.blankBrand();
     if (!b || typeof b !== "object") return out;
@@ -223,7 +250,7 @@
     out.locked = !!b.locked;
     out.lockedAt = b.lockedAt || 0;
     out.checkpoint = b.checkpoint !== false;
-    out.direction = b.direction && typeof b.direction === "object" ? b.direction : null;
+    out.direction = fixDirection(b.direction);
     return out;
   }
   function fixFieldSet(obj, defs) {
@@ -246,6 +273,10 @@
         out.push({ field: P.brand.f[d.k], kind: "brand", label: "Брэнд · " + d.lb })
       );
       out.push({ field: P.brand.frameSubject, kind: "brand", label: "Брэнд · Туршилтын кадр" });
+      if (P.brand.direction)
+        S.DIRECTION_FIELDS.forEach((d) =>
+          out.push({ field: P.brand.direction[d.k], kind: "brand", label: "Брэнд · " + d.lb })
+        );
     }
     if (want("scene"))
       P.scenes.forEach((s, i) => out.push({ field: s.body, kind: "scene", label: s.name || "Үзэгдэл " + (i + 1) }));

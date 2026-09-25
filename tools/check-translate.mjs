@@ -53,6 +53,7 @@ const CASES = [
   ["хормой нь салхинд намирна", /hem/, /skirt of a robe/],
   ["анаморф хальсны нарийн ширхэг", /anamorphic.*grain/, /narrow/],
   ["тэнгэрийн дэвсгэрт", /backdrop/, /mat/],
+  ["үлэмж том хүн", /immense/, /ulemj/],
 ];
 
 let pass = 0;

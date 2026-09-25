@@ -54,6 +54,16 @@
     }
   ];
 
+  /**
+   * Хэтрүүлгээс сэргийлэх дүрэм — монгол текст зохиодог бүх AI дуудлагад.
+   * «аврага хүмүүс» мэт гарчгийг үгчлэн ойлгож хүмүүсийг «зургаа дахин
+   * өндөр» болгодог байсан.
+   */
+  B.REAL_RULE =
+    "- Бодит байдлаас бүү хазай: хүний биеийн хэмжээ, харьцаа, тоо ширхэг бодит байна. " +
+    "«зургаа дахин өндөр», «тэнгэр шүргэсэн» мэт хэтрүүлэг, санаанд үгчлэн ойлгох зүйрлэл бүү бич. " +
+    "Нишийн болон гарчгийн «аврага», «агуу» мэт үгийг утгаар нь (алдартай, хүндтэй) ойлго — биеийн хэмжээ гэж бүү ойлго.\n";
+
   /* ── туслахууд ──────────────────────────────────────────── */
   const CYR = /[а-яөүё]/i;
 
@@ -249,12 +259,12 @@
     L.push("", "=== LAYER 4 · CHECKPOINT ===");
     const d = b.direction;
     if (d) {
-      const de = (k) => B.toEN(d[k + "_en"] || d[k] || "");
+      const de = (k) => (d[k] ? txt(d[k]) : "");
       L.push("Approved direction:");
-      if (de("look")) L.push("  Look: " + de("look"));
-      if (de("pacing")) L.push("  Pacing: " + de("pacing"));
-      if (de("frame")) L.push("  Frame to approve first: " + de("frame"));
-      if (de("risk")) L.push("  Known risk: " + de("risk"));
+      if (de("look")) L.push("  Look: " + de("look") + ".");
+      if (de("pacing")) L.push("  Pacing: " + de("pacing") + ".");
+      if (de("frame")) L.push("  Frame to approve first: " + de("frame") + ".");
+      if (de("risk")) L.push("  Known risk: " + de("risk") + ".");
       L.push("");
     }
     if (b.checkpoint !== false) {
@@ -324,6 +334,7 @@
       "- Ерөнхий үг бүү хэрэглэ («гоё», «сайхан», «мэргэжлийн»). Өнгө, материал, " +
       "линз, гэрлийн чиглэл, багажийн нэр гэх мэт бодит зүйл нэрлэ.\n" +
       "- Энэ суваг бусдаас ЯЛГАРАХ ёстой. Хамгийн ердийн хувилбарыг бүү сонго.\n" +
+      B.REAL_RULE +
       "- Формат:\n{\n" +
       '  "titleFmt": "энэ нишид ажилладаг гарчгийн давтагдах загвар, нэг мөр",\n' +
       keys +
@@ -415,6 +426,7 @@
       "; хоолой, дуу авианы талбарыг ертөнцийн уур амьсгалд тохируулж санал болго.\n" +
       "- Энэ бол нэг ангийн биш, СУВГИЙН тогтмол хэв маяг — бүх ангид давтагдах зүйлийг бич.\n" +
       "- «гоё», «мэргэжлийн» зэрэг ерөнхий үг бүү хэрэглэ.\n" +
+      B.REAL_RULE +
       "- Формат:\n{\n" + fmt + "\n}\n\n" +
       "Ертөнц:\n" + (world.join("\n") || "(зөвхөн зураг)");
 
@@ -491,15 +503,17 @@
       '  "risk_en": "risk‑ийн англи хувилбар" }\n' +
       "- «_en» талбарууд нь монгол эхийнхээ ЯГ орчуулга байна, шинэ зүйл бүү нэм.\n" +
       "- Монгол талбарууд бүгд МОНГОЛ, тодорхой шийдэл болгож бич. Асуулт бүү тавь.\n" +
-      "- Брэнд файлаас гажсан зүйл бүү санал болго.\n\n" +
+      "- Брэнд файлаас гажсан зүйл бүү санал болго.\n" +
+      B.REAL_RULE + "\n" +
       B.autoContext() +
       "\nСанаа: " + idea;
 
     const o = await WB.api.askJSON(prompt, 2200);
     if (!o || typeof o !== "object") throw new Error("хариу таарсангүй");
-    b.direction = o;
+    S.pushHistory();
+    b.direction = S.fixDirection(o);
     S.touch();
-    return o;
+    return b.direction;
   };
 
   /* ═════════════════ ДЭЛГЭЦ ═════════════════════════════════ */
@@ -625,22 +639,17 @@
       box.innerHTML = "";
       return;
     }
-    const rows = [
-      ["Харагдац", d.look],
-      ["Хэмнэл", d.pacing],
-      ["Эхлээд баталгаажуулах кадр", d.frame],
-      ["Эмзэг тал", d.risk]
-    ];
     box.classList.add("on");
-    box.innerHTML = rows
-      .filter((r) => r[1])
-      .map((r) => '<div class="issue tip"><b>' + U.esc(r[0]) + ":</b> " + U.esc(r[1]) + "</div>")
-      .join("");
+    box.innerHTML = "";
+    S.DIRECTION_FIELDS.forEach((x) => {
+      box.appendChild(WB.ui.dualField(d[x.k], "brand", x.lb.replace("Чиглэл · ", ""), ""));
+    });
   }
   B.paintDirection = paintDirection;
 
   /** Санал болгосон чиглэлийг устгана — мастер промтоос мөн хасагдана. */
   B.clearDirection = function () {
+    S.pushHistory();
     S.P.brand.direction = null;
     S.touch();
     paintDirection();

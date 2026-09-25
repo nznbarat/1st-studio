@@ -2,7 +2,7 @@
    «биш», «хэт», «энд», «тэнд» гэх мэт өдөр бүр хэрэглэгддэг атлаа
    толинд байгаагүй үгс. */
 WB.dict.add({ id:"adj-core", label:"Цөм · тэмдэг нэр, дайвар, туслах үг", icon:"🔤", w:{
-"биш":"not","өнгийн":"coloured","улаан өнгийн":"red","алтан өнгийн":"golden",
+"биш":"not","үлэмж":"immense","үлэмж том":"immensely large","үлэмж их":"immense","өнгийн":"coloured","улаан өнгийн":"red","алтан өнгийн":"golden",
 "цэнхэр өнгийн":"blue","гадагш":"outward","эхнийх":"the first one","өнөөгийн":"present-day",
 "бурхны":"Buddhist","бурхны шүүгээ":"Buddhist altar cabinet","ээрүүл":"spindle","зүүн гар":"left hand",
 "баруун гар":"right hand","эхэн":"beginning","эхэн сар":"first month","биш юм":"is not",

@@ -77,6 +77,7 @@
       "- cast дотор яг " + nCast + " дүр, locs дотор " + nLocs + " байршил, scenes дотор " + nScenes + " үзэгдэл байна.\n" +
       '- scenes доторх "cast" ба "loc" талбарууд нь дээр зохиосон нэрсийг ЯГ давтаж бичнэ.\n' +
       "- Үзэгдлүүд цаг хугацааны дарааллаар, эхлэл–тэмцэл–шийдэл бүхий бүтэцтэй.\n" +
+      (WB.brand ? WB.brand.REAL_RULE : "") +
       imgRules +
       (WB.brand ? WB.brand.autoContext() : "") +
       "\nСанаа: " + (idea || "(өгөөгүй — зурган дээрх агшнаас түүхээ эхлүүл)");
@@ -130,7 +131,8 @@
       "- Зөвхөн JSON массив буцаа.\n" +
       '- Формат: [{"cam":"англи камерын заавар, ж: slow dolly in, low angle","dur":"3s","body":"монголоор тухайн кадрт юу харагдаж, юу хөдөлж байгаа"}]\n' +
       "- cam талбар АНГЛИ, body талбар МОНГОЛ хэлээр.\n" +
-      "- Кадрууд давхардахгүй, үзэгдлийн явцыг бүрэн харуулна.\n\n" +
+      "- Кадрууд давхардахгүй, үзэгдлийн явцыг бүрэн харуулна.\n" +
+      (WB.brand ? WB.brand.REAL_RULE : "") + "\n" +
       "Үзэгдэл: " + (scene.name || "") + "\n" + (scene.body.mn || scene.body.en || "");
     const arr = await WB.api.askJSON(prompt, 2000);
     if (!Array.isArray(arr)) throw new Error("кадрын жагсаалт буруу форматтай");
@@ -320,6 +322,7 @@
         "- Keep every concrete detail from the original; add precision, never invent contradictions.\n" +
         "- Keep Mongolian cultural terms and their clarifiers intact.\n" +
         "- One paragraph each, under 110 words, English only.\n" +
+        "- Do not exaggerate: keep human scale, sizes, numbers and physical proportions realistic and exactly as given — no hyperbole.\n" +
         (WB.brand && WB.brand.polishHint()
           ? "- The channel style is appended automatically after your text — do NOT restate it. " +
             "Only keep the prompt consistent with it, never contradicting it: " + WB.brand.polishHint() + ".\n"

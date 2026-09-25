@@ -133,6 +133,7 @@
   const RULES = [
     "Output English only. Never leave Cyrillic characters in the output.",
     "Keep it natural, visual and concrete — these become AI image/video prompts.",
+    "Translate faithfully: never exaggerate, intensify or add drama; keep sizes, proportions, numbers and quantities exactly as in the source.",
     "Preserve Mongolian cultural terms with a short clarifier on first use: deel (traditional Mongolian robe), ger (yurt), morin khuur (horsehead fiddle), airag (fermented mare's milk), ovoo (sacred cairn), khadag (ceremonial silk scarf), khuushuur, buuz, del (mane).",
     "Keep roughly the same length and the same line breaks as the input.",
     "Do not add commentary, quotes, numbering or explanation."

@@ -529,20 +529,17 @@
   el("dirBtn").onclick = async (e) => {
     if (!AU.needAI()) return;
     await UI.withBtn(e.target, "Бодож байна…", async () => {
-      await B.direction();
-      B.paintDirection();
-      const d = S.P.brand.direction;
+      const d = await B.direction();
       const fs = S.P.brand.frameSubject;
       /* Чиглэл монгол ба англи хоёуланг нэг дуудлагаар өгдөг тул
          нэмэлт орчуулгагүйгээр хоёр талыг зэрэг дүүргэнэ. */
-      if (d && d.frame && !fs.mn.trim() && !fs.en.trim()) {
-        fs.mn = d.frame;
-        fs.en = d.frame_en || "";
-        fs.src = d.frame_en ? "ai" : "";
+      if (d && d.frame && (d.frame.mn || d.frame.en) && !fs.mn.trim() && !fs.en.trim()) {
+        fs.mn = d.frame.mn;
+        fs.en = d.frame.en;
+        fs.src = d.frame.src;
         S.touch();
-        UI.renderAll();
       }
-      B.paintOutputs();
+      UI.renderAll();
       U.toast("Чиглэл бэлэн — доорх туршилтын кадрыг эхлээд шалгаарай", "good");
     });
   };
