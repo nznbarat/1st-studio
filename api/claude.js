@@ -18,7 +18,10 @@
 const ALLOWED_MODEL = /^claude-[a-z0-9.\-]+$/i;
 const DEFAULT_MODEL = process.env.WB_MODEL || "claude-sonnet-4-6";
 const MAX_TOKENS_CAP = Number(process.env.WB_MAX_TOKENS || 8000);
-const MAX_BODY_CHARS = 120000;
+/* Лавлагаа зурагтай хүсэлт: 1568px JPEG нэг бүр base64‑ээр ~0.3–0.7 MB.
+   Vercel‑ийн хүсэлтийн хязгаар 4.5 MB тул түүнээс доош байлгана. */
+const MAX_BODY_CHARS = 4000000;
+const MAX_IMAGES = 4;
 
 /* Хамгийн энгийн хурдны хязгаар — нэг IP‑ээс минутад хэдэн дуудлага.
    Serverless нь төлөвгүй тул зөвхөн нэг instance дотор ажиллана;
@@ -95,6 +98,15 @@ module.exports = async function handler(req, res) {
   const messages = Array.isArray(body.messages) ? body.messages : null;
   if (!messages || !messages.length) {
     return res.status(400).json({ error: { message: "messages массив шаардлагатай" } });
+  }
+
+  /* Зураг бүр эзэмшигчийн түлхүүрээр төлөгддөг тул тоог хязгаарлана. */
+  let images = 0;
+  for (const m of messages) {
+    if (Array.isArray(m && m.content)) images += m.content.filter((b) => b && b.type === "image").length;
+  }
+  if (images > MAX_IMAGES) {
+    return res.status(400).json({ error: { message: "Нэг хүсэлтэд " + MAX_IMAGES + "‑өөс ихгүй зураг." } });
   }
 
   const payload = { model, max_tokens: maxTokens, messages };

@@ -57,12 +57,20 @@
       <div class="pane-head">
         <span class="eyebrow">Алхам 0 · Автомат горим</span>
         <h2>Нэг санаанаас бүтэн ертөнц</h2>
-        <p>Товч санаагаа монголоор бичээд <b>Ертөнц бүтээх</b> дарна уу. Claude түүх, дүр, байршлыг зохиож, англи промт руу орчуулж, кадарт хувааж, сонгосон хэрэгсэлд тааруулж өнгөлнө. Бүх үр дүнг гараар засаж болно.</p>
+        <p>Товч санаагаа монголоор бичээд <b>Ертөнц бүтээх</b> дарна уу. Хүсвэл <b>лавлагаа зураг</b> хамт оруулбал Claude дүрийн төрх, хувцас, орчин, гэрэл, өнгийг зургаас нь авна. Claude түүх, дүр, байршлыг зохиож, англи промт руу орчуулж, кадарт хувааж, сонгосон хэрэгсэлд тааруулж өнгөлнө. Бүх үр дүнг гараар засаж болно.</p>
       </div>
 
       <div class="card big">
         <label class="flabel" for="autoIdea">Таны санаа (монголоор)</label>
         <textarea id="autoIdea" class="bigin" rows="3" spellcheck="false" placeholder="Жишээ: Говьд ганцаараа амьдардаг хөгшин анчин мөхөж буй ирвэсийг аврахаар сүүлчийн аяндаа гарна."></textarea>
+
+        <div class="reflabel"><span class="flabel inline">Лавлагаа зураг <i>(заавал биш)</i></span><span id="refCount" class="refcount"></span></div>
+        <div id="refZone" class="refzone" tabindex="0" role="button" aria-label="Лавлагаа зураг оруулах">
+          <div class="refhint">🖼 Зураг <b>чирж оруулах</b>, <b>дарж сонгох</b> эсвэл <b>Ctrl+V</b> — хамгийн ихдээ 3.
+            <small>Claude дүрийн төрх, хувцас, орчин, гэрэл, өнгийг зургаас авна. Зөвхөн AI холбогдсон үед ажиллана · төсөлд хадгалагдахгүй.</small></div>
+          <div id="refThumbs" class="refthumbs"></div>
+        </div>
+        <input type="file" id="refInput" accept="image/*" multiple hidden>
 
         <div class="genrewrap">
           <span class="flabel inline">Жанр:</span>
@@ -460,6 +468,7 @@
 <script src="js/52-brand.js"></script>
 <script src="js/55-prompt.js"></script>
 <script src="js/60-ui.js"></script>
+<script src="js/66-refimg.js"></script>
 <script src="js/70-auto.js"></script>
 <script src="js/75-demo.js"></script>
 <script src="js/80-main.js"></script>

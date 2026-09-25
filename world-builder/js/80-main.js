@@ -92,14 +92,22 @@
   /* ── 0. АВТО САМБАР ─────────────────────────────────────── */
   el("autoRun").onclick = async (e) => {
     const idea = el("autoIdea").value.trim();
-    if (!idea) {
-      U.toast("Эхлээд санаагаа монголоор бичнэ үү", "bad");
+    const images = WB.refimg.blocks();
+    if (!idea && !images.length) {
+      U.toast("Эхлээд санаагаа бичих эсвэл лавлагаа зураг оруулна уу", "bad");
       el("autoIdea").focus();
       return;
     }
     if (!AU.needAI()) return;
+    /* Сануулга эхэлж — «Болих» дарвал явцын мөр гацаж үлдэхгүй */
+    const warn = WB.brand.gate();
+    if (warn && !(await U.confirm(warn, "Үргэлжлүүлэх"))) {
+      UI.goto("brand");
+      return;
+    }
     const cfg = {
       idea: idea,
+      images: images,
       genre: el("autoGenre").value.trim(),
       scenes: Number(el("autoScenes").value) || 6,
       cast: Number(el("autoCast").value) || 3,
@@ -110,11 +118,6 @@
       target: el("targetSel").value
     };
     autoBar = UI.progress("Эхэлж байна…");
-    const warn = WB.brand.gate();
-    if (warn && !(await U.confirm(warn, "Үргэлжлүүлэх"))) {
-      UI.goto("brand");
-      return;
-    }
 
     el("autoLog").innerHTML = "";
     el("autoRun").disabled = true;
@@ -657,6 +660,7 @@
 
   /* ── эхлүүлэлт ──────────────────────────────────────────── */
   function boot() {
+    WB.refimg.wire();
     const brag = el("dictBrag");
     if (brag) brag.textContent = WB.dict.size().toLocaleString("en-US");
     const restored = S.restore();
