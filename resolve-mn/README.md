@@ -3,7 +3,7 @@
 DaVinci Resolve-ийн интерфейсийн монгол хэл дээрх лавлах.
 Программын цэс, самбар, товчлуур, тохиргоо бүрийн монгол нэр, тайлбар, хаана байдгийг цуглуулсан.
 
-**1022 нэр томьёо · 47 ангилал · 133 товчлуур · 622 гарын авлагын дэлгэрэнгүй тайлбар · 6 ажлын урсгал · 8 хуудасны загвар · 20 нээгддэг цэс**
+**1052 нэр томьёо · 48 ангилал · 133 товчлуур · 656 гарын авлагын дэлгэрэнгүй тайлбар · 6 ажлын урсгал · 8 хуудасны загвар · 20 нээгддэг цэс**
 
 ---
 
@@ -105,6 +105,10 @@ Fairlight, Deliver) хуулбарлан харуулна. Нийт **640 тов
   үед; Single/Multiple User — Local төслийн санд саарал. Тайлбар нь шалтгааныг нэрлэнэ.
 - **Color → Effects → Library** таб дээр товшиход Resolve FX Blur бүлгийн бодит жагсаалт
   (Box Blur, CineFocus, Directional Blur, Gaussian Blur, Lens Blur, Mosaic Blur) нээгдэнэ.
+- **Fusion хуудасны хэрэгслийн мөр** — 28 товч, 6 бүлэг (4-4-5-5-3-7), бүгд tooltip-оор баталгаажсан.
+  Товч дээр хулганаа тавихад доод мөрөнд Resolve-ийн бодит тайлбар гарна (жишээ нь «Merge - Layers one
+  image over another…»). Дүрс бүрийг зурагнаас хэлбэрийг нь дагаж SVG-ээр зурсан (js/53-sim-icons.js).
+- **Fusion Inspector** — MediaIn нодын Image / Audio / Settings таб товшиход агуулга нь солигдоно.
 - **Cut хуудасны ⚌ "Timeline Options" товч** 18 тохиргооны бодит жагсаалт нээнэ (Ripple On, Snap,
   Display Clip…, Edit Using Ch…, Fixed Playhead, Boring Detector); хажуугийн ⇤≡ "Timeline Actions" товч 15 командын
   жагсаалт (Create Subtitles from Audio … Add Transition to All Edits; Voice Convert саарал). 3 дахь товч
@@ -135,7 +139,7 @@ Blackmagic-ийн албан ёсны гарын авлагын хэв маяг�
 - Толинд: карт бүрийн **▸ Гарын авлага** мөрөөр нээгдэнэ; холбоос хайлт руу үсэрнэ.
 - Хамрах хүрээ: загварын бүх товших цэг (290), 13 цэсний бүх команд (225),
   AI (Neural Engine) ба сэргээн засварын 36 хэрэглүүр, Photo Album, Resolve FX Blur,
-  Cut хуудасны Timeline Options ба Timeline Actions цэс, товчнууд, Keyframes самбар — нийт 622.
+  Cut хуудасны Timeline Options ба Timeline Actions цэс, товчнууд, Keyframes самбар, Fusion хэрэгслийн мөр, MediaIn Inspector — нийт 656.
   Үлдсэн 400 нэр томьёо богино тайлбартай; дараагийн шатанд.
 - Бичлэгийн хэлбэр: `js/long/*.js` файлд `RM.dict.long({ id: "бичвэр" })`.
   Мини-markdown: хоосон мөр — догол, `## ` — дэд гарчиг, `- ` / `1. ` — жагсаалт,
@@ -161,6 +165,8 @@ resolve-mn/
     ├── 30-ui.js            толины интерфейс — хайлт, жагсаалт, хөтөч
     ├── 50-sim-pages.js     Edit, Color хуудасны бүтэц
     ├── 51-sim-more.js      Media, Cut, Fusion, Fairlight, Deliver, Photo
+    ├── 52-sim-menus.js     нээгддэг цэсний агуулга
+    ├── 53-sim-icons.js     дүрсүүд (SVG) — Fusion хэрэгслийн мөр, Inspector
     ├── 60-sim-ui.js        загварын харилцан үйлдэл
     ├── 90-main.js          толины эхлүүлэлт
     ├── 91-sim-main.js      загварын эхлүүлэлт
@@ -190,13 +196,15 @@ resolve-mn/
         ├── r23-ai-sergeen.js   AI (Neural Engine), сэргээн засварын хэрэглүүр
         ├── r24-photo.js        Photo — цомгийн шүүлтүүрийн цэс
         ├── r25-resolvefx-blur.js Resolve FX Blur (Color → Effects → Library)
-        └── r26-cut-tses.js     Cut — Timeline Options цэс, timeline-ийн товчнууд
+        ├── r26-cut-tses.js     Cut — Timeline Options цэс, timeline-ийн товчнууд
+        └── r27-fusion-mediain.js Fusion — хэрэгслийн мөр, MediaIn Inspector
     └── long/                   гарын авлагын дэлгэрэнгүй тайлбар (RM.dict.long)
         ├── l01–l08             загварын товших цэгүүд, хуудас, самбарууд
         ├── l07-ai-sergeen.js   AI ба сэргээн засварын хэрэглүүр
         ├── l09–l12             13 цэсний командууд
         ├── l13–l14             Photo Album цэс, Resolve FX Blur
-        └── l15-cut-tses.js     Cut хуудасны цэс, товчнууд
+        ├── l15-cut-tses.js     Cut хуудасны цэс, товчнууд
+        └── l16-fusion-mediain.js Fusion хэрэгслийн мөр, MediaIn Inspector
 ```
 
 ---
@@ -303,8 +311,12 @@ Color хуудасны нодны хөдөлгүүр дээр засварлан
 - **Cut хуудасны ⚌ Timeline Options цэс** — 18 мөр, 7 тусгаарлагч, 6 чагт; **⇤≡ Timeline Actions цэс** — 15 мөр,
   5 тусгаарлагч (Voice Convert саарал байсан);
   тайрах/дахин синк цэсний 3 мөр; 14 товчны tooltip; Keyframes самбарын хоёр … цэс (2026-09-19).
+- **Fusion хэрэгслийн мөр** — 28 товчны tooltip, доод мөрийн тайлбар; Background, FastNoise … Renderer 3D.
+  Гарын авлагаас санаж байсан жагсаалтаас ялгаатай нь: MultiMerge, MultiPoly, pDirectionalForce
+  (pMerge, Resize байхгүй). **MediaIn Inspector** — Image, Audio, Settings табын бүх мөр (2026-09-25).
 
-Хараахан баталгаажуулаагүй: Cut хуудасны дээд timeline-ийн 3 дахь товчны tooltip нэр
+Хараахан баталгаажуулаагүй: Fusion Inspector-ийн толгойн дүрсүүдийн (● ⌄, хувилбар, хадаас, түгжээ,
+буцаах) tooltip; Source Color/Gamma Space-ийн доторх мөрүүд; Cut хуудасны дээд timeline-ийн 3 дахь товчны tooltip нэр
 (цэсний агуулга нь баталгаажсан); транспорт мөрийн 6 засварын товч, тэдгээрийн баруун талын 3 + 5 товчны нэр;
 Resync Clip-ийн яг үйлдэл; цэсний дэд цэснүүдийн (AI Tools, Audio Operations,
 Edit Options, Go To, Sort by…) доторх мөрүүд; Resolve 20–21-д нэмэгдсэн AI хэрэглүүрийн

@@ -431,6 +431,48 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
 .fu-tools .ft{width:30px;height:28px;border-radius:3px;display:flex;align-items:center;justify-content:center;
   font-size:14px;color:var(--rs-icon);flex-shrink:0}
 .fu-tools .div{width:1px;height:20px;background:var(--rs-line2);margin:0 8px;flex-shrink:0}
+/* Fusion — 2026-09-25-ны зураг: хэрэгслийн мөр төвлөрсөн, Inspector дээд эгнээнд */
+.fu-body{display:flex;flex-direction:column}
+.fu-body .fu-tools{justify-content:center}
+.fu-bins{display:flex;flex-direction:column}
+.fu-bins .mp-bin.sub{padding-left:22px}
+.fu-folders{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 6px;padding:10px 6px;align-content:start}
+.fu-folder{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:10px;color:var(--rs-dim);min-width:0}
+.fu-folder i{width:46px;height:30px;border-radius:2px;background:linear-gradient(#6b6b71,#56565c);position:relative}
+.fu-folder i::before{content:"";position:absolute;left:0;top:-4px;width:18px;height:5px;background:#6b6b71;border-radius:2px 2px 0 0}
+.fu-folder span{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fu-insp .pane-b{overflow:auto}
+.fu-insp .insp-row .lb{width:96px}
+.insp-tabs div.hs{cursor:pointer}
+.insp-tabs div.off{color:#4a4a50}
+.insp-chk{display:flex;align-items:center;gap:8px;margin:6px 0 6px 104px;font-size:10.5px;color:var(--rs-txt)}
+.insp-chk i{width:11px;height:11px;border:1px solid #5a5a60;border-radius:2px;background:#1c1c20;flex-shrink:0}
+.kfd{font-size:8px;color:var(--rs-dim);flex-shrink:0}
+.insp-row .val.in{background:#1c1c20;border:1px solid #3a3a40;height:16px}
+.insp-row .sl.ticks{background:repeating-linear-gradient(90deg,#5a5a60 0 1px,transparent 1px 4px);height:8px}
+.insp-row .sl.ticks::after{display:none}
+.insp-btn{margin:6px 0 2px 104px;padding:4px 0;text-align:center;border:1px solid #4a4a50;border-radius:12px;font-size:10.5px;color:var(--rs-txt)}
+.insp-note{height:40px;background:#1c1c20;border:1px solid #3a3a40;border-radius:2px;margin-top:4px}
+.fu-tools .ft{width:34px;height:30px}
+.fu-tools .ft svg{display:block;width:26px;height:22px}
+.fu-tools .ft:hover{color:#d8d8dc}
+.fu-itabs div{display:flex;flex-direction:column;align-items:center;gap:2px}
+.fu-itabs div svg{display:block}
+.fu-itabs div br{display:none}
+.fu-itabs div.act{color:var(--rs-txt)}
+.fu-hdr{gap:6px}
+.fu-hdr .fu-tog{width:22px;height:12px;border-radius:6px;background:#141417;position:relative;flex-shrink:0}
+.fu-hdr .fu-tog i{position:absolute;right:3px;top:2.5px;width:7px;height:7px;border-radius:50%;background:#e8473c}
+.fu-hdr .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.fu-hdr .bdot{width:8px;height:8px;border-radius:50%;background:#7ab0dc;margin-left:4px;flex-shrink:0}
+.fu-hdr .chev{color:var(--rs-dim)}
+.fu-hdr .hic{color:var(--rs-dim);display:flex}
+.fu-hdr .hic svg{width:15px;height:13px}
+.fu-hdr .hic.dim{opacity:.45}
+.rs-status .st-hint{display:none;font-family:'Inter',system-ui,sans-serif;font-size:10.5px;color:var(--rs-txt)}
+.rs-status.hinting .st-hint{display:inline}
+.rs-status .ro{display:none}
+.rs-status.readout .ro{display:inline}
 .rs-status{height:20px;flex-shrink:0;background:var(--rs-pane);border-top:1px solid var(--rs-line);display:flex;align-items:center;
   padding:0 10px;gap:10px;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:9.5px;color:var(--rs-dim2)}
 .node-canvas{flex:1;background:var(--rs-pane);position:relative;height:100%;
@@ -438,7 +480,7 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
 .node{position:absolute;height:26px;background:#3c3c42;border:1px solid #4a4a50;border-radius:3px;display:flex;align-items:center;
   justify-content:center;color:var(--rs-txt);font-size:11px;padding:0 10px}
 .node .nl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.node.sel{border-color:var(--rs-red);box-shadow:0 0 0 1px var(--rs-red)}
+.node.nsel{border-color:var(--rs-red);box-shadow:0 0 0 1px var(--rs-red)}
 .node::before{content:"";position:absolute;left:-7px;top:50%;transform:translateY(-50%);border-top:4px solid transparent;
   border-bottom:4px solid transparent;border-left:5px solid #888}
 .node::after{content:"";position:absolute;right:-7px;top:50%;transform:translateY(-50%);width:5px;height:5px;background:#888}
@@ -462,7 +504,7 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
   font-family:'JetBrains Mono',ui-monospace,monospace}
 .cl-thumb{position:absolute;left:8px;top:30px;width:122px;height:70px;border-radius:2px;border:1px solid #0a0c10;
   background:radial-gradient(ellipse at 50% 55%,#2a3340 0%,#161b22 50%,#0b0d11 100%)}
-.cl-thumb.sel{border-color:var(--rs-red);box-shadow:0 0 0 1px var(--rs-red)}
+.cl-thumb.csel{border-color:var(--rs-red);box-shadow:0 0 0 1px var(--rs-red)}
 .cl-thumb .cap{position:absolute;left:0;top:calc(100% + 4px);font-size:11px;color:var(--rs-txt);white-space:nowrap}
 .pal-rail{background:var(--rs-pane);border-bottom:1px solid var(--rs-line);display:flex;align-items:center;gap:2px;
   padding:0 10px;height:44px;flex-shrink:0;overflow:hidden}
@@ -2352,6 +2394,48 @@ note:"Cut хуудасны timeline-ийн зүүн талын товчнууд 
 ["Minimize Subtitle Track","Хадмалын замыг багасгах","Хадмалын замын өндрийг хамгийн бага болгож timeline-д зай гаргана.","","Cut → Timeline Options ⚌"],
 ["Fixed Playhead","Тогтмол заагч","Заагч дэлгэцийн голд тогтож, timeline нь заагчийн доогуур гүйнэ. Зурагт чагттай — Cut хуудасны анхдагч.","","Cut → Timeline Options ⚌"],
 ["Legacy Speed Mode","Хуучин хурдны горим","Хурдны (retime) түлхүүр кадрыг Resolve-ийн өмнөх хувилбаруудын аргаар боловсруулах горим гэж ойлгогдоно. Яг үйлдэл баталгаажаагүй.","","Keyframe timeline … цэс"]
+]});
+
+</script>
+<script>
+/* ── js/dict/r27-fusion-mediain.js ── */
+/* ── Ангилал 27 · Fusion — хэрэгслийн мөр, MediaIn нодын Inspector ──
+   Resolve Studio 21-ийн Fusion хуудас, 2026-09-25-ны дэлгэцийн зургууд:
+   хэрэгслийн мөрийн товч бүрийн tooltip ба доод мөрийн тайлбар (28 товч, бүгд),
+   MediaIn нодын Inspector — Tools / Modifiers, Image / Audio / Settings таб. */
+
+RM.dict.add({ id:"fusion-mediain", label:"Fusion — хэрэгслийн мөр, MediaIn Inspector", icon:"✧", page:"fusion",
+note:"Fusion хуудасны хэрэгслийн мөрийн баталгаажсан товчнууд ба MediaIn нодын Inspector-ийн гурван таб. Мөр бүр дэлгэцийн зургаас.", terms:[
+["Fusion Toolbar","Fusion хэрэгслийн мөр","Viewer ба Nodes самбарын хоорондох 28 товчтой мөр, 6 бүлэгт хуваагдсан. Товчийг дарвал сонгосон нодын ард шинэ нод нэмнэ; хулганаа тавихад нэр нь tooltip-оор, тайлбар нь доод мөрөнд гарна.","","Fusion → Viewer-ийн доор"],
+["FastNoise","Хурдан шуугиан (FastNoise)","Процедурт шуугиан үүсгэгч нод — Perlin шуугианы хурдан хувилбар. Утаа, үүл, манан, бүтэц, хөдөлгөөнт гэрэл, Displace-ийн газрын зураг үүсгэхэд. Tooltip: \"FastNoise - Applies a faster version of Perlin noise\".","","Fusion хэрэгслийн мөр → 2"],
+["Color Curves (Fusion)","Өнгөний муруй (Fusion)","Улаан, ногоон, цэнхэр, альфа суваг бүрийн муруйг засах нод. Tooltip: \"Color Curves - Allows changes to channel color curves\".","","Fusion хэрэгслийн мөр → 6"],
+["MultiMerge","Олон оролттой Merge","Олон дүрсийг нэг нод дотор давхарга болгон нийлүүлэх Merge. Давхарга бүрийн холилт, байрлалыг тусад нь тохируулна. Tooltip: \"MultiMerge - Multi-input Merge\".","","Fusion хэрэгслийн мөр → 10"],
+["Channel Booleans","Сувгийн логик үйлдэл","Урд (foreground) ба дэвсгэрийн (background) дүрсийн сувгуудыг хооронд нь хуулах, нэмэх, хасах зэргээр холих нод. Жишээ нь нэг дүрсийн гэрэлтэлтийг нөгөөгийн альфа болгох. Tooltip: \"Channel Booleans - Allows Boolean combinations of foreground channels with the background\".","","Fusion хэрэгслийн мөр → 11"],
+["MultiPoly","Олон давхаргат полигон маск","Нэг нод дотор олон полигон маскийг давхарга болгон зурж удирдах маск. Олон хэсгийг зэрэг ротоскоп хийхэд. Tooltip: \"MultiPoly - Multi-layer Polygon Mask\".","","Fusion хэрэгслийн мөр → 18"],
+["pDirectionalForce","Чиглэлт хүч (бөөмс)","Бөөмсийн системд нэг чиглэлд үйлчлэх хүч (салхи, таталцал мэт) нэмэх нод. pEmitter-ийн ард холбогдоно. Tooltip: \"pDirectionalForce - pDirectionalForce\".","","Fusion хэрэгслийн мөр → 20"],
+["Spot Light","Чиглэлт гэрэл (3D)","3D орчинд конус хэлбэрийн чиглэлт гэрэл үүсгэх нод — прожектор, гар чийдэн мэт. Merge 3D-д холбож, Renderer 3D-д гэрэлтүүлгийг асаана. Tooltip: \"Spot Light - Generate a Spot Light\".","","Fusion хэрэгслийн мөр → 27"],
+["Tools (Fusion Inspector)","Tools таб (Fusion Inspector)","Fusion Inspector-ийн дээд талын эхний таб — сонгосон нодын өөрийн тохиргоо.","","Fusion → Inspector → Tools"],
+["Modifiers (Fusion Inspector)","Modifiers таб (Fusion Inspector)","Нодын параметрт залгасан модификаторуудын (илэрхийлэл, хөдөлгөөн үүсгэгч, tracker гэх мэт) тохиргоо. Модификатор байхгүй үед саарал — таны зурагт саарал.","","Fusion → Inspector → Modifiers"],
+["Clip Name (MediaIn)","Клипийн нэр (MediaIn)","MediaIn нод аль клипийг уншиж байгааг харуулна. Таны зурагт: dreamina-2026-09-17-3642-Photor…","","Fusion → Inspector → MediaIn"],
+["Image (MediaIn)","Image таб (MediaIn)","MediaIn нодын дүрсний тохиргоо: Process Mode, Media Source, Layer, Source Color Space, Source Gamma Space.","","Fusion → Inspector → MediaIn → Image"],
+["Audio (MediaIn)","Audio таб (MediaIn)","MediaIn нодын дууны тохиргоо: AudioTrack, Sound Offset, AudioCache.","","Fusion → Inspector → MediaIn → Audio"],
+["Settings (Fusion Inspector)","Settings таб (Fusion Inspector)","Fusion-ий бараг бүх нодод байдаг нийтлэг тохиргоо: маскийн хэрэглээ, холболтын шугам, давхарга, тайлбар.","","Fusion → Inspector → Settings"],
+["Process Mode","Боловсруулах горим","Дүрсийг бүтэн кадраар (Full Frames) эсвэл хагас кадраар (field) боловсруулахыг сонгоно. Таны зурагт: Full Frames.","","MediaIn → Image"],
+["Media Source (MediaIn)","Медиа эх (MediaIn)","MediaIn нодын дүрс хаанаас ирэхийг заана. Таны зурагт: Timeline.","","MediaIn → Image"],
+["Layer (MediaIn)","Давхарга (MediaIn)","Олон давхаргатай файлын аль давхаргыг уншихыг сонгоно гэж ойлгогдоно. Таны зурагт: 0.","","MediaIn → Image"],
+["Source Color Space","Эх өнгөний орон зай","Оролтын дүрсний өнгөний орон зайг заах хумигдсан хэсэг. Шугаман (linear) урсгалд ашиглана.","","MediaIn → Image"],
+["Source Gamma Space","Эх гамма орон зай","Оролтын дүрсний гамма (дамжуулах муруй)-г заах хумигдсан хэсэг. Шугаман урсгалд муруйг арилгахад.","","MediaIn → Image"],
+["AudioTrack (MediaIn)","Дууны зам (MediaIn)","Fusion-д тоглуулах дууны эхийг сонгоно. Таны зурагт: Timeline Audio [SEEDANCE_v1_30s].","","MediaIn → Audio"],
+["Sound Offset","Дууны шилжилт","Дууг дүрстэй харьцуулан хэдэн кадраар урагш/хойш шилжүүлнэ. Таны зурагт: 0.0.","","MediaIn → Audio"],
+["AudioCache","Дууны кэш","Fusion-д тоглуулах дууны түр хадгалалтын хэсэг. Доор нь Purge Audio Cache товч.","","MediaIn → Audio"],
+["Purge Audio Cache","Дууны кэшийг цэвэрлэх","Хадгалсан дууны кэшийг устгаж дахин уншуулна. Дуу тасрах, хуучин дуу сонсогдох үед.","","MediaIn → Audio → AudioCache"],
+["Apply Mask Inverted","Маскийг урвуулж хэрэглэх","Нодод залгасан эффект маскийг урвуулна — нод маскийн гадна талд үйлчилнэ. Түлхүүр кадартай.","","Inspector → Settings → Settings"],
+["Multiply by Mask","Маскаар үржүүлэх","Дүрсний өнгийг маскийн утгаар үржүүлж, маскаас гадна хэсгийг хар/тунгалаг болгоно. Түлхүүр кадартай.","","Inspector → Settings → Settings"],
+["Hide Incoming Connections","Орох холболтыг нуух","Nodes самбарт энэ нод руу орж ирэх холболтын шугамыг нууна. Олон шугамтай нарийн схемийг цэгцлэхэд.","","Inspector → Settings → Settings"],
+["Main Layer Name","Үндсэн давхаргын нэр","Нодын гаргах үндсэн давхаргын нэр. Олон давхаргатай урсгалд ашиглагдана гэж ойлгогдоно. Таны зурагт хоосон.","","Inspector → Settings → Layers"],
+["Effect Mask Layer","Эффект маскийн давхарга","Эффект маскийг аль давхаргаас авахыг сонгоно гэж ойлгогдоно. Таны зурагт: Auto. Түлхүүр кадартай.","","Inspector → Settings → Layers"],
+["Comments (Fusion Inspector)","Тайлбар (Fusion Inspector)","Нодын тухай тэмдэглэл бичих талбар. Багийн ажилд, нарийн схемд юу хийснээ сануулахад.","","Inspector → Settings → Comments"],
+["Status Bar (Fusion)","Төлөвийн мөр (Fusion)","Fusion хуудасны доод мөр. Хэрэгслийн товч дээр хулганаа тавихад нэр, тайлбар нь зүүн талд; Viewer дээр пикселийн байрлал, өнгө; баруун талд санах ойн хэрэглээ (зурагт: 9% - 2973 MB).","","Fusion → доод мөр"]
 ]});
 
 </script>
@@ -12286,6 +12370,423 @@ Timeline Options ⚌ → **Fixed Playhead** нь заагчийг **дэлгэц
 });
 
 </script>
+<script>
+/* ── js/long/l16-fusion-mediain.js ── */
+/* ═════════════════════════════════════════════════════════════
+   Гарын авлагын дэлгэрэнгүй тайлбар · Fusion хэрэгслийн мөр, MediaIn нодын Inspector
+   (2026-09-25-ны дэлгэцийн зургууд: 28 товчны tooltip, доод мөрийн тайлбар,
+    MediaIn — Tools / Modifiers, Image / Audio / Settings таб)
+   ═════════════════════════════════════════════════════════════ */
+RM.dict.long({
+
+"fusion-toolbar": `
+## Зориулалт
+Fusion хуудасны **хэрэгслийн мөр** нь Viewer ба Nodes самбарын хооронд байрлах 28 товч — хамгийн их хэрэглэгддэг нодуудыг нэг товшилтоор нэмэх зориулалттай. Товч дээр хулганаа тавихад нэр нь tooltip-оор, товч тайлбар нь дэлгэцийн **доод мөрөнд** гарна.
+
+## Бүлгүүд (Resolve Studio 21 — таны зургаар бүгд баталгаажсан)
+1. **Үүсгэгч, текст, будалт** — Background, FastNoise, Text+, Paint.
+2. **Өнгө, бүдгэрүүлэлт** — Color Corrector, Color Curves, Brightness / Contrast, Blur.
+3. **Нийлүүлэх, хувиргах** — Merge, MultiMerge, Channel Booleans, Matte Control, Transform.
+4. **Маск** — Rectangle, Ellipse, Polygon, BSpline, MultiPoly.
+5. **Бөөмс** — pEmitter, pDirectionalForce, pRender.
+6. **3D** — Image Plane 3D, Shape 3D, Text 3D, Merge 3D, Camera 3D, Spot Light, Renderer 3D.
+
+## Хэрэглэх арга
+- **Товших** — Nodes самбарт сонгосон нодын ард шинэ нод холбогдож нэмэгдэнэ.
+- **Nodes самбар руу чирэх** — хүссэн байрандаа тавина; холболтын шугам дээр тавибал дунд нь орно.
+- Мөрөнд байхгүй нод — Effects самбар эсвэл Nodes самбарт [k:Shift+Space] (Select Tool) -ээр хайна.
+
+> Мөрийг нуух, харуулах — Fusion цэс → Show Toolbar. [[show-toolbar]]. 3D бүлгийн товчийг зүүнээс баруун тийш дараалан дарвал бие биедээ холбогдож бэлэн 3D схем үүснэ гэж Blackmagic-ийн гарын авлагад тайлбарладаг.
+
+Холбоотой: [[node-graph]], [[status-bar-fusion]].
+`,
+
+"fastnoise": `
+## Зориулалт
+**FastNoise** нь Perlin шуугианы хурдан хувилбараар **процедурт бүтэц** үүсгэдэг үүсгэгч нод (оролтгүй, өөрөө дүрс гаргана). Утаа, үүл, манан, ус, гал, хөдөлгөөнт гэрэл сүүдэр, хуучин хальсны толбо, Displace-д зориулсан хэлбэлзлийн газрын зураг — бүгдийн эхлэл.
+
+## Гол параметрүүд (ерөнхий)
+- **Detail** — шуугианы нарийвчлал (давхаргын тоо); их бол ширхэгтэй.
+- **Contrast**, **Brightness** — хар, цагаан хэсгийн харьцаа.
+- **Scale**, **Angle** — хэмжээ, эргэлт; X/Y тусад нь.
+- **Seethe**, **Seethe Rate** — цаг хугацааны дагуу "буцалж" хувирах хурд — хөдөлгөөнт утаанд.
+- **Color** таб — хоёр өнгө эсвэл градиентаар будах.
+
+## Хэрэглэх алхам
+1. Хэрэгслийн мөр → FastNoise (2 дахь товч).
+2. Merge-ийн Foreground-д холбож Apply Mode (Screen, Multiply…) -оор эх дүрс дээр давхарлана.
+3. Seethe Rate-ийг бага зэрэг өсгөж хөдөлгөөнтэй болгоно.
+
+> Tooltip: «FastNoise - Applies a faster version of Perlin noise». Нарийн бодит бүтэц хэрэгтэй бол Effects доторх бусад шуугиан, Particle системийг харьцуулна.
+
+Холбоотой: [[background-node]], [[merge]], [[fusion-toolbar]].
+`,
+
+"color-curves-fusion": `
+## Зориулалт
+**Color Curves** нь Fusion доторх **сувгийн муруйн** засварын нод: улаан, ногоон, цэнхэр, альфа суваг бүрийн оролт-гаралтын муруйг цэгээр чирж өөрчилнө. Color хуудасны Curves-тэй ижил санаа боловч Fusion-ий схем дотор, маск, түлхүүр кадартай хослуулна.
+
+## Хэрэглэх алхам
+1. Засах нодын ард хэрэгслийн мөр → Color Curves (6 дахь товч).
+2. Inspector-т суваг сонгож (Red, Green, Blue, Alpha) муруй дээр цэг нэмж чирнэ.
+3. Хэсэгчлэн засах бол нодын цэнхэр маск оролтод Rectangle, Ellipse, Polygon маск холбоно.
+
+> Tooltip: «Color Curves - Allows changes to channel color curves». Ерөнхий өнгөний засварыг Color хуудсанд хийж, Fusion-д зөвхөн нийлүүлсэн элементүүдийг тааруулах нь ажлын зөв хуваарилалт.
+
+Холбоотой: [[color-corrector-fusion]], [[brightness-contrast]], [[curves]].
+`,
+
+"multimerge": `
+## Зориулалт
+**MultiMerge** нь **олон оролттой Merge** — хоёроос олон дүрсийг нэг нод дотор давхарга болгон нийлүүлнэ. Энгийн Merge бүр хоёр л дүрс нийлүүлдэг тул олон давхаргад Merge-ийн урт гинж үүсдэг; MultiMerge нь үүнийг нэг нод, нэг давхаргын жагсаалт болгож цэгцэлнэ.
+
+## Хэрэглэх алхам
+1. Хэрэгслийн мөр → MultiMerge (10 дахь товч).
+2. Дэвсгэр болон бусад дүрсүүдийг оролтуудад холбоно — холбох бүрт шинэ оролт нэмэгдэнэ.
+3. Inspector-ийн давхаргын жагсаалтаас давхарга бүрийн дараалал, холилтын горим, тунгалаг, байрлалыг тусад нь тохируулна.
+
+> Tooltip: «MultiMerge - Multi-input Merge». Inspector-ийн яг бүтцийг таны зурагт хараагүй — нодыг нэмээд Inspector-ийн зургийг илгээвэл нарийвчилна.
+
+Холбоотой: [[merge]], [[fusion-toolbar]].
+`,
+
+"channel-booleans": `
+## Зориулалт
+**Channel Booleans** нь хоёр дүрсийн **сувгуудыг** хооронд нь холино: урд (foreground, ногоон оролт) дүрсийн R, G, B, A сувгийг дэвсгэрийн (background, шар оролт) сувагтай хуулах, нэмэх, хасах, үржүүлэх, логик үйлдэл (And, Or, Xor) хийх.
+
+## Түгээмэл хэрэглээ
+- Нэг дүрсийн **гэрэлтэлтийг нөгөөгийн альфа** болгох (жишээ нь утааны FastNoise-ийг маск болгох).
+- Сувгийг сольж (R ↔ B) өнгөний эффект.
+- Маск, матт дүрсүүдийг нэмэх, хасах.
+
+## Хэрэглэх алхам
+1. Хэрэгслийн мөр → Channel Booleans (11 дахь товч).
+2. Шар оролт — дэвсгэр, ногоон оролт — урд дүрс.
+3. Inspector-т суваг бүрт эх суваг, үйлдлийг сонгоно.
+
+> Tooltip: «Channel Booleans - Allows Boolean combinations of foreground channels with the background».
+
+Холбоотой: [[matte-control]], [[merge]], [[alpha-channel]].
+`,
+
+"multipoly": `
+## Зориулалт
+**MultiPoly** нь **олон давхаргат полигон маск** — нэг маск нод дотор хэд хэдэн полигон хэлбэрийг тусдаа давхарга болгон зурж, тус бүрийг нуух, түгжих, хөдөлгөх боломжтой. Нэг кадарт олон хэсгийг зэрэг ротоскоп хийхэд (жишээ нь хүний гар, хөл, толгой тусдаа) олон Polygon нод үүсгэхээс цэгцтэй.
+
+## Хэрэглэх алхам
+1. Маск хэрэглэх нодыг сонгоод хэрэгслийн мөр → MultiPoly (18 дахь товч).
+2. Viewer дээр эхний хэлбэрийг цэгээр зурна; Inspector-оос шинэ давхарга нэмж дараагийн хэлбэрийг зурна.
+3. Хэлбэр бүрт түлхүүр кадар тавьж хөдөлгөөнийг дагуулна.
+
+> Tooltip: «MultiPoly - Multi-layer Polygon Mask». Inspector-ийн давхаргын жагсаалтын яг бүтцийг зургаар шалгаагүй.
+
+Холбоотой: [[polygon-mask]], [[b-spline-mask]], [[fusion-toolbar]].
+`,
+
+"pdirectionalforce": `
+## Зориулалт
+**pDirectionalForce** нь бөөмсийн системд **нэг чиглэлд тогтмол хүч** нэмнэ — салхи, таталцал, урсгал мэт. Бөөмс тэр чиглэлд аажмаар хурдасч хөдөлнө: цас хажуу тийш хийсэх, оч доош унах, утаа дээш хөөрөх.
+
+## Бөөмсийн схем
+1. **pEmitter** — бөөмс цацна. [[particle-emitter]].
+2. **pDirectionalForce** — хүч нэмнэ (хэдэн ч хүчний нод дараалуулж болно).
+3. **pRender** — бөөмсийг 2D дүрс болгоно. [[prender]].
+Хэрэгслийн мөрийн бөөмсийн бүлгийн гурван товчийг зүүнээс баруун тийш дарахад энэ дараалал бүрдэнэ.
+
+## Гол тохиргоо (ерөнхий)
+- **Strength** — хүчний хэмжээ.
+- **Direction** (өнцөг) — хүчний чиглэл.
+
+> Tooltip: «pDirectionalForce - pDirectionalForce». Параметрийн яг нэрийг Inspector-ийн зургаар баталгаажуулаагүй.
+`,
+
+"spot-light": `
+## Зориулалт
+**Spot Light** нь 3D орчинд **конус хэлбэрийн чиглэлт гэрэл** үүсгэнэ — прожектор, гар чийдэн, тайзны гэрэл мэт. Гэрэл нэг цэгээс тодорхой чиглэлд тусч, ирмэг нь зөөлөн бүдгэрнэ; 3D биетүүд дээр гэрэлтэлт, сүүдэр үүсгэнэ.
+
+## Хэрэглэх алхам
+1. Хэрэгслийн мөр → Spot Light (27 дахь товч).
+2. Merge 3D-ийн оролтод холбоно. [[merge-3d]].
+3. Байрлал, чиглэлийг Viewer эсвэл Inspector-оос; өнгө, хүч, конусын өнцөг, ирмэгийн зөөлөн.
+4. Renderer 3D-ийн Lighting (гэрэлтүүлэг), шаардлагатай бол Shadows-ийг асаана. [[renderer-3d]].
+
+> Tooltip: «Spot Light - Generate a Spot Light». Гэрэлтүүлэг асаагаагүй бол Renderer 3D гэрлийг тооцохгүй — "гэрэл ажиллахгүй байна" гэх хамгийн түгээмэл шалтгаан.
+
+Холбоотой: [[camera-3d]], [[shape-3d]].
+`,
+
+"tools-fusion-inspector": `
+## Зориулалт
+Fusion Inspector-ийн дээд талын **Tools** таб нь Nodes самбарт сонгосон нодын **өөрийн тохиргоог** харуулна. Таны зурагт MediaIn1 сонгогдсон тул түүний Image, Audio, Settings гурван дэд таб харагдана.
+
+> Хэд хэдэн нод сонгоход Inspector тус бүрийн хэсгийг дараалан харуулна. Хажуугийн **Modifiers** таб — параметрт залгасан модификаторууд. [[modifiers-fusion-inspector]].
+
+Холбоотой: [[inspector-fusion]].
+`,
+
+"modifiers-fusion-inspector": `
+## Зориулалт
+**Modifiers** таб нь нодын параметрт залгасан **модификаторуудын** тохиргоог харуулна — жишээ нь параметр дээр баруун товч → Modify With → Expression, Perturb (санамсаргүй хэлбэлзэл), Shake, Tracker, Path. Модификатор байхгүй үед таб саарал — таны зурагт саарал.
+
+## Хэрэглээ
+- Параметрийг гараар түлхүүр кадраар биш, **автоматаар** хөдөлгөх (гэрэл анивчих, камер сэгсрэх).
+- Нэг параметрийн утгыг нөгөөд илэрхийллээр холбох.
+
+> Modify With цэсний яг мөрүүдийг Resolve 21 дээр зургаар шалгаагүй.
+
+Холбоотой: [[tools-fusion-inspector]], [[inspector-fusion]].
+`,
+
+"clip-name-mediain": `
+## Зориулалт
+MediaIn нодын Inspector-ийн **Clip Name** мөр нь тухайн нод **аль клипийг** уншиж байгааг харуулна — таны зурагт dreamina-2026-09-17-3642-Photor… (Edit хуудасны timeline дээрх клип). Олон MediaIn-тэй нарийн схемд аль нь аль клип болохыг ялгахад.
+
+> Нодын нэр (MediaIn1) ба клипийн нэр өөр зүйл: нодын нэрийг [k:F2] -оор солиход клип солигдохгүй. Клипийг солих бол Media Pool-оос өөр клипийг нод руу чирнэ.
+
+Холбоотой: [[mediain]].
+`,
+
+"image-mediain": `
+## Зориулалт
+MediaIn нодын **Image** таб нь оролтын **дүрсийг хэрхэн унших** тохиргоо (таны зурагт):
+- **Process Mode** — Full Frames. [[process-mode]].
+- **Media Source** — Timeline. [[media-source-mediain]].
+- **Layer** — 0. [[layer-mediain]].
+- **Source Color Space**, **Source Gamma Space** — хумигдсан хэсгүүд. [[source-color-space]], [[source-gamma-space]].
+
+> Загвар дээр Image, Audio, Settings табыг товшиход агуулга нь солигдоно — бодит программтай адил.
+
+Холбоотой: [[audio-mediain]], [[settings-fusion-inspector]].
+`,
+
+"audio-mediain": `
+## Зориулалт
+MediaIn нодын **Audio** таб нь Fusion-д **дуу тоглуулах** тохиргоо. Fusion дуу засварладаггүй; дууг зөвхөн хөдөлгөөнийг хэмнэл, ярианд тааруулахад сонсоно (таны зурагт):
+- **AudioTrack** — Timeline Audio [SEEDANCE_v1_30s]. [[audiotrack-mediain]].
+- **Sound Offset** — 0.0. [[sound-offset]].
+- **AudioCache** → **Purge Audio Cache** товч. [[audiocache]].
+
+> Viewer-ийн доорх чанга яригчийн товчоор Fusion-ий дууг асааж унтраана. Хулганаа Audio таб дээр тавихад доод мөрөнд «Audio» гэж гарна.
+
+Холбоотой: [[image-mediain]].
+`,
+
+"settings-fusion-inspector": `
+## Зориулалт
+**Settings** таб нь Fusion-ий бараг бүх нодод байдаг **нийтлэг тохиргоо**. Таны зурагт MediaIn-д гурван хэсэг:
+- **Settings** — Apply Mask Inverted, Multiply by Mask, Hide Incoming Connections. [[apply-mask-inverted]], [[multiply-by-mask]], [[hide-incoming-connections]].
+- **Layers** — Main Layer Name, Effect Mask Layer. [[main-layer-name]], [[effect-mask-layer]].
+- **Comments** — тэмдэглэлийн талбар. [[comments-fusion-inspector]].
+
+> Зурагт Inspector-ийн гүйлгэх зурвас доошоо үргэлжилж байсан — Comments-ийн доор өөр хэсэг байж магадгүй. Бусад нодын Settings табд Blend, суваг сонголт, Motion Blur зэрэг нэмэлт мөр байдаг.
+
+Холбоотой: [[image-mediain]], [[audio-mediain]].
+`,
+
+"process-mode": `
+## Зориулалт
+**Process Mode** нь дүрсийг **бүтэн кадраар** (Full Frames) эсвэл **хагас кадраар** (fields — interlaced видеоны сондгой, тэгш мөрүүд тусдаа) боловсруулахыг сонгоно. Таны зурагт Full Frames — орчин үеийн бүх progressive бичлэгт зөв сонголт.
+
+> Хуучин телевизийн interlaced (1080i, NTSC, PAL) бичлэгт fields горим хөдөлгөөнт эффектийг илүү зөв тооцно. Жагсаалтын бусад сонголтыг зурагт задлаагүй.
+
+Холбоотой: [[image-mediain]], [[interlaced]], [[field-order]].
+`,
+
+"media-source-mediain": `
+## Зориулалт
+**Media Source** нь MediaIn нодын дүрс **хаанаас ирэхийг** заана. Таны зурагт **Timeline** — Edit хуудасны timeline дээрх клип (Fusion найруулгыг тэр клип дээр нээсэн). Энэ нь Fusion-ий дүрс timeline-ий засвартай (тайралт, хурд) уялдах үндэс.
+
+> Жагсаалтын бусад сонголтыг зурагт задлаагүй тул энд нэрлээгүй. Нэмэлт клипийг ихэвчлэн Media Pool-оос Nodes самбар руу чирч шинэ MediaIn болгоно.
+
+Холбоотой: [[mediain]], [[image-mediain]].
+`,
+
+"layer-mediain": `
+## Зориулалт
+**Layer** нь олон давхаргатай файлын (жишээ нь EXR, PSD) **аль давхаргыг** уншихыг сонгоно гэж ойлгогдоно. Таны зурагт 0 — ганц давхаргатай видео клипт анхдагч утга.
+
+> Олон давхаргатай файл дээр жагсаалт ямар хэлбэртэй болохыг зургаар шалгаагүй. EXR-ийн нэмэлт сувгийг (гүн, вектор) ашиглах ажилд энэ мөр чухал.
+
+Холбоотой: [[image-mediain]], [[mediain]].
+`,
+
+"source-color-space": `
+## Зориулалт
+**Source Color Space** нь оролтын дүрсний **өнгөний орон зайг** (жишээ нь Rec.709, Rec.2020, ACES) Fusion-д заах хумигдсан хэсэг. Шугаман (linear) урсгалаар нийлүүлэх, 3D гэрэлтүүлэг, бүдгэрүүлэлтийг физикт ойр болгохын тулд эх өнгөний орон зайг зөв мэдэх шаардлагатай.
+
+> Таны зурагт хумигдсан (›) — дотор нь юу байгааг задлаагүй. Ихэнх тохиолдолд Resolve-ийн өнгөний удирдлага (Project Settings → Color Management) үүнийг хариуцдаг тул өөрчлөх шаардлагагүй.
+
+Холбоотой: [[source-gamma-space]], [[input-color-space]].
+`,
+
+"source-gamma-space": `
+## Зориулалт
+**Source Gamma Space** нь оролтын дүрсний **гамма (дамжуулах муруй)** -г заах хумигдсан хэсэг. Шугаман урсгалд гамма муруйг арилгаж (linearize) нийлүүлээд, MediaOut-ийн өмнө буцааж тавьдаг. Шугаман орчинд Merge, Blur, гэрэлтүүлэг бодит гэрэл шиг зөв холилдоно.
+
+> Таны зурагт хумигдсан (›). Дотор нь ямар сонголт байгааг зургаар шалгаагүй.
+
+Холбоотой: [[source-color-space]], [[gamma]].
+`,
+
+"audiotrack-mediain": `
+## Зориулалт
+**AudioTrack** нь Fusion-д тоглуулах **дууны эхийг** сонгоно. Таны зурагт **Timeline Audio [SEEDANCE_v1_30s]** — timeline-ий нийт дуу. Хөдөлгөөнт гарчиг, эффектийг хөгжмийн цохилт, ярианд тааруулахад сонсоно.
+
+> Дуу Fusion-ий үр дүнд орохгүй — эцсийн дуу Edit, Fairlight хуудсанд хэвээр. Жагсаалтын бусад сонголтыг зурагт задлаагүй.
+
+Холбоотой: [[audio-mediain]], [[sound-offset]].
+`,
+
+"sound-offset": `
+## Зориулалт
+**Sound Offset** нь Fusion-д сонсох дууг дүрстэй харьцуулан **урагш, хойш шилжүүлнэ** (кадраар). Таны зурагт 0.0 — шилжилтгүй. Дуу дүрснээс хоцорч, түрүүлж сонсогдвол тааруулна.
+
+> Энэ нь зөвхөн Fusion доторх сонсголд нөлөөлнө гэж ойлгогдоно; timeline-ий дууны синк өөрчлөгдөхгүй.
+
+Холбоотой: [[audiotrack-mediain]].
+`,
+
+"audiocache": `
+## Зориулалт
+**AudioCache** хэсэг нь Fusion-д тоглуулах дууны **түр хадгалалт** (кэш). Кэш дуу тоглуулалтыг саадгүй болгоно. Таны зурагт задлагдсан (⌄), дотор нь нэг товч — **Purge Audio Cache**. [[purge-audio-cache]].
+
+Холбоотой: [[audio-mediain]].
+`,
+
+"purge-audio-cache": `
+## Зориулалт
+**Purge Audio Cache** нь хадгалсан дууны кэшийг **устгаж**, дууг дахин уншуулна. Дуу тасрах, хуучин хувилбар сонсогдох, timeline-ий дууг өөрчилсний дараа Fusion-д шинэчлэгдэхгүй байх үед.
+
+> Кэш устгах нь аюулгүй — эх файл, засварт нөлөөлөхгүй; дараагийн тоглуулалтад дахин үүснэ.
+
+Холбоотой: [[audiocache]], [[render-cache]].
+`,
+
+"apply-mask-inverted": `
+## Зориулалт
+**Apply Mask Inverted** нь нодын цэнхэр маск оролтод холбосон **эффект маскийг урвуулна** — нод маскийн **гадна** талд үйлчилнэ. Жишээ: нүүрийг Ellipse-ээр хүрээлээд Blur нодод энэ сонголтыг асаавал нүүрнээс бусад хэсэг бүдгэрнэ.
+
+> Хажууд нь ◆ — түлхүүр кадраар асааж унтраах боломжтой. Маскийн нод дотор ч Invert сонголт бий; аль нэгийг нь л ашиглана, эс бөгөөс хоёр урвуулалт бие биеэ хүчингүй болгоно.
+
+Холбоотой: [[multiply-by-mask]], [[settings-fusion-inspector]].
+`,
+
+"multiply-by-mask": `
+## Зориулалт
+**Multiply by Mask** нь дүрсний өнгийг **маскийн утгаар үржүүлнэ** — маскаас гадна хэсэг хар, тунгалаг болж, зөвхөн маскийн дотор үлдэнэ. Элементийг тусгаарлаж өөр дэвсгэр дээр Merge хийхэд.
+
+> ◆ — түлхүүр кадартай. Энгийн эффект маск нь нодын үйлчлэлийг хязгаарладаг бол энэ сонголт дүрсийг өөрийг нь тайрдаг гэдгээрээ ялгаатай.
+
+Холбоотой: [[apply-mask-inverted]], [[alpha-channel]].
+`,
+
+"hide-incoming-connections": `
+## Зориулалт
+**Hide Incoming Connections** нь Nodes самбарт энэ нод руу **орж ирэх холболтын шугамыг** нууна. Хол байрлах нодоос олон шугам татагдаж схем ороолдсон үед харагдацыг цэгцэлнэ; холболт өөрөө хэвээр ажиллана.
+
+> Шугам харагдахгүй тул дараа нь "яагаад энэ нод өөрчлөгдөж байна" гэж андуурахаас сэргийлж Comments-д тэмдэглэнэ. [[comments-fusion-inspector]].
+
+Холбоотой: [[node-graph]].
+`,
+
+"main-layer-name": `
+## Зориулалт
+**Main Layer Name** нь нодын гаргах **үндсэн давхаргын нэр** — Layers хэсгийн эхний мөр. Олон давхаргатай урсгалд давхаргыг нэрээр нь ялгах зориулалттай гэж ойлгогдоно. Таны зурагт хоосон.
+
+> Энэ Layers хэсэг нь Resolve-ийн шинэ хувилбаруудад нэмэгдсэн олон давхаргын боломжтой холбоотой байх магадлалтай; яг ажиллагааг зургаар баталгаажуулаагүй.
+
+Холбоотой: [[effect-mask-layer]], [[layer-mediain]].
+`,
+
+"effect-mask-layer": `
+## Зориулалт
+**Effect Mask Layer** нь нодын эффект маскийг **аль давхаргаас** авахыг сонгоно гэж ойлгогдоно. Таны зурагт **Auto** — автоматаар. ◆ — түлхүүр кадартай.
+
+> Жагсаалтын бусад сонголтыг зурагт задлаагүй; ихэнх ажилд Auto хэвээр үлдээнэ.
+
+Холбоотой: [[main-layer-name]], [[apply-mask-inverted]].
+`,
+
+"comments-fusion-inspector": `
+## Зориулалт
+**Comments** нь нодын тухай **чөлөөт тэмдэглэл** бичих талбар. Нарийн схемд "энэ нод юу хийдэг", "хэзээ, яагаад өөрчилсөн" гэдгийг сануулах, багийн гишүүнд дамжуулахад. Fusion-д тэмдэглэлтэй нод Nodes самбарт тэмдэгтэй харагдаж, хулгана тавихад тэмдэглэл нь гардаг гэж Fusion-ий гарын авлагад тайлбарладаг.
+
+Холбоотой: [[settings-fusion-inspector]], [[node-graph]].
+`,
+
+"status-bar-fusion": `
+## Зориулалт
+Fusion хуудасны **доод төлөвийн мөр** хоёр хэсэгтэй:
+- **Зүүн тал** — хулганы доорх зүйлийн мэдээлэл. Хэрэгслийн товч дээр: нэр ба тайлбар (жишээ нь «Merge - Layers one image over another, with rotation, scaling and offset»). Viewer дээр: пикселийн байрлал, өнгө (Position, Canvas R G B A). [[position-viewer]], [[canvas-rgba]].
+- **Баруун тал** — Fusion-ий санах ойн хэрэглээ (таны зурагт 9% - 2973 MB). [[render-cache]].
+
+> Загвар дээр хэрэгслийн мөрийн товч дээр хулганаа тавихад доод мөрөнд бодит англи тайлбар нь гарна — бүгд таны зургаас.
+
+Холбоотой: [[fusion-toolbar]].
+`,
+
+"prender": `
+## Зориулалт
+**pRender** нь бөөмсийн системийг **2D дүрс** болгож гаргах нод — бөөмсийн схемийн төгсгөл. pEmitter-ийн цацсан, хүчний нодуудын хөдөлгөсөн бөөмсийг кадар бүрт зурж, Merge-ээр бусад дүрстэй нийлүүлэх боломжтой болгоно.
+
+## Бөөмсийн схем
+1. **pEmitter** → 2. хүчний нодууд (pDirectionalForce…) → 3. **pRender** → Merge.
+Хэрэгслийн мөрийн бөөмсийн бүлгийн гурван товч (19–21) энэ дарааллаар.
+
+## Гол тохиргоо (ерөнхий)
+- **Output Mode** — 2D эсвэл 3D (3D бол Merge 3D-д холбоно).
+- **Pre-Generate Frames** — эхний кадраас өмнө бөөмсийг урьдчилан үүсгэж, эхнээс нь дүүрэн харагдуулна.
+
+> Tooltip: «pRender - Renders Particles».
+
+Холбоотой: [[particle-emitter]], [[pdirectionalforce]].
+`,
+
+"image-plane-3d": `
+## Зориулалт
+**Image Plane 3D** нь 2D дүрс, видеог 3D орчинд **бүтэцтэй хавтгай** болгон байрлуулна. 3D камер хөдлөхөд зураг жинхэнэ гүнтэй мэт перспективээр харагдана — олон давхарга гүнд байрлуулж "2.5D" parallax эффект хийх үндэс.
+
+## Хэрэглэх алхам
+1. MediaIn (эсвэл зураг) сонгоод хэрэгслийн мөр → Image Plane 3D (22 дахь товч).
+2. Merge 3D-д холбоно; Transform хэсгээр Z (гүн) байрлал өгнө.
+3. Camera 3D, Renderer 3D нэмж камерыг хөдөлгөнө.
+
+> Tooltip: «Image Plane 3D - Converts an image to a textured plane». 3D бүлгийн товчийг зүүнээс баруун тийш дарвал Image Plane 3D → Merge 3D → Camera 3D → Renderer 3D схем автоматаар холбогдоно гэж гарын авлагад бичсэн.
+
+Холбоотой: [[merge-3d]], [[camera-3d]], [[renderer-3d]].
+`,
+
+"text-3d": `
+## Зориулалт
+**Text 3D** нь **зузаантай, гурван хэмжээст** текст үүсгэнэ — ирмэгийн налуу (bevel), гүн (extrusion), материал, гэрэлтүүлэгтэй. Кино, телевизийн гарчиг, лого шиг текст; камераар тойрон эргүүлэх.
+
+## Хэрэглэх алхам
+1. Хэрэгслийн мөр → Text 3D (24 дахь товч).
+2. Inspector-т текст, фонт, хэмжээ; Extrusion хэсэгт гүн, налуу.
+3. Merge 3D, Spot Light, Camera 3D, Renderer 3D-тэй холбож гэрэлтүүлнэ.
+
+> Tooltip: «Text 3D - Text3D». Хавтгай хөдөлгөөнт текст хангалттай бол Text+ хурдан, хялбар. [[text-plus-node]].
+
+Холбоотой: [[merge-3d]], [[renderer-3d]], [[spot-light]].
+`,
+
+"merge-3d": `
+## Зориулалт
+**Merge 3D** нь 3D орчны **төв цуглуулагч**: Image Plane 3D, Shape 3D, Text 3D биетүүд, гэрэл, камерыг нэг үзэгдэлд нийлүүлнэ. 2D Merge хоёр дүрсийг давхарладаг бол Merge 3D олон 3D элементийг нэг орон зайд байрлуулна.
+
+## Хэрэглэх алхам
+1. Хэрэгслийн мөр → Merge 3D (25 дахь товч).
+2. Биет, гэрэл, камерыг оролтуудад холбоно — холбох бүрт шинэ оролт нэмэгдэнэ.
+3. Гаралтыг Renderer 3D-д холбоно. [[renderer-3d]].
+
+> Tooltip: «Merge 3D - Merge 3D Data». Merge 3D-ийн Transform-ийг өөрчлөхөд доторх бүх элемент зэрэг хөдөлнө — бүх үзэгдлийг нэг дор эргүүлэх арга.
+
+Холбоотой: [[image-plane-3d]], [[shape-3d]], [[text-3d]], [[camera-3d]], [[spot-light]].
+`
+
+});
+
+</script>
 <!-- long:end -->
 <script>
 /* ── js/50-sim-pages.js ── */
@@ -12845,6 +13346,51 @@ Timeline Options ⚌ → **Fixed Playhead** нь заагчийг **дэлгэц
   const S = RM.sim, H = S._h;
 
   /* ═══════════ FUSION ═══════════ */
+  /* Fusion хэрэгслийн мөр — 28 товч, 4|4|5|5|3|7 бүлэг (2026-09-25-ны зургууд).
+     [толины id, дүрс, tooltip, доод мөрийн тайлбар]. 28 товч бүгд tooltip-оор баталгаажсан.
+     id нь null бол нэр нь хараахан баталгаажаагүй товч (одоогоор байхгүй). */
+  const FU_TOOLS = [
+    [["background-node", "▥", "Background", "Background - Creates a four-point gradient frame"],
+     ["fastnoise", "▩", "FastNoise", "FastNoise - Applies a faster version of Perlin noise"],
+     ["text-plus-node", "T", "Text+", "Text+ - Text+"],
+     ["paint", "✎", "Paint", "Paint - Animated Paint System"]],
+    [["color-corrector-fusion", "◍", "Color Corrector", "Color Corrector - Full color correction"],
+     ["color-curves-fusion", "⟋", "Color Curves", "Color Curves - Allows changes to channel color curves"],
+     ["brightness-contrast", "☼", "Brightness / Contrast", "Brightness / Contrast - Applies Brightness and Contrast"],
+     ["blur-fusion", "◖", "Blur", "Blur - Blurs images"]],
+    [["merge", "⧉", "Merge", "Merge - Layers one image over another, with rotation, scaling and offset"],
+     ["multimerge", "⧈", "MultiMerge", "MultiMerge - Multi-input Merge"],
+     ["channel-booleans", "⊟", "Channel Booleans", "Channel Booleans - Allows Boolean combinations of foreground channels with the background"],
+     ["matte-control", "◪", "Matte Control", "Matte Control - Applies Blurring and Contrast to the Matte"],
+     ["transform-fusion", "⟳", "Transform", "Transform - Applies rotation, scaling and mirroring effects"]],
+    [["rectangle-mask", "▭", "Rectangle", "Rectangle - Creates a rectangular mask"],
+     ["ellipse-mask", "◯", "Ellipse", "Ellipse - Creates an elliptical mask"],
+     ["polygon-mask", "⬠", "Polygon", "Polygon - Draw a Polyline"],
+     ["b-spline-mask", "⌒", "BSpline", "BSpline - Draw a BSpline Polyline"],
+     ["multipoly", "〰", "MultiPoly", "MultiPoly - Multi-layer Polygon Mask"]],
+    [["particle-emitter", "⁂", "pEmitter", "pEmitter - Generates Particles"],
+     ["pdirectionalforce", "⁘", "pDirectionalForce", "pDirectionalForce - pDirectionalForce"],
+     ["prender", "⋰", "pRender", "pRender - Renders Particles"]],
+    [["image-plane-3d", "▱", "Image Plane 3D", "Image Plane 3D - Converts an image to a textured plane"],
+     ["shape-3d", "⬢", "Shape 3D", "Shape 3D - Generate a Shape"],
+     ["text-3d", "Ṯ", "Text 3D", "Text 3D - Text3D"],
+     ["merge-3d", "⚭", "Merge 3D", "Merge 3D - Merge 3D Data"],
+     ["camera-3d", "⬡", "Camera 3D", "Camera 3D - Creates a standard camera"],
+     ["spot-light", "✺", "Spot Light", "Spot Light - Generate a Spot Light"],
+     ["renderer-3d", "◓", "Renderer 3D", "Renderer 3D - Renders 3D Scene"]]
+  ];
+  const FU_TOOLBAR = () => FU_TOOLS.map((g) => g.map(([id, ic, name, st]) => id
+    ? `<span class="ft hs" data-t="${id}" title="${name}" data-status="${st}">${S.icon(id, ic)}</span>`
+    : `<span class="ft hs" data-t="fusion-toolbar" title="Нэр нь хараахан баталгаажаагүй">${ic}</span>`
+  ).join("")).join('<span class="div"></span>');
+
+  /* Media Pool — Master сангийн хавтаснууд (2026-09-25-ны зураг, нэр нь зурагт таслагдсан хэвээр) */
+  const FU_FOLDERS = ["01_Holog_T…", "02_Suirel_A…", "03_Eej_Huu", "04_Avrah_h…", "05_Tovchlu…",
+                      "06_Cockpit…", "07_Huvtsas…", "08_Test_Ex…", "09_Referen…", "10_Green_S…"];
+
+  /* ═══════════ FUSION ═══════════
+     2026-09-25-ны зургууд: Inspector дээд эгнээнд (хагас өндөр), хэрэгслийн мөр,
+     Nodes, төлөвийн мөр бүтэн өргөнөөр. MediaIn1 сонгогдсон. */
   S.fusion = () => `
   <div class="rs" data-page="fusion">
     ${H.MENU()}
@@ -12860,87 +13406,105 @@ Timeline Options ⚌ → **Fixed Playhead** нь заагчийг **дэлгэц
     <div class="rs-row2">
       <span class="hs" data-t="panel-toggle">▯ ⌄</span><span>‹ ›</span><span class="hs" data-t="audio-sync">⧖</span>
       <span class="hs" data-t="import-media">▦ ⌄</span><span class="hs" data-t="blackmagic-cloud-account">☁</span>
-      <b class="hs" data-t="bin">S…</b><span class="hs" data-t="thumbnail-view">▦ ⌄</span><span class="hs" data-t="help-search">⌕</span><span>⇅ …</span>
+      <span>…</span><span class="hs" data-t="thumbnail-view">▦ ⌄</span><span class="hs" data-t="help-search">⌕</span><span>⇅ ⋯</span>
       <span class="hs" data-t="zoom-slider">100% ⌄</span><span class="hs" data-t="viewer-mode">▣ ⌄ ▭ ⌄</span>
       <span class="sp"></span>
-      <span class="hs" data-t="viewer-mode">▭ …</span><span class="hs" data-t="zoom-slider">Fit ⌄</span>
+      <span class="hs" data-t="viewer-mode">▭ ⋯</span><span class="hs" data-t="zoom-slider">Fit ⌄</span>
       <span class="hs" data-t="viewer-mode">▣ ⌄ ▭ ⌄</span>
-      <b class="hs" data-t="mediaout">MediaOut1</b><span class="hs" data-t="viewer-mode">▭ ⌄</span><span>D…</span>
+      <b class="hs" data-t="mediaout">MediaOut1</b><span class="hs" data-t="viewer-mode">▭ ⌄</span><span>Default ⌄</span><span>◍ ⌄</span><span>▦</span>
     </div>
-    <div class="rs-body"><div class="fu-split">
-      <div class="fu-left">
-        <div class="rs-top">
-          <div class="pane hs" data-t="bin" style="width:178px;flex-shrink:0">
-            <div class="pane-b">${H.BINS(H.BIN_LIST.slice(1), "Seedance")}</div>
-          </div>
-          <div class="pane hs" data-t="media-pool" style="width:340px;flex-shrink:0">
-            <div class="pane-h hs" data-t="bin"><span>Master / Seedance</span></div>
-            <div class="pane-b">${H.THUMBS(2)}</div>
-          </div>
-          <div class="pane vw hs" data-t="viewer-1-2">
-            <div class="pane-b" style="display:flex;flex-direction:column">
-              <div class="vw-screen dark"><span class="vw-info hs" data-t="resolution">[Main]: 3840x2160 float32</span><div class="img"></div></div>
-              <div class="vw-foot">
-                <div class="tl-ruler hs" data-t="timeline-ruler" style="padding-left:0">
-                  <div class="tk"><span>0</span></div><div class="tk"><span>100</span></div><div class="tk"><span>200</span></div>
-                  <div class="tk"><span>300</span></div><div class="tk"><span>400</span></div><div class="tk"><span>500</span></div>
-                  <div class="tk"><span>600</span></div><div class="tk"><span>700</span></div></div>
-                <div class="vw-jog hs" data-t="jog-bar"><div class="bar"></div></div>
-                ${H.TRANSPORT("0.0", '<span class="tc hs" data-t="timecode">0.0</span><span class="tc hs" data-t="duration">720.0</span><span class="hs" data-t="mute">🔈</span><span class="sp"></span>')}
-              </div>
+    <div class="rs-body fu-body">
+      <div class="rs-top" style="flex:0 0 55%">
+        <div class="pane hs" data-t="bin" style="width:118px;flex-shrink:0">
+          <div class="pane-b"><div class="mp-bins fu-bins">
+            <div class="mp-bin-h hs" data-t="bin">▤ Bins<span class="sp"></span>+</div>
+            <div class="mp-bin act hs" data-t="bin">› Master</div>
+            <div class="sp"></div>
+            <div class="mp-bin-h hs" data-t="smart-bin">✦ Smart Bins<span class="sp"></span>+</div>
+            <div class="mp-bin sub hs" data-t="keyword">Keywords</div>
+            <div class="mp-bin sub hs" data-t="power-bin">› Collections</div>
+          </div></div>
+        </div>
+        <div class="pane hs" data-t="media-pool" style="width:210px;flex-shrink:0">
+          <div class="pane-h hs" data-t="bin"><span>Master</span></div>
+          <div class="pane-b"><div class="fu-folders">
+            ${FU_FOLDERS.map((n) => `<div class="fu-folder hs" data-t="bin"><i></i><span>${n}</span></div>`).join("")}
+          </div></div>
+        </div>
+        <div class="pane vw hs" data-t="viewer-1-2">
+          <div class="pane-b" style="display:flex;flex-direction:column">
+            <div class="vw-screen dark"><span class="vw-info hs" data-t="resolution">[Main]: 3840x2160 float32</span><div class="img"></div></div>
+            <div class="vw-foot">
+              <div class="tl-ruler hs" data-t="timeline-ruler" style="padding-left:0">
+                ${[0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700].map((n) => `<div class="tk"><span>${n}</span></div>`).join("")}
+                <div class="tl-play" style="left:87.5%"></div></div>
+              <div class="vw-jog hs" data-t="jog-bar"><div class="bar"></div></div>
+              ${H.TRANSPORT("630.0", '<span class="tc hs" data-t="timecode">0.0</span><span class="tc hs" data-t="duration">720.0</span><span class="hs" data-t="mute">🔈</span><span class="sp"></span>')}
             </div>
           </div>
         </div>
-        <div class="fu-tools hs" data-t="show-toolbar">
-          <span class="ft hs" data-t="background-node" title="Background">▦</span><span class="ft hs" data-t="mediain" title="MediaIn">▣</span>
-          <span class="ft hs" data-t="text-plus-node" title="Text+">T</span><span class="ft hs" data-t="paint" title="Paint">✎</span>
-          <span class="div"></span>
-          <span class="ft hs" data-t="particle-emitter" title="Particles">∵</span><span class="ft hs" data-t="displace" title="Displace">≋</span>
-          <span class="ft hs" data-t="brightness-contrast" title="Brightness/Contrast">◑</span><span class="ft hs" data-t="color-corrector-fusion" title="Color Corrector">◍</span>
-          <span class="div"></span>
-          <span class="ft hs" data-t="merge" title="Merge">⊕</span><span class="ft hs" data-t="transform-fusion" title="Transform">⊹</span>
-          <span class="ft hs" data-t="blur-fusion" title="Blur">◌</span><span class="ft hs" data-t="glow" title="Glow">✸</span><span class="ft hs" data-t="defocus" title="Defocus">◉</span>
-          <span class="div"></span>
-          <span class="ft hs" data-t="rectangle-mask" title="Rectangle">▭</span><span class="ft hs" data-t="ellipse-mask" title="Ellipse">◯</span>
-          <span class="ft hs" data-t="polygon-mask" title="Polygon">⬠</span><span class="ft hs" data-t="b-spline-mask" title="B-Spline">⌒</span><span class="ft hs" data-t="matte-control" title="Matte Control">◪</span>
-          <span class="div"></span>
-          <span class="ft hs" data-t="tracker" title="Tracker">⊹</span><span class="ft hs" data-t="planar-tracker" title="Planar Tracker">▱</span><span class="ft hs" data-t="delta-keyer" title="Delta Keyer">◈</span>
-          <span class="div"></span>
-          <span class="ft hs" data-t="shape-3d" title="Shape 3D">⬢</span><span class="ft hs" data-t="camera-3d" title="Camera 3D">⬡</span><span class="ft hs" data-t="renderer-3d" title="Renderer 3D">⬣</span>
-        </div>
-        <div class="pane hs" data-t="node-graph" style="flex:1;min-height:0;border-top:1px solid var(--rs-line)">
-          <div class="pane-h"><b>Nodes</b><span class="sp"></span><span class="hs" data-t="node-label">⋯</span></div>
-          <div class="pane-b"><div class="node-canvas">
-            <div class="wire y" style="left:172px;top:40px;width:calc(100% - 340px)"></div>
-            <div class="node sel hs" data-t="mediain" style="left:66px;top:28px;width:160px"><span class="nl">${H.CLIP_SHORT}</span></div>
-            <div class="node hs" data-t="mediaout" style="right:70px;top:28px;width:150px"><span class="nl">MediaOut1</span></div>
-          </div></div>
-        </div>
-        <div class="rs-status hs" data-t="pixel-readout">
-          <span class="hs" data-t="position-viewer">Position&nbsp; X 0.94512&nbsp; 2422&nbsp;&nbsp; Y −0.33804&nbsp; −483</span>
-          <span class="hs" data-t="canvas-rgba">Canvas&nbsp; R 0&nbsp;&nbsp; G 0&nbsp;&nbsp; B 0&nbsp;&nbsp; A 0</span>
-          <span class="sp"></span><span class="hs" data-t="render-cache">10% — 3178 MB</span>
+        <div class="pane insp fu-insp hs" data-t="inspector-fusion" style="width:318px">
+          <div class="pane-h"><b>Inspector</b><span class="sp"></span><span>▭ ⋯</span></div>
+          <div class="insp-tabs"><div class="act hs" data-t="tools-fusion-inspector">Tools</div><div class="off hs" data-t="modifiers-fusion-inspector">Modifiers</div></div>
+          <div class="pane-b">
+            <div class="insp-sec hs" data-t="mediain">
+              <div class="t fu-hdr"><span class="fu-tog"><i></i></span><span class="nm">MediaIn1: dreamina-2026-09-1</span><span class="bdot"></span><span class="chev">⌄</span><span class="sp"></span>
+                <span class="hic dim">${S.icon("hdr-versions")}</span><span class="hic">${S.icon("hdr-pin")}</span><span class="hic">${S.icon("hdr-lock")}</span><span class="hic">${S.icon("hdr-reset")}</span></div>
+              <div class="insp-row hs" data-t="clip-name-mediain"><span class="lb">Clip Name</span><b class="val">dreamina-2026-09-17-3642-Photor</b></div>
+            </div>
+            <div class="insp-tabs three fu-itabs">
+              <div class="act hs" data-t="image-mediain" data-tab="mi:image">${S.icon("insp-image")}<br>Image</div>
+              <div class="hs" data-t="audio-mediain" data-tab="mi:audio" data-status="Audio">${S.icon("insp-audio")}<br>Audio</div>
+              <div class="hs" data-t="settings-fusion-inspector" data-tab="mi:settings">${S.icon("insp-settings")}<br>Settings</div>
+            </div>
+            <div data-tabpane="mi:image">
+              <div class="insp-sec">
+                <div class="insp-row hs" data-t="process-mode"><span class="lb">Process Mode</span><b class="val dd">Full Frames ⌄</b></div>
+                <div class="insp-row hs" data-t="media-source-mediain"><span class="lb">Media Source</span><b class="val dd">Timeline ⌄</b></div>
+                <div class="insp-row hs" data-t="layer-mediain"><span class="lb">Layer</span><b class="val dd">0 ⌄</b></div>
+              </div>
+              <div class="insp-sec hs" data-t="source-color-space"><div class="t">› Source Color Space</div></div>
+              <div class="insp-sec hs" data-t="source-gamma-space"><div class="t">› Source Gamma Space</div></div>
+            </div>
+            <div data-tabpane="mi:audio" hidden>
+              <div class="insp-sec">
+                <div class="insp-row hs" data-t="audiotrack-mediain"><span class="lb">AudioTrack</span><b class="val dd">Timeline Audio [SEEDANCE_v1_30s] ⌄</b></div>
+                <div class="insp-row hs" data-t="sound-offset"><span class="lb">Sound Offset</span><span class="sl ticks"></span><b>0.0</b></div>
+              </div>
+              <div class="insp-sec hs" data-t="audiocache"><div class="t">⌄ AudioCache</div>
+                <div class="insp-btn hs" data-t="purge-audio-cache">Purge Audio Cache</div></div>
+            </div>
+            <div data-tabpane="mi:settings" hidden>
+              <div class="insp-sec"><div class="t">⌄ Settings</div>
+                <div class="insp-chk hs" data-t="apply-mask-inverted"><i></i>Apply Mask Inverted<span class="sp"></span><span class="kfd">◆</span></div>
+                <div class="insp-chk hs" data-t="multiply-by-mask"><i></i>Multiply by Mask<span class="sp"></span><span class="kfd">◆</span></div>
+                <div class="insp-chk hs" data-t="hide-incoming-connections"><i></i>Hide Incoming Connections</div>
+              </div>
+              <div class="insp-sec"><div class="t">⌄ Layers</div>
+                <div class="insp-row hs" data-t="main-layer-name"><span class="lb">Main Layer Name</span><b class="val in"></b></div>
+                <div class="insp-row hs" data-t="effect-mask-layer"><span class="lb">Effect Mask Layer</span><b class="val dd">Auto ⌄</b><span class="kfd">◆</span></div>
+              </div>
+              <div class="insp-sec hs" data-t="comments-fusion-inspector"><div class="t">⌄ Comments</div><div class="insp-note"></div></div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="pane insp hs" data-t="inspector-fusion" style="width:270px">
-        <div class="pane-h"><b>Inspector</b><span class="sp"></span><span>▭ ⋯</span></div>
-        <div class="insp-tabs"><div class="act">Tools</div><div>Modifiers</div></div>
-        <div class="pane-b">
-          <div class="insp-sec hs" data-t="mediain">
-            <div class="t"><span class="tog on"></span> MediaIn1: ${H.CLIP_SHORT} <span class="sp"></span><span class="mini">● ⌄ ▭ ⊠ ⟲</span></div>
-            <div class="insp-row hs" data-t="clip"><span class="lb">Clip Name</span><b class="val">dreamina-2026-09-17-3642-Photor</b></div>
-          </div>
-          <div class="insp-tabs three"><div class="act">▨<br>Image</div><div>♫<br>Audio</div><div>⚙<br>Settings</div></div>
-          <div class="insp-sec">
-            <div class="insp-row hs" data-t="clip"><span class="lb">Process Mode</span><b class="val dd">Full Frames ⌄</b></div>
-            <div class="insp-row hs" data-t="media-pool"><span class="lb">Media Source</span><b class="val dd">Timeline ⌄</b></div>
-            <div class="insp-row hs" data-t="layer-node"><span class="lb">Layer</span><b class="val dd">0 ⌄</b></div>
-          </div>
-          <div class="insp-sec hs" data-t="input-color-space"><div class="t">› Source Color Space</div></div>
-          <div class="insp-sec hs" data-t="gamma"><div class="t">› Source Gamma Space</div></div>
-        </div>
+      <div class="fu-tools hs" data-t="fusion-toolbar">${FU_TOOLBAR()}</div>
+      <div class="pane hs" data-t="node-graph" style="flex:1;min-height:0;border-top:1px solid var(--rs-line)">
+        <div class="pane-h"><b>Nodes</b><span class="sp"></span><span class="hs" data-t="node-label">⋯</span></div>
+        <div class="pane-b"><div class="node-canvas">
+          <div class="wire y" style="left:172px;top:40px;width:calc(57% - 172px)"></div>
+          <div class="node nsel hs" data-t="mediain" style="left:40px;top:28px;width:132px"><span class="nl">dreamina-2026-09-17…</span></div>
+          <div class="node hs" data-t="mediaout" style="left:57%;top:28px;width:130px"><span class="nl">MediaOut1</span></div>
+        </div></div>
       </div>
-    </div></div>
+      <div class="rs-status hs" data-t="status-bar-fusion">
+        <span class="st-hint"></span>
+        <span class="ro hs" data-t="position-viewer">Position&nbsp; X 0.94512&nbsp; 2422&nbsp;&nbsp; Y −0.33804&nbsp; −483</span>
+        <span class="ro hs" data-t="canvas-rgba">Canvas&nbsp; R 0&nbsp;&nbsp; G 0&nbsp;&nbsp; B 0&nbsp;&nbsp; A 0</span>
+        <span class="sp"></span><span class="hs" data-t="render-cache">9% - 2973 MB</span>
+      </div>
+    </div>
     ${H.PAGES("fusion")}
   </div>`;
 
@@ -13018,7 +13582,7 @@ Timeline Options ⚌ → **Fixed Playhead** нь заагчийг **дэлгэц
 
       <div class="cl-strip hs" data-t="clips-panel">
         <span class="cbadge hs" data-t="thumbnail-timeline">01</span><span class="hs" data-t="track" style="margin-left:80px">V1</span>
-        <div class="cl-thumb sel hs" data-t="grade"><span class="cap">H.264 High L5.0</span></div>
+        <div class="cl-thumb csel hs" data-t="grade"><span class="cap">H.264 High L5.0</span></div>
       </div>
 
       <div class="pal-rail hs" data-t="primaries">
@@ -13244,7 +13808,7 @@ Timeline Options ⚌ → **Fixed Playhead** нь заагчийг **дэлгэц
           </div>
           <div class="cl-strip hs" data-t="clips-panel" style="border-top:1px solid var(--rs-line)">
             <span class="cbadge hs" data-t="thumbnail-timeline">01</span><span class="hs" data-t="track" style="margin-left:80px">V1</span>
-            <div class="cl-thumb sel hs" data-t="clip"><span class="cap">H.264 High L5.0</span></div>
+            <div class="cl-thumb csel hs" data-t="clip"><span class="cap">H.264 High L5.0</span></div>
           </div>
           <div class="rs-tlbar hs" data-t="render-in-place" style="border-bottom:0">
             <span class="tl hs" data-t="timeline-menu">⚌</span><span class="sp"></span>
@@ -13912,6 +14476,149 @@ Timeline Options ⚌ → **Fixed Playhead** нь заагчийг **дэлгэц
 
 </script>
 <script>
+/* ── js/53-sim-icons.js ── */
+/* ═════════════════════════════════════════════════════════════
+   53 · Загварын дүрсүүд (SVG)
+
+   Resolve Studio 21-ийн дэлгэцийн зурагнаас (2026-09-25) хэлбэр бүрийг
+   нь дагаж гараар зурсан SVG. Blackmagic-ийн эх зургийг хуулаагүй —
+   ижил хэлбэр, харьцаа, өнгөтэй шинээр зурсан.
+   Үндсэн өнгө нь currentColor (товчны өнгө), бараан дэвсгэр нь тогтмол.
+   ═════════════════════════════════════════════════════════════ */
+(function (RM) {
+  "use strict";
+
+  const S = RM.sim;
+  const DK = "#26262a";     /* товчны доторх бараан дүүргэлт */
+  const FL = "#1a1a1d";     /* 3D дүрсний шал */
+  const sw = (w) => `fill="none" stroke="currentColor" stroke-width="${w}"`;
+  const svg = (body, vb) => `<svg viewBox="${vb || "0 0 28 24"}" width="${vb ? 22 : 22}" height="${vb ? 16 : 19}" aria-hidden="true">${body}</svg>`;
+  const dot = (x, y, r) => `<circle cx="${x}" cy="${y}" r="${r}" fill="currentColor"/>`;
+  const pt = (x, y) => `<circle cx="${x}" cy="${y}" r="1.45" fill="${DK}" stroke="currentColor" stroke-width="1"/>`;
+  const FLOOR = `<path d="M2 18.5 14 13.5 26 18.5 14 23.5z" fill="${FL}"/>`;
+
+  /* тогтмол "санамсаргүй" тоо — дүрс бүр ижил гарна */
+  const rnd = (i) => { const v = Math.sin(i * 12.9898) * 43758.5453; return v - Math.floor(v); };
+
+  /* FastNoise — жижиг нүднүүдийн сүүдэр */
+  let noise = `<defs><filter id="rmFnBlur" x="0" y="0" width="100%" height="100%"><feGaussianBlur stdDeviation=".45"/></filter>
+    <clipPath id="rmFnClip"><rect x="4" y="4.5" width="20" height="15"/></clipPath></defs><g filter="url(#rmFnBlur)" clip-path="url(#rmFnClip)">`;
+  for (let r = 0; r < 9; r++) for (let c = 0; c < 12; c++) {
+    noise += `<rect x="${(4 + c * 1.67).toFixed(2)}" y="${(4.5 + r * 1.67).toFixed(2)}" width="1.7" height="1.7" fill="currentColor" opacity="${(0.1 + 0.75 * rnd(r * 12 + c + 1)).toFixed(2)}"/>`;
+  }
+  noise += "</g>";
+
+  /* Color Corrector — цэгүүдийн цагираг */
+  let ring = dot(14, 12, 1.6);
+  for (let i = 0; i < 10; i++) {
+    const a = (i / 10) * Math.PI * 2, rr = [1.6, 1.15, 1.4, 1.0, 1.5][i % 5];
+    ring += dot((14 + Math.cos(a) * 7.6).toFixed(2), (12 + Math.sin(a) * 7.6).toFixed(2), rr);
+  }
+
+  /* Brightness / Contrast — туяа */
+  let rays = "";
+  for (let i = 0; i < 8; i++) {
+    const a = (i / 8) * Math.PI * 2;
+    rays += dot((14 + Math.cos(a) * 8.4).toFixed(2), (12 + Math.sin(a) * 8.4).toFixed(2), i % 2 ? 0.9 : 1.2);
+  }
+
+  /* Channel Booleans — цэгэн дүүргэлт */
+  let dots = "";
+  for (let y = 10.8; y < 20; y += 1.7) for (let x = 11.3; x < 23.5; x += 1.7) dots += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r=".45" fill="currentColor" opacity=".7"/>`;
+
+  const scatter = (list) => list.map(([x, y, r]) => dot(x, y, r)).join("");
+
+  S.ICON = {
+    /* ── 1. Үүсгэгч, текст, будалт ── */
+    "background-node": svg(`<rect x="3.5" y="4.5" width="21" height="15" rx="1" fill="${DK}" stroke="currentColor" stroke-width="1.3"/>
+      <path d="M6 18 9.4 7.2M9 18l2.8-8.4M12 18l2.1-6.3M15 18l1.5-4.3M18 18l.9-2.4M21 18l.3-.9" ${sw(1.2)}/>`),
+    "fastnoise": svg(noise),
+    "text-plus-node": svg(`<rect x="5" y="2.5" width="18" height="19" rx="1.5" fill="#38383e"/>
+      <path d="M8.5 6.5h11v3.4h-.9l-.5-1.8h-3v9.3l1.5.5v.6h-5.2v-.6l1.5-.5V8.1h-3l-.5 1.8h-.9z" fill="currentColor"/>`),
+    "paint": svg(`<path d="M24.5 2.5 15 12.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M15.8 11.2 12.6 14.4c-1.3 1.3-1.1 3.6-3.2 4.8 2.6.7 5.4-.3 6.7-2.2.9-1.2 1-2.3 1.9-3.3z" fill="currentColor"/>
+      <path d="M3 21c1.5-2.6 3.7-3.8 4.6-2.8.8.9-1.3 2.5-.3 3 .9.4 2.3-.5 3.4-1.2" ${sw(1.2)} stroke-linecap="round" opacity=".55"/>`),
+
+    /* ── 2. Өнгө, бүдгэрүүлэлт ── */
+    "color-corrector-fusion": svg(ring),
+    "color-curves-fusion": svg(`<rect x="5" y="3.5" width="18" height="17" ${sw(1)} opacity=".75"/>
+      <path d="M11 3.5v17M17 3.5v17M5 9.2h18M5 14.8h18" ${sw(0.7)} opacity=".45"/>
+      <path d="M5 20.5C12 20.5 13 3.5 23 3.5" ${sw(1.5)}/>`),
+    "brightness-contrast": svg(`<circle cx="14" cy="12" r="4.6" ${sw(1.6)}/><path d="M14 7.4a4.6 4.6 0 0 1 0 9.2z" fill="currentColor"/>${rays}`),
+    "blur-fusion": svg(`<path d="M14 2.8C11 7.2 8 10.8 8 14.8a6 6 0 0 0 12 0c0-4-3-7.6-6-12z" fill="currentColor"/>
+      <path d="M11 15.2a3.2 3.2 0 0 0 2.4 3" fill="none" stroke="${DK}" stroke-width="1.3" stroke-linecap="round"/>`),
+
+    /* ── 3. Нийлүүлэх, хувиргах ── */
+    "merge": svg(`<rect x="10.5" y="3.5" width="14" height="11" rx=".8" ${sw(1.1)} opacity=".6"/>
+      <rect x="8" y="7" width="14" height="12" rx=".8" fill="#2e2e33" stroke="currentColor" stroke-width="1.3"/>
+      <path d="M3 9.5v6h6.5M7.4 13.3l2.4 2.2-2.4 2.2" ${sw(1.3)}/>`),
+    "multimerge": svg(`<rect x="12.5" y="3" width="13" height="11" rx=".8" ${sw(1)} opacity=".45"/>
+      <rect x="10.5" y="5" width="13" height="12" rx=".8" ${sw(1)} opacity=".7"/>
+      <rect x="8.5" y="7.5" width="14" height="12" rx=".8" fill="#2e2e33" stroke="currentColor" stroke-width="1.3"/>
+      <path d="M3 5.5v11.5h7M3 11h7M8 9l2.2 2L8 13M8 15l2.2 2L8 19" ${sw(1.2)}/>`),
+    "channel-booleans": svg(`<rect x="3.5" y="3" width="15" height="11" fill="#5c5c62"/>
+      <rect x="9.5" y="9" width="15" height="12" fill="${DK}" stroke="currentColor" stroke-width="1.2"/>${dots}`),
+    "matte-control": svg(`<rect x="4" y="2.5" width="20" height="13" fill="#7a7a80"/><path d="M4 2.5h12L4 15.5z" fill="#8f8f95"/>
+      <circle cx="13" cy="8.8" r="4" fill="#141417"/>
+      <path d="M5 20.5h18" ${sw(1)}/>${dot(13, 20.5, 1.5)}`),
+    "transform-fusion": svg(`<rect x="6" y="6.5" width="16" height="12" rx="1" fill="#2e2e33" stroke="currentColor" stroke-width="1.3"/>
+      <path d="M17.5 3.2a5 5 0 0 1 7 4.3M22.4 6.2l2.1 1.8 1.6-2.3M10.5 21.8a5 5 0 0 1-7-4.3M5.6 18.8 3.5 17l-1.6 2.3" ${sw(1.3)}/>`),
+
+    /* ── 4. Маск ── */
+    "rectangle-mask": svg(`<rect x="7" y="5" width="14" height="14" ${sw(1.2)}/>${pt(7, 5)}${pt(21, 5)}${pt(7, 19)}${pt(21, 19)}`),
+    "ellipse-mask": svg(`<circle cx="14" cy="12" r="7" ${sw(1.2)}/>${pt(14, 5)}${pt(21, 12)}${pt(14, 19)}${pt(7, 12)}`),
+    "polygon-mask": svg(`<path d="M12 12 17.5 4M12 12l11 3.5M12 12 4 17.5M12 12l.5 9" ${sw(1.1)}/>${pt(12, 12)}${pt(17.5, 4)}${pt(23, 15.5)}${pt(4, 17.5)}${pt(12.5, 21)}`),
+    "b-spline-mask": svg(`<path d="M4 19C8 7.5 20 7.5 24 19" ${sw(1.2)}/>${pt(4, 19)}${pt(9.5, 7)}${pt(18.5, 7)}${pt(24, 19)}`),
+    "multipoly": svg(`<path d="M3 9c3-4.5 6 3 9 0s6-4.5 9 0l3-1.5M3 17c3 4.5 6-3 9 0s6 4.5 9 0l3 1.5" ${sw(1.1)}/>
+      ${pt(3, 9)}${pt(12, 8.2)}${pt(21, 8)}${pt(25, 7)}${pt(3, 17)}${pt(12, 17.8)}${pt(24.5, 18.5)}`),
+
+    /* ── 5. Бөөмс ── */
+    "particle-emitter": svg(`<path d="M4 19.5 10 16.5 17 18.5 11 21.5z" ${sw(1)}/>
+      ${scatter([[10, 18.4, 1], [11.5, 15, .9], [13.5, 13, 1], [10, 11.5, .8], [15.5, 10, .9], [12.5, 8, .8], [17.5, 7, .9], [14.5, 5, .8], [19.5, 4, .8], [17, 2.8, .7], [20.5, 9.2, .8], [18.5, 12.3, .8], [8.5, 14.2, .7], [22, 6, .7]])}`),
+    "pdirectionalforce": svg(`${scatter([[8, 3, .9], [11, 2.4, .8], [14, 3.4, .9], [17, 2.4, .8], [20, 3.4, .9], [10, 6, .8], [13, 5.4, .9], [16, 6, .8], [19, 6, .8], [22.5, 5.5, .7]])}
+      <path d="M9 21a4 4 0 1 1 3.2-6.4" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M19 10.5v10M14 15.5h10M17.6 11.9l1.4-1.4 1.4 1.4M17.6 19.1l1.4 1.4 1.4-1.4M15.4 14.1 14 15.5l1.4 1.4M22.6 14.1l1.4 1.4-1.4 1.4" ${sw(1)}/>`),
+    "prender": svg(`<rect x="7" y="4" width="16" height="11" fill="#303035"/>
+      <path d="M4 8V3h4.5M24 15v5h-4.5" ${sw(1.2)}/>
+      ${scatter([[10, 6.5, .8], [13, 5.5, .8], [16.5, 7, .9], [12, 9, .8], [15, 9.8, .8], [18.5, 8.5, .8], [20.5, 10.8, .8], [17.5, 12.3, .8], [14, 12, .7], [20, 5.5, .7]])}
+      <path d="M4 21.5 11 14" ${sw(1.1)} stroke-dasharray="1.2 1.6"/>`),
+
+    /* ── 6. 3D ── */
+    "image-plane-3d": svg(`${FLOOR}<path d="M10 17.5V7l8.5-3.5v10.8z" fill="currentColor"/><path d="M10 17.5 18.5 14.3" stroke="${DK}" stroke-width=".8"/>`),
+    "shape-3d": svg(`${FLOOR}<path d="M5.5 15.5 9.5 4.5l4 11z" fill="currentColor" opacity=".8"/>
+      <path d="M16 9.5 20 8l4 1.5v5L20 16l-4-1.5z" fill="currentColor" opacity=".7"/><path d="M16 9.5 20 11l4-1.5M20 11v5" stroke="${DK}" stroke-width=".8" fill="none"/>
+      <circle cx="14" cy="15.5" r="4.3" fill="currentColor"/>`),
+    "text-3d": svg(`${FLOOR}<path d="M9.5 3.8h11.2l-.5 3.5h-.8l-.2-1.7h-3.2l-1.3 10.2 1.4.5-.1.8h-4.9l.1-.8 1.5-.5 1.3-10.2h-3.1l-.6 1.7h-.8z" fill="currentColor"/>
+      <path d="M20.7 3.8l.8.8-.5 3.5h-.8M15.3 16.3l.8.6" stroke="currentColor" stroke-width=".9" fill="none" opacity=".6"/>`),
+    "merge-3d": svg(`${FLOOR}<path d="M4 8.5v6h6.5M8.2 12.3l2.4 2.2-2.4 2.2" ${sw(1.4)}/><circle cx="18" cy="13.8" r="4.6" fill="currentColor"/>`),
+    "camera-3d": svg(`${FLOOR}<path d="M5.5 7.5 14.5 5.5l5 2v8l-9 2-5-2z" fill="#2e2e33" stroke="currentColor" stroke-width="1.2"/>
+      <path d="M19.5 9.5l4.5-2.2v8.2l-4.5-1.7z" ${sw(1.2)}/><rect x="8.2" y="9.3" width="4" height="3" ${sw(1)}/>`),
+    "spot-light": svg(`${FLOOR}<path d="M5.5 7.8 9.5 6v8.4l-4-1.6z" fill="currentColor"/><circle cx="12.8" cy="10.2" r="4.3" fill="#2e2e33" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M19 6.3l2.6-1.6M20 10.2h3.2M19 14.1l2.6 1.6M12.8 16.8v2.4" ${sw(1.3)} stroke-linecap="round"/>`),
+    "renderer-3d": svg(`${FLOOR}<path d="M4 8V3.5h4.5M24 8V3.5h-4.5" ${sw(1.2)}/>
+      <path d="M8 13.5a6 6 0 0 1 12 0z" fill="currentColor"/><path d="M8 13.5h12a6 6 0 0 1-12 0z" fill="#56565c"/>`),
+
+    /* ── Fusion Inspector ── */
+    "insp-image": svg(`<rect x="3" y="2" width="22" height="15" fill="${DK}" stroke="currentColor" stroke-width="1.2"/>${dot(9, 6.5, 1.5)}
+      <path d="M1.5 12 7 9.5l6 3.5 6-4.5 7.5 5.5" ${sw(1.2)}/>`, "0 0 28 20"),
+    "insp-audio": svg(`<rect x="3" y="2" width="19" height="15" fill="${DK}" stroke="currentColor" stroke-width="1.2" opacity=".8"/>
+      <path d="M7.5 7h3M9 5.5v3M14.5 3.5h2.6M15.8 2.2v2.6M10.5 12h2.6M11.8 10.7v2.6" ${sw(1)}/>
+      <path d="M17.5 17.5 24.5 5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>`, "0 0 28 20"),
+    "insp-settings": svg(`<rect x="3" y="2" width="20" height="14" fill="#3a3a40" stroke="currentColor" stroke-width="1.2"/>
+      <circle cx="21.5" cy="14.5" r="3.7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="1.4 1.5"/>
+      <circle cx="21.5" cy="14.5" r="2.7" fill="currentColor"/><circle cx="21.5" cy="14.5" r="1.1" fill="#1e1e22"/>`, "0 0 28 20"),
+    "hdr-versions": svg(`<rect x="3" y="7" width="13" height="10" ${sw(1.2)}/><path d="M6.5 7V3.5h13v10H16" ${sw(1.2)}/>`, "0 0 24 20"),
+    "hdr-pin": svg(`<path d="M13 2.5l7 7-2.2.6-3.4 3.4-.2 3.5-7.2-7.2 3.5-.2 3.4-3.4z" fill="currentColor"/><path d="M8.6 13.4 3.5 18.5" ${sw(1.6)} stroke-linecap="round"/>`, "0 0 24 20"),
+    "hdr-lock": svg(`<rect x="5" y="9" width="13" height="9" rx="1.2" ${sw(1.4)}/><path d="M8 9V6a3.5 3.5 0 0 1 7 0" ${sw(1.4)}/>`, "0 0 24 20"),
+    "hdr-reset": svg(`<path d="M5.5 10a6.5 6.5 0 1 0 2-4.7" ${sw(1.4)}/><path d="M5 2.5v4h4" ${sw(1.4)}/><path d="M12 7v6M9 10h6" ${sw(1.3)}/>`, "0 0 24 20")
+  };
+
+  /* Нэр → SVG; байхгүй бол тэмдэгт буцаана */
+  S.icon = (key, fallback) => S.ICON[key] || fallback || "";
+})(window.RM);
+
+</script>
+<script>
 /* ── js/60-sim-ui.js ── */
 /* ═════════════════════════════════════════════════════════════
    60 · Загварын харилцан үйлдэл — товших, тайлбарлах, хуудас солих
@@ -14254,7 +14961,27 @@ Timeline Options ⚌ → **Fixed Playhead** нь заагчийг **дэлгэц
         }
       }
 
+      /* data-tab="бүлэг:нэр" — Inspector-ийн таб солих (Fusion MediaIn: Image / Audio / Settings) */
+      const tab = e.target.closest("[data-tab]");
+      if (tab) {
+        const key = tab.getAttribute("data-tab"), grp = key.split(":")[0] + ":";
+        RM.$$('#rsHost [data-tab^="' + grp + '"]').forEach((t) => t.classList.toggle("act", t === tab));
+        RM.$$('#rsHost [data-tabpane^="' + grp + '"]').forEach((p) => { p.hidden = p.getAttribute("data-tabpane") !== key; });
+      }
+
       S.select(hs.getAttribute("data-t"), hs);
+    });
+
+    /* Fusion-ий төлөвийн мөр — товч дээр хулгана тавихад нэр, тайлбар нь зүүн талд гарна;
+       Viewer дээр байхад пикселийн байрлал, өнгө (бодит программын зан төлөв). */
+    $("#rsHost").addEventListener("mouseover", (e) => {
+      const bar = $("#rsHost .rs-status");
+      const hint = bar && bar.querySelector(".st-hint");
+      if (!hint) return;
+      const t = e.target.closest("[data-status]");
+      hint.textContent = t ? t.getAttribute("data-status") : "";
+      bar.classList.toggle("hinting", !!t);
+      bar.classList.toggle("readout", !t && !!e.target.closest(".vw-screen"));
     });
 
     document.addEventListener("click", (e) => {

@@ -37,7 +37,7 @@ new Function("window", "RM", guideSrc)(globalThis.window, RM);
 
 /* Интерфейсийн загварын хуудсууд */
 for (const f of ["resolve-mn/js/50-sim-pages.js", "resolve-mn/js/51-sim-more.js",
-                 "resolve-mn/js/52-sim-menus.js"]) {
+                 "resolve-mn/js/52-sim-menus.js", "resolve-mn/js/53-sim-icons.js"]) {
   new Function("window", "RM", readFileSync(join(root, f), "utf8"))(globalThis.window, RM);
 }
 

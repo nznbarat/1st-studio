@@ -8,6 +8,51 @@
   const S = RM.sim, H = S._h;
 
   /* ═══════════ FUSION ═══════════ */
+  /* Fusion хэрэгслийн мөр — 28 товч, 4|4|5|5|3|7 бүлэг (2026-09-25-ны зургууд).
+     [толины id, дүрс, tooltip, доод мөрийн тайлбар]. 28 товч бүгд tooltip-оор баталгаажсан.
+     id нь null бол нэр нь хараахан баталгаажаагүй товч (одоогоор байхгүй). */
+  const FU_TOOLS = [
+    [["background-node", "▥", "Background", "Background - Creates a four-point gradient frame"],
+     ["fastnoise", "▩", "FastNoise", "FastNoise - Applies a faster version of Perlin noise"],
+     ["text-plus-node", "T", "Text+", "Text+ - Text+"],
+     ["paint", "✎", "Paint", "Paint - Animated Paint System"]],
+    [["color-corrector-fusion", "◍", "Color Corrector", "Color Corrector - Full color correction"],
+     ["color-curves-fusion", "⟋", "Color Curves", "Color Curves - Allows changes to channel color curves"],
+     ["brightness-contrast", "☼", "Brightness / Contrast", "Brightness / Contrast - Applies Brightness and Contrast"],
+     ["blur-fusion", "◖", "Blur", "Blur - Blurs images"]],
+    [["merge", "⧉", "Merge", "Merge - Layers one image over another, with rotation, scaling and offset"],
+     ["multimerge", "⧈", "MultiMerge", "MultiMerge - Multi-input Merge"],
+     ["channel-booleans", "⊟", "Channel Booleans", "Channel Booleans - Allows Boolean combinations of foreground channels with the background"],
+     ["matte-control", "◪", "Matte Control", "Matte Control - Applies Blurring and Contrast to the Matte"],
+     ["transform-fusion", "⟳", "Transform", "Transform - Applies rotation, scaling and mirroring effects"]],
+    [["rectangle-mask", "▭", "Rectangle", "Rectangle - Creates a rectangular mask"],
+     ["ellipse-mask", "◯", "Ellipse", "Ellipse - Creates an elliptical mask"],
+     ["polygon-mask", "⬠", "Polygon", "Polygon - Draw a Polyline"],
+     ["b-spline-mask", "⌒", "BSpline", "BSpline - Draw a BSpline Polyline"],
+     ["multipoly", "〰", "MultiPoly", "MultiPoly - Multi-layer Polygon Mask"]],
+    [["particle-emitter", "⁂", "pEmitter", "pEmitter - Generates Particles"],
+     ["pdirectionalforce", "⁘", "pDirectionalForce", "pDirectionalForce - pDirectionalForce"],
+     ["prender", "⋰", "pRender", "pRender - Renders Particles"]],
+    [["image-plane-3d", "▱", "Image Plane 3D", "Image Plane 3D - Converts an image to a textured plane"],
+     ["shape-3d", "⬢", "Shape 3D", "Shape 3D - Generate a Shape"],
+     ["text-3d", "Ṯ", "Text 3D", "Text 3D - Text3D"],
+     ["merge-3d", "⚭", "Merge 3D", "Merge 3D - Merge 3D Data"],
+     ["camera-3d", "⬡", "Camera 3D", "Camera 3D - Creates a standard camera"],
+     ["spot-light", "✺", "Spot Light", "Spot Light - Generate a Spot Light"],
+     ["renderer-3d", "◓", "Renderer 3D", "Renderer 3D - Renders 3D Scene"]]
+  ];
+  const FU_TOOLBAR = () => FU_TOOLS.map((g) => g.map(([id, ic, name, st]) => id
+    ? `<span class="ft hs" data-t="${id}" title="${name}" data-status="${st}">${S.icon(id, ic)}</span>`
+    : `<span class="ft hs" data-t="fusion-toolbar" title="Нэр нь хараахан баталгаажаагүй">${ic}</span>`
+  ).join("")).join('<span class="div"></span>');
+
+  /* Media Pool — Master сангийн хавтаснууд (2026-09-25-ны зураг, нэр нь зурагт таслагдсан хэвээр) */
+  const FU_FOLDERS = ["01_Holog_T…", "02_Suirel_A…", "03_Eej_Huu", "04_Avrah_h…", "05_Tovchlu…",
+                      "06_Cockpit…", "07_Huvtsas…", "08_Test_Ex…", "09_Referen…", "10_Green_S…"];
+
+  /* ═══════════ FUSION ═══════════
+     2026-09-25-ны зургууд: Inspector дээд эгнээнд (хагас өндөр), хэрэгслийн мөр,
+     Nodes, төлөвийн мөр бүтэн өргөнөөр. MediaIn1 сонгогдсон. */
   S.fusion = () => `
   <div class="rs" data-page="fusion">
     ${H.MENU()}
@@ -23,87 +68,105 @@
     <div class="rs-row2">
       <span class="hs" data-t="panel-toggle">▯ ⌄</span><span>‹ ›</span><span class="hs" data-t="audio-sync">⧖</span>
       <span class="hs" data-t="import-media">▦ ⌄</span><span class="hs" data-t="blackmagic-cloud-account">☁</span>
-      <b class="hs" data-t="bin">S…</b><span class="hs" data-t="thumbnail-view">▦ ⌄</span><span class="hs" data-t="help-search">⌕</span><span>⇅ …</span>
+      <span>…</span><span class="hs" data-t="thumbnail-view">▦ ⌄</span><span class="hs" data-t="help-search">⌕</span><span>⇅ ⋯</span>
       <span class="hs" data-t="zoom-slider">100% ⌄</span><span class="hs" data-t="viewer-mode">▣ ⌄ ▭ ⌄</span>
       <span class="sp"></span>
-      <span class="hs" data-t="viewer-mode">▭ …</span><span class="hs" data-t="zoom-slider">Fit ⌄</span>
+      <span class="hs" data-t="viewer-mode">▭ ⋯</span><span class="hs" data-t="zoom-slider">Fit ⌄</span>
       <span class="hs" data-t="viewer-mode">▣ ⌄ ▭ ⌄</span>
-      <b class="hs" data-t="mediaout">MediaOut1</b><span class="hs" data-t="viewer-mode">▭ ⌄</span><span>D…</span>
+      <b class="hs" data-t="mediaout">MediaOut1</b><span class="hs" data-t="viewer-mode">▭ ⌄</span><span>Default ⌄</span><span>◍ ⌄</span><span>▦</span>
     </div>
-    <div class="rs-body"><div class="fu-split">
-      <div class="fu-left">
-        <div class="rs-top">
-          <div class="pane hs" data-t="bin" style="width:178px;flex-shrink:0">
-            <div class="pane-b">${H.BINS(H.BIN_LIST.slice(1), "Seedance")}</div>
-          </div>
-          <div class="pane hs" data-t="media-pool" style="width:340px;flex-shrink:0">
-            <div class="pane-h hs" data-t="bin"><span>Master / Seedance</span></div>
-            <div class="pane-b">${H.THUMBS(2)}</div>
-          </div>
-          <div class="pane vw hs" data-t="viewer-1-2">
-            <div class="pane-b" style="display:flex;flex-direction:column">
-              <div class="vw-screen dark"><span class="vw-info hs" data-t="resolution">[Main]: 3840x2160 float32</span><div class="img"></div></div>
-              <div class="vw-foot">
-                <div class="tl-ruler hs" data-t="timeline-ruler" style="padding-left:0">
-                  <div class="tk"><span>0</span></div><div class="tk"><span>100</span></div><div class="tk"><span>200</span></div>
-                  <div class="tk"><span>300</span></div><div class="tk"><span>400</span></div><div class="tk"><span>500</span></div>
-                  <div class="tk"><span>600</span></div><div class="tk"><span>700</span></div></div>
-                <div class="vw-jog hs" data-t="jog-bar"><div class="bar"></div></div>
-                ${H.TRANSPORT("0.0", '<span class="tc hs" data-t="timecode">0.0</span><span class="tc hs" data-t="duration">720.0</span><span class="hs" data-t="mute">🔈</span><span class="sp"></span>')}
-              </div>
+    <div class="rs-body fu-body">
+      <div class="rs-top" style="flex:0 0 55%">
+        <div class="pane hs" data-t="bin" style="width:118px;flex-shrink:0">
+          <div class="pane-b"><div class="mp-bins fu-bins">
+            <div class="mp-bin-h hs" data-t="bin">▤ Bins<span class="sp"></span>+</div>
+            <div class="mp-bin act hs" data-t="bin">› Master</div>
+            <div class="sp"></div>
+            <div class="mp-bin-h hs" data-t="smart-bin">✦ Smart Bins<span class="sp"></span>+</div>
+            <div class="mp-bin sub hs" data-t="keyword">Keywords</div>
+            <div class="mp-bin sub hs" data-t="power-bin">› Collections</div>
+          </div></div>
+        </div>
+        <div class="pane hs" data-t="media-pool" style="width:210px;flex-shrink:0">
+          <div class="pane-h hs" data-t="bin"><span>Master</span></div>
+          <div class="pane-b"><div class="fu-folders">
+            ${FU_FOLDERS.map((n) => `<div class="fu-folder hs" data-t="bin"><i></i><span>${n}</span></div>`).join("")}
+          </div></div>
+        </div>
+        <div class="pane vw hs" data-t="viewer-1-2">
+          <div class="pane-b" style="display:flex;flex-direction:column">
+            <div class="vw-screen dark"><span class="vw-info hs" data-t="resolution">[Main]: 3840x2160 float32</span><div class="img"></div></div>
+            <div class="vw-foot">
+              <div class="tl-ruler hs" data-t="timeline-ruler" style="padding-left:0">
+                ${[0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700].map((n) => `<div class="tk"><span>${n}</span></div>`).join("")}
+                <div class="tl-play" style="left:87.5%"></div></div>
+              <div class="vw-jog hs" data-t="jog-bar"><div class="bar"></div></div>
+              ${H.TRANSPORT("630.0", '<span class="tc hs" data-t="timecode">0.0</span><span class="tc hs" data-t="duration">720.0</span><span class="hs" data-t="mute">🔈</span><span class="sp"></span>')}
             </div>
           </div>
         </div>
-        <div class="fu-tools hs" data-t="show-toolbar">
-          <span class="ft hs" data-t="background-node" title="Background">▦</span><span class="ft hs" data-t="mediain" title="MediaIn">▣</span>
-          <span class="ft hs" data-t="text-plus-node" title="Text+">T</span><span class="ft hs" data-t="paint" title="Paint">✎</span>
-          <span class="div"></span>
-          <span class="ft hs" data-t="particle-emitter" title="Particles">∵</span><span class="ft hs" data-t="displace" title="Displace">≋</span>
-          <span class="ft hs" data-t="brightness-contrast" title="Brightness/Contrast">◑</span><span class="ft hs" data-t="color-corrector-fusion" title="Color Corrector">◍</span>
-          <span class="div"></span>
-          <span class="ft hs" data-t="merge" title="Merge">⊕</span><span class="ft hs" data-t="transform-fusion" title="Transform">⊹</span>
-          <span class="ft hs" data-t="blur-fusion" title="Blur">◌</span><span class="ft hs" data-t="glow" title="Glow">✸</span><span class="ft hs" data-t="defocus" title="Defocus">◉</span>
-          <span class="div"></span>
-          <span class="ft hs" data-t="rectangle-mask" title="Rectangle">▭</span><span class="ft hs" data-t="ellipse-mask" title="Ellipse">◯</span>
-          <span class="ft hs" data-t="polygon-mask" title="Polygon">⬠</span><span class="ft hs" data-t="b-spline-mask" title="B-Spline">⌒</span><span class="ft hs" data-t="matte-control" title="Matte Control">◪</span>
-          <span class="div"></span>
-          <span class="ft hs" data-t="tracker" title="Tracker">⊹</span><span class="ft hs" data-t="planar-tracker" title="Planar Tracker">▱</span><span class="ft hs" data-t="delta-keyer" title="Delta Keyer">◈</span>
-          <span class="div"></span>
-          <span class="ft hs" data-t="shape-3d" title="Shape 3D">⬢</span><span class="ft hs" data-t="camera-3d" title="Camera 3D">⬡</span><span class="ft hs" data-t="renderer-3d" title="Renderer 3D">⬣</span>
-        </div>
-        <div class="pane hs" data-t="node-graph" style="flex:1;min-height:0;border-top:1px solid var(--rs-line)">
-          <div class="pane-h"><b>Nodes</b><span class="sp"></span><span class="hs" data-t="node-label">⋯</span></div>
-          <div class="pane-b"><div class="node-canvas">
-            <div class="wire y" style="left:172px;top:40px;width:calc(100% - 340px)"></div>
-            <div class="node sel hs" data-t="mediain" style="left:66px;top:28px;width:160px"><span class="nl">${H.CLIP_SHORT}</span></div>
-            <div class="node hs" data-t="mediaout" style="right:70px;top:28px;width:150px"><span class="nl">MediaOut1</span></div>
-          </div></div>
-        </div>
-        <div class="rs-status hs" data-t="pixel-readout">
-          <span class="hs" data-t="position-viewer">Position&nbsp; X 0.94512&nbsp; 2422&nbsp;&nbsp; Y −0.33804&nbsp; −483</span>
-          <span class="hs" data-t="canvas-rgba">Canvas&nbsp; R 0&nbsp;&nbsp; G 0&nbsp;&nbsp; B 0&nbsp;&nbsp; A 0</span>
-          <span class="sp"></span><span class="hs" data-t="render-cache">10% — 3178 MB</span>
+        <div class="pane insp fu-insp hs" data-t="inspector-fusion" style="width:318px">
+          <div class="pane-h"><b>Inspector</b><span class="sp"></span><span>▭ ⋯</span></div>
+          <div class="insp-tabs"><div class="act hs" data-t="tools-fusion-inspector">Tools</div><div class="off hs" data-t="modifiers-fusion-inspector">Modifiers</div></div>
+          <div class="pane-b">
+            <div class="insp-sec hs" data-t="mediain">
+              <div class="t fu-hdr"><span class="fu-tog"><i></i></span><span class="nm">MediaIn1: dreamina-2026-09-1</span><span class="bdot"></span><span class="chev">⌄</span><span class="sp"></span>
+                <span class="hic dim">${S.icon("hdr-versions")}</span><span class="hic">${S.icon("hdr-pin")}</span><span class="hic">${S.icon("hdr-lock")}</span><span class="hic">${S.icon("hdr-reset")}</span></div>
+              <div class="insp-row hs" data-t="clip-name-mediain"><span class="lb">Clip Name</span><b class="val">dreamina-2026-09-17-3642-Photor</b></div>
+            </div>
+            <div class="insp-tabs three fu-itabs">
+              <div class="act hs" data-t="image-mediain" data-tab="mi:image">${S.icon("insp-image")}<br>Image</div>
+              <div class="hs" data-t="audio-mediain" data-tab="mi:audio" data-status="Audio">${S.icon("insp-audio")}<br>Audio</div>
+              <div class="hs" data-t="settings-fusion-inspector" data-tab="mi:settings">${S.icon("insp-settings")}<br>Settings</div>
+            </div>
+            <div data-tabpane="mi:image">
+              <div class="insp-sec">
+                <div class="insp-row hs" data-t="process-mode"><span class="lb">Process Mode</span><b class="val dd">Full Frames ⌄</b></div>
+                <div class="insp-row hs" data-t="media-source-mediain"><span class="lb">Media Source</span><b class="val dd">Timeline ⌄</b></div>
+                <div class="insp-row hs" data-t="layer-mediain"><span class="lb">Layer</span><b class="val dd">0 ⌄</b></div>
+              </div>
+              <div class="insp-sec hs" data-t="source-color-space"><div class="t">› Source Color Space</div></div>
+              <div class="insp-sec hs" data-t="source-gamma-space"><div class="t">› Source Gamma Space</div></div>
+            </div>
+            <div data-tabpane="mi:audio" hidden>
+              <div class="insp-sec">
+                <div class="insp-row hs" data-t="audiotrack-mediain"><span class="lb">AudioTrack</span><b class="val dd">Timeline Audio [SEEDANCE_v1_30s] ⌄</b></div>
+                <div class="insp-row hs" data-t="sound-offset"><span class="lb">Sound Offset</span><span class="sl ticks"></span><b>0.0</b></div>
+              </div>
+              <div class="insp-sec hs" data-t="audiocache"><div class="t">⌄ AudioCache</div>
+                <div class="insp-btn hs" data-t="purge-audio-cache">Purge Audio Cache</div></div>
+            </div>
+            <div data-tabpane="mi:settings" hidden>
+              <div class="insp-sec"><div class="t">⌄ Settings</div>
+                <div class="insp-chk hs" data-t="apply-mask-inverted"><i></i>Apply Mask Inverted<span class="sp"></span><span class="kfd">◆</span></div>
+                <div class="insp-chk hs" data-t="multiply-by-mask"><i></i>Multiply by Mask<span class="sp"></span><span class="kfd">◆</span></div>
+                <div class="insp-chk hs" data-t="hide-incoming-connections"><i></i>Hide Incoming Connections</div>
+              </div>
+              <div class="insp-sec"><div class="t">⌄ Layers</div>
+                <div class="insp-row hs" data-t="main-layer-name"><span class="lb">Main Layer Name</span><b class="val in"></b></div>
+                <div class="insp-row hs" data-t="effect-mask-layer"><span class="lb">Effect Mask Layer</span><b class="val dd">Auto ⌄</b><span class="kfd">◆</span></div>
+              </div>
+              <div class="insp-sec hs" data-t="comments-fusion-inspector"><div class="t">⌄ Comments</div><div class="insp-note"></div></div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="pane insp hs" data-t="inspector-fusion" style="width:270px">
-        <div class="pane-h"><b>Inspector</b><span class="sp"></span><span>▭ ⋯</span></div>
-        <div class="insp-tabs"><div class="act">Tools</div><div>Modifiers</div></div>
-        <div class="pane-b">
-          <div class="insp-sec hs" data-t="mediain">
-            <div class="t"><span class="tog on"></span> MediaIn1: ${H.CLIP_SHORT} <span class="sp"></span><span class="mini">● ⌄ ▭ ⊠ ⟲</span></div>
-            <div class="insp-row hs" data-t="clip"><span class="lb">Clip Name</span><b class="val">dreamina-2026-09-17-3642-Photor</b></div>
-          </div>
-          <div class="insp-tabs three"><div class="act">▨<br>Image</div><div>♫<br>Audio</div><div>⚙<br>Settings</div></div>
-          <div class="insp-sec">
-            <div class="insp-row hs" data-t="clip"><span class="lb">Process Mode</span><b class="val dd">Full Frames ⌄</b></div>
-            <div class="insp-row hs" data-t="media-pool"><span class="lb">Media Source</span><b class="val dd">Timeline ⌄</b></div>
-            <div class="insp-row hs" data-t="layer-node"><span class="lb">Layer</span><b class="val dd">0 ⌄</b></div>
-          </div>
-          <div class="insp-sec hs" data-t="input-color-space"><div class="t">› Source Color Space</div></div>
-          <div class="insp-sec hs" data-t="gamma"><div class="t">› Source Gamma Space</div></div>
-        </div>
+      <div class="fu-tools hs" data-t="fusion-toolbar">${FU_TOOLBAR()}</div>
+      <div class="pane hs" data-t="node-graph" style="flex:1;min-height:0;border-top:1px solid var(--rs-line)">
+        <div class="pane-h"><b>Nodes</b><span class="sp"></span><span class="hs" data-t="node-label">⋯</span></div>
+        <div class="pane-b"><div class="node-canvas">
+          <div class="wire y" style="left:172px;top:40px;width:calc(57% - 172px)"></div>
+          <div class="node nsel hs" data-t="mediain" style="left:40px;top:28px;width:132px"><span class="nl">dreamina-2026-09-17…</span></div>
+          <div class="node hs" data-t="mediaout" style="left:57%;top:28px;width:130px"><span class="nl">MediaOut1</span></div>
+        </div></div>
       </div>
-    </div></div>
+      <div class="rs-status hs" data-t="status-bar-fusion">
+        <span class="st-hint"></span>
+        <span class="ro hs" data-t="position-viewer">Position&nbsp; X 0.94512&nbsp; 2422&nbsp;&nbsp; Y −0.33804&nbsp; −483</span>
+        <span class="ro hs" data-t="canvas-rgba">Canvas&nbsp; R 0&nbsp;&nbsp; G 0&nbsp;&nbsp; B 0&nbsp;&nbsp; A 0</span>
+        <span class="sp"></span><span class="hs" data-t="render-cache">9% - 2973 MB</span>
+      </div>
+    </div>
     ${H.PAGES("fusion")}
   </div>`;
 
@@ -181,7 +244,7 @@
 
       <div class="cl-strip hs" data-t="clips-panel">
         <span class="cbadge hs" data-t="thumbnail-timeline">01</span><span class="hs" data-t="track" style="margin-left:80px">V1</span>
-        <div class="cl-thumb sel hs" data-t="grade"><span class="cap">H.264 High L5.0</span></div>
+        <div class="cl-thumb csel hs" data-t="grade"><span class="cap">H.264 High L5.0</span></div>
       </div>
 
       <div class="pal-rail hs" data-t="primaries">
@@ -407,7 +470,7 @@
           </div>
           <div class="cl-strip hs" data-t="clips-panel" style="border-top:1px solid var(--rs-line)">
             <span class="cbadge hs" data-t="thumbnail-timeline">01</span><span class="hs" data-t="track" style="margin-left:80px">V1</span>
-            <div class="cl-thumb sel hs" data-t="clip"><span class="cap">H.264 High L5.0</span></div>
+            <div class="cl-thumb csel hs" data-t="clip"><span class="cap">H.264 High L5.0</span></div>
           </div>
           <div class="rs-tlbar hs" data-t="render-in-place" style="border-bottom:0">
             <span class="tl hs" data-t="timeline-menu">⚌</span><span class="sp"></span>

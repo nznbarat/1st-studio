@@ -339,7 +339,27 @@
         }
       }
 
+      /* data-tab="бүлэг:нэр" — Inspector-ийн таб солих (Fusion MediaIn: Image / Audio / Settings) */
+      const tab = e.target.closest("[data-tab]");
+      if (tab) {
+        const key = tab.getAttribute("data-tab"), grp = key.split(":")[0] + ":";
+        RM.$$('#rsHost [data-tab^="' + grp + '"]').forEach((t) => t.classList.toggle("act", t === tab));
+        RM.$$('#rsHost [data-tabpane^="' + grp + '"]').forEach((p) => { p.hidden = p.getAttribute("data-tabpane") !== key; });
+      }
+
       S.select(hs.getAttribute("data-t"), hs);
+    });
+
+    /* Fusion-ий төлөвийн мөр — товч дээр хулгана тавихад нэр, тайлбар нь зүүн талд гарна;
+       Viewer дээр байхад пикселийн байрлал, өнгө (бодит программын зан төлөв). */
+    $("#rsHost").addEventListener("mouseover", (e) => {
+      const bar = $("#rsHost .rs-status");
+      const hint = bar && bar.querySelector(".st-hint");
+      if (!hint) return;
+      const t = e.target.closest("[data-status]");
+      hint.textContent = t ? t.getAttribute("data-status") : "";
+      bar.classList.toggle("hinting", !!t);
+      bar.classList.toggle("readout", !t && !!e.target.closest(".vw-screen"));
     });
 
     document.addEventListener("click", (e) => {
