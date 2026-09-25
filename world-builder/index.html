@@ -101,6 +101,10 @@
           <button class="tbtn2 stop" id="autoStop">■ Зогсоох</button>
         </div>
         <div id="autoLog" class="autolog"></div>
+        <div class="toolrow tobrand">
+          <button class="aibtn" id="autoToBrand">🎨 Брэнд рүү хадгалах</button>
+          <span class="note">Зохиосон ертөнц ба лавлагаа зургаас брэндийн <b>харагдац, гэрэл, палетт, камер</b>‑ын <b>хоосон</b> талбарыг бөглөнө — таны бичсэнийг дарж бичихгүй.</span>
+        </div>
       </div>
 
       <div class="hintgrid">
@@ -317,14 +321,33 @@
         <div id="checkOut" class="checkout"></div>
       </div>
 
-      <div class="toolrow">
-        <button class="tbtn2 acc" id="copyAll">📋 Бүгдийг хуулах</button>
-        <button class="tbtn2" id="expMd">⬇ Markdown</button>
-        <button class="tbtn2" id="expCsv">⬇ CSV</button>
-        <button class="tbtn2" id="expTxt">⬇ TXT</button>
+      <div class="outtabs" role="tablist">
+        <button class="otab on" data-otab="other" role="tab">📋 Бусад промт <b id="cntOther">0</b></button>
+        <button class="otab" data-otab="seed" role="tab">🎬 Seedance 2.5 <b id="cntSeed">0</b></button>
       </div>
 
-      <div id="outList"></div>
+      <div class="otabpane on" id="ot-other">
+        <div class="toolrow">
+          <button class="tbtn2 acc" id="copyAll">📋 Бүгдийг хуулах</button>
+          <button class="tbtn2" id="expMd">⬇ Markdown</button>
+          <button class="tbtn2" id="expCsv">⬇ CSV</button>
+          <button class="tbtn2" id="expTxt">⬇ TXT</button>
+        </div>
+        <div id="outList"></div>
+      </div>
+
+      <div class="otabpane" id="ot-seed">
+        <p class="note nb">Үзэгдэл бүр <b>нэг олон кадрын промт</b>: хэлбэр → сэдэв → орчин → стиль → <code>Shot 1…N</code> → тасралтгүй байдал → дуу → хязгаарлалт. Нэг үүсгэлт <b>15 секундээс</b> хэтэрвэл клипэд хуваана. Брэндийн камерын дүрэм «no cuts» бол <code>Hard cut</code>‑ийн оронд тасралтгүй шилжилт хэрэглэнэ. Промт бүр <b>@ лавлагаагаар эхэлнэ</b> (<code>[@image1]</code>, <code>[@video1]</code>) — дугаар нь файл <b>хуулах дарааллыг</b> дагана, тиймээс блок бүрийн дээрх жагсаалтын дагуу хуулаарай.</p>
+        <div class="opt">
+          <label><input type="checkbox" id="seedRefsChk" checked> @ лавлагаа оруулах (дүр, байршил, брэндийн фрэйм, өмнөх клип)</label>
+          <label><input type="checkbox" id="seedCamChk"> Камерын хөдөлгөөний бичлэг нэмэх (<code>[@video]</code>)</label>
+        </div>
+        <div class="toolrow">
+          <button class="tbtn2 acc" id="seedCopy">📋 Seedance‑ийг бүгдийг хуулах</button>
+          <button class="tbtn2" id="seedTxt">⬇ seedance-2.5.txt</button>
+        </div>
+        <div id="seedList"></div>
+      </div>
     </section>
 
     <!-- ══════════ 6 · ТОЛЬ ══════════ -->
@@ -467,6 +490,7 @@
 <script src="js/50-state.js"></script>
 <script src="js/52-brand.js"></script>
 <script src="js/55-prompt.js"></script>
+<script src="js/57-seedance.js"></script>
 <script src="js/60-ui.js"></script>
 <script src="js/66-refimg.js"></script>
 <script src="js/70-auto.js"></script>

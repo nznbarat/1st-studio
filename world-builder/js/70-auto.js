@@ -321,7 +321,8 @@
         "- Keep Mongolian cultural terms and their clarifiers intact.\n" +
         "- One paragraph each, under 110 words, English only.\n" +
         (WB.brand && WB.brand.polishHint()
-          ? "- Honour the channel style exactly, never drift from it: " + WB.brand.polishHint() + ".\n"
+          ? "- The channel style is appended automatically after your text — do NOT restate it. " +
+            "Only keep the prompt consistent with it, never contradicting it: " + WB.brand.polishHint() + ".\n"
           : "") +
         '- Return ONLY a JSON object mapping each id to its rewritten prompt: {"id":"text"}.\n\n' +
         body;

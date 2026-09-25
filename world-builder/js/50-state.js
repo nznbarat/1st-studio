@@ -144,7 +144,9 @@
         negative: "",
         continuity: true,
         autoTranslate: true,
-        brandOn: true
+        brandOn: true,
+        seedRefs: true,
+        seedCamVideo: false
       },
       updated: Date.now()
     };

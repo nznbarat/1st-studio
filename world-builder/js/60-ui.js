@@ -419,7 +419,68 @@
     ncp.onclick = () => UI.copy(PR.negative(), ncp);
     neg.append(nh, npre, ncp);
     list.appendChild(neg);
+    UI.renderSeed(blocks.length);
     UI.updateCounts();
+  };
+
+  /** Seedance 2.5 таб — үзэгдэл бүрийн олон кадрын промт. */
+  UI.renderSeed = function (otherCount) {
+    const box = el("seedList");
+    if (!box || !WB.seedance) return;
+    const blocks = WB.seedance.blocks();
+    box.innerHTML = "";
+    if (!blocks.length) {
+      box.innerHTML =
+        '<div class="empty"><b>Үзэгдэл алга</b>Авто‑гоор ертөнц бүтээх эсвэл «Түүх» хэсэгт үзэгдэл нэмнэ үү.</div>';
+    }
+    blocks.forEach((b) => {
+      const w = document.createElement("div");
+      w.className = "outwrap";
+      const h = document.createElement("h3");
+      h.appendChild(document.createTextNode(b.title + " "));
+      const em = document.createElement("em");
+      em.textContent = b.tag;
+      h.appendChild(em);
+      w.appendChild(h);
+      /* Хавсаргах дараалал — @ дугаар нь файл хуулах дарааллыг дагана */
+      if (b.files && b.files.length) {
+        const ol = document.createElement("ul");
+        ol.className = "seedfiles";
+        const hd = document.createElement("li");
+        hd.className = "sfh";
+        hd.textContent = "Seedance‑д хавсаргах — энэ дарааллаар";
+        ol.appendChild(hd);
+        b.files.forEach((f) => {
+          const li = document.createElement("li");
+          const code = document.createElement("code");
+          code.textContent = f.tag;
+          const sm = document.createElement("small");
+          sm.textContent = "← " + f.from;
+          li.append(code, document.createTextNode(f.what), sm);
+          ol.appendChild(li);
+        });
+        w.appendChild(ol);
+      }
+      const pre = document.createElement("div");
+      pre.className = "out";
+      pre.textContent = b.text;
+      const cp = document.createElement("button");
+      cp.className = "cp";
+      cp.textContent = "Хуулах";
+      cp.onclick = () => UI.copy(b.text, cp);
+      w.append(pre, cp);
+      box.appendChild(w);
+    });
+    const co = el("cntOther");
+    if (co && otherCount != null) co.textContent = otherCount;
+    const cs = el("cntSeed");
+    if (cs) cs.textContent = blocks.length;
+  };
+
+  UI.outTab = function (tab) {
+    U.qsa(".otab").forEach((b) => b.classList.toggle("on", b.dataset.otab === tab));
+    U.qsa(".otabpane").forEach((p) => p.classList.toggle("on", p.id === "ot-" + tab));
+    WB.store.set("outTab", tab);
   };
 
   UI.copy = async function (txt, btn) {
@@ -666,6 +727,10 @@
     if (at) at.checked = !!o.autoTranslate;
     const br = el("brandChk");
     if (br) br.checked = o.brandOn !== false;
+    const sr = el("seedRefsChk");
+    if (sr) sr.checked = o.seedRefs !== false;
+    const sc = el("seedCamChk");
+    if (sc) sc.checked = !!o.seedCamVideo;
   };
 
   /* ── багц орчуулга ──────────────────────────────────────── */

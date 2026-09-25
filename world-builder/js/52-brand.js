@@ -111,6 +111,32 @@
     return joinParts([txt(b.f.look), txt(b.f.light), txt(b.f.palette), txt(b.f.camera)]);
   };
 
+  /** Харагдацын давхаргын хэсгүүд: [харагдац, гэрэл, палетт, камер]. */
+  B.visualParts = function () {
+    const b = S.P.brand;
+    if (!b) return [];
+    return [txt(b.f.look), txt(b.f.light), txt(b.f.palette), txt(b.f.camera)].filter(Boolean);
+  };
+
+  /**
+   * Текстэд ХАРАХАН байхгүй брэндийн хэсгүүд. Таслалаар салгасан хэллэг
+   * бүрийг шалгана — өнгөлсөн промт «35mm anamorphic film grain»‑ийг
+   * агуулсан бол дахин залгахгүй, харин «statuesque stillness» байхгүй
+   * бол түүнийг л нэмнэ.
+   */
+  B.missingVisual = function (text) {
+    const low = String(text || "").toLowerCase();
+    return B.visualParts()
+      .map((seg) =>
+        seg
+          .split(/\s*,\s*/)
+          .filter((atom) => atom && !low.includes(atom.toLowerCase()))
+          .join(", ")
+      )
+      .filter(Boolean)
+      .join(". ");
+  };
+
   /** Сөрөг промтод нэмэгдэх «хэзээ ч гаргахгүй» мөр. */
   B.avoidLine = function () {
     const b = S.P.brand;
@@ -325,6 +351,76 @@
     });
     S.touch();
     return n;
+  };
+
+  /**
+   * Авто → Брэнд: Авто‑гийн зохиосон ертөнц ба лавлагаа зургаас брэндийн
+   * ХАРАГДАЦЫН давхаргын (2) ХООСОН талбаруудыг бөглөнө. Хэрэглэгчийн
+   * бичсэнийг хэзээ ч дарж бичихгүй. Хоолой ба дуу авиа (3) нь зургаас
+   * гарахгүй, бүтээгчийн өөрийн сонголт тул хөндөхгүй.
+   * @returns {{filled:string[], full?:boolean}}
+   */
+  B.fromWorld = async function (images, imageNames) {
+    const b = S.P.brand;
+    const P = S.P;
+    images = images || [];
+    const empty = S.BRAND_FIELDS.filter(
+      (d) => d.layer === 2 && !(b.f[d.k].mn || "").trim() && !(b.f[d.k].en || "").trim()
+    );
+    if (!empty.length) return { filled: [], full: true };
+
+    const world = [];
+    if (P.logline.mn) world.push("Логлайн: " + P.logline.mn);
+    P.cast.forEach((c) => {
+      const d = [c.f.look.mn, c.f.cloth.mn].filter(Boolean).join("; ");
+      if (d) world.push("Дүр " + (c.name || "") + ": " + d);
+    });
+    P.locs.forEach((l) => {
+      const d = [l.f.look.mn, l.f.time.mn, l.f.mood.mn].filter(Boolean).join("; ");
+      if (d) world.push("Байршил " + (l.name || "") + ": " + d);
+    });
+    P.scenes.slice(0, 6).forEach((sc) => sc.body.mn && world.push("Үзэгдэл: " + sc.body.mn));
+    const cams = [...new Set(P.scenes.flatMap((sc) => sc.shots.map((sh) => sh.cam)).filter(Boolean))].slice(0, 8);
+    if (cams.length) world.push("Кадрын камерууд: " + cams.join("; "));
+    if (!world.length && !images.length) {
+      throw new Error("Эхлээд Авто‑гоор ертөнц бүтээх эсвэл лавлагаа зураг оруулна уу.");
+    }
+
+    const keys = empty.map((d) => '  "' + d.k + '": "' + d.hint + '"').join(",\n");
+    const prompt =
+      "Та урлагийн найруулагч, брэнд стратегич. " +
+      (images.length ? "Хавсаргасан " + images.length + " лавлагаа зураг ба д" : "Д") +
+      "оорх ертөнцөөс YouTube сувгийн БРЭНД ФАЙЛЫН харагдацын талбаруудыг гарга.\n\n" +
+      "Шаардлага:\n" +
+      "- Зөвхөн JSON объект буцаа. Тайлбар, код блокын хашилтгүй.\n" +
+      "- Бүх утга МОНГОЛ хэлээр, богино (8–20 үг), бодит: өнгө, материал, линз, гэрлийн чиглэл.\n" +
+      "- Зөвхөн бодитоор " + (images.length ? "зурагт харагдаж буй эсвэл " : "") +
+      "ертөнцөд бичигдсэн зүйлээс гарга" +
+      (images.length ? " — харагдац, гэрэл, палеттыг ЗУРГААС ав" : "") + ".\n" +
+      "- Энэ бол нэг ангийн биш, СУВГИЙН тогтмол хэв маяг — бүх ангид давтагдах зүйлийг бич.\n" +
+      "- «гоё», «мэргэжлийн» зэрэг ерөнхий үг бүү хэрэглэ.\n" +
+      "- Формат:\n{\n" + keys + "\n}\n\n" +
+      "Ертөнц:\n" + (world.join("\n") || "(зөвхөн зураг)");
+
+    const o = await WB.api.askJSON(prompt, 1600, images.length ? { images: images } : undefined);
+    if (!o || typeof o !== "object") throw new Error("хариу таарсангүй");
+
+    S.pushHistory();
+    const filled = [];
+    empty.forEach((d) => {
+      const v = o[d.k];
+      if (typeof v === "string" && v.trim()) {
+        b.f[d.k].mn = v.trim();
+        b.f[d.k].en = "";
+        b.f[d.k].src = "";
+        filled.push(d.lb);
+      }
+    });
+    if (images.length && !(b.ref || "").trim() && imageNames && imageNames.length) {
+      b.ref = "Авто‑гийн лавлагаа зураг: " + imageNames.join(", ");
+    }
+    S.touch();
+    return { filled: filled };
   };
 
   /** Батлагдсан гарчгийн форматаар N ангийн гарчиг санал болгоно. */

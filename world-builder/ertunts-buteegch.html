@@ -195,6 +195,23 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
 .issue.warn{border-color:rgba(224,162,74,.4);color:#ffd9a0}
 .issue.tip{border-color:rgba(111,183,220,.35);color:#bfe0f2}
 
+/* ── промтын таб ── */
+.outtabs{display:flex;gap:6px;margin:6px 0 14px;border-bottom:1px solid var(--line)}
+.otab{padding:9px 14px;border:1px solid transparent;border-bottom:0;border-radius:8px 8px 0 0;font-size:13px;font-weight:600;color:var(--dim);margin-bottom:-1px}
+.otab b{font-family:'JetBrains Mono';font-size:10.5px;font-weight:500;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:0 7px;margin-left:4px}
+.otab:hover{color:var(--text)}
+.otab.on{color:var(--text);background:var(--panel);border-color:var(--line)}
+.otab.on b{color:var(--tungsten);border-color:var(--tungsten)}
+.otabpane{display:none}
+.otabpane.on{display:block}
+.tobrand{margin:12px 0 0;padding-top:12px;border-top:1px dashed var(--line)}
+.tobrand .note{margin:0;flex:1;min-width:220px}
+
+.seedfiles{list-style:none;margin:0 0 8px;padding:9px 11px;border:1px dashed var(--line);border-radius:8px;background:var(--ink);font-size:12px;line-height:1.7}
+.seedfiles code{font-family:'JetBrains Mono';font-size:11px;color:var(--tungsten);margin-right:6px}
+.seedfiles small{color:#5d6f80;margin-left:6px}
+.seedfiles .sfh{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:2px}
+
 /* ── лавлагаа зураг ── */
 .reflabel{display:flex;align-items:center;gap:8px;margin:14px 0 6px}
 .reflabel i{font-style:normal;font-weight:400;color:#5d6f80}
@@ -425,6 +442,10 @@ textarea.lineIn.ta{resize:vertical;line-height:1.6;font-family:inherit}
           <button class="tbtn2 stop" id="autoStop">■ Зогсоох</button>
         </div>
         <div id="autoLog" class="autolog"></div>
+        <div class="toolrow tobrand">
+          <button class="aibtn" id="autoToBrand">🎨 Брэнд рүү хадгалах</button>
+          <span class="note">Зохиосон ертөнц ба лавлагаа зургаас брэндийн <b>харагдац, гэрэл, палетт, камер</b>‑ын <b>хоосон</b> талбарыг бөглөнө — таны бичсэнийг дарж бичихгүй.</span>
+        </div>
       </div>
 
       <div class="hintgrid">
@@ -641,14 +662,33 @@ textarea.lineIn.ta{resize:vertical;line-height:1.6;font-family:inherit}
         <div id="checkOut" class="checkout"></div>
       </div>
 
-      <div class="toolrow">
-        <button class="tbtn2 acc" id="copyAll">📋 Бүгдийг хуулах</button>
-        <button class="tbtn2" id="expMd">⬇ Markdown</button>
-        <button class="tbtn2" id="expCsv">⬇ CSV</button>
-        <button class="tbtn2" id="expTxt">⬇ TXT</button>
+      <div class="outtabs" role="tablist">
+        <button class="otab on" data-otab="other" role="tab">📋 Бусад промт <b id="cntOther">0</b></button>
+        <button class="otab" data-otab="seed" role="tab">🎬 Seedance 2.5 <b id="cntSeed">0</b></button>
       </div>
 
-      <div id="outList"></div>
+      <div class="otabpane on" id="ot-other">
+        <div class="toolrow">
+          <button class="tbtn2 acc" id="copyAll">📋 Бүгдийг хуулах</button>
+          <button class="tbtn2" id="expMd">⬇ Markdown</button>
+          <button class="tbtn2" id="expCsv">⬇ CSV</button>
+          <button class="tbtn2" id="expTxt">⬇ TXT</button>
+        </div>
+        <div id="outList"></div>
+      </div>
+
+      <div class="otabpane" id="ot-seed">
+        <p class="note nb">Үзэгдэл бүр <b>нэг олон кадрын промт</b>: хэлбэр → сэдэв → орчин → стиль → <code>Shot 1…N</code> → тасралтгүй байдал → дуу → хязгаарлалт. Нэг үүсгэлт <b>15 секундээс</b> хэтэрвэл клипэд хуваана. Брэндийн камерын дүрэм «no cuts» бол <code>Hard cut</code>‑ийн оронд тасралтгүй шилжилт хэрэглэнэ. Промт бүр <b>@ лавлагаагаар эхэлнэ</b> (<code>[@image1]</code>, <code>[@video1]</code>) — дугаар нь файл <b>хуулах дарааллыг</b> дагана, тиймээс блок бүрийн дээрх жагсаалтын дагуу хуулаарай.</p>
+        <div class="opt">
+          <label><input type="checkbox" id="seedRefsChk" checked> @ лавлагаа оруулах (дүр, байршил, брэндийн фрэйм, өмнөх клип)</label>
+          <label><input type="checkbox" id="seedCamChk"> Камерын хөдөлгөөний бичлэг нэмэх (<code>[@video]</code>)</label>
+        </div>
+        <div class="toolrow">
+          <button class="tbtn2 acc" id="seedCopy">📋 Seedance‑ийг бүгдийг хуулах</button>
+          <button class="tbtn2" id="seedTxt">⬇ seedance-2.5.txt</button>
+        </div>
+        <div id="seedList"></div>
+      </div>
     </section>
 
     <!-- ══════════ 6 · ТОЛЬ ══════════ -->
@@ -5857,7 +5897,9 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
         negative: "",
         continuity: true,
         autoTranslate: true,
-        brandOn: true
+        brandOn: true,
+        seedRefs: true,
+        seedCamVideo: false
       },
       updated: Date.now()
     };
@@ -6227,6 +6269,32 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     return joinParts([txt(b.f.look), txt(b.f.light), txt(b.f.palette), txt(b.f.camera)]);
   };
 
+  /** Харагдацын давхаргын хэсгүүд: [харагдац, гэрэл, палетт, камер]. */
+  B.visualParts = function () {
+    const b = S.P.brand;
+    if (!b) return [];
+    return [txt(b.f.look), txt(b.f.light), txt(b.f.palette), txt(b.f.camera)].filter(Boolean);
+  };
+
+  /**
+   * Текстэд ХАРАХАН байхгүй брэндийн хэсгүүд. Таслалаар салгасан хэллэг
+   * бүрийг шалгана — өнгөлсөн промт «35mm anamorphic film grain»‑ийг
+   * агуулсан бол дахин залгахгүй, харин «statuesque stillness» байхгүй
+   * бол түүнийг л нэмнэ.
+   */
+  B.missingVisual = function (text) {
+    const low = String(text || "").toLowerCase();
+    return B.visualParts()
+      .map((seg) =>
+        seg
+          .split(/\s*,\s*/)
+          .filter((atom) => atom && !low.includes(atom.toLowerCase()))
+          .join(", ")
+      )
+      .filter(Boolean)
+      .join(". ");
+  };
+
   /** Сөрөг промтод нэмэгдэх «хэзээ ч гаргахгүй» мөр. */
   B.avoidLine = function () {
     const b = S.P.brand;
@@ -6441,6 +6509,76 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     });
     S.touch();
     return n;
+  };
+
+  /**
+   * Авто → Брэнд: Авто‑гийн зохиосон ертөнц ба лавлагаа зургаас брэндийн
+   * ХАРАГДАЦЫН давхаргын (2) ХООСОН талбаруудыг бөглөнө. Хэрэглэгчийн
+   * бичсэнийг хэзээ ч дарж бичихгүй. Хоолой ба дуу авиа (3) нь зургаас
+   * гарахгүй, бүтээгчийн өөрийн сонголт тул хөндөхгүй.
+   * @returns {{filled:string[], full?:boolean}}
+   */
+  B.fromWorld = async function (images, imageNames) {
+    const b = S.P.brand;
+    const P = S.P;
+    images = images || [];
+    const empty = S.BRAND_FIELDS.filter(
+      (d) => d.layer === 2 && !(b.f[d.k].mn || "").trim() && !(b.f[d.k].en || "").trim()
+    );
+    if (!empty.length) return { filled: [], full: true };
+
+    const world = [];
+    if (P.logline.mn) world.push("Логлайн: " + P.logline.mn);
+    P.cast.forEach((c) => {
+      const d = [c.f.look.mn, c.f.cloth.mn].filter(Boolean).join("; ");
+      if (d) world.push("Дүр " + (c.name || "") + ": " + d);
+    });
+    P.locs.forEach((l) => {
+      const d = [l.f.look.mn, l.f.time.mn, l.f.mood.mn].filter(Boolean).join("; ");
+      if (d) world.push("Байршил " + (l.name || "") + ": " + d);
+    });
+    P.scenes.slice(0, 6).forEach((sc) => sc.body.mn && world.push("Үзэгдэл: " + sc.body.mn));
+    const cams = [...new Set(P.scenes.flatMap((sc) => sc.shots.map((sh) => sh.cam)).filter(Boolean))].slice(0, 8);
+    if (cams.length) world.push("Кадрын камерууд: " + cams.join("; "));
+    if (!world.length && !images.length) {
+      throw new Error("Эхлээд Авто‑гоор ертөнц бүтээх эсвэл лавлагаа зураг оруулна уу.");
+    }
+
+    const keys = empty.map((d) => '  "' + d.k + '": "' + d.hint + '"').join(",\n");
+    const prompt =
+      "Та урлагийн найруулагч, брэнд стратегич. " +
+      (images.length ? "Хавсаргасан " + images.length + " лавлагаа зураг ба д" : "Д") +
+      "оорх ертөнцөөс YouTube сувгийн БРЭНД ФАЙЛЫН харагдацын талбаруудыг гарга.\n\n" +
+      "Шаардлага:\n" +
+      "- Зөвхөн JSON объект буцаа. Тайлбар, код блокын хашилтгүй.\n" +
+      "- Бүх утга МОНГОЛ хэлээр, богино (8–20 үг), бодит: өнгө, материал, линз, гэрлийн чиглэл.\n" +
+      "- Зөвхөн бодитоор " + (images.length ? "зурагт харагдаж буй эсвэл " : "") +
+      "ертөнцөд бичигдсэн зүйлээс гарга" +
+      (images.length ? " — харагдац, гэрэл, палеттыг ЗУРГААС ав" : "") + ".\n" +
+      "- Энэ бол нэг ангийн биш, СУВГИЙН тогтмол хэв маяг — бүх ангид давтагдах зүйлийг бич.\n" +
+      "- «гоё», «мэргэжлийн» зэрэг ерөнхий үг бүү хэрэглэ.\n" +
+      "- Формат:\n{\n" + keys + "\n}\n\n" +
+      "Ертөнц:\n" + (world.join("\n") || "(зөвхөн зураг)");
+
+    const o = await WB.api.askJSON(prompt, 1600, images.length ? { images: images } : undefined);
+    if (!o || typeof o !== "object") throw new Error("хариу таарсангүй");
+
+    S.pushHistory();
+    const filled = [];
+    empty.forEach((d) => {
+      const v = o[d.k];
+      if (typeof v === "string" && v.trim()) {
+        b.f[d.k].mn = v.trim();
+        b.f[d.k].en = "";
+        b.f[d.k].src = "";
+        filled.push(d.lb);
+      }
+    });
+    if (images.length && !(b.ref || "").trim() && imageNames && imageNames.length) {
+      b.ref = "Авто‑гийн лавлагаа зураг: " + imageNames.join(", ");
+    }
+    S.touch();
+    return { filled: filled };
   };
 
   /** Батлагдсан гарчгийн форматаар N ангийн гарчиг санал болгоно. */
@@ -6687,17 +6825,29 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     return body ? body + "." : "";
   };
 
+  const CYR = /[а-яөүё]/i;
+  /** Дүрийн нэр бол өвөрмөц нэр — орчуулахгүй, галиглана: «Сарнай» → «Sarnai». */
+  PR.nameEN = function (n) {
+    const t = String(n || "").trim();
+    return CYR.test(t) ? WB.gram.translit(t) : t;
+  };
+  /** Байршлын нэр ихэвчлэн тайлбар үг — орчуулна: «Тал» → «steppe». */
+  PR.placeEN = function (n) {
+    const t = String(n || "").trim();
+    return CYR.test(t) && WB.tr ? WB.tr.offline(t).en.trim() : t;
+  };
+
   PR.character = function (c) {
     if (c.pro) return c.pro;
-    return PR.join([c.name ? "Character: " + c.name : "", c.f.look.en, c.f.cloth.en, c.f.person.en]);
+    return PR.join([c.name ? "Character: " + PR.nameEN(c.name) : "", c.f.look.en, c.f.cloth.en, c.f.person.en]);
   };
   PR.characterFull = function (c) {
     if (c.pro) return c.pro;
-    return PR.join([c.name ? "Character: " + c.name : "", c.f.look.en, c.f.cloth.en, c.f.person.en, c.f.voice.en]);
+    return PR.join([c.name ? "Character: " + PR.nameEN(c.name) : "", c.f.look.en, c.f.cloth.en, c.f.person.en, c.f.voice.en]);
   };
   PR.location = function (l) {
     if (l.pro) return l.pro;
-    return PR.join([l.name ? "Location: " + l.name : "", l.f.look.en, l.f.time.en, l.f.mood.en, l.f.detail.en]);
+    return PR.join([l.name ? "Location: " + PR.placeEN(l.name) : "", l.f.look.en, l.f.time.en, l.f.mood.en, l.f.detail.en]);
   };
 
   /** Үзэгдлийн промт — тууштай байдлын горимд дүр, байршлыг шингээнэ. */
@@ -6709,7 +6859,12 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     if (o.continuity) {
       (s.castIds || []).forEach((id) => {
         const c = P.cast.find((x) => x.id === id);
-        if (c) parts.push(PR.join([c.name ? c.name + ":" : "", c.f.look.en, c.f.cloth.en]));
+        if (!c) return;
+        const desc = [c.f.look.en, c.f.cloth.en]
+          .map((t) => (t || "").trim().replace(/\.$/, ""))
+          .filter(Boolean)
+          .join(", ");
+        if (desc) parts.push((c.name ? PR.nameEN(c.name) + ": " : "") + desc);
       });
       const loc = P.locs.find((x) => x.id === s.locId);
       if (loc) parts.push(PR.join([loc.f.look.en, loc.f.time.en]));
@@ -6733,9 +6888,10 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     const style = PR.styleText(o);
     let out = text;
     if (style) out += " " + style + ".";
-    /* Брэнд файлын харагдацын давхарга — сувгийн гарын үсэг. */
+    /* Брэнд файлын харагдацын давхарга — сувгийн гарын үсэг. Өнгөлсөн промт
+       брэндийн үгсийг аль хэдийн агуулж болох тул байхгүй хэсгийг л залгана. */
     if (o.brandOn !== false && WB.brand) {
-      const bl = WB.brand.visualLine();
+      const bl = WB.brand.missingVisual(out);
       if (bl) out += " " + bl + ".";
     }
     const suf = PR.SUFFIX[o.target] ? PR.SUFFIX[o.target](o) : "";
@@ -6858,6 +7014,13 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
         if (s.shots.length) md.push("");
       });
     }
+    if (WB.seedance) {
+      const sb = WB.seedance.blocks();
+      if (sb.length) {
+        md.push("## Seedance 2.5", "");
+        sb.forEach((b) => md.push("### " + b.title + "  `" + b.tag + "`", "", "```", b.text, "```", ""));
+      }
+    }
     md.push("## Сөрөг промт", "", "```", PR.negative(), "```");
     return md.join("\n");
   };
@@ -6888,6 +7051,265 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
       );
     });
     return "﻿" + rows.join("\n");
+  };
+})(window.WB);
+
+</script>
+<script>
+/* ── js/57-seedance.js ── */
+/* ═════════════════════════════════════════════════════════════
+   SEEDANCE 2.5 — үзэгдэл бүрийг олон кадрын видео промт болгоно.
+
+   Бүтэц (нийтлэг гарын авлагуудын дагуу):
+     Format → Subject → Setting → Style → Shot 1…N → Continuity
+     → Audio → Constraints
+   • Кадр бүр «Shot N (эхлэл–төгсгөл)», камер + үйлдэл, «Hard cut.»
+   • Нэг үүсгэлт ≤ 15 секунд — урт үзэгдлийг хэд хэдэн клипэд хуваана.
+   • Брэнд «зүсэлтгүй / no cuts» гэж заасан бол «Hard cut»‑ийн оронд
+     тасралтгүй шилжилт хэрэглэнэ.
+   • Сэдэв, орчныг эхэнд НЭГ удаа бичнэ; кадрууд зөвхөн өөрчлөгдөж
+     буй зүйлээ хэлнэ (өнгөлсөн бие даасан промт биш, түүхий кадр).
+   • Монгол үсэг промт руу хэзээ ч орохгүй (B.toEN хамгаалалт).
+   Офлайн ажиллана — AI дуудлага хийхгүй, байгаа өгөгдлөөс угсарна.
+   ═════════════════════════════════════════════════════════════ */
+(function (WB) {
+  "use strict";
+
+  const SD = (WB.seedance = {});
+  const S = WB.state;
+  const PR = WB.prompt;
+
+  SD.MAX_CLIP = 15;     /* сек, нэг үүсгэлтийн дээд урт */
+  SD.MAX_IMAGES = 9;    /* нэг үүсгэлтэд хавсаргах зургийн дээд тоо */
+  SD.MAX_VIDEOS = 3;
+  SD.DEFAULT_SHOT = 3;  /* кадрын урт тодорхойгүй бол */
+  SD.SINGLE_SHOT = 5;   /* кадаргүй үзэгдлийн урт */
+
+  function en(field) {
+    const t = field ? field.en || field.mn || "" : "";
+    return WB.brand.toEN(t).trim().replace(/\s*\.\s*$/, "");
+  }
+  function sentence(t) {
+    t = String(t || "").trim();
+    return t ? t.replace(/[.;,\s]*$/, "") + "." : "";
+  }
+
+  /** «3s», «3с», «2.5 sec», «4» → секунд. */
+  SD.durOf = function (sh) {
+    const m = /(\d+(?:[.,]\d+)?)/.exec(String((sh && sh.dur) || ""));
+    const v = m ? parseFloat(m[1].replace(",", ".")) : SD.DEFAULT_SHOT;
+    return Math.max(1, Math.min(SD.MAX_CLIP, v || SD.DEFAULT_SHOT));
+  };
+
+  /** Брэндийн камерын дүрэм зүсэлтийг хориглосон уу. */
+  SD.noCut = function () {
+    const rule = (S.P.brand && (S.P.brand.f.camera.en || S.P.brand.f.camera.mn)) || "";
+    return /\b(no|without)\s+(hard\s+)?cuts?\b|\bsingle continuous take\b|зүсэлтгүй|огтлолгүй|огтлол хийхгүй/i.test(rule);
+  };
+
+  function subjectOf(scene) {
+    return (scene.castIds || [])
+      .map((id) => S.P.cast.find((c) => c.id === id))
+      .filter(Boolean)
+      .map((c) => {
+        const d = [en(c.f.look), en(c.f.cloth)].filter(Boolean).join(", ");
+        const nm = PR.nameEN(c.name);
+        return nm && d ? nm + " — " + d : nm || d;
+      })
+      .filter(Boolean)
+      .join("; ");
+  }
+  function settingOf(scene) {
+    const l = S.P.locs.find((x) => x.id === scene.locId);
+    if (!l) return "";
+    return [en(l.f.look), en(l.f.time), en(l.f.mood)].filter(Boolean).join(", ");
+  }
+  function styleLine() {
+    const o = S.P.opts;
+    const parts = [];
+    if (o.brandOn !== false && WB.brand) parts.push(...WB.brand.visualParts());
+    const st = PR.styleText(o);
+    if (st) parts.push(st);
+    return parts.join(". ");
+  }
+  function audioLine() {
+    const b = S.P.brand;
+    const a = b && S.P.opts.brandOn !== false ? WB.brand.toEN(b.f.audio.en || b.f.audio.mn || "").trim() : "";
+    return a || "natural ambient sound of the setting only, no music";
+  }
+  function constraintsLine() {
+    const base = "no on-screen text, no subtitles, no watermark, no logo";
+    /* Брэндийн хориглосон зүйлсийг «avoid»‑оор тусгаарлана — эс бөгөөс
+       «no logo, modern buildings» гэж зөвшөөрсөн мэт уншигдана. */
+    const avoid = [S.P.opts.brandOn !== false && WB.brand ? WB.brand.avoidLine() : "", (S.P.opts.negative || "").trim()]
+      .map((t) => WB.brand.toEN(t))
+      .filter(Boolean)
+      .join(", ");
+    return avoid ? base + "; avoid " + avoid : base;
+  }
+
+  /**
+   * @ лавлагаа — промтын ЭХЭНД, дөрвөлжин хаалтан дотор: [@image1].
+   * Дугаар нь файл хуулах дарааллыг дагана ([@image1], [@image2] …,
+   * [@video1]). Лавлагаа бүрд НЭГ нарийн үүрэг өгч, юуг хуулахгүйг
+   * заана — эс бөгөөс загвар өөрөө таамаглана.
+   * @returns {{lines:string[], files:{tag:string, what:string, from:string}[]}}
+   */
+  SD.refs = function (scene, idx) {
+    const o = S.P.opts;
+    const out = { lines: [], files: [] };
+    if (o.seedRefs === false) return out;
+    let img = 0, vid = 0;
+    const addImg = (line, what, from) => {
+      if (img >= SD.MAX_IMAGES) return;
+      img++;
+      const tag = "[@image" + img + "]";
+      out.lines.push(tag + " " + line);
+      out.files.push({ tag: tag, what: what, from: from });
+    };
+    const addVid = (line, what, from) => {
+      if (vid >= SD.MAX_VIDEOS) return;
+      vid++;
+      const tag = "[@video" + vid + "]";
+      out.lines.push(tag + " " + line);
+      out.files.push({ tag: tag, what: what, from: from });
+    };
+
+    (scene.castIds || [])
+      .map((id) => S.P.cast.find((c) => c.id === id))
+      .filter(Boolean)
+      .forEach((c) => {
+        const nm = PR.nameEN(c.name);
+        addImg(
+          "defines " + (nm ? nm + "'s" : "the character's") + " face, hairstyle and wardrobe only — do not copy its background.",
+          (c.name || "Дүр") + " — дүрийн зураг",
+          "«Бусад промт» → " + (c.name || "дүр") + " · ДҮРИЙН ЗУРАГ"
+        );
+      });
+    const loc = S.P.locs.find((x) => x.id === scene.locId);
+    if (loc) {
+      addImg(
+        "defines the setting, light and colour palette only — do not copy any people from it.",
+        (loc.name || "Байршил") + " — байршлын зураг",
+        "«Бусад промт» → " + (loc.name || "байршил") + " · БАЙРШЛЫН ЗУРАГ"
+      );
+    }
+    const b = S.P.brand;
+    if (b && b.locked && o.brandOn !== false) {
+      addImg(
+        "defines the colour grade, film grain and lighting style only — do not copy its subjects or composition.",
+        "Брэндийн түгжсэн фрэйм",
+        (b.ref || "").trim() || "Алхам 1 · Брэнд → баталсан кадр"
+      );
+    }
+    if (idx > 0) {
+      addVid(
+        "is the previous clip — continue seamlessly from its last frame; do not repeat its action.",
+        "Өмнөх клипийн үр дүн",
+        "энэ үзэгдлийн клип " + idx + "‑ийн гарсан видео"
+      );
+    }
+    if (o.seedCamVideo) {
+      addVid(
+        "provides the camera motion only — do not copy its subject or location.",
+        "Камерын хөдөлгөөний лавлагаа бичлэг",
+        "Camera Director‑ын урьдчилсан харагдац (дэлгэц бичлэг)"
+      );
+    }
+    return out;
+  };
+
+  /** Кадруудыг ≤ 15 секундийн клипэд хуваана. */
+  SD.clips = function (scene) {
+    const shots = (scene.shots || []).map((sh) => ({ sh, d: SD.durOf(sh) }));
+    if (!shots.length) return [[{ sh: null, d: SD.SINGLE_SHOT }]];
+    const out = [];
+    let cur = [], sum = 0;
+    shots.forEach((x) => {
+      if (cur.length && sum + x.d > SD.MAX_CLIP) {
+        out.push(cur);
+        cur = [];
+        sum = 0;
+      }
+      cur.push(x);
+      sum += x.d;
+    });
+    if (cur.length) out.push(cur);
+    return out;
+  };
+
+  function fmtT(t) {
+    return (Math.round(t * 10) / 10).toString();
+  }
+
+  /** Нэг клипийн Seedance 2.5 промт. */
+  SD.prompt = function (scene, clip, idx, total) {
+    const ar = S.P.opts.ar || "16:9";
+    const dur = clip.reduce((a, x) => a + x.d, 0);
+    const noCut = SD.noCut();
+    const L = SD.refs(scene, idx).lines.slice();
+    L.push(
+      "Format: " + clip.length + (clip.length === 1 ? " shot, " : " shots, ") + fmtT(dur) + " seconds, " + ar +
+        (noCut && clip.length > 1 ? ", one continuous take with no cuts" : "") +
+        (total > 1 ? " (part " + (idx + 1) + " of " + total + ")" : "") + "."
+    );
+    const subj = subjectOf(scene);
+    if (subj) L.push("Subject: " + sentence(subj));
+    const set = settingOf(scene);
+    if (set) L.push("Setting: " + sentence(set));
+    const st = styleLine();
+    if (st) L.push("Style: " + sentence(st));
+
+    let t = 0;
+    clip.forEach((x, i) => {
+      const t0 = t, t1 = t + x.d;
+      t = t1;
+      const cam = x.sh ? (x.sh.cam || "").trim() : "";
+      const body = x.sh ? en(x.sh.body) : en(scene.body);
+      const last = i === clip.length - 1;
+      const tail = last ? "" : noCut ? " Continue in the same take, no cut." : " Hard cut.";
+      L.push("Shot " + (i + 1) + " (" + fmtT(t0) + "–" + fmtT(t1) + "s): " + (cam ? cam + " — " : "") + sentence(body) + tail);
+    });
+
+    if (subj || clip.length > 1)
+      L.push("Continuity: keep the same faces, wardrobe, lighting and colour palette in every shot.");
+    L.push("Audio: " + sentence(audioLine()));
+    L.push("Constraints: " + sentence(constraintsLine()));
+    return L.join("\n");
+  };
+
+  /** Бүх үзэгдлийн Seedance блокууд (Промт самбарт). */
+  SD.blocks = function () {
+    const out = [];
+    S.P.scenes.forEach((s, i) => {
+      if (!(s.body.en || s.body.mn || (s.shots || []).length)) return;
+      const clips = SD.clips(s);
+      clips.forEach((clip, k) => {
+        const dur = clip.reduce((a, x) => a + x.d, 0);
+        out.push({
+          id: "seed:" + s.id + ":" + k,
+          title: (s.name || "Үзэгдэл " + (i + 1)) + (clips.length > 1 ? " · клип " + (k + 1) + "/" + clips.length : ""),
+          tag: "SEEDANCE 2.5 · " + clip.length + " кадр · " + fmtT(dur) + "с",
+          text: SD.prompt(s, clip, k, clips.length),
+          files: SD.refs(s, k).files
+        });
+      });
+    });
+    return out;
+  };
+
+  SD.asText = function () {
+    const lines = ["# " + (S.P.title || "Нэргүй төсөл") + " — Seedance 2.5", ""];
+    SD.blocks().forEach((b) => {
+      lines.push("## " + b.title + "  [" + b.tag + "]");
+      if (b.files.length) {
+        lines.push("Хавсаргах (энэ дарааллаар):");
+        b.files.forEach((f) => lines.push("  " + f.tag + " = " + f.what + "  ← " + f.from));
+        lines.push("");
+      }
+      lines.push(b.text, "");
+    });
+    return lines.join("\n");
   };
 })(window.WB);
 
@@ -7315,7 +7737,68 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     ncp.onclick = () => UI.copy(PR.negative(), ncp);
     neg.append(nh, npre, ncp);
     list.appendChild(neg);
+    UI.renderSeed(blocks.length);
     UI.updateCounts();
+  };
+
+  /** Seedance 2.5 таб — үзэгдэл бүрийн олон кадрын промт. */
+  UI.renderSeed = function (otherCount) {
+    const box = el("seedList");
+    if (!box || !WB.seedance) return;
+    const blocks = WB.seedance.blocks();
+    box.innerHTML = "";
+    if (!blocks.length) {
+      box.innerHTML =
+        '<div class="empty"><b>Үзэгдэл алга</b>Авто‑гоор ертөнц бүтээх эсвэл «Түүх» хэсэгт үзэгдэл нэмнэ үү.</div>';
+    }
+    blocks.forEach((b) => {
+      const w = document.createElement("div");
+      w.className = "outwrap";
+      const h = document.createElement("h3");
+      h.appendChild(document.createTextNode(b.title + " "));
+      const em = document.createElement("em");
+      em.textContent = b.tag;
+      h.appendChild(em);
+      w.appendChild(h);
+      /* Хавсаргах дараалал — @ дугаар нь файл хуулах дарааллыг дагана */
+      if (b.files && b.files.length) {
+        const ol = document.createElement("ul");
+        ol.className = "seedfiles";
+        const hd = document.createElement("li");
+        hd.className = "sfh";
+        hd.textContent = "Seedance‑д хавсаргах — энэ дарааллаар";
+        ol.appendChild(hd);
+        b.files.forEach((f) => {
+          const li = document.createElement("li");
+          const code = document.createElement("code");
+          code.textContent = f.tag;
+          const sm = document.createElement("small");
+          sm.textContent = "← " + f.from;
+          li.append(code, document.createTextNode(f.what), sm);
+          ol.appendChild(li);
+        });
+        w.appendChild(ol);
+      }
+      const pre = document.createElement("div");
+      pre.className = "out";
+      pre.textContent = b.text;
+      const cp = document.createElement("button");
+      cp.className = "cp";
+      cp.textContent = "Хуулах";
+      cp.onclick = () => UI.copy(b.text, cp);
+      w.append(pre, cp);
+      box.appendChild(w);
+    });
+    const co = el("cntOther");
+    if (co && otherCount != null) co.textContent = otherCount;
+    const cs = el("cntSeed");
+    if (cs) cs.textContent = blocks.length;
+  };
+
+  UI.outTab = function (tab) {
+    U.qsa(".otab").forEach((b) => b.classList.toggle("on", b.dataset.otab === tab));
+    U.qsa(".otabpane").forEach((p) => p.classList.toggle("on", p.id === "ot-" + tab));
+    WB.store.set("outTab", tab);
   };
 
   UI.copy = async function (txt, btn) {
@@ -7562,6 +8045,10 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     if (at) at.checked = !!o.autoTranslate;
     const br = el("brandChk");
     if (br) br.checked = o.brandOn !== false;
+    const sr = el("seedRefsChk");
+    if (sr) sr.checked = o.seedRefs !== false;
+    const sc = el("seedCamChk");
+    if (sc) sc.checked = !!o.seedCamVideo;
   };
 
   /* ── багц орчуулга ──────────────────────────────────────── */
@@ -8163,7 +8650,8 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
         "- Keep Mongolian cultural terms and their clarifiers intact.\n" +
         "- One paragraph each, under 110 words, English only.\n" +
         (WB.brand && WB.brand.polishHint()
-          ? "- Honour the channel style exactly, never drift from it: " + WB.brand.polishHint() + ".\n"
+          ? "- The channel style is appended automatically after your text — do NOT restate it. " +
+            "Only keep the prompt consistent with it, never contradicting it: " + WB.brand.polishHint() + ".\n"
           : "") +
         '- Return ONLY a JSON object mapping each id to its rewritten prompt: {"id":"text"}.\n\n' +
         body;
@@ -8702,6 +9190,46 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
 
   /* ── экспорт ────────────────────────────────────────────── */
   el("copyAll").onclick = (e) => UI.copy(WB.prompt.asText(), e.target);
+  el("seedCopy").onclick = (e) => {
+    if (!WB.seedance.blocks().length) {
+      U.toast("Seedance промт алга — эхлээд үзэгдэл үүсгэнэ үү", "info");
+      return;
+    }
+    UI.copy(WB.seedance.asText(), e.target);
+  };
+  el("seedTxt").onclick = () =>
+    S.download(U.slug(S.P.title) + "-seedance-2.5.txt", WB.seedance.asText(), "text/plain");
+  U.qsa(".otab").forEach((b) => (b.onclick = () => UI.outTab(b.dataset.otab)));
+  el("seedRefsChk").addEventListener("change", (e) => {
+    S.P.opts.seedRefs = e.target.checked;
+    S.touch();
+    UI.renderOut();
+  });
+  el("seedCamChk").addEventListener("change", (e) => {
+    S.P.opts.seedCamVideo = e.target.checked;
+    S.touch();
+    UI.renderOut();
+  });
+
+  /* Авто → Брэнд: ертөнц ба лавлагаа зургаас харагдацын хоосон талбарыг бөглөнө */
+  el("autoToBrand").onclick = async (e) => {
+    if (!AU.needAI()) return;
+    await UI.withBtn(e.target, "Уншиж байна…", async () => {
+      const r = await WB.brand.fromWorld(WB.refimg.blocks(), WB.refimg.list.map((x) => x.name));
+      if (r.full) {
+        U.toast("Брэндийн харагдацын талбарууд аль хэдийн бөглөгдсөн — дарж бичсэнгүй", "info", 5000);
+        return;
+      }
+      if (!r.filled.length) {
+        U.toast("Шинэ зүйл олдсонгүй", "info");
+        return;
+      }
+      UI.renderAll();
+      await UI.translatePending(["brand"]);
+      UI.goto("brand");
+      U.toast(r.filled.length + " талбар бөглөлөө: " + r.filled.join(", ") + ". Одоо нэг фрэймээ шалгаад түгжээрэй", "good", 7000);
+    });
+  };
   el("expMd").onclick = () => S.download(U.slug(S.P.title) + ".md", WB.prompt.asMarkdown(), "text/markdown");
   el("expCsv").onclick = () => S.download(U.slug(S.P.title) + ".csv", WB.prompt.asCSV(), "text/csv");
   el("expTxt").onclick = () => S.download(U.slug(S.P.title) + "-prompts.txt", WB.prompt.asText(), "text/plain");
@@ -9017,6 +9545,7 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
   /* ── эхлүүлэлт ──────────────────────────────────────────── */
   function boot() {
     WB.refimg.wire();
+    UI.outTab(WB.store.get("outTab", "other") === "seed" ? "seed" : "other");
     const brag = el("dictBrag");
     if (brag) brag.textContent = WB.dict.size().toLocaleString("en-US");
     const restored = S.restore();

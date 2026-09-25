@@ -34,17 +34,29 @@
     return body ? body + "." : "";
   };
 
+  const CYR = /[а-яөүё]/i;
+  /** Дүрийн нэр бол өвөрмөц нэр — орчуулахгүй, галиглана: «Сарнай» → «Sarnai». */
+  PR.nameEN = function (n) {
+    const t = String(n || "").trim();
+    return CYR.test(t) ? WB.gram.translit(t) : t;
+  };
+  /** Байршлын нэр ихэвчлэн тайлбар үг — орчуулна: «Тал» → «steppe». */
+  PR.placeEN = function (n) {
+    const t = String(n || "").trim();
+    return CYR.test(t) && WB.tr ? WB.tr.offline(t).en.trim() : t;
+  };
+
   PR.character = function (c) {
     if (c.pro) return c.pro;
-    return PR.join([c.name ? "Character: " + c.name : "", c.f.look.en, c.f.cloth.en, c.f.person.en]);
+    return PR.join([c.name ? "Character: " + PR.nameEN(c.name) : "", c.f.look.en, c.f.cloth.en, c.f.person.en]);
   };
   PR.characterFull = function (c) {
     if (c.pro) return c.pro;
-    return PR.join([c.name ? "Character: " + c.name : "", c.f.look.en, c.f.cloth.en, c.f.person.en, c.f.voice.en]);
+    return PR.join([c.name ? "Character: " + PR.nameEN(c.name) : "", c.f.look.en, c.f.cloth.en, c.f.person.en, c.f.voice.en]);
   };
   PR.location = function (l) {
     if (l.pro) return l.pro;
-    return PR.join([l.name ? "Location: " + l.name : "", l.f.look.en, l.f.time.en, l.f.mood.en, l.f.detail.en]);
+    return PR.join([l.name ? "Location: " + PR.placeEN(l.name) : "", l.f.look.en, l.f.time.en, l.f.mood.en, l.f.detail.en]);
   };
 
   /** Үзэгдлийн промт — тууштай байдлын горимд дүр, байршлыг шингээнэ. */
@@ -56,7 +68,12 @@
     if (o.continuity) {
       (s.castIds || []).forEach((id) => {
         const c = P.cast.find((x) => x.id === id);
-        if (c) parts.push(PR.join([c.name ? c.name + ":" : "", c.f.look.en, c.f.cloth.en]));
+        if (!c) return;
+        const desc = [c.f.look.en, c.f.cloth.en]
+          .map((t) => (t || "").trim().replace(/\.$/, ""))
+          .filter(Boolean)
+          .join(", ");
+        if (desc) parts.push((c.name ? PR.nameEN(c.name) + ": " : "") + desc);
       });
       const loc = P.locs.find((x) => x.id === s.locId);
       if (loc) parts.push(PR.join([loc.f.look.en, loc.f.time.en]));
@@ -80,9 +97,10 @@
     const style = PR.styleText(o);
     let out = text;
     if (style) out += " " + style + ".";
-    /* Брэнд файлын харагдацын давхарга — сувгийн гарын үсэг. */
+    /* Брэнд файлын харагдацын давхарга — сувгийн гарын үсэг. Өнгөлсөн промт
+       брэндийн үгсийг аль хэдийн агуулж болох тул байхгүй хэсгийг л залгана. */
     if (o.brandOn !== false && WB.brand) {
-      const bl = WB.brand.visualLine();
+      const bl = WB.brand.missingVisual(out);
       if (bl) out += " " + bl + ".";
     }
     const suf = PR.SUFFIX[o.target] ? PR.SUFFIX[o.target](o) : "";
@@ -204,6 +222,13 @@
         });
         if (s.shots.length) md.push("");
       });
+    }
+    if (WB.seedance) {
+      const sb = WB.seedance.blocks();
+      if (sb.length) {
+        md.push("## Seedance 2.5", "");
+        sb.forEach((b) => md.push("### " + b.title + "  `" + b.tag + "`", "", "```", b.text, "```", ""));
+      }
     }
     md.push("## Сөрөг промт", "", "```", PR.negative(), "```");
     return md.join("\n");

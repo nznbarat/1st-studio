@@ -346,6 +346,46 @@
 
   /* ── экспорт ────────────────────────────────────────────── */
   el("copyAll").onclick = (e) => UI.copy(WB.prompt.asText(), e.target);
+  el("seedCopy").onclick = (e) => {
+    if (!WB.seedance.blocks().length) {
+      U.toast("Seedance промт алга — эхлээд үзэгдэл үүсгэнэ үү", "info");
+      return;
+    }
+    UI.copy(WB.seedance.asText(), e.target);
+  };
+  el("seedTxt").onclick = () =>
+    S.download(U.slug(S.P.title) + "-seedance-2.5.txt", WB.seedance.asText(), "text/plain");
+  U.qsa(".otab").forEach((b) => (b.onclick = () => UI.outTab(b.dataset.otab)));
+  el("seedRefsChk").addEventListener("change", (e) => {
+    S.P.opts.seedRefs = e.target.checked;
+    S.touch();
+    UI.renderOut();
+  });
+  el("seedCamChk").addEventListener("change", (e) => {
+    S.P.opts.seedCamVideo = e.target.checked;
+    S.touch();
+    UI.renderOut();
+  });
+
+  /* Авто → Брэнд: ертөнц ба лавлагаа зургаас харагдацын хоосон талбарыг бөглөнө */
+  el("autoToBrand").onclick = async (e) => {
+    if (!AU.needAI()) return;
+    await UI.withBtn(e.target, "Уншиж байна…", async () => {
+      const r = await WB.brand.fromWorld(WB.refimg.blocks(), WB.refimg.list.map((x) => x.name));
+      if (r.full) {
+        U.toast("Брэндийн харагдацын талбарууд аль хэдийн бөглөгдсөн — дарж бичсэнгүй", "info", 5000);
+        return;
+      }
+      if (!r.filled.length) {
+        U.toast("Шинэ зүйл олдсонгүй", "info");
+        return;
+      }
+      UI.renderAll();
+      await UI.translatePending(["brand"]);
+      UI.goto("brand");
+      U.toast(r.filled.length + " талбар бөглөлөө: " + r.filled.join(", ") + ". Одоо нэг фрэймээ шалгаад түгжээрэй", "good", 7000);
+    });
+  };
   el("expMd").onclick = () => S.download(U.slug(S.P.title) + ".md", WB.prompt.asMarkdown(), "text/markdown");
   el("expCsv").onclick = () => S.download(U.slug(S.P.title) + ".csv", WB.prompt.asCSV(), "text/csv");
   el("expTxt").onclick = () => S.download(U.slug(S.P.title) + "-prompts.txt", WB.prompt.asText(), "text/plain");
@@ -661,6 +701,7 @@
   /* ── эхлүүлэлт ──────────────────────────────────────────── */
   function boot() {
     WB.refimg.wire();
+    UI.outTab(WB.store.get("outTab", "other") === "seed" ? "seed" : "other");
     const brag = el("dictBrag");
     if (brag) brag.textContent = WB.dict.size().toLocaleString("en-US");
     const restored = S.restore();
