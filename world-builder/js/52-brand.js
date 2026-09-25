@@ -353,26 +353,42 @@
     return n;
   };
 
+  /** Брэндийн бүх мөр — Авто → Брэнд сонгогчид. */
+  const META_HINT = {
+    niche: "сувгийн ниш — нэг өгүүлбэр",
+    titleFmt: "энэ сувгийн давтагдах гарчгийн загвар, нэг мөр"
+  };
+  B.rows = function () {
+    const b = S.P.brand;
+    return S.BRAND_META_FIELDS.map((d) => ({ k: d.k, lb: d.lb, layer: 1, hint: META_HINT[d.k], field: b.meta[d.k] }))
+      .concat(S.BRAND_FIELDS.map((d) => ({ k: d.k, lb: d.lb, layer: d.layer, hint: d.hint, field: b.f[d.k] })));
+  };
+  function rowEmpty(r) {
+    return !((r.field.mn || "").trim() || (r.field.en || "").trim());
+  }
+  B.rowEmpty = rowEmpty;
+
   /**
    * Авто → Брэнд: Авто‑гийн зохиосон ертөнц ба лавлагаа зургаас брэндийн
-   * ХАРАГДАЦЫН давхаргын (2) ХООСОН талбаруудыг бөглөнө. Хэрэглэгчийн
-   * бичсэнийг хэзээ ч дарж бичихгүй. Хоолой ба дуу авиа (3) нь зургаас
-   * гарахгүй, бүтээгчийн өөрийн сонголт тул хөндөхгүй.
-   * @returns {{filled:string[], full?:boolean}}
+   * мөрүүдийг бөглөнө. `keys` өгвөл яг тэдгээрийг (бөглөгдсөн байсан ч)
+   * ДАРЖ бичнэ — хэрэглэгч сонгогчоос өөрөө сонгосон. `keys` өгөөгүй бол
+   * харагдацын давхаргын хоосон мөрүүдийг л бөглөнө.
+   * @returns {{filled:string[], overwritten:string[], full?:boolean}}
    */
-  B.fromWorld = async function (images, imageNames) {
+  B.fromWorld = async function (images, imageNames, keys) {
     const b = S.P.brand;
     const P = S.P;
     images = images || [];
-    const empty = S.BRAND_FIELDS.filter(
-      (d) => d.layer === 2 && !(b.f[d.k].mn || "").trim() && !(b.f[d.k].en || "").trim()
-    );
-    if (!empty.length) return { filled: [], full: true };
+    const rows = B.rows();
+    const want = keys
+      ? rows.filter((r) => keys.includes(r.k))
+      : rows.filter((r) => r.layer === 2 && rowEmpty(r));
+    if (!want.length) return { filled: [], overwritten: [], full: !keys };
 
     const world = [];
     if (P.logline.mn) world.push("Логлайн: " + P.logline.mn);
     P.cast.forEach((c) => {
-      const d = [c.f.look.mn, c.f.cloth.mn].filter(Boolean).join("; ");
+      const d = [c.f.look.mn, c.f.cloth.mn, c.f.voice.mn].filter(Boolean).join("; ");
       if (d) world.push("Дүр " + (c.name || "") + ": " + d);
     });
     P.locs.forEach((l) => {
@@ -386,41 +402,45 @@
       throw new Error("Эхлээд Авто‑гоор ертөнц бүтээх эсвэл лавлагаа зураг оруулна уу.");
     }
 
-    const keys = empty.map((d) => '  "' + d.k + '": "' + d.hint + '"').join(",\n");
+    const fmt = want.map((r) => '  "' + r.k + '": "' + r.hint + '"').join(",\n");
     const prompt =
       "Та урлагийн найруулагч, брэнд стратегич. " +
       (images.length ? "Хавсаргасан " + images.length + " лавлагаа зураг ба д" : "Д") +
-      "оорх ертөнцөөс YouTube сувгийн БРЭНД ФАЙЛЫН харагдацын талбаруудыг гарга.\n\n" +
+      "оорх ертөнцөөс YouTube сувгийн БРЭНД ФАЙЛЫН дараах талбаруудыг гарга.\n\n" +
       "Шаардлага:\n" +
       "- Зөвхөн JSON объект буцаа. Тайлбар, код блокын хашилтгүй.\n" +
-      "- Бүх утга МОНГОЛ хэлээр, богино (8–20 үг), бодит: өнгө, материал, линз, гэрлийн чиглэл.\n" +
-      "- Зөвхөн бодитоор " + (images.length ? "зурагт харагдаж буй эсвэл " : "") +
-      "ертөнцөд бичигдсэн зүйлээс гарга" +
-      (images.length ? " — харагдац, гэрэл, палеттыг ЗУРГААС ав" : "") + ".\n" +
+      "- Бүх утга МОНГОЛ хэлээр, богино (8–20 үг), бодит: өнгө, материал, линз, гэрлийн чиглэл, багажийн нэр.\n" +
+      "- Бодитоор " + (images.length ? "зурагт харагдаж буй эсвэл " : "") + "ертөнцөд бичигдсэн зүйлээс гарга" +
+      (images.length ? " — харагдац, гэрэл, палеттыг ЗУРГААС ав" : "") +
+      "; хоолой, дуу авианы талбарыг ертөнцийн уур амьсгалд тохируулж санал болго.\n" +
       "- Энэ бол нэг ангийн биш, СУВГИЙН тогтмол хэв маяг — бүх ангид давтагдах зүйлийг бич.\n" +
       "- «гоё», «мэргэжлийн» зэрэг ерөнхий үг бүү хэрэглэ.\n" +
-      "- Формат:\n{\n" + keys + "\n}\n\n" +
+      "- Формат:\n{\n" + fmt + "\n}\n\n" +
       "Ертөнц:\n" + (world.join("\n") || "(зөвхөн зураг)");
 
-    const o = await WB.api.askJSON(prompt, 1600, images.length ? { images: images } : undefined);
+    const o = await WB.api.askJSON(prompt, 1800, images.length ? { images: images } : undefined);
     if (!o || typeof o !== "object") throw new Error("хариу таарсангүй");
 
     S.pushHistory();
     const filled = [];
-    empty.forEach((d) => {
-      const v = o[d.k];
-      if (typeof v === "string" && v.trim()) {
-        b.f[d.k].mn = v.trim();
-        b.f[d.k].en = "";
-        b.f[d.k].src = "";
-        filled.push(d.lb);
-      }
+    const overwritten = [];
+    want.forEach((r) => {
+      const v = o[r.k];
+      if (typeof v !== "string" || !v.trim()) return;
+      (rowEmpty(r) ? filled : overwritten).push(r.lb);
+      /* Шинэ монгол текст — англи талыг дахин орчуулахаар түгжээг тайлна
+         (Camera Director эсвэл гар засвараар түгжигдсэн байсан ч). */
+      r.field.mn = v.trim();
+      r.field.en = "";
+      r.field.src = "";
+      r.field.unk = [];
+      r.field.auto = true;
     });
     if (images.length && !(b.ref || "").trim() && imageNames && imageNames.length) {
       b.ref = "Авто‑гийн лавлагаа зураг: " + imageNames.join(", ");
     }
     S.touch();
-    return { filled: filled };
+    return { filled: filled, overwritten: overwritten };
   };
 
   /** Батлагдсан гарчгийн форматаар N ангийн гарчиг санал болгоно. */

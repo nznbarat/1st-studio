@@ -83,6 +83,9 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
 .dual-head{display:flex;align-items:center;gap:9px;margin-bottom:6px}
 .dual-head .lb{font-size:12px;font-weight:600;color:var(--dim)}
 .dual-head .st{font-family:'JetBrains Mono';font-size:9.5px;letter-spacing:.1em;color:var(--dim);margin-left:auto}
+.dual-head .rev{margin-left:auto;font-size:10.5px;color:var(--tungsten);border:1px solid rgba(245,168,60,.4);border-radius:6px;padding:1px 8px}
+.dual-head .rev:hover{background:rgba(245,168,60,.1)}
+.dual-head .rev:not([hidden]) + .st{margin-left:8px}
 .dual-head .st.go{color:var(--daylight)} .dual-head .st.done{color:var(--ok)} .dual-head .st.warn{color:var(--warn)}
 .dual-body{display:grid;grid-template-columns:1fr 42px 1fr;gap:0}
 .pn{position:relative;background:var(--ink);border:1px solid var(--line);border-radius:8px}
@@ -180,6 +183,23 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
 .issue.err{border-color:rgba(255,82,82,.4);color:#ffb3b3}
 .issue.warn{border-color:rgba(224,162,74,.4);color:#ffd9a0}
 .issue.tip{border-color:rgba(111,183,220,.35);color:#bfe0f2}
+
+/* ── Авто → Брэнд сонгогч ── */
+.pick-modal .mbox{width:min(620px,100%)}
+.pickquick{display:flex;gap:6px;margin-bottom:6px}
+.pickquick button{font-size:11.5px;color:var(--dim);border:1px solid var(--line);border-radius:6px;padding:3px 10px}
+.pickquick button:hover{color:var(--daylight);border-color:var(--daylight)}
+.pickgrp{font-family:'JetBrains Mono';font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--tungsten);margin:12px 0 4px}
+.mbox label.pickrow{display:grid;grid-template-columns:18px 150px 1fr auto;align-items:baseline;gap:8px;margin:0;padding:6px 8px;border-radius:7px;font-weight:400;font-size:12.5px;color:var(--text);cursor:pointer}
+.mbox label.pickrow:hover{background:var(--panel2)}
+.mbox label.pickrow input{width:auto;accent-color:var(--tungsten)}
+.pickrow b{font-weight:600}
+.pickrow .pv{color:var(--dim);font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pickrow .pe{color:#5d6f80;font-style:italic;font-size:11.5px}
+.pickrow .pw{display:none;font-style:normal;font-size:10px;color:var(--rec);border:1px solid rgba(255,82,82,.4);border-radius:5px;padding:0 6px}
+.pickrow.over{background:rgba(255,82,82,.06)}
+.pickrow.over .pw{display:inline}
+.mrow button:disabled{opacity:.45;cursor:default}
 
 /* ── промтын таб ── */
 .outtabs{display:flex;gap:6px;margin:6px 0 14px;border-bottom:1px solid var(--line)}

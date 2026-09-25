@@ -370,20 +370,27 @@
   /* Авто → Брэнд: ертөнц ба лавлагаа зургаас харагдацын хоосон талбарыг бөглөнө */
   el("autoToBrand").onclick = async (e) => {
     if (!AU.needAI()) return;
-    await UI.withBtn(e.target, "Уншиж байна…", async () => {
-      const r = await WB.brand.fromWorld(WB.refimg.blocks(), WB.refimg.list.map((x) => x.name));
-      if (r.full) {
-        U.toast("Брэндийн харагдацын талбарууд аль хэдийн бөглөгдсөн — дарж бичсэнгүй", "info", 5000);
-        return;
-      }
-      if (!r.filled.length) {
+    const btn = e.currentTarget;
+    const keys = await UI.pickBrandRows();
+    if (!keys || !keys.length) return;
+    await UI.withBtn(btn, "Уншиж байна…", async () => {
+      const r = await WB.brand.fromWorld(WB.refimg.blocks(), WB.refimg.list.map((x) => x.name), keys);
+      const n = r.filled.length + r.overwritten.length;
+      if (!n) {
         U.toast("Шинэ зүйл олдсонгүй", "info");
         return;
       }
       UI.renderAll();
       await UI.translatePending(["brand"]);
       UI.goto("brand");
-      U.toast(r.filled.length + " талбар бөглөлөө: " + r.filled.join(", ") + ". Одоо нэг фрэймээ шалгаад түгжээрэй", "good", 7000);
+      U.toast(
+        n + " мөр шинэчлэгдлээ" +
+          (r.filled.length ? " · бөглөсөн: " + r.filled.join(", ") : "") +
+          (r.overwritten.length ? " · дарж бичсэн: " + r.overwritten.join(", ") : "") +
+          ". Буцаах бол Ctrl+Z",
+        "good",
+        8000
+      );
     });
   };
   el("expMd").onclick = () => S.download(U.slug(S.P.title) + ".md", WB.prompt.asMarkdown(), "text/markdown");

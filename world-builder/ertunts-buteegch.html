@@ -97,6 +97,9 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
 .dual-head{display:flex;align-items:center;gap:9px;margin-bottom:6px}
 .dual-head .lb{font-size:12px;font-weight:600;color:var(--dim)}
 .dual-head .st{font-family:'JetBrains Mono';font-size:9.5px;letter-spacing:.1em;color:var(--dim);margin-left:auto}
+.dual-head .rev{margin-left:auto;font-size:10.5px;color:var(--tungsten);border:1px solid rgba(245,168,60,.4);border-radius:6px;padding:1px 8px}
+.dual-head .rev:hover{background:rgba(245,168,60,.1)}
+.dual-head .rev:not([hidden]) + .st{margin-left:8px}
 .dual-head .st.go{color:var(--daylight)} .dual-head .st.done{color:var(--ok)} .dual-head .st.warn{color:var(--warn)}
 .dual-body{display:grid;grid-template-columns:1fr 42px 1fr;gap:0}
 .pn{position:relative;background:var(--ink);border:1px solid var(--line);border-radius:8px}
@@ -194,6 +197,23 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
 .issue.err{border-color:rgba(255,82,82,.4);color:#ffb3b3}
 .issue.warn{border-color:rgba(224,162,74,.4);color:#ffd9a0}
 .issue.tip{border-color:rgba(111,183,220,.35);color:#bfe0f2}
+
+/* ── Авто → Брэнд сонгогч ── */
+.pick-modal .mbox{width:min(620px,100%)}
+.pickquick{display:flex;gap:6px;margin-bottom:6px}
+.pickquick button{font-size:11.5px;color:var(--dim);border:1px solid var(--line);border-radius:6px;padding:3px 10px}
+.pickquick button:hover{color:var(--daylight);border-color:var(--daylight)}
+.pickgrp{font-family:'JetBrains Mono';font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--tungsten);margin:12px 0 4px}
+.mbox label.pickrow{display:grid;grid-template-columns:18px 150px 1fr auto;align-items:baseline;gap:8px;margin:0;padding:6px 8px;border-radius:7px;font-weight:400;font-size:12.5px;color:var(--text);cursor:pointer}
+.mbox label.pickrow:hover{background:var(--panel2)}
+.mbox label.pickrow input{width:auto;accent-color:var(--tungsten)}
+.pickrow b{font-weight:600}
+.pickrow .pv{color:var(--dim);font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pickrow .pe{color:#5d6f80;font-style:italic;font-size:11.5px}
+.pickrow .pw{display:none;font-style:normal;font-size:10px;color:var(--rec);border:1px solid rgba(255,82,82,.4);border-radius:5px;padding:0 6px}
+.pickrow.over{background:rgba(255,82,82,.06)}
+.pickrow.over .pw{display:inline}
+.mrow button:disabled{opacity:.45;cursor:default}
 
 /* ── промтын таб ── */
 .outtabs{display:flex;gap:6px;margin:6px 0 14px;border-bottom:1px solid var(--line)}
@@ -444,7 +464,7 @@ textarea.lineIn.ta{resize:vertical;line-height:1.6;font-family:inherit}
         <div id="autoLog" class="autolog"></div>
         <div class="toolrow tobrand">
           <button class="aibtn" id="autoToBrand">🎨 Брэнд рүү хадгалах</button>
-          <span class="note">Зохиосон ертөнц ба лавлагаа зургаас брэндийн <b>харагдац, гэрэл, палетт, камер</b>‑ын <b>хоосон</b> талбарыг бөглөнө — таны бичсэнийг дарж бичихгүй.</span>
+          <span class="note">Зохиосон ертөнц ба лавлагаа зургаас брэндийн мөрүүдийг бөглөнө. Дарахад <b>брэндийн бүх мөр</b> жагсаагдана — хоосон мөрүүд сонгогдсон, буруу бичигдсэн мөрийг сонговол <b>дарж бичнэ</b>.</span>
         </div>
       </div>
 
@@ -6511,26 +6531,42 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     return n;
   };
 
+  /** Брэндийн бүх мөр — Авто → Брэнд сонгогчид. */
+  const META_HINT = {
+    niche: "сувгийн ниш — нэг өгүүлбэр",
+    titleFmt: "энэ сувгийн давтагдах гарчгийн загвар, нэг мөр"
+  };
+  B.rows = function () {
+    const b = S.P.brand;
+    return S.BRAND_META_FIELDS.map((d) => ({ k: d.k, lb: d.lb, layer: 1, hint: META_HINT[d.k], field: b.meta[d.k] }))
+      .concat(S.BRAND_FIELDS.map((d) => ({ k: d.k, lb: d.lb, layer: d.layer, hint: d.hint, field: b.f[d.k] })));
+  };
+  function rowEmpty(r) {
+    return !((r.field.mn || "").trim() || (r.field.en || "").trim());
+  }
+  B.rowEmpty = rowEmpty;
+
   /**
    * Авто → Брэнд: Авто‑гийн зохиосон ертөнц ба лавлагаа зургаас брэндийн
-   * ХАРАГДАЦЫН давхаргын (2) ХООСОН талбаруудыг бөглөнө. Хэрэглэгчийн
-   * бичсэнийг хэзээ ч дарж бичихгүй. Хоолой ба дуу авиа (3) нь зургаас
-   * гарахгүй, бүтээгчийн өөрийн сонголт тул хөндөхгүй.
-   * @returns {{filled:string[], full?:boolean}}
+   * мөрүүдийг бөглөнө. `keys` өгвөл яг тэдгээрийг (бөглөгдсөн байсан ч)
+   * ДАРЖ бичнэ — хэрэглэгч сонгогчоос өөрөө сонгосон. `keys` өгөөгүй бол
+   * харагдацын давхаргын хоосон мөрүүдийг л бөглөнө.
+   * @returns {{filled:string[], overwritten:string[], full?:boolean}}
    */
-  B.fromWorld = async function (images, imageNames) {
+  B.fromWorld = async function (images, imageNames, keys) {
     const b = S.P.brand;
     const P = S.P;
     images = images || [];
-    const empty = S.BRAND_FIELDS.filter(
-      (d) => d.layer === 2 && !(b.f[d.k].mn || "").trim() && !(b.f[d.k].en || "").trim()
-    );
-    if (!empty.length) return { filled: [], full: true };
+    const rows = B.rows();
+    const want = keys
+      ? rows.filter((r) => keys.includes(r.k))
+      : rows.filter((r) => r.layer === 2 && rowEmpty(r));
+    if (!want.length) return { filled: [], overwritten: [], full: !keys };
 
     const world = [];
     if (P.logline.mn) world.push("Логлайн: " + P.logline.mn);
     P.cast.forEach((c) => {
-      const d = [c.f.look.mn, c.f.cloth.mn].filter(Boolean).join("; ");
+      const d = [c.f.look.mn, c.f.cloth.mn, c.f.voice.mn].filter(Boolean).join("; ");
       if (d) world.push("Дүр " + (c.name || "") + ": " + d);
     });
     P.locs.forEach((l) => {
@@ -6544,41 +6580,45 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
       throw new Error("Эхлээд Авто‑гоор ертөнц бүтээх эсвэл лавлагаа зураг оруулна уу.");
     }
 
-    const keys = empty.map((d) => '  "' + d.k + '": "' + d.hint + '"').join(",\n");
+    const fmt = want.map((r) => '  "' + r.k + '": "' + r.hint + '"').join(",\n");
     const prompt =
       "Та урлагийн найруулагч, брэнд стратегич. " +
       (images.length ? "Хавсаргасан " + images.length + " лавлагаа зураг ба д" : "Д") +
-      "оорх ертөнцөөс YouTube сувгийн БРЭНД ФАЙЛЫН харагдацын талбаруудыг гарга.\n\n" +
+      "оорх ертөнцөөс YouTube сувгийн БРЭНД ФАЙЛЫН дараах талбаруудыг гарга.\n\n" +
       "Шаардлага:\n" +
       "- Зөвхөн JSON объект буцаа. Тайлбар, код блокын хашилтгүй.\n" +
-      "- Бүх утга МОНГОЛ хэлээр, богино (8–20 үг), бодит: өнгө, материал, линз, гэрлийн чиглэл.\n" +
-      "- Зөвхөн бодитоор " + (images.length ? "зурагт харагдаж буй эсвэл " : "") +
-      "ертөнцөд бичигдсэн зүйлээс гарга" +
-      (images.length ? " — харагдац, гэрэл, палеттыг ЗУРГААС ав" : "") + ".\n" +
+      "- Бүх утга МОНГОЛ хэлээр, богино (8–20 үг), бодит: өнгө, материал, линз, гэрлийн чиглэл, багажийн нэр.\n" +
+      "- Бодитоор " + (images.length ? "зурагт харагдаж буй эсвэл " : "") + "ертөнцөд бичигдсэн зүйлээс гарга" +
+      (images.length ? " — харагдац, гэрэл, палеттыг ЗУРГААС ав" : "") +
+      "; хоолой, дуу авианы талбарыг ертөнцийн уур амьсгалд тохируулж санал болго.\n" +
       "- Энэ бол нэг ангийн биш, СУВГИЙН тогтмол хэв маяг — бүх ангид давтагдах зүйлийг бич.\n" +
       "- «гоё», «мэргэжлийн» зэрэг ерөнхий үг бүү хэрэглэ.\n" +
-      "- Формат:\n{\n" + keys + "\n}\n\n" +
+      "- Формат:\n{\n" + fmt + "\n}\n\n" +
       "Ертөнц:\n" + (world.join("\n") || "(зөвхөн зураг)");
 
-    const o = await WB.api.askJSON(prompt, 1600, images.length ? { images: images } : undefined);
+    const o = await WB.api.askJSON(prompt, 1800, images.length ? { images: images } : undefined);
     if (!o || typeof o !== "object") throw new Error("хариу таарсангүй");
 
     S.pushHistory();
     const filled = [];
-    empty.forEach((d) => {
-      const v = o[d.k];
-      if (typeof v === "string" && v.trim()) {
-        b.f[d.k].mn = v.trim();
-        b.f[d.k].en = "";
-        b.f[d.k].src = "";
-        filled.push(d.lb);
-      }
+    const overwritten = [];
+    want.forEach((r) => {
+      const v = o[r.k];
+      if (typeof v !== "string" || !v.trim()) return;
+      (rowEmpty(r) ? filled : overwritten).push(r.lb);
+      /* Шинэ монгол текст — англи талыг дахин орчуулахаар түгжээг тайлна
+         (Camera Director эсвэл гар засвараар түгжигдсэн байсан ч). */
+      r.field.mn = v.trim();
+      r.field.en = "";
+      r.field.src = "";
+      r.field.unk = [];
+      r.field.auto = true;
     });
     if (images.length && !(b.ref || "").trim() && imageNames && imageNames.length) {
       b.ref = "Авто‑гийн лавлагаа зураг: " + imageNames.join(", ");
     }
     S.touch();
-    return { filled: filled };
+    return { filled: filled, overwritten: overwritten };
   };
 
   /** Батлагдсан гарчгийн форматаар N ангийн гарчиг санал болгоно. */
@@ -7361,7 +7401,7 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     const wrap = document.createElement("div");
     wrap.className = "dual";
     wrap.innerHTML =
-      '<div class="dual-head"><span class="lb"></span><span class="st"></span></div>' +
+      '<div class="dual-head"><span class="lb"></span><button class="rev" hidden>↶ Гараар засснаа сэргээх</button><span class="st"></span></div>' +
       '<div class="dual-body">' +
       '<div class="pn mn"><span class="tag">МН</span><textarea spellcheck="false"></textarea></div>' +
       '<div class="seam"><button class="go" title="Одоо орчуулах">→</button>' +
@@ -7375,6 +7415,10 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     const stat = wrap.querySelector(".st");
     const lk = wrap.querySelector(".lk");
     const unkEl = wrap.querySelector(".unk");
+    const rev = wrap.querySelector(".rev");
+    /* Гараар зассан (түгжсэн) англи — монгол тал засагдахад солигдоно,
+       гэхдээ «сэргээх» товчоор буцаах боломжтой хадгална. */
+    let manualEN = null;
 
     taMN.placeholder = placeholder ? "Жишээ: " + placeholder : "Монголоор бич…";
     taEN.placeholder = "English appears here…";
@@ -7400,6 +7444,7 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
       const s2 = statusLabel(field);
       stat.textContent = s2.t;
       stat.className = s2.c;
+      rev.hidden = !(manualEN !== null && field.auto && manualEN !== field.en);
       paintUnknown(unkEl, field);
       UI.renderOut();
       UI.updateCounts();
@@ -7418,7 +7463,16 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
       field.mn = taMN.value;
       autoGrow(taMN);
       S.touch();
-      if (!field.auto || !S.P.opts.autoTranslate) return;
+      if (!S.P.opts.autoTranslate) return;
+      /* Монгол тал бол эх сурвалж — засагдахад англи тал нь дагах ёстой.
+         Түгжигдсэн байсан ч (англи талд санамсаргүй бичсэн, Camera Director
+         бичсэн) түгжээг тайлж дахин орчуулна. */
+      if (!field.auto) {
+        if (manualEN === null) manualEN = field.en;
+        field.auto = true;
+        lk.classList.remove("on");
+        lk.textContent = "🔓";
+      }
       stat.textContent = "…";
       stat.className = "st";
       clearTimeout(timer);
@@ -7426,6 +7480,8 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     });
     taEN.addEventListener("input", () => {
       field.en = taEN.value;
+      manualEN = null; /* шинэ гар засвар өмнөхийг орлоно */
+      rev.hidden = true;
       field.auto = false;
       field.src = "manual";
       lk.classList.add("on");
@@ -7436,6 +7492,20 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
       S.touch();
       UI.renderOut();
     });
+    rev.onclick = () => {
+      if (manualEN === null) return;
+      clearTimeout(timer);
+      field.en = manualEN;
+      field.auto = false;
+      field.src = "manual";
+      manualEN = null;
+      lk.classList.add("on");
+      lk.textContent = "🔒";
+      sync();
+      stat.textContent = "ГАРААР ЗАССАН";
+      stat.className = "st";
+      S.touch();
+    };
     wrap.querySelector(".go").onclick = doTranslate;
     lk.onclick = () => {
       field.auto = !field.auto;
@@ -7793,6 +7863,71 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     if (co && otherCount != null) co.textContent = otherCount;
     const cs = el("cntSeed");
     if (cs) cs.textContent = blocks.length;
+  };
+
+  /**
+   * Авто → Брэнд: брэндийн бүх мөрийг одоогийн утгатай нь жагсааж,
+   * аль мөрийг бөглөх / дарж бичихийг хэрэглэгчээр сонгуулна.
+   * Хоосон мөрүүд урьдчилан сонгогдсон. @returns {Promise<string[]|null>}
+   */
+  UI.pickBrandRows = function () {
+    return new Promise((resolve) => {
+      const rows = WB.brand.rows();
+      const LAYER = { 1: "1 · Судалгаа", 2: "2 · Харагдац", 3: "3 · Хоолой" };
+      const back = document.createElement("div");
+      back.className = "modal on pick-modal";
+      let html =
+        '<div class="mbox"><h2>Брэнд рүү <span>хадгалах</span></h2>' +
+        '<p class="lead">Авто‑гийн ертөнц ба лавлагаа зургаас аль мөрийг бөглөх вэ? Хоосон мөрүүд сонгогдсон. ' +
+        "Буруу бичигдсэн мөрийг сонговол <b>дарж бичнэ</b> — дараа нь <b>Ctrl+Z</b>‑ээр буцаана.</p>" +
+        '<div class="pickquick"><button data-q="empty">Хоосныг</button><button data-q="all">Бүгдийг</button><button data-q="none">Цэвэрлэх</button></div>';
+      let layer = 0;
+      rows.forEach((r) => {
+        if (r.layer !== layer) {
+          layer = r.layer;
+          html += '<div class="pickgrp">' + LAYER[layer] + "</div>";
+        }
+        const cur = ((r.field.mn || r.field.en || "").trim());
+        const empty = WB.brand.rowEmpty(r);
+        html +=
+          '<label class="pickrow"><input type="checkbox" data-k="' + r.k + '"' + (empty ? " checked" : "") + ">" +
+          "<b>" + U.esc(r.lb) + "</b>" +
+          (empty ? '<span class="pe">хоосон</span>' : '<span class="pv">' + U.esc(cur.length > 70 ? cur.slice(0, 70) + "…" : cur) + "</span>") +
+          '<em class="pw">дарж бичнэ</em></label>';
+      });
+      html += '<div class="mrow"><button class="acc" data-ok>Бөглөх</button><button data-no>Болих</button></div></div>';
+      back.innerHTML = html;
+
+      const boxes = [...back.querySelectorAll("input[data-k]")];
+      const paint = () => {
+        boxes.forEach((b) => b.closest(".pickrow").classList.toggle("over", b.checked && !b.closest(".pickrow").querySelector(".pe")));
+        const n = boxes.filter((b) => b.checked).length;
+        const ok = back.querySelector("[data-ok]");
+        ok.disabled = !n;
+        ok.textContent = n ? "Бөглөх (" + n + ")" : "Бөглөх";
+      };
+      boxes.forEach((b) => b.addEventListener("change", paint));
+      back.querySelectorAll("[data-q]").forEach((q) => {
+        q.onclick = () => {
+          boxes.forEach((b) => {
+            const empty = !!b.closest(".pickrow").querySelector(".pe");
+            b.checked = q.dataset.q === "all" || (q.dataset.q === "empty" && empty);
+          });
+          paint();
+        };
+      });
+      const close = (v) => {
+        back.remove();
+        resolve(v);
+      };
+      back.querySelector("[data-ok]").onclick = () => close(boxes.filter((b) => b.checked).map((b) => b.dataset.k));
+      back.querySelector("[data-no]").onclick = () => close(null);
+      back.addEventListener("click", (e) => {
+        if (e.target === back) close(null);
+      });
+      document.body.appendChild(back);
+      paint();
+    });
   };
 
   UI.outTab = function (tab) {
@@ -9214,20 +9349,27 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
   /* Авто → Брэнд: ертөнц ба лавлагаа зургаас харагдацын хоосон талбарыг бөглөнө */
   el("autoToBrand").onclick = async (e) => {
     if (!AU.needAI()) return;
-    await UI.withBtn(e.target, "Уншиж байна…", async () => {
-      const r = await WB.brand.fromWorld(WB.refimg.blocks(), WB.refimg.list.map((x) => x.name));
-      if (r.full) {
-        U.toast("Брэндийн харагдацын талбарууд аль хэдийн бөглөгдсөн — дарж бичсэнгүй", "info", 5000);
-        return;
-      }
-      if (!r.filled.length) {
+    const btn = e.currentTarget;
+    const keys = await UI.pickBrandRows();
+    if (!keys || !keys.length) return;
+    await UI.withBtn(btn, "Уншиж байна…", async () => {
+      const r = await WB.brand.fromWorld(WB.refimg.blocks(), WB.refimg.list.map((x) => x.name), keys);
+      const n = r.filled.length + r.overwritten.length;
+      if (!n) {
         U.toast("Шинэ зүйл олдсонгүй", "info");
         return;
       }
       UI.renderAll();
       await UI.translatePending(["brand"]);
       UI.goto("brand");
-      U.toast(r.filled.length + " талбар бөглөлөө: " + r.filled.join(", ") + ". Одоо нэг фрэймээ шалгаад түгжээрэй", "good", 7000);
+      U.toast(
+        n + " мөр шинэчлэгдлээ" +
+          (r.filled.length ? " · бөглөсөн: " + r.filled.join(", ") : "") +
+          (r.overwritten.length ? " · дарж бичсэн: " + r.overwritten.join(", ") : "") +
+          ". Буцаах бол Ctrl+Z",
+        "good",
+        8000
+      );
     });
   };
   el("expMd").onclick = () => S.download(U.slug(S.P.title) + ".md", WB.prompt.asMarkdown(), "text/markdown");

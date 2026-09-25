@@ -43,7 +43,7 @@
     const wrap = document.createElement("div");
     wrap.className = "dual";
     wrap.innerHTML =
-      '<div class="dual-head"><span class="lb"></span><span class="st"></span></div>' +
+      '<div class="dual-head"><span class="lb"></span><button class="rev" hidden>↶ Гараар засснаа сэргээх</button><span class="st"></span></div>' +
       '<div class="dual-body">' +
       '<div class="pn mn"><span class="tag">МН</span><textarea spellcheck="false"></textarea></div>' +
       '<div class="seam"><button class="go" title="Одоо орчуулах">→</button>' +
@@ -57,6 +57,10 @@
     const stat = wrap.querySelector(".st");
     const lk = wrap.querySelector(".lk");
     const unkEl = wrap.querySelector(".unk");
+    const rev = wrap.querySelector(".rev");
+    /* Гараар зассан (түгжсэн) англи — монгол тал засагдахад солигдоно,
+       гэхдээ «сэргээх» товчоор буцаах боломжтой хадгална. */
+    let manualEN = null;
 
     taMN.placeholder = placeholder ? "Жишээ: " + placeholder : "Монголоор бич…";
     taEN.placeholder = "English appears here…";
@@ -82,6 +86,7 @@
       const s2 = statusLabel(field);
       stat.textContent = s2.t;
       stat.className = s2.c;
+      rev.hidden = !(manualEN !== null && field.auto && manualEN !== field.en);
       paintUnknown(unkEl, field);
       UI.renderOut();
       UI.updateCounts();
@@ -100,7 +105,16 @@
       field.mn = taMN.value;
       autoGrow(taMN);
       S.touch();
-      if (!field.auto || !S.P.opts.autoTranslate) return;
+      if (!S.P.opts.autoTranslate) return;
+      /* Монгол тал бол эх сурвалж — засагдахад англи тал нь дагах ёстой.
+         Түгжигдсэн байсан ч (англи талд санамсаргүй бичсэн, Camera Director
+         бичсэн) түгжээг тайлж дахин орчуулна. */
+      if (!field.auto) {
+        if (manualEN === null) manualEN = field.en;
+        field.auto = true;
+        lk.classList.remove("on");
+        lk.textContent = "🔓";
+      }
       stat.textContent = "…";
       stat.className = "st";
       clearTimeout(timer);
@@ -108,6 +122,8 @@
     });
     taEN.addEventListener("input", () => {
       field.en = taEN.value;
+      manualEN = null; /* шинэ гар засвар өмнөхийг орлоно */
+      rev.hidden = true;
       field.auto = false;
       field.src = "manual";
       lk.classList.add("on");
@@ -118,6 +134,20 @@
       S.touch();
       UI.renderOut();
     });
+    rev.onclick = () => {
+      if (manualEN === null) return;
+      clearTimeout(timer);
+      field.en = manualEN;
+      field.auto = false;
+      field.src = "manual";
+      manualEN = null;
+      lk.classList.add("on");
+      lk.textContent = "🔒";
+      sync();
+      stat.textContent = "ГАРААР ЗАССАН";
+      stat.className = "st";
+      S.touch();
+    };
     wrap.querySelector(".go").onclick = doTranslate;
     lk.onclick = () => {
       field.auto = !field.auto;
@@ -475,6 +505,71 @@
     if (co && otherCount != null) co.textContent = otherCount;
     const cs = el("cntSeed");
     if (cs) cs.textContent = blocks.length;
+  };
+
+  /**
+   * Авто → Брэнд: брэндийн бүх мөрийг одоогийн утгатай нь жагсааж,
+   * аль мөрийг бөглөх / дарж бичихийг хэрэглэгчээр сонгуулна.
+   * Хоосон мөрүүд урьдчилан сонгогдсон. @returns {Promise<string[]|null>}
+   */
+  UI.pickBrandRows = function () {
+    return new Promise((resolve) => {
+      const rows = WB.brand.rows();
+      const LAYER = { 1: "1 · Судалгаа", 2: "2 · Харагдац", 3: "3 · Хоолой" };
+      const back = document.createElement("div");
+      back.className = "modal on pick-modal";
+      let html =
+        '<div class="mbox"><h2>Брэнд рүү <span>хадгалах</span></h2>' +
+        '<p class="lead">Авто‑гийн ертөнц ба лавлагаа зургаас аль мөрийг бөглөх вэ? Хоосон мөрүүд сонгогдсон. ' +
+        "Буруу бичигдсэн мөрийг сонговол <b>дарж бичнэ</b> — дараа нь <b>Ctrl+Z</b>‑ээр буцаана.</p>" +
+        '<div class="pickquick"><button data-q="empty">Хоосныг</button><button data-q="all">Бүгдийг</button><button data-q="none">Цэвэрлэх</button></div>';
+      let layer = 0;
+      rows.forEach((r) => {
+        if (r.layer !== layer) {
+          layer = r.layer;
+          html += '<div class="pickgrp">' + LAYER[layer] + "</div>";
+        }
+        const cur = ((r.field.mn || r.field.en || "").trim());
+        const empty = WB.brand.rowEmpty(r);
+        html +=
+          '<label class="pickrow"><input type="checkbox" data-k="' + r.k + '"' + (empty ? " checked" : "") + ">" +
+          "<b>" + U.esc(r.lb) + "</b>" +
+          (empty ? '<span class="pe">хоосон</span>' : '<span class="pv">' + U.esc(cur.length > 70 ? cur.slice(0, 70) + "…" : cur) + "</span>") +
+          '<em class="pw">дарж бичнэ</em></label>';
+      });
+      html += '<div class="mrow"><button class="acc" data-ok>Бөглөх</button><button data-no>Болих</button></div></div>';
+      back.innerHTML = html;
+
+      const boxes = [...back.querySelectorAll("input[data-k]")];
+      const paint = () => {
+        boxes.forEach((b) => b.closest(".pickrow").classList.toggle("over", b.checked && !b.closest(".pickrow").querySelector(".pe")));
+        const n = boxes.filter((b) => b.checked).length;
+        const ok = back.querySelector("[data-ok]");
+        ok.disabled = !n;
+        ok.textContent = n ? "Бөглөх (" + n + ")" : "Бөглөх";
+      };
+      boxes.forEach((b) => b.addEventListener("change", paint));
+      back.querySelectorAll("[data-q]").forEach((q) => {
+        q.onclick = () => {
+          boxes.forEach((b) => {
+            const empty = !!b.closest(".pickrow").querySelector(".pe");
+            b.checked = q.dataset.q === "all" || (q.dataset.q === "empty" && empty);
+          });
+          paint();
+        };
+      });
+      const close = (v) => {
+        back.remove();
+        resolve(v);
+      };
+      back.querySelector("[data-ok]").onclick = () => close(boxes.filter((b) => b.checked).map((b) => b.dataset.k));
+      back.querySelector("[data-no]").onclick = () => close(null);
+      back.addEventListener("click", (e) => {
+        if (e.target === back) close(null);
+      });
+      document.body.appendChild(back);
+      paint();
+    });
   };
 
   UI.outTab = function (tab) {
