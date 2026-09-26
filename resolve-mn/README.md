@@ -3,7 +3,7 @@
 DaVinci Resolve-ийн интерфейсийн монгол хэл дээрх лавлах.
 Программын цэс, самбар, товчлуур, тохиргоо бүрийн монгол нэр, тайлбар, хаана байдгийг цуглуулсан.
 
-**1156 нэр томьёо · 51 ангилал · 134 товчлуур · 753 гарын авлагын дэлгэрэнгүй тайлбар · 6 ажлын урсгал · 8 хуудасны загвар · 31 нээгддэг цэс · 2 жишээтэй заавар (Fusion 28, Edit 26 хэрэгсэл)**
+**1188 нэр томьёо · 52 ангилал · 135 товчлуур · 789 гарын авлагын дэлгэрэнгүй тайлбар · 6 ажлын урсгал · 8 хуудасны загвар · 35 нээгддэг цэс · 2 жишээтэй заавар (Fusion 28, Edit 26 хэрэгсэл)**
 
 ---
 
@@ -95,6 +95,13 @@ node tools/build-resolve-mn.mjs
 - `←` `→` — Resolve-ийн хуудас хооронд шилжинэ
 - `Esc` — сонголтыг цуцална
 
+### Хичээлийн горим (хоёр заавар хоёулаа)
+
+Хэрэглэгчийн хүсэлтээр **нэг хуудсанд нэг хичээл**: нүүр хуудсанд танилцуулга ба хичээлийн жагсаалт
+(`#hicheel`), товч бүр тусдаа хуудас (`#blade`, `#merge` …) — дээр нь «Хичээл 3 / 27 · бүлэг» ба явцын
+зурвас, бүлгийн эхний хичээлд бүлгийн тайлбар, доор нь **‹ Өмнөх · ☰ · Дараах ›**. Гарын ← → товчоор
+шилжинэ. Толь, загварын «▶ Жишээтэй заавар» холбоос тухайн хичээлийг шууд нээнэ.
+
 ### Edit хэрэгслийн мөрийн заавар
 
 `edit-zaavar.html` — Edit хуудасны timeline-ийн хэрэгслийн мөр (Timeline View Options, Show Keyframe Tray,
@@ -111,7 +118,7 @@ Selection, Position Lock · туг, тэмдэглэгээ · Full Extent/Detail
 ### Интерфейсийн загвар
 
 `interface.html` нь Resolve-ийн найман хуудсыг (Media, Photo, Cut, Edit, Fusion, Color,
-Fairlight, Deliver) хуулбарлан харуулна. Нийт **727 товших цэг** (377 өвөрмөц нэр томьёо) —
+Fairlight, Deliver) хуулбарлан харуулна. Нийт **755 товших цэг** (406 өвөрмөц нэр томьёо) —
 цэг бүр толины нэр томьёотой шууд холбогдсон тул тайлбар давхардаж бичигдээгүй.
 Өнгө нь Resolve Studio 21-ийн дэлгэцийн зургаас хэмжсэн бодит утга
 (`css/sim.css` доторх `--rs-*` хувьсагчид).
@@ -121,7 +128,7 @@ Fairlight, Deliver) хуулбарлан харуулна. Нийт **727 тов
 - **Цэг харуулах** товч бүх идэвхтэй хэсгийг тодруулна — юу товшиж болохыг олоход.
 - Баруун талын жагсаалт нь тухайн хуудасны бүх цэгийг ангиллаар нь харуулна.
 - Доод талын хуудасны мөр нь бодит Resolve шиг ажиллана.
-- **13 цэс дарахад үнэхээр нээгдэнэ** — 323 мөр, товчлууртайгаа. Бусад 18 унждаг жагсаалт (хэрэгслийн мөр, viewer, Media Pool) — нийт 31 цэс, 511 мөр.
+- **13 цэс дарахад үнэхээр нээгдэнэ** — 323 мөр, товчлууртайгаа. Бусад 18 унждаг жагсаалт (хэрэгслийн мөр, viewer, Media Pool) — нийт 35 цэс, 537 мөр.
 - **Edit цэсний командууд хуудаснаас хамаарч саарал болно** — бодит программ шиг,
   Fusion, Color, Fairlight хуудсан дээр цэсийг нээсэн зургаас мөр бүрээр:
   Fusion — 5 мөр идэвхтэй (Undo, Redo, History, Select All, Deselect All);
@@ -156,6 +163,13 @@ Fairlight, Deliver) хуулбарлан харуулна. Нийт **727 тов
   харагдац ▦ ⌄, ⌕ хайлтын мөр (Search In, Display), ⇅ эрэмбэ (25 мөр), … тохиргоо (13 мөр),
   **Create Smart Bin**, ☁ **Blackmagic Cloud Folder** цонх. Viewer-ийн толгойн ⛶ Guides самбар
   (Social Media, Broadcast and Film, Safe Area, Ruler), прокси ⌄, timeline-ийн нягтрал ⌄, … цэс.
+- **Color хуудас** (2026-09-26) — viewer-ийн дээд мөрийн ◧ Image Wipe / ▦ Split Screen / ◐ Highlight
+  (нэг нь идэвхтэй, доор нь өөрийн мөр): wipe-ийн 9 хэлбэр (Horizontal, Vertical, Diagonal, Mix, Alpha, A/B,
+  Box, Venetian Blind, Checker Board), Split Screen-ийн «Version ⌄» (11 мөр), Highlight-ийн 3 товч.
+  Палитрын Tracker дүрс → **Tracker - Window** самбар (6 мөрдөлтийн товч, Pan/Tilt/Zoom/Rotate/3D,
+  Clip/Frame, график, Interactive Mode + Insert/Set Point/Delete, Cloud Tracker ⌄ — Cloud, Point,
+  AI IntelliTrack), Window/Stabilizer/FX, Clear All Tracking Points. Keyframes дүрс → **Keyframes** самбар
+  (Master, Corrector 1–4, Sizing).
 - **Photo хуудасны "Photo Album ⌄" товч** бодит шүүлтүүрийн жагсаалт нээнэ
   (Sort by, All/Selected/Graded/Ungraded Photos, People, Magic Mask … Create Smart Filter).
   Цэс нээлттэй байхад хажуугийн цэсэн дээр хулгана тултал шилжинэ.
@@ -251,7 +265,8 @@ resolve-mn/
         ├── r27-fusion-mediain.js Fusion — хэрэгслийн мөр, MediaIn Inspector
         ├── r28-edit-tses.js    Edit — timeline-ийн мөр, viewer-ийн цэс, Inspector, шилжилт
         ├── r29-edit-media-export.js Edit — AI шинжилгээ, Quick Export, Blackmagic Cloud Folder
-        └── r30-edit-mediapool-guides.js Edit — Media Pool хайлт, эрэмбэ, Smart Bin, Guides, viewer-ийн цэс
+        ├── r30-edit-mediapool-guides.js Edit — Media Pool хайлт, эрэмбэ, Smart Bin, Guides, viewer-ийн цэс
+        └── r31-color-viewer-tracker.js Color — viewer-ийн wipe, Split Screen, Highlight, Tracker, Keyframes
     └── long/                   гарын авлагын дэлгэрэнгүй тайлбар (RM.dict.long)
         ├── l01–l08             загварын товших цэгүүд, хуудас, самбарууд
         ├── l07-ai-sergeen.js   AI ба сэргээн засварын хэрэглүүр
@@ -259,7 +274,8 @@ resolve-mn/
         ├── l13–l14             Photo Album цэс, Resolve FX Blur
         ├── l15-cut-tses.js     Cut хуудасны цэс, товчнууд
         ├── l16-fusion-mediain.js Fusion хэрэгслийн мөр, MediaIn Inspector
-        └── l17–l19             Edit хуудасны товч, цэс, цонх
+        ├── l17–l19             Edit хуудасны товч, цэс, цонх
+        └── l20-color-viewer-tracker.js Color — wipe, Tracker, Keyframes
 ```
 
 ---
@@ -375,6 +391,10 @@ Color хуудасны нодны хөдөлгүүр дээр засварлан
   Position Lock, Full Extent / Detail / Custom Zoom), Jog Wheel; Timeline View Options, viewer ▭ ⌄, туг, marker,
   Media Pool-ийн 4 цэс, viewer-ийн толгойн 3 цэс ба Guides самбар; Quick Export, Blackmagic Cloud Folder,
   Create Smart Bin цонх; Inspector-ийн Video, Audio таб; Effects-ийн шилжилтийн жагсаалт; Mixer самбар.
+- **Color хуудас** (2026-09-26) — wipe-ийн 8 tooltip (Horizontal … Checker Board), Split Screen-ийн 11 мөр,
+  Tracker-ийн Window / Stabilizer / FX, Clear All Tracking Points, Insert / Set Point / Delete tooltip,
+  Cloud Tracker ⌄ (Cloud Tracker, Point Tracker, AI IntelliTrack), Tracker-ийн … цэс (9 мөр), Keyframes самбарын
+  мөрүүд ба All ⌄ (All, Color, Sizing), палитрын Keyframes / Scopes / Info tooltip.
 
 Хараахан баталгаажуулаагүй: Fusion Inspector-ийн толгойн дүрсүүдийн (● ⌄, хувилбар, хадаас, түгжээ,
 буцаах) tooltip; Source Color/Gamma Space-ийн доторх мөрүүд; Cut хуудасны дээд timeline-ийн 3 дахь товчны tooltip нэр
@@ -382,7 +402,9 @@ Color хуудасны нодны хөдөлгүүр дээр засварлан
 Resync Clip-ийн яг үйлдэл; **Edit:** Show Keyframe Tray-ийн үйлдэл, viewer ▭ ⌄, ⚌, туг, marker товчны tooltip,
 Immersive горим, Display Full / Borders / Scaled Waveforms-ийн ялгаа, Thumbnail View ›, IntelliSearch Mode ›,
 Markers › дэд цэс, timeline-ийн нягтралын цэс одоогийн timeline-ийг өөрчлөх үү, viewer-ийн толгойн улаан
-зураастай товч, Voiceover самбарын агуулга, Retime and Scaling, AI Super Scale-ийн доторх мөрүүд, Replay бэлдэц; цэсний дэд цэснүүдийн (AI Tools, Audio Operations,
+зураастай товч, Voiceover самбарын агуулга, Retime and Scaling, AI Super Scale-ийн доторх мөрүүд, Replay бэлдэц;
+**Color:** ◧ ▦ ◐ товчны tooltip (үйлдлээр нь баталгаажсан), wipe-ийн A/B, Highlight-ийн 3 товч, Tracker-ийн 6
+мөрдөлтийн товч, Keyframes-ийн мөрийн дүрс ба All ⌄, палитрын дүрс бүрийн tooltip; цэсний дэд цэснүүдийн (AI Tools, Audio Operations,
 Edit Options, Go To, Sort by…) доторх мөрүүд; Resolve 20–21-д нэмэгдсэн AI хэрэглүүрийн
 яг байрлал; Edit цэсний төлөв Media хуудсанд, File цэсний төлөв Media-аас бусад
 хуудсанд. Зохиомол агуулга
@@ -403,6 +425,7 @@ Edit Options, Go To, Sort by…) доторх мөрүүд; Resolve 20–21-д �
 | Switch to Page | долоон хуудас | найман (Photo нэмэгдсэн) |
 | Edit-ийн дэлгэц | — | Зурагт ганц дэлгэц (Single Viewer); загварт Resolve-ийн анхны Source/Timeline хос дэлгэцийг сонгосон |
 | Edit timeline-ийн 🔒 товч | Sync Lock | **Position Lock** (tooltip) |
+| Color Tracker-ийн горим | Унждаг цэс, «Perspective 3D» | Толгойн 3 дүрс (Window, Stabilizer, FX), чагт нь «3D» |
 | Edit timeline-ийн засварын горимын дараалал | Selection, Trim, Dynamic Trim, Blade | Selection, Trim, **Blade, Dynamic Trim (Slip)** |
 | Edit timeline-ийн 2, 3 дахь товч | Track, Record Voiceover | **Show Keyframe Tray**, **Voiceover** |
 | Томруулалтын 3 товч | Zoom to Fit, Zoom In, Zoom Out | **Full Extent Zoom, Detail Zoom, Custom Zoom** |

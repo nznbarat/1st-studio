@@ -91,7 +91,7 @@
       el("section", { class: "effect" }, [el("h4", { text: "Бичлэгт үзүүлэх нөлөө" }), el("p", { html: fmt(tool.effect) })]),
       el("section", {}, [el("h4", { text: "Resolve дээр алхам алхмаар" }), el("ol", {}, tool.steps.map((s) => el("li", { html: fmt(s) })))]),
       el("section", {}, [el("h4", { text: "Гол тохиргоо" }),
-        el("dl", { class: "params" }, tool.params.flatMap(([k, d]) => [el("dt", { text: k }), el("dd", { html: fmt(d) })]))]),
+        el("dl", { class: "params" }, tool.params.flatMap(([k, d]) => [el("dt", { html: fmt(k) }), el("dd", { html: fmt(d) })]))]),
       el("section", { class: "tips" }, [el("h4", { text: "Анхаарах" }), el("ul", {}, tool.tips.map((t) => el("li", { html: fmt(t) })))]),
       tool.unsure ? el("p", { class: "unsure", html: "<b>Баталгаажаагүй:</b> " + fmt(tool.unsure) }) : null,
       el("p", { class: "tool-links" }, [
@@ -129,5 +129,96 @@
     if (h && document.getElementById(h)) requestAnimationFrame(() => document.getElementById(h).scrollIntoView());
   }
 
-  G.ui = { buildControls, buildDemo, buildTool, watchNav, jumpToHash };
+
+  /* ══════════ Хичээлийн горим — нэг удаад нэг хичээл (хэрэглэгчийн хүсэлтээр) ══════════
+     Нүүр (#top): hero, үндэс, хичээлийн жагсаалт (#hicheel). #<id> — тэр хичээл л харагдана,
+     доор нь «‹ Өмнөх · Дараах ›», дээр нь явцын зурвас. ← → товчоор шилжинэ. */
+  function buildLessonsPage(c) {
+    const el = G.el, fmt = G.fmt;
+    const root = c.root;
+    const firstOf = (gid) => c.tools.find((t) => t.group === gid);
+    root.appendChild(el("nav", { class: "fz-nav", "aria-label": "Хичээлүүд" }, [
+      el("a", { class: "brand", href: "#top" }, c.brand),
+      el("div", { class: "chips" }, [el("a", { href: "#top", text: "Нүүр" })].concat(
+        c.groups.map((g) => el("a", { href: "#" + firstOf(g.id).id, "data-group": g.id, text: g.title })),
+        [el("a", { href: "#jishee", "data-group": "jishee", text: "Жишээ" })])),
+      el("div", { class: "out" }, c.navOut)
+    ]));
+
+    /* нүүр */
+    const toc = el("section", { class: "toc", id: "hicheel" }, [
+      el("h2", { text: "Хичээлүүд" }),
+      el("p", { class: "lead", html: fmt("Хичээл бүр **тусдаа хуудас**: юу хийдэг, бичлэгт үзүүлэх нөлөө, алхам алхмаар, туршдаг жишээ. Доод талын **Дараах ›** товчоор, эсвэл гарын [k:←] [k:→]-оор дараалан үзнэ.") })
+    ].concat(c.groups.map((g, gi) => el("div", { class: "toc-g" }, [
+      el("h3", {}, [el("span", { class: "toc-gn", text: String(gi + 1).padStart(2, "0") }), g.title, el("small", { text: g.en })]),
+      el("div", { class: "toc-grid" }, c.tools.filter((t) => t.group === g.id).map((t) => el("a", { class: "toc-i", href: "#" + t.id }, [
+        el("span", { class: "toc-ic", html: icon(t.iconId || t.id) || t.glyph || "•" }),
+        el("span", { class: "toc-t" }, [el("small", { text: "№ " + t.n }), el("b", { text: t.en }), el("span", { text: t.mn })]),
+        t.impact && c.impacts ? el("span", { class: "impact " + t.impact, text: c.impacts[t.impact] }) : null
+      ])))
+    ]))).concat([el("div", { class: "toc-g" }, [el("h3", {}, [el("span", { class: "toc-gn", text: "★" }), c.recipesTitle]),
+      el("div", { class: "toc-grid" }, [el("a", { class: "toc-i", href: "#jishee" }, [el("span", { class: "toc-ic", text: "⛓" }),
+        el("span", { class: "toc-t" }, [el("small", { text: "Сүүлийн хичээл" }), el("b", { text: c.recipesTitle }), el("span", { text: "Хэрэгслүүдийг дараалан хэрэглэх" })])])])])]));
+    const intro = el("div", { class: "intro" }, [c.hero, c.basics, toc]);
+    root.appendChild(intro);
+
+    /* хичээлүүд */
+    const lessons = c.tools.map((t) => ({ id: t.id, group: t.group, title: t.en, node: c.buildTool(t) }));
+    lessons.push({ id: "jishee", group: "jishee", title: c.recipesTitle, node: c.recipes });
+    const wrap = el("div", { class: "lessons" });
+    lessons.forEach((L, i) => {
+      const g = c.groups.find((x) => x.id === L.group);
+      const first = g && firstOf(g.id).id === L.id;
+      const sec = el("section", { class: "lesson", "aria-label": L.title, hidden: "hidden" }, [
+        el("div", { class: "crumb" }, [
+          el("a", { href: "#hicheel", text: "☰ Хичээлүүд" }),
+          el("span", { text: "Хичээл " + (i + 1) + " / " + lessons.length + (g ? " · " + g.title : "") }),
+          el("span", { class: "prog", "aria-hidden": "true" }, [el("i", { style: "width:" + ((i + 1) / lessons.length * 100).toFixed(1) + "%" })])
+        ]),
+        first ? el("div", { class: "grp-h lesson-grp" }, [
+          el("p", { class: "eyebrow", text: "Бүлэг " + (c.groups.indexOf(g) + 1) + " / " + c.groups.length + " · " + g.en }),
+          el("h2", { text: g.title }), el("p", { class: "lead", html: fmt(g.intro) })]) : null,
+        L.node
+      ]);
+      const prev = lessons[i - 1], next = lessons[i + 1];
+      const pg = (cls, href, small, big) => el("a", { class: "pg " + cls, href }, [el("small", { text: small }), el("span", { text: big })]);
+      sec.appendChild(el("nav", { class: "pager", "aria-label": "Хичээл хооронд шилжих" }, [
+        prev ? pg("prev", "#" + prev.id, "‹ Өмнөх", prev.title) : pg("prev", "#top", "‹ Буцах", "Нүүр"),
+        el("a", { class: "pg toc-l", href: "#hicheel", text: "☰" , title: "Бүх хичээл", "aria-label": "Бүх хичээл" }),
+        next ? pg("next", "#" + next.id, "Дараах ›", next.title) : pg("next", "#hicheel", "Дуусав ✓", "Хичээлийн жагсаалт")
+      ]));
+      L.el = sec;
+      wrap.appendChild(sec);
+    });
+    root.appendChild(wrap);
+    root.appendChild(c.footer);
+
+    const idx = {}; lessons.forEach((L, i) => { idx[L.id] = i; });
+    const chips = RM.$$(".fz-nav .chips a");
+    const route = () => {
+      const h = decodeURIComponent(location.hash.slice(1));
+      const cur = Object.prototype.hasOwnProperty.call(idx, h) ? lessons[idx[h]] : null;
+      intro.hidden = !!cur;
+      lessons.forEach((L) => { L.el.hidden = L !== cur; });
+      document.title = cur ? cur.title + " · " + c.baseTitle : c.baseTitle;
+      chips.forEach((a) => a.classList.toggle("on", cur ? a.getAttribute("data-group") === cur.group : a.getAttribute("href") === "#top"));
+      const on = RM.$(".fz-nav .chips a.on"); if (on && on.scrollIntoView) on.scrollIntoView({ block: "nearest", inline: "nearest" });
+      const target = !cur && h && document.getElementById(h);
+      if (target) target.scrollIntoView({ behavior: "instant" });
+      else window.scrollTo({ top: 0, behavior: "instant" });
+    };
+    window.addEventListener("hashchange", route);
+    document.addEventListener("keydown", (e) => {
+      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      if (e.target && /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
+      const h = decodeURIComponent(location.hash.slice(1));
+      if (!Object.prototype.hasOwnProperty.call(idx, h)) return;
+      const i = idx[h];
+      if (e.key === "ArrowRight" && lessons[i + 1]) location.hash = lessons[i + 1].id;
+      else if (e.key === "ArrowLeft") location.hash = lessons[i - 1] ? lessons[i - 1].id : "top";
+    });
+    route();
+  }
+
+  G.ui = { buildControls, buildDemo, buildTool, watchNav, jumpToHash, buildLessonsPage };
 })(window.RM);

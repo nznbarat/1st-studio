@@ -798,6 +798,51 @@
       ["show-overlays-during-playback", "Show Overlays During Playback"],
       "-",
       ["marker", "Markers", "", "›"]
+    ]},
+
+    /* Color viewer — Split Screen асаалттай үед 2 дахь мөрийн «Version ⌄» (11 мөр, 2026-09-26) */
+    "split-screen-mode-menu": { label: "Split Screen Mode Menu", verified: true, items: [
+      ["split-screen-mode-menu", "Current Group"],
+      ["split-screen-mode-menu", "Highlight Modes"],
+      ["split-screen-mode-menu", "Neighbor Clips"],
+      ["split-screen-mode-menu", "Playheads"],
+      ["split-screen-mode-menu", "Selected Album"],
+      ["split-screen-mode-menu", "Selected Clips"],
+      ["split-screen-mode-menu", "Selected LUTs"],
+      ["split-screen-mode-menu", "Selected Still Grades"],
+      ["split-screen-mode-menu", "Selected Still Images"],
+      ["split-screen-mode-menu", "Version", "✓"],
+      ["split-screen-mode-menu", "Versions and Original"]
+    ]},
+
+    /* Color → Tracker самбарын ⌄ — мөрдөх арга (3 мөр, 2026-09-26) */
+    "tracker-method-menu": { label: "Tracker Method Menu", verified: true, items: [
+      ["cloud-tracker", "Cloud Tracker", "✓"],
+      ["point-tracker", "Point Tracker"],
+      ["intellitrack", "AI IntelliTrack"]
+    ]},
+
+    /* Color → Tracker самбарын … (FX горимд, 2026-09-26) */
+    "tracker-options-menu": { label: "Tracker Options Menu", verified: true, items: [
+      ["reset-track-data-on-active-window", "Reset Track Data on Active Window"],
+      ["clear-selected-track-data", "Clear Selected Track Data"],
+      ["delete-keyframe", "Delete Keyframe"],
+      ["clear-all-tracking-points", "Clear All Tracking Points"],
+      "-",
+      ["show-track", "Show Track"],
+      "-",
+      ["copy-track-data-paste-track-data", "Copy Track Data"],
+      ["copy-track-data-paste-track-data", "Paste Track Data"],
+      "-",
+      ["classic-stabilizer", "Classic Stabilizer", "", "", "none"],
+      ["use-gpu-acceleration-tracker", "Use GPU Acceleration", "✓", "", "none"]
+    ]},
+
+    /* Color → Keyframes самбарын All ⌄ (3 мөр) */
+    "keyframes-filter-color": { label: "Keyframes Filter (Color)", verified: true, items: [
+      ["keyframes-filter-color", "All", "✓"],
+      ["keyframes-filter-color", "Color"],
+      ["sizing-keyframes", "Sizing"]
     ]}
   };
 

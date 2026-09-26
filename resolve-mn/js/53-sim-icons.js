@@ -152,6 +152,16 @@
     "full-extent-zoom": svg(`<rect x="2.5" y="4.5" width="19" height="12" ${sw(1.4)}/><path d="M5.5 8.5h13M5.5 12.5h8" ${sw(1.2)}/><circle cx="20" cy="15.5" r="3.6" fill="${DK}" ${sw(1.6)}/><path d="M22.6 18.1l3 3" ${sw(2)} stroke-linecap="round"/>`),
     "detail-zoom": svg(`<path d="M3 6h14M3 10h10M3 14h8M3 18h8" ${sw(1.3)}/><circle cx="18.5" cy="14.5" r="4" ${sw(1.6)}/><path d="M21.4 17.4l3.2 3.2" ${sw(2)} stroke-linecap="round"/>`),
     "custom-zoom": svg(`<path d="M3 7h22M5 7v4M9 7v2.5M13 7v4M17 7v2.5M21 7v4" ${sw(1.2)}/><circle cx="18.5" cy="15.5" r="3.6" fill="${DK}" ${sw(1.6)}/><path d="M21.1 18.1l3 3" ${sw(2)} stroke-linecap="round"/>`),
+    /* ═══ Color viewer — wipe-ийн хэлбэр (2026-09-26-ны зургаас) ═══ */
+    "horizontal-wipe": svg(`<path d="M14 4v16" ${sw(1.8)}/><path d="M10.5 8.5 7 12l3.5 3.5z" fill="currentColor"/><path d="M17.5 8.5 21 12l-3.5 3.5z" fill="currentColor"/>`),
+    "vertical-wipe": svg(`<path d="M5 12h18" ${sw(1.8)}/><path d="M10.5 9.5 14 5.5l3.5 4zM10.5 14.5 14 18.5l3.5-4z" fill="currentColor"/>`),
+    "diagonal-wipe": svg(`<path d="M7 5.5h7l7 13h-7z" fill="currentColor" opacity=".55"/><path d="M6 4.5l16 15" ${sw(1.8)}/>`),
+    "mix-wipe": svg(`<path d="M4 6l9 6-9 6zM24 6l-9 6 9 6z" fill="currentColor"/>`),
+    "alpha-wipe": svg(`<rect x="5" y="6" width="9" height="12" fill="currentColor"/>` + [0, 1, 2].map((r) => [0, 1, 2].map((c) => ((r + c) % 2 ? "" : `<rect x="${14 + c * 3}" y="${6 + r * 4}" width="3" height="4" fill="currentColor" opacity=".7"/>`)).join("")).join("")),
+    "ab-wipe": svg(`<text x="14" y="16" text-anchor="middle" font-size="10" font-family="Inter,Arial,sans-serif" fill="currentColor">A/B</text>`),
+    "box-wipe": svg(`<rect x="4" y="6" width="20" height="12" rx="1" ${sw(1.4)}/><rect x="12" y="9" width="8" height="5" fill="currentColor"/><rect x="6" y="9" width="5" height="6" fill="currentColor" opacity=".45"/>`),
+    "venetian-blind-wipe": svg(`<rect x="4" y="5" width="20" height="14" ${sw(1.2)}/><path d="M4 8.5h20M4 12h20M4 15.5h20" ${sw(1.2)}/>`),
+    "checker-board-wipe": svg(`<rect x="4" y="5" width="20" height="14" ${sw(1.2)}/>` + [0, 1, 2].map((r) => [0, 1, 2, 3, 4].map((c) => ((r + c) % 2 ? `<rect x="${4 + c * 4}" y="${5 + r * 4.67}" width="4" height="4.67" fill="currentColor" opacity=".6"/>` : "")).join("")).join("")),
     "jog-wheel": svg(`<path d="M7 8.5 3.5 12 7 15.5M21 8.5l3.5 3.5-3.5 3.5" ${sw(1.5)} stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="12" r="3.2" fill="currentColor"/>`)
   };
 

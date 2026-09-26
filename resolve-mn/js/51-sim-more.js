@@ -179,6 +179,54 @@
       <div class="wsl hs" data-t="bars"></div>
     </div>`;
 
+
+  /* ── Color viewer-ийн wipe-ийн мөр (2026-09-26): [id, tooltip, класс] — A/B саарал, tooltip гараагүй ── */
+  const CL_WIPE = [["horizontal-wipe", "Horizontal"], ["vertical-wipe", "Vertical"], ["diagonal-wipe", "Diagonal"],
+    ["mix-wipe", "Mix", "act"], ["alpha-wipe", "Alpha"], ["wipe-style-toolbar-color-viewer", "A/B — tooltip гараагүй", "dim"],
+    ["box-wipe", "Box"], ["venetian-blind-wipe", "Venetian Blind"], ["checker-board-wipe", "Checker Board"]];
+
+  /* ── Tracker - Window самбар (2026-09-26) ── */
+  const CL_TRACKER = () => `
+          <div class="cp-pane trk" data-tabpane="cp:tracker" hidden>
+            <div class="pane-h"><b class="hs" data-t="window-tracker">Tracker - Window</b><span class="sp"></span>
+              <span class="hs on" data-t="tracker-mode-buttons" title="Window">⊕</span><span class="hs" data-t="tracker-mode-buttons" title="Stabilizer">▣</span><span class="hs" data-t="tracker-mode-buttons" title="FX">fx</span>
+              <span class="hs" data-t="clear-all-tracking-points" title="Clear All Tracking Points">⟲</span><span class="hs mi" data-t="tracker-options-menu">…</span></div>
+            <div class="trk-bar">
+              <span class="hs" data-t="tracker-transport">⇤ ◀ ‖ ⇄ ▶ ⇥</span>
+              <span class="trk-ck hs" data-t="pan-tilt-zoom-rotate-3d-tracker"><i></i><b style="color:#3ec28f">Pan</b><i></i><b style="color:#6f8ff0">Tilt</b><i></i><b style="color:#e04fc7">Zoom</b><i></i><b style="color:#e3d25a">Rotate</b><i></i><b style="color:#4fb6e0">3D</b></span>
+              <span class="trk-seg hs" data-t="clip-frame-tracker"><b class="on">Clip</b><b>Frame</b></span>
+            </div>
+            <div class="trk-graph hs" data-t="tracker-graph">
+              <div class="trk-ru">${["00:00:00:00", "00:00:04:18", "00:00:09:12", "00:00:14:05", "00:00:18:23", "00:00:23:17"].map((t) => `<span>${t}</span>`).join("")}</div>
+              <div class="trk-ph"></div>
+              <div class="trk-val"><b style="color:#3ec28f">0.00</b><b style="color:#6f8ff0">0.00</b><b style="color:#e04fc7">0.00</b><b style="color:#e3d25a">0.00</b></div>
+            </div>
+            <div class="trk-foot">
+              <span class="hs" data-t="interactive-mode"><i class="cb"></i> Interactive Mode</span>
+              <span class="dim hs" data-t="interactive-mode-tools" title="Insert">⬚</span><span class="dim hs" data-t="interactive-mode-tools" title="Set Point">↖</span><span class="dim hs" data-t="interactive-mode-tools" title="Delete">🗑</span><span class="sp"></span>
+              <b class="dd mi hs" data-t="tracker-method-menu">Cloud Tracker ⌄</b>
+            </div>
+          </div>`;
+
+  /* ── Keyframes самбар (Color, 2026-09-26) ── */
+  const CL_KEYFRAMES = () => `
+          <div class="cp-pane kfc" data-tabpane="cr:keyframes" hidden>
+            <div class="pane-h"><b class="hs" data-t="keyframes-panel-color">Keyframes</b><span class="sp"></span>
+              <b class="hs mi" data-t="keyframes-filter-color">All ⌄</b><span class="kfc-zoom hs" data-t="keyframes-panel-color"><i></i></span></div>
+            <div class="kfc-body">
+              <div class="kfc-names">
+                <div class="kfc-tc hs" data-t="timecode">00:00:30:00</div>
+                <div class="kfc-n master hs" data-t="master-keyframes">Master</div>
+                ${[1, 2, 3, 4].map((n) => `<div class="kfc-n hs" data-t="corrector-keyframes"><span class="ic">● ▪ ◆ ›</span>Corrector ${n}</div>`).join("")}
+                <div class="kfc-n hs" data-t="sizing-keyframes"><span class="ic">● ▪ ◆ ›</span>Sizing</div>
+              </div>
+              <div class="kfc-lanes">
+                <div class="kfc-ru"><span>00:00:00:00</span><span>00:00:10:08</span><span>00:00:20:16</span></div>
+                <div class="kfc-l master"><i></i></div>${"<div class=\"kfc-l\"><i></i></div>".repeat(5)}
+              </div>
+            </div>
+          </div>`;
+
   S.color = () => `
   <div class="rs" data-page="color">
     ${H.MENU()}
@@ -193,7 +241,7 @@
        ${H.TG("openfx", "✦", "Effects")}
        ${H.TG("lightbox", "▦", "Lightbox")}`, false)}
     <div class="rs-row2">
-      <span class="hs" data-t="zoom-slider">9% ⌄</span><span class="hs" data-t="viewer-mode">▭ ▦ ▭ ▭</span>
+      <span class="hs" data-t="zoom-slider">12.5% ⌄</span><span class="hs act" data-t="image-wipe" data-tab="vr:wipe">◧</span><span class="hs" data-t="split-screen" data-tab="vr:split">▦</span><span class="hs" data-t="highlight" data-tab="vr:hl">◐</span>
       <span class="sp"></span>
       <b class="hs" data-t="timeline">SE…0s ⌄</b><span class="tc hs" data-t="timecode">00:00:00:00 ⌄</span>
       <span class="hs" data-t="viewer-mode">▭ ⌄ ▦ ⌄ ⚙ ⌄</span><span class="hs" data-t="reset">⟲</span><span class="hs" data-t="full-screen-window">⛶</span><span>…</span>
@@ -207,6 +255,10 @@
     <div class="rs-body">
       <div class="cl-top">
         <div class="pane vw hs" data-t="viewer" style="flex:0 0 49%">
+          <div class="cl-wipe hs" data-t="wipe-style-toolbar-color-viewer" data-tabpane="vr:wipe">${CL_WIPE.map(([id, tip, cls]) =>
+            `<span class="wb ${cls || ""} hs" data-t="${id}" title="${tip}">${S.icon(id === "wipe-style-toolbar-color-viewer" ? "ab-wipe" : id)}</span>`).join("")}</div>
+          <div class="cl-wipe" data-tabpane="vr:split" hidden><b class="dd mi hs" data-t="split-screen-mode-menu">Version ⌄</b></div>
+          <div class="cl-wipe hs" data-t="highlight-mode-buttons" data-tabpane="vr:hl" hidden><span class="wb act hs" data-t="highlight-mode-buttons">■</span><span class="wb hs" data-t="highlight-mode-buttons">◧</span><span class="wb hs" data-t="highlight-mode-buttons" style="font-size:9px">A/B</span></div>
           <div class="pane-b" style="display:flex;flex-direction:column">
             <div class="vw-screen dark"><div class="img" style="width:36%"></div></div>
             <div class="vw-foot">
@@ -249,19 +301,20 @@
 
       <div class="pal-rail hs" data-t="primaries">
         <span class="pi hs" data-t="camera-raw" title="Camera Raw">◉</span><span class="pi hs" data-t="shot-match" title="Color Match">▦</span>
-        <span class="pi act hs" data-t="color-wheels" title="Color Wheels">◑</span><span class="pi hs" data-t="hdr-palette" title="HDR">✸</span>
+        <span class="pi act hs" data-t="color-wheels" data-tab="cp:wheels" title="Color Wheels">◑</span><span class="pi hs" data-t="hdr-palette" title="HDR">✸</span>
         <span class="pi hs" data-t="splitter-combiner" title="RGB Mixer">⁂</span><span class="pi hs" data-t="motion-effects" title="Motion Effects">⧗</span>
         <span class="pi hs" data-t="curves" title="Curves">∿</span><span class="pi hs" data-t="color-warper" title="Color Warper">⬚</span>
         <span class="pi hs" data-t="qualifier" title="Qualifier">◌</span><span class="pi hs" data-t="power-window" title="Windows">▭</span>
-        <span class="pi hs" data-t="window-tracker" title="Tracker">⊹</span><span class="pi hs" data-t="magic-mask" title="Magic Mask">✦</span>
+        <span class="pi hs" data-t="window-tracker" data-tab="cp:tracker" title="Tracker">⊹</span><span class="pi hs" data-t="magic-mask" title="Magic Mask">✦</span>
         <span class="pi hs" data-t="blur-sharpen-mist" title="Blur">◍</span><span class="pi hs" data-t="matte" title="Key">◪</span>
         <span class="pi hs" data-t="node-sizing" title="Sizing">⤢</span><span class="pi hs" data-t="switch-eye-to" title="Stereo 3D">3D</span>
         <span class="sp"></span>
-        <span class="pi hs" data-t="keyframe-editor" title="Keyframes">◆</span><span class="pi hs" data-t="scopes" title="Scopes">∿</span><span class="pi hs" data-t="metadata" title="Info">ⓘ</span>
+        <span class="pi hs" data-t="keyframes-panel-color" data-tab="cr:keyframes" title="Keyframes">◆</span><span class="pi act hs" data-t="scopes" data-tab="cr:scopes" title="Scopes">∿</span><span class="pi hs" data-t="metadata" title="Info">ⓘ</span>
       </div>
 
       <div class="cl-bottom">
         <div class="pane" style="flex:0 0 49%">
+          <div class="cp-pane" data-tabpane="cp:wheels">
           <div class="pane-h"><b>Primaries - Color Wheels</b><span class="sp"></span>
             <span class="hs" data-t="color-wheels">◉</span><span class="hs" data-t="bars">▮▮</span><span class="hs" data-t="log-wheels">◐</span><span class="hs" data-t="reset">⟲</span></div>
           <div class="pane-b" style="display:flex;flex-direction:column">
@@ -287,14 +340,19 @@
               <span class="hs" data-t="lum-mix">Lum Mix <b>100.00</b></span>
             </div>
           </div>
+          </div>
+          ${CL_TRACKER()}
         </div>
-        <div class="pane scopes hs" data-t="scopes" style="flex:1">
+        <div class="pane scopes" style="flex:1">
+          <div class="cp-pane hs" data-t="scopes" data-tabpane="cr:scopes">
           <div class="pane-h"><b>Scopes</b><span class="sp"></span>
             <b class="hs" data-t="parade">Parade ⌄</b><span class="hs" data-t="scopes">⚌ ⛶ …</span></div>
           <div class="pane-b" style="display:flex">
             <div class="scope-scale">${["1023","896","768","640","512","384","256","128","0"].map((v) => `<span>${v}</span>`).join("")}</div>
             <div class="scope-box parade hs" data-t="parade"><div class="grid"></div><div class="tr r"></div><div class="tr g"></div><div class="tr b"></div></div>
           </div>
+          </div>
+          ${CL_KEYFRAMES()}
         </div>
       </div>
     </div>

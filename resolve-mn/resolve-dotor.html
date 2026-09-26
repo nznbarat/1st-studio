@@ -763,6 +763,50 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
 .gd i.b1{width:20px}.gd i.b4,.gd i.b5,.gd i.b6{height:10px;margin-top:3px}
 .gd i.s1,.gd i.s2{border-style:dashed}.gd i.s3{border:0;background:radial-gradient(circle,#aaa 1.5px,transparent 2px) center/100% 100%}
 
+/* ═══ Color хуудас — wipe-ийн мөр, Tracker, Keyframes (2026-09-26) ═══ */
+.rs-row2 .act{color:#fff}
+.cl-wipe{display:flex;align-items:center;gap:6px;padding:3px 8px;background:var(--rs-head);border-bottom:1px solid var(--rs-line);flex-shrink:0;min-height:24px}
+.cl-wipe[hidden]{display:none}
+.cl-wipe .dd{font-weight:400;background:#1c1c20;border:1px solid #3a3a40;border-radius:2px;padding:1px 26px 1px 8px;color:var(--rs-txt)}
+.cl-wipe .wb{color:var(--rs-icon);display:grid;place-items:center;padding:1px 3px;border-radius:2px}
+.cl-wipe .wb svg{width:19px;height:16px;display:block}
+.cl-wipe .wb.act{color:#fff}
+.cl-wipe .wb.dim{color:#5c5c62}
+.cp-pane{flex:1;display:flex;flex-direction:column;min-height:0}
+.cp-pane[hidden]{display:none}
+.trk .pane-h span{color:var(--rs-dim2)} .trk .pane-h span.on{color:#fff}
+.trk-bar{display:flex;align-items:center;gap:12px;padding:6px 10px;font-size:11px;color:var(--rs-icon);border-bottom:1px solid var(--rs-line);white-space:nowrap}
+.trk-ck{display:flex;align-items:center;gap:5px}
+.trk-ck i{width:11px;height:11px;border:1px solid #777;border-radius:2px;background:#1c1c20;display:inline-grid;place-items:center;font-style:normal;font-size:9px;color:#fff}
+.trk-ck i::after{content:"✓"}
+.trk-ck b{font-weight:400;margin-right:4px}
+.trk-seg{display:flex;flex:1;border:1px solid #3a3a40;border-radius:3px;overflow:hidden}
+.trk-seg b{flex:1;text-align:center;font-weight:400;color:var(--rs-dim2);padding:2px 0}
+.trk-seg b.on{background:#1c1c20;color:#fff}
+.trk-graph{position:relative;flex:1;margin:0 10px;background:#232328;border:1px solid var(--rs-line);min-height:0}
+.trk-ru{display:flex;justify-content:space-between;padding:3px 30px 3px 8px;font:9px 'JetBrains Mono',monospace;color:#8e8e94;border-bottom:1px solid #1a1a1d}
+.trk-ph{position:absolute;right:26px;top:0;bottom:0;width:2px;background:var(--rs-red)}
+.trk-ph::before{content:"";position:absolute;top:0;left:-5px;border:6px solid transparent;border-top:8px solid var(--rs-red)}
+.trk-val{position:absolute;right:36px;bottom:8px;display:flex;gap:24px;font:11px 'JetBrains Mono',monospace}
+.trk-val b{font-weight:400}
+.trk-foot{display:flex;align-items:center;gap:12px;padding:6px 10px;font-size:11px;color:var(--rs-dim)}
+.trk-foot .cb{display:inline-block;width:11px;height:11px;border:1px solid #6a6a70;border-radius:2px;vertical-align:-1px}
+.trk-foot .dim{color:#55555b;letter-spacing:.3em}
+.trk-foot .dd{font-weight:400;background:#1c1c20;border:1px solid #3a3a40;border-radius:2px;padding:1px 8px;color:var(--rs-txt)}
+.kfc-zoom{width:90px;height:2px;background:#4a4a50;position:relative;margin-left:10px}
+.kfc-zoom i{position:absolute;left:0;top:-4px;width:9px;height:9px;border-radius:50%;background:#c9c9cd}
+.kfc-body{flex:1;display:flex;min-height:0;font-size:11px}
+.kfc-names{width:190px;flex-shrink:0;border-right:1px solid #0e0e10}
+.kfc-tc{text-align:center;padding:5px 0;font:12px 'JetBrains Mono',monospace;color:var(--rs-dim);border-bottom:1px solid #1a1a1d}
+.kfc-n{height:22px;display:flex;align-items:center;gap:8px;padding:0 10px;border-bottom:1px solid #1f1f23;color:var(--rs-txt)}
+.kfc-n.master{justify-content:center}
+.kfc-n .ic{color:#77777d;font-size:8px;letter-spacing:.25em}
+.kfc-lanes{flex:1;min-width:0}
+.kfc-ru{display:flex;justify-content:space-between;padding:6px 30% 5px 8px;font:9px 'JetBrains Mono',monospace;color:#8e8e94;border-bottom:1px solid #1a1a1d}
+.kfc-l{height:22px;border-bottom:1px solid #1f1f23;position:relative}
+.kfc-l.master{background:#6e6e76}
+.kfc-l i{position:absolute;left:6px;top:50%;width:7px;height:7px;margin-top:-3.5px;border-radius:50%;background:#fff}
+
 /* ── жижиг дэлгэц ── */
 @media (max-width:1100px){
   .insp{width:170px} .mp{width:210px} .nodes{width:230px} .gal{width:112px} .scopes{width:150px}
@@ -2722,6 +2766,52 @@ note:"Media Pool-ийн хайлт, эрэмбэлэх, тохиргооны ж�
 ["Show Marker Overlays","Тэмдэглэгээний тайлбарыг viewer-т харуулах","Заагч тэмдэглэгээн дээр ирэхэд түүний нэр, тайлбарыг viewer дээр харуулна. Зурагт чагттай.","","Viewer-ийн … цэс"],
 ["Show Timecode Overlays","Тайм кодыг viewer-т харуулах","Viewer-ийн дүрс дээр тайм код давхарлаж харуулна (эцсийн бичлэгт орохгүй).","","Viewer-ийн … цэс"],
 ["Show Overlays During Playback","Тоглуулах үед давхаргыг харуулах","Тэмдэглэгээ, тайм кодын давхаргыг тоглуулж байх үед ч харуулна. Зурагт чагтгүй.","","Viewer-ийн … цэс"]
+]});
+
+</script>
+<script>
+/* ── js/dict/r31-color-viewer-tracker.js ── */
+/* ── Ангилал 31 · Color хуудас — viewer-ийн харьцуулах (wipe) мөр, Tracker, Keyframes ──
+   Resolve Studio 21-ийн Color хуудас, 2026-09-26-ны дэлгэцийн зургууд:
+   viewer-ийн хоёр дахь мөрийн wipe хэлбэрийн товчнууд (tooltip: Horizontal, Vertical, Diagonal, Mix, Alpha,
+   Box, Venetian Blind, Checker Board; A/B-ийн tooltip гараагүй),
+   Tracker - Window самбар (Pan, Tilt, Zoom, Rotate, 3D, Clip / Frame, Interactive Mode, Cloud Tracker),
+   Keyframes самбар (Master, Corrector 1–4, Sizing). */
+
+RM.dict.add({ id:"color-viewer-tracker", label:"Color — viewer-ийн wipe, Tracker, Keyframes", icon:"◐", page:"color",
+note:"Color хуудасны viewer-ийн дээд хоёр мөр (харьцуулах wipe-ийн хэлбэр), Tracker самбарын Window горим, Keyframes самбар. Tooltip-ийг зурагт гарснаар; гараагүйг тайлбарт нь тэмдэглэсэн.", terms:[
+["Image Wipe","Зургийн харьцуулалт (wipe)","Viewer-ийн дээд мөрийн зүүн талын ◧ товч (tooltip зурагт гараагүй; дарахад wipe-ийн хэлбэрийн мөр гарсан тул Image Wipe гэж баталгаажсан). Одоогийн кадрыг Gallery-ийн зурагтай (still) эсвэл өөр клиптэй нэг дэлгэцэнд хагаслан харьцуулна. Асаахад доор нь wipe-ийн хэлбэрийн мөр гарна.","Ctrl+W","Color → viewer-ийн дээд мөр ◧"],
+["Wipe Style Toolbar (Color Viewer)","Wipe-ийн хэлбэрийн мөр","Image Wipe асаалттай үед viewer-ийн хоёр дахь мөрөнд гарах 9 товч: Horizontal, Vertical, Diagonal, Mix, Alpha, A/B, Box, Venetian Blind, Checker Board. A/B-ээс бусад нь tooltip-оор баталгаажсан; A/B зурагт саарал.","","Color → viewer-ийн 2 дахь мөр"],
+["Horizontal (Wipe)","Хэвтээ харьцуулалт","Wipe-ийн шугам босоо байрлаж, зүүн тал нь нэг зураг, баруун тал нь нөгөө зураг (◂|▸ дүрс). Шугамыг viewer дээр чирж зөөнө.","","Wipe-ийн мөр, 1 дэх товч"],
+["Vertical (Wipe)","Босоо харьцуулалт","Wipe-ийн шугам хэвтээ — дээд тал нэг зураг, доод тал нөгөө зураг.","","Wipe-ийн мөр, 2 дахь товч"],
+["Diagonal (Wipe)","Ташуу харьцуулалт","Wipe-ийн шугам ташуу — кадрыг диагоналаар хоёр хувааж харьцуулна.","","Wipe-ийн мөр, 3 дахь товч"],
+["Mix (Wipe)","Холих харьцуулалт","Хоёр зургийг шугамаар биш, бүх кадраар нь тунгалгаар холино (▶◀ дүрс) — өнгө, гэрлийн өөрчлөлтийг бүхэлд нь харах.","","Wipe-ийн мөр, 4 дэх товч"],
+["Alpha (Wipe)","Альфа харьцуулалт","Одоогийн клипийн тунгалаг (alpha) хэсгээр нөгөө зургийг харуулна — түлхүүр, маскийн ирмэг шалгах.","","Wipe-ийн мөр, 5 дахь товч"],
+["Box (Wipe)","Хайрцган харьцуулалт","Кадрын голд тэгш өнцөгт хайрцаг — дотор нь нэг зураг, гадна нь нөгөө зураг. Нүүр, гол объектыг хэсэгчлэн харьцуулахад.","","Wipe-ийн мөр, 7 дахь товч"],
+["Venetian Blind (Wipe)","Хөшигний харьцуулалт","Кадрыг олон хэвтээ туузаар ээлжлэн хувааж, нэг тууз нэг зураг, дараагийнх нь нөгөө зураг — хөшигний хавтас мэт.","","Wipe-ийн мөр, 8 дахь товч"],
+["Checker Board (Wipe)","Шатрын нүдэн харьцуулалт","Кадрыг шатрын хөлөг шиг нүднүүдэд хувааж, нүд ээлжлэн хоёр зургийг харуулна — бүх кадраар жигд харьцуулах.","","Wipe-ийн мөр, 9 дэх товч"],
+["Tracker Mode Buttons","Tracker-ийн горимын товч","Tracker самбарын толгойн баруун талын гурван дүрс (tooltip-оор баталгаажсан): ⊕ Window, шоо — Stabilizer, fx — FX. Сонгосон горим самбарын нэрэнд гарна: «Tracker - Window», «Tracker - FX».","","Color → Tracker самбарын толгой"],
+["Clear All Tracking Points","Бүх мөрдөлтийн цэгийг арилгах","Tracker самбарын толгойн ⟲ товч (tooltip: Clear All Tracking Points). Мөрдөлтийн бүх цэг, өгөгдлийг устгаж, дахин мөрдөх боломжтой болгоно.","","Color → Tracker самбарын толгой ⟲"],
+["Tracker Method Menu","Мөрдөх аргын цэс","Tracker самбарын баруун доод ⌄ жагсаалт — 3 мөр: Cloud Tracker, Point Tracker, AI IntelliTrack. Window горимд анхдагч нь Cloud Tracker, FX горимд Point Tracker (зурагт).","","Color → Tracker самбарын доод мөр ⌄"],
+["Tracker Transport","Мөрдөлтийн товчнууд","Tracker самбарын зүүн дээд 6 товч: |◀ ◀ ‖ ⇄ ▶ ▶| — нэг кадар хойш, хойш мөрдөх, зогсоох, хоёр тийш мөрдөх, урагш мөрдөх, нэг кадар урагш. Tooltip зурагт гараагүй.","","Color → Tracker самбар"],
+["Pan / Tilt / Zoom / Rotate / 3D (Tracker)","Мөрдөх шинж","Tracker-ийн чагтууд — юуг мөрдөхийг сонгоно: Pan (хэвтээ, ногоон), Tilt (босоо, хөх), Zoom (хэмжээ, ягаан), Rotate (эргэлт, шар), 3D (перспектив, цэнхэр). Зурагт бүгд чагттай. Графикийн муруй ижил өнгөтэй.","","Color → Tracker самбар"],
+["Clip / Frame (Tracker)","Clip / Frame горим","Tracker-ийн баруун дээд хоёр товч. Clip (зурагт сонгогдсон) — цонхыг зөөвөл бүх клипийн турш хамт шилжинэ; Frame — зөвхөн тухайн кадарт өөрчилж, гараар кадар кадраар засна.","","Color → Tracker самбар"],
+["Tracker Graph","Мөрдөлтийн график","Tracker самбарын дунд хэсэг — клипийн timecode-той шугам, заагч, мөрдөлтийн муруй. Доод талд одоогийн кадрын Pan, Tilt, Zoom, Rotate утга (зурагт 0.00 ×4).","","Color → Tracker самбар"],
+["Interactive Mode Tools","Interactive Mode-ийн хэрэгсэл","Interactive Mode чагтын хажуугийн гурван дүрс (tooltip-оор баталгаажсан): Insert — хүрээнд мөрдөх цэг нэмэх, Set Point — цэгийг гараар тавих, Delete — цэг устгах.","","Color → Tracker самбарын доод мөр"],
+["Split Screen Mode Menu","Split Screen-ийн горимын цэс","Viewer-ийн ▦ (Split Screen) асаалттай үед хоёр дахь мөрөнд гарах «Version ⌄» жагсаалт — 11 мөр: Current Group, Highlight Modes, Neighbor Clips, Playheads, Selected Album, Selected Clips, Selected LUTs, Selected Still Grades, Selected Still Images, Version (зурагт сонгогдсон), Versions and Original.","","Color → viewer-ийн 2 дахь мөр (Split Screen)"],
+["Highlight Mode Buttons","Highlight-ийн горимын товч","Viewer-ийн ◐ (Highlight) асаалттай үед хоёр дахь мөрөнд гарах 3 товч: дүүрэн дөрвөлжин, хагас дөрвөлжин, A/B. Tooltip зурагт гараагүй — Resolve-ийн гарын авлагаар Highlight, Highlight B/W, Highlight Difference.","","Color → viewer-ийн 2 дахь мөр (Highlight)"],
+["Keyframes Panel (Color)","Keyframes самбар (Color)","Color хуудасны баруун доод Keyframes самбар: timecode, All ⌄ шүүлтүүр, томруулах гүйлгэгч; мөр бүр — Master, Corrector 1–4 (нод бүр), Sizing. Мөр бүрийн эхэнд ● , 🔒, ◆ дүрс ба › дэлгэх сум.","","Color → палитрын мөрийн баруун тал → Keyframes"],
+["Master (Keyframes)","Master мөр","Keyframes самбарын хамгийн дээд мөр — клипийн бүх түлхүүр кадрыг нэгтгэж харуулна; эндээс зөөвөл бүх нодын түлхүүр кадар хамт зөөгдөнө (Resolve-ийн гарын авлагаар).","","Keyframes самбар (Color)"],
+["Corrector (Keyframes)","Corrector мөр","Keyframes самбарт нод бүрийн мөр (зурагт Corrector 1–4 — клипт 4 нод). › дэлгэхэд тухайн нодын параметр бүрийн мөр гарна.","","Keyframes самбар (Color)"],
+["Sizing (Keyframes)","Sizing мөр","Keyframes самбарын Sizing мөр — Sizing палитрын (Input/Output/Node Sizing) хөдөлгөөний түлхүүр кадар.","","Keyframes самбар (Color)"],
+["Keyframes Filter (Color)","Keyframes шүүлтүүр","Keyframes самбарын баруун дээд «All ⌄» — 3 мөр: All (бүгд, зурагт сонгогдсон), Color (зөвхөн өнгөний нодууд), Sizing (зөвхөн Sizing).","","Keyframes самбар (Color)"],
+["Tracker Options Menu","Tracker-ийн … цэс","Tracker самбарын толгойн … жагсаалт: Reset Track Data on Active Window, Clear Selected Track Data, Delete Keyframe, Clear All Tracking Points; Show Track; Copy Track Data, Paste Track Data; Classic Stabilizer, Use GPU Acceleration (хоёулаа саарал, сүүлийнх нь чагттай).","","Color → Tracker самбар …"],
+["Reset Track Data on Active Window","Идэвхтэй цонхны мөрдөлтийг буцаах","Сонгосон (идэвхтэй) Power Window-ийн мөрдөлтийн өгөгдлийг л арилгаж, бусад цонхных хэвээр үлдэнэ.","","Tracker-ийн … цэс"],
+["Clear Selected Track Data","Сонгосон мөрдөлтийг арилгах","Графикт сонгосон хэсгийн (кадрын мужийн) мөрдөлтийн өгөгдлийг арилгана — алдаатай хэсгийг дахин мөрдөхөд.","","Tracker-ийн … цэс"],
+["Show Track","Мөрдөлтийн замыг харуулах","Viewer дээр мөрдөлтийн цэгүүдийн замыг (траектори) харуулна — мөрдөлт хаана алдагдсаныг нүдээр шалгах.","","Tracker-ийн … цэс"],
+["Copy Track Data / Paste Track Data","Мөрдөлтийг хуулах / буулгах","Нэг нодын мөрдөлтийн өгөгдлийг хуулж, өөр нод эсвэл цонхонд буулгана — нэг объектыг олон засвар дагуулахад дахин мөрдөхгүй.","","Tracker-ийн … цэс"],
+["Classic Stabilizer","Хуучин тогтворжуулагч","Resolve-ийн өмнөх хувилбарын тогтворжуулах алгоритм. Зурагт саарал — Stabilizer горимд л идэвхждэг байх магадлалтай.","","Tracker-ийн … цэс"],
+["Use GPU Acceleration (Tracker)","GPU-гээр хурдасгах","Мөрдөлтийн тооцоонд видео картыг ашиглана. Зурагт чагттай, саарал.","","Tracker-ийн … цэс"]
 ]});
 
 </script>
@@ -7653,8 +7743,8 @@ Tracker самбарын **Window** горим нь Power Window-ийг хөдө
 
 ## Хэрэглэх алхам
 1. Цонх зурна ([[power-window]]).
-2. Tracker самбар → горим **Window** (унадаг цэс: Window / Stabilizer / FX).
-3. Мөрдөх шинж: **Pan, Tilt, Zoom, Rotate, Perspective 3D** чагт. Ердийн: Pan, Tilt, Zoom асаалттай.
+2. Tracker самбар → толгойн баруун талын дүрсээр горим сонгоно: ⊕ **Window**, шоо — **Stabilizer**, fx — **FX** (Resolve 21-д самбарын нэр «Tracker - Window» болно). [[tracker-mode-buttons]].
+3. Мөрдөх шинж: **Pan, Tilt, Zoom, Rotate, 3D** чагт (таны Resolve 21-ийн зурагт бүгд чагттай). [[pan-tilt-zoom-rotate-3d-tracker]].
 4. **Track Forward** (▶) — заагчаас эхлэн кадар бүрд мөрдөнө. Track Reverse — ухраан. Заагчийг клипийн эхлэлд аваачаад эхлэх нь зүйтэй.
 5. Мөрдөлтийн график самбарт харагдана (X, Y, Zoom).
 6. Цонх зөрсөн кадарт **Interactive Mode** асааж, мөрдөх цэгүүдийг гараар зааж (объект дээр), дахин мөрдөнө.
@@ -14520,6 +14610,481 @@ Viewer-ийн толгойн баруун талын **…** жагсаалт �
 });
 
 </script>
+<script>
+/* ── js/long/l20-color-viewer-tracker.js ── */
+/* ═════════════════════════════════════════════════════════════
+   Гарын авлагын дэлгэрэнгүй тайлбар · Color — viewer-ийн wipe, Tracker, Keyframes
+   (2026-09-26-ны дэлгэцийн зургууд)
+   ═════════════════════════════════════════════════════════════ */
+RM.dict.long({
+
+"image-wipe": `
+## Зориулалт
+**Image Wipe** нь viewer дээр **хоёр зургийг нэг дор** харуулна: одоогийн засаж буй кадр ба **лавлах зураг** — Gallery-д хадгалсан зураг (still), өөр клип, эсвэл засахаас өмнөх хувилбар. Өнгөний засварыг «өмнө, дараа» харьцуулах, хоёр камерын өнгийг тааруулахад гол хэрэгсэл.
+
+## Хэрэглэх алхам
+1. Gallery-д лавлах зураг хадгална: viewer дээр баруун товч → **Grab Still** [k:Alt+G]. [[still]].
+2. Gallery-д тэр зургийг хоёр товшино — wipe асна (эсвэл viewer-ийн дээд мөрийн ◧ товч, [k:Ctrl+W]).
+3. Viewer-ийн хоёр дахь мөрөнд **хэлбэрээ** сонгоно: Horizontal, Vertical, Diagonal, Mix, Alpha, Box, Venetian Blind, Checker Board. [[wipe-style-toolbar-color-viewer]].
+4. Viewer дээр шугамыг чирж хил зааг зөөнө.
+5. Дахин [k:Ctrl+W] — унтраана.
+
+## Бичлэгт нөлөөлөх үү
+**Үгүй** — зөвхөн viewer-ийн харагдац.
+
+> Viewer-ийн дээд мөрийн гурван товч: ◧ **Image Wipe**, ▦ **Split Screen**, ◐ **Highlight**. Tooltip нь зурагт гараагүй ч дарахад доор нь гарсан мөрөөр (wipe-ийн хэлбэр, «Version ⌄» жагсаалт, Highlight-ийн 3 товч) баталгаажсан. Гурвын нэг л идэвхтэй байна. [[split-screen]], [[highlight]].
+`,
+
+"wipe-style-toolbar-color-viewer": `
+## Зориулалт
+Image Wipe асаалттай үед Color viewer-ийн **хоёр дахь мөр** — хоёр зургийг **ямар хэлбэрээр хуваахыг** сонгоно.
+
+## Товчнууд (таны зураг, зүүнээс баруун)
+1. **Horizontal** ◂|▸ — зүүн / баруун. [[horizontal-wipe]].
+2. **Vertical** — дээд / доод. [[vertical-wipe]].
+3. **Diagonal** — ташуу. [[diagonal-wipe]].
+4. **Mix** ▶◀ — бүх кадраар хольж. [[mix-wipe]].
+5. **Alpha** — тунгалаг хэсгээр. [[alpha-wipe]].
+6. **A/B** — зурагт **саарал** (идэвхгүй); tooltip гараагүй.
+7. **Box** — голын хайрцаг. [[box-wipe]].
+8. **Venetian Blind** — хэвтээ туузууд. [[venetian-blind-wipe]].
+9. **Checker Board** — шатрын нүд. [[checker-board-wipe]].
+
+## Аль нь хэзээ
+- Хоёр камерын **арьсны өнгө** тааруулах — Horizontal, шугамыг нүүрний дундуур.
+- **Бүх кадрын** гэрэл, өнгөний ерөнхий ялгаа — Mix эсвэл Checker Board.
+- **Түлхүүр (key), маск** шалгах — Alpha.
+
+> Бичлэгт нөлөөлөхгүй.
+`,
+
+"horizontal-wipe": `
+## Зориулалт
+**Horizontal** wipe — viewer-ийг **босоо шугамаар** хоёр хувааж, зүүн талд нэг зураг, баруун талд нөгөө зураг. Дүрс нь ◂|▸. Хамгийн түгээмэл харьцуулалт.
+
+## Хэрэглэх
+Шугамыг viewer дээр чирж зөөнө — жишээ нь хүний нүүрний яг дундуур тавиад хоёр камерын арьсны өнгийг тааруулна. Шугамыг хоёр талаас нь хурдан зөөж «анивчуулбал» ялгаа илүү тод мэдэгдэнэ.
+
+Холбоотой: [[image-wipe]], [[vertical-wipe]].
+`,
+
+"vertical-wipe": `
+## Зориулалт
+**Vertical** wipe — viewer-ийг **хэвтээ шугамаар** хувааж, дээд талд нэг зураг, доод талд нөгөө зураг.
+
+## Хэзээ хэрэгтэй
+Тэнгэр, газар гэх мэт **хэвтээ** бүтэцтэй кадарт: тэнгэрийн өнгө нэг хувилбарт, газар нөгөөд ямар харагдахыг хил дээр нь харьцуулна.
+
+Холбоотой: [[image-wipe]], [[horizontal-wipe]].
+`,
+
+"diagonal-wipe": `
+## Зориулалт
+**Diagonal** wipe — viewer-ийг **ташуу шугамаар** хоёр хуваана.
+
+## Хэзээ хэрэгтэй
+Кадрын гол объект булангаас булан руу (диагональ) байрлалтай үед, эсвэл хэвтээ, босоо шугам нүд рүү хэт тод тусах үед. Таны зурагт саарал «\\» дүрс.
+
+Холбоотой: [[image-wipe]], [[wipe-style-toolbar-color-viewer]].
+`,
+
+"mix-wipe": `
+## Зориулалт
+**Mix** — шугамаар хуваахгүй, хоёр зургийг **бүх кадраар нь тунгалгаар холино** (▶◀ дүрс). Viewer дээр чирэхэд холилтын хувь өөрчлөгдөнө гэж ойлгогдоно.
+
+## Хэзээ хэрэгтэй
+- Хоёр хувилбарын **ерөнхий** өнгө, гэрлийн ялгааг мэдрэх.
+- **Байрлалын зөрүү** (Stabilizer, Sizing-ийн дараа) — холилтонд «давхар» дүрс харагдана.
+
+> Холилтын хувийг яг яаж өөрчлөх нь Resolve 21-д баталгаажаагүй.
+
+Холбоотой: [[image-wipe]].
+`,
+
+"alpha-wipe": `
+## Зориулалт
+**Alpha** — одоогийн клипийн **тунгалаг (alpha) хэсгээр** лавлах зургийг харуулна: key, маскаар тусгаарласан хэсэг нэг зураг, үлдсэн нь нөгөө.
+
+## Хэзээ хэрэгтэй
+Qualifier, Magic Mask, Window-оор ялгасан хэсгийн **ирмэг** зөв эсэх, засвар зөвхөн тэр хэсэгт хүрч байгааг шалгах. [[qualifier]], [[magic-mask]].
+
+Холбоотой: [[image-wipe]], [[highlight]].
+`,
+
+"box-wipe": `
+## Зориулалт
+**Box** — кадрын голд **тэгш өнцөгт хайрцаг**: дотор нь нэг зураг, гадна нь нөгөө зураг.
+
+## Хэзээ хэрэгтэй
+Нүүр, бүтээгдэхүүн гэх мэт **гол объектыг** хоёр хувилбараар хэсэгчлэн харьцуулах — хүрээлэн буй орчин өөрчлөгдөөгүй мэт харагдаж, зөвхөн объектод анхаарна.
+
+Холбоотой: [[image-wipe]], [[wipe-style-toolbar-color-viewer]].
+`,
+
+"venetian-blind-wipe": `
+## Зориулалт
+**Venetian Blind** — кадрыг **олон хэвтээ туузаар** хувааж, тууз ээлжлэн нэг зураг, нөгөө зураг — хөшигний хавтас мэт (≡ дүрс).
+
+## Хэзээ хэрэгтэй
+Нэг шугамаар хуваахад кадрын нэг хэсгийг л харьцуулдаг бол энэ нь **кадрын бүх өндрийн дагуу** ойрхон туузаар харьцуулна — жигд градиент (тэнгэр, хана) дээрх өнгөний ялгааг олоход.
+
+Холбоотой: [[checker-board-wipe]], [[image-wipe]].
+`,
+
+"checker-board-wipe": `
+## Зориулалт
+**Checker Board** — кадрыг **шатрын хөлөг шиг нүднүүдэд** хувааж, нүд ээлжлэн хоёр зургийг харуулна.
+
+## Хэзээ хэрэгтэй
+**Бүх кадраар жигд** харьцуулах: хэвтээ, босоо ялгааг хоёуланг нь нэг дор. Бага зэргийн өнгө, гэрлийн зөрүү нүдний ирмэг дээр тод мэдэгдэнэ.
+
+Холбоотой: [[venetian-blind-wipe]], [[image-wipe]].
+`,
+
+"tracker-mode-buttons": `
+## Зориулалт
+Tracker самбарын толгойн баруун талын **гурван дүрс** — самбарын горимыг сонгоно; нэр нь самбарын гарчигт гарна (таны зурагт «Tracker - **Window**»).
+- ⊕ **Window** — Power Window-ийг хөдөлж буй объектын араас дагуулна (таны зурагт идэвхтэй). [[window-tracker]].
+- Шоо — **Stabilizer** — клипийг тогтворжуулна (чичиргээг арилгана).
+- **fx** — **FX** — Resolve FX-ийн байрлалыг (жишээ нь гэрлийн толбоны төв) мөрдөнө.
+- ⟲ — **Clear All Tracking Points** (tooltip) — бүх мөрдөлтийг арилгах. [[clear-all-tracking-points]].
+- … — нэмэлт тохиргоо.
+
+## Горим бүрийн ялгаа (таны зургаас)
+- **Window** — доод мөрөнд Interactive Mode ба Insert, Set Point, Delete; мөрдөх арга — **Cloud Tracker**.
+- **FX** — самбарын нэр «Tracker - FX»; Interactive Mode байхгүй, зөвхөн Set Point, Delete; мөрдөх арга — **Point Tracker**. [[tracker-method-menu]].
+
+> Горимын гурван дүрсийн tooltip (Window, Stabilizer, FX) зурагт баталгаажсан.
+`,
+
+"tracker-transport": `
+## Зориулалт
+Tracker самбарын зүүн дээд **6 товч** — мөрдөлтийг эхлүүлэх, зогсоох:
+1. **|◀** — нэг кадар хойш мөрдөх.
+2. **◀** — хойш (эхлэл рүү) мөрдөх.
+3. **‖** — зогсоох.
+4. **⇄** — заагчаас хоёр тийш (урагш, хойш) мөрдөх.
+5. **▶** — урагш мөрдөх.
+6. **▶|** — нэг кадар урагш мөрдөх.
+
+## Зөвлөмж
+- Объект хамгийн **тод, бүтэн** харагдах кадраас эхэлж **⇄** — хоёр тийш нэг дор.
+- Мөрдөлт алдагдсан газарт зогсоож, цонхыг засаад нэг кадраар (|◀ ▶|) явна.
+
+> Tooltip зурагт гараагүй — нэрс нь Resolve-ийн гарын авлагын нэрс. [[track-forward-reverse]].
+`,
+
+"pan-tilt-zoom-rotate-3d-tracker": `
+## Зориулалт
+Tracker-ийн **таван чагт** — объектын хөдөлгөөний аль шинжийг мөрдөж, цонхонд шилжүүлэхийг сонгоно (таны зурагт бүгд чагттай). Өнгө нь графикийн муруйн өнгөтэй адил:
+- **Pan** (ногоон) — хэвтээ шилжилт.
+- **Tilt** (хөх) — босоо шилжилт.
+- **Zoom** (ягаан) — хэмжээ (ойртох, холдох).
+- **Rotate** (шар) — эргэлт.
+- **3D** (цэнхэр) — перспектив (хазайх).
+
+## Хэзээ унтраах
+Объект зөвхөн хажуу тийш явж байхад Zoom, Rotate, 3D-ийг унтраавал мөрдөлт **илүү тогтвортой** — хэрэггүй шинж алдаа нэмдэг.
+
+Холбоотой: [[window-tracker]], [[tracker-graph]].
+`,
+
+"clip-frame-tracker": `
+## Зориулалт
+Tracker-ийн баруун дээд **Clip | Frame** хоёр товч — цонхыг гараар зөөхөд юу болохыг заана.
+- **Clip** (таны зурагт сонгогдсон) — цонхыг зөөвөл **бүх клипийн турш** хамт шилжинэ (мөрдөлтийн дээрээс нэмэлт зөрүү).
+- **Frame** — цонхыг зөөвөл **зөвхөн тухайн кадарт** өөрчлөгдөнө: мөрдөлт алдагдсан кадруудыг **кадар кадраар гараар засах** горим.
+
+## Хэрэглэх
+1. Track Forward — мөрдөнө.
+2. Алдаатай кадар олдвол **Frame** сонгоод цонхыг зөв газар нь тавина.
+3. Дараагийн алдаатай кадар — давтана. Дуусаад **Clip** руу буцна.
+
+Холбоотой: [[window-tracker]], [[tracker-transport]].
+`,
+
+"tracker-graph": `
+## Зориулалт
+Tracker самбарын дунд хэсэг — **мөрдөлтийн график**. Дээр нь клипийн timecode (таны зурагт 00:00:00:00 … 00:00:23:17), улаан заагч, доор нь одоогийн кадрын утга: Pan, Tilt, Zoom, Rotate (зурагт 0.00 ×4 — мөрдөлт хийгдээгүй).
+
+## Уншиж сурах
+- Мөрдсөний дараа өнгө бүрийн **муруй** гарна. Жигд муруй — сайн мөрдөлт.
+- Муруй дээр огцом **үсрэлт** — мөрдөлт алдагдсан кадар: заагчийг тэнд аваачаад Frame горимоор засна. [[clip-frame-tracker]].
+- Баруун талын босоо гүйлгэгч, доод хэвтээ гүйлгэгч — графикийг томруулах.
+`,
+
+"interactive-mode": `
+## Зориулалт
+**Interactive Mode** (Tracker самбарын зүүн доод чагт) — Cloud Tracker-ийн **автомат цэгийн** оронд мөрдөх цэгүүдийг **өөрөө сонгоно**. Объектын нэг хэсэг далдлагдах, ард нь өөр хөдөлгөөн байх үед мөрдөлтийг сайжруулна.
+
+## Хэрэглэх алхам
+1. **Interactive Mode**-ийг чагтална.
+2. Viewer дээр цонхны дотор мөрдөх хэсгийг сонгоод хажуугийн **нэмэх** дүрсээр цэг оруулна. [[interactive-mode-tools]].
+3. Буруу цэгийг (жишээ нь ард нь хөдөлж буй хүн дээр) **устгах** дүрсээр хасна.
+4. Track Forward — зөвхөн таны цэгүүдээр мөрдөнө.
+
+> Таны зурагт унтраалттай.
+
+Холбоотой: [[cloud-tracker]], [[window-tracker]].
+`,
+
+"interactive-mode-tools": `
+## Зориулалт
+**Interactive Mode**-ийн хажуугийн **гурван дүрс** (tooltip-оор баталгаажсан; Interactive Mode асаалттай үед идэвхжинэ):
+1. Тасархай хүрээ + — **Insert**: viewer дээр чирж зурсан хүрээнд мөрдөх **цэгүүдийг автоматаар нэмэх**.
+2. Сум + — **Set Point**: нэг **цэгийг гараар** (яг объект дээр) тавих.
+3. Цэг + хогийн сав — **Delete**: сонгосон хүрээн дэх **цэгүүдийг устгах** (ар талд хөдөлж буй зүйл дээрх буруу цэг).
+
+Холбоотой: [[interactive-mode]].
+`,
+
+"cloud-tracker": `
+## Зориулалт
+**Cloud Tracker** (Tracker самбарын баруун доод ⌄, таны зурагт сонгогдсон) — Resolve цонхны доторх **олон цэгийг өөрөө олж** («үүл» мэт) мөрдөнө. Ихэнх тохиолдолд хамгийн хурдан, найдвартай.
+
+## Point Tracker-оос ялгаа
+- **Cloud** — автомат, олон цэг. Нүүр, бие, машин гэх мэт том объект.
+- **Point** — та цэгээ өөрөө тавина. Жижиг, тод цэг (гэрэл, булан), эсвэл Cloud алдаад байвал. [[point-tracker]].
+
+> ⌄ жагсаалтын бусад мөр зурагт задраагүй.
+`,
+
+"point-tracker": `
+## Зориулалт
+**Point Tracker** — Cloud Tracker-ийн оронд мөрдөх **цэгийг гараар** сонгох арга. Viewer дээр загалмай (+) цэг тавьж, түүнийг кадар бүрд дагуулна.
+
+## Хэзээ хэрэглэх
+- Жижиг, тод цэг (гэрэл, дэлгэцийн булан, товч) мөрдөх.
+- Cloud Tracker ар дэвсгэрийн хөдөлгөөнд «төөрөөд» байвал.
+- Хэд хэдэн цэг тавибал Zoom, Rotate ч тооцоологдоно.
+
+> Cloud Tracker ⌄ жагсаалтаас сонгоно (жагсаалт зурагт задраагүй).
+
+Холбоотой: [[cloud-tracker]].
+`,
+
+"keyframes-panel-color": `
+## Зориулалт
+Color хуудасны **Keyframes** самбар (палитрын мөрийн баруун талын ◆◇ дүрс) — өнгөний засвар **цаг хугацааны явцад өөрчлөгдөх** түлхүүр кадруудыг харуулж, зөөнө. Жишээ нь нар жаргах үед зургийг аажим дулаан болгох.
+
+## Бүрэлдэхүүн (таны зурагт)
+- Зүүн дээд **timecode** (00:00:30:00).
+- Баруун дээд **All ⌄** шүүлтүүр, томруулах гүйлгэгч. [[keyframes-filter-color]].
+- Мөрүүд: **Master**, **Corrector 1–4**, **Sizing**. [[master-keyframes]], [[corrector-keyframes]], [[sizing-keyframes]].
+- Мөр бүрийн эхэнд **●**, **🔒**, **◆** дүрс, **›** дэлгэх сум (tooltip гараагүй).
+- Баруун тал — timeline (00:00:00:00, 00:00:10:08, 00:00:20:16), мөр бүрийн эхэнд цагаан цэг — клипийн эхлэл.
+
+## Түлхүүр кадар тавих
+1. Заагчийг кадар дээр тавина.
+2. Мөрийн ◆ дээр дарна, эсвэл **Mark** цэс → Add Keyframe [k:Ctrl+[] (аажим шилжих **dynamic**), Add Static Keyframe [k:Ctrl+]] (огцом **static**). [[add-keyframe]], [[add-static-keyframe]].
+3. Өөр кадарт шилжиж засвараа өөрчилнө — хоёр түлхүүр кадрын хооронд өнгө аажим шилжинэ.
+
+> Бичлэгт **нөлөөлнө** — засвар цаг хугацаанд өөрчлөгдөнө.
+`,
+
+"master-keyframes": `
+## Зориулалт
+Keyframes самбарын **Master** мөр — клипийн **бүх түлхүүр кадрыг нэгтгэж** харуулдаг хамгийн дээд мөр (таны зурагт саарал зурвастай). Master дээр түлхүүр кадрыг зөөвөл бүх нодын тэр цэгийн түлхүүр кадар хамт зөөгдөнө гэж Blackmagic-ийн гарын авлагад тайлбарладаг.
+
+## Хэзээ хэрэгтэй
+Бүх засварын шилжилтийг **нэг дор** хурдасгах, удаашруулах (жишээ нь өдрөөс шөнө болох шилжилтийг 2 секундээс 4 секунд болгох).
+
+> Resolve 21-д яг ийм ажиллах эсэх баталгаажаагүй.
+
+Холбоотой: [[keyframes-panel-color]], [[corrector-keyframes]].
+`,
+
+"corrector-keyframes": `
+## Зориулалт
+Keyframes самбарт **нод бүрийн мөр** — «Corrector 1», «Corrector 2» … (таны зурагт 4 — клипт 4 нод бий). **›** дээр дарахад тухайн нодын параметр тус бүрийн (Primaries, Window, Qualifier …) дэд мөр гарна.
+
+## Хэрэглэх
+- Нэг нодын засварыг л аажим өөрчлөх бол тэр нодын мөрөнд түлхүүр кадар тавина — бусад нод хөдлөхгүй.
+- Дэд мөрөөр зөвхөн **цонхны байрлал** эсвэл зөвхөн **өнгө**-нд түлхүүр кадар тавина.
+
+Холбоотой: [[corrector-node]], [[master-keyframes]].
+`,
+
+"sizing-keyframes": `
+## Зориулалт
+Keyframes самбарын **Sizing** мөр — **Sizing** палитрын (Pan, Tilt, Zoom, Rotate — Input Sizing, Node Sizing) түлхүүр кадар. Color хуудсанд кадрыг аажим томруулах (push-in), зөөх хөдөлгөөн.
+
+> Edit хуудасны Inspector → Transform-оос тусдаа — хоёулаа нэг клипэд давхар үйлчилнэ. [[node-sizing]], [[transform]].
+
+Холбоотой: [[keyframes-panel-color]].
+`,
+
+"keyframes-filter-color": `
+## Зориулалт
+Keyframes самбарын баруун дээд **All ⌄** — самбарт аль мөрүүдийг харуулахыг шүүнэ. Таны зурагт 3 мөр:
+- **All** — бүх мөр (Master, Corrector …, Sizing) — сонгогдсон.
+- **Color** — зөвхөн өнгөний нодуудын мөр.
+- **Sizing** — зөвхөн Sizing мөр.
+
+Олон нодтой клипт зөвхөн хөдөлгөөний (Sizing) түлхүүр кадраа засах үед **Sizing** сонгож самбараа цэгцэлнэ.
+
+Холбоотой: [[keyframes-panel-color]].
+`,
+
+"split-screen": `
+## Зориулалт
+**Split Screen** — viewer-ийг **хэд хэдэн хэсэгт** хувааж, олон зургийг зэрэг харуулна: одоогийн клипийн хэд хэдэн хувилбар (Versions), Gallery-ийн сонгосон зургууд, timeline-ийн хөрш клипүүд гэх мэт.
+
+## Хэрэглэх
+1. Viewer-ийн дээд мөрийн ▦ товч эсвэл View цэс → Split Screen.
+2. Хоёр дахь мөрийн **«Version ⌄»** жагсаалтаас горимоо сонгоно — таны зурагт 11 мөр. [[split-screen-mode-menu]].
+3. Хөрш клипүүдтэй зэрэгцүүлж харвал бүх үзэгдлийн өнгө **нэгэн жигд** эсэхийг шалгана.
+
+> Бичлэгт нөлөөлөхгүй.
+
+Холбоотой: [[image-wipe]], [[gallery]].
+`,
+
+"highlight": `
+## Зориулалт
+**Highlight** [k:Shift+H] — Qualifier, Window, Magic Mask-аар **сонгосон хэсгийг** тодруулж харуулна: сонгогдоогүй хэсэг саарал (эсвэл хар цагаан) болно. Сонголт хаанаас хаана хүртэл байгааг нүдээр шалгах.
+
+## Хэрэглэх
+1. Qualifier-ээр өнгө сонгоно (жишээ нь тэнгэр). [[qualifier]].
+2. Viewer-ийн дээд мөрийн ◐ товч эсвэл [k:Shift+H]. Хоёр дахь мөрөнд 3 горимын товч гарна. [[highlight-mode-buttons]].
+3. Сонголтын ирмэгт «нүх», илүүдэл байвал Qualifier-ийн тохиргоог засна.
+4. Дуусаад унтраана.
+
+> Бичлэгт нөлөөлөхгүй — зөвхөн харагдац.
+
+Холбоотой: [[alpha-wipe]], [[magic-mask]].
+`,
+
+"split-screen-mode-menu": `
+## Зориулалт
+Split Screen асаалттай үед viewer-ийн хоёр дахь мөрний **«Version ⌄»** жагсаалт — viewer-ийг **юугаар** хуваахыг сонгоно. Таны зурагт 11 мөр:
+- **Current Group** — одоогийн бүлгийн (group) клипүүд.
+- **Highlight Modes** — Highlight-ийн горимуудыг зэрэг.
+- **Neighbor Clips** — timeline-ийн хөрш клипүүд (өмнөх, дараах) — үзэгдлийн өнгө нэгэн жигд эсэх.
+- **Playheads** — олон заагчийн байрлал (Color-ийн олон заагч).
+- **Selected Album** — Gallery-ийн сонгосон цомгийн зургууд.
+- **Selected Clips** — clips мөрөнд сонгосон клипүүд.
+- **Selected LUTs** — LUT Browser-т сонгосон LUT-уудыг нэг кадар дээр хэрэглэж харьцуулах.
+- **Selected Still Grades** — Gallery-ийн зургуудын **засварыг** одоогийн клипт хэрэглэж харьцуулах.
+- **Selected Still Images** — Gallery-ийн зургуудыг өөрсдийг нь.
+- **Version** ✓ — одоогийн клипийн засварын хувилбарууд (Local Versions).
+- **Versions and Original** — хувилбарууд ба засвараагүй эх.
+
+## Хэрэглэх жишээ
+Гурван LUT-аас сонгох: LUT Browser-т гурвыг сонгож → Split Screen → **Selected LUTs** — нэг дор харьцуулна.
+
+> Мөр бүрийн нарийн ажиллагааг Resolve-ийн гарын авлагын утгаар бичсэн; жагсаалтын нэрс таны зургаас.
+
+Холбоотой: [[split-screen]], [[gallery]].
+`,
+
+"highlight-mode-buttons": `
+## Зориулалт
+Highlight (◐) асаалттай үед viewer-ийн хоёр дахь мөрөнд гарах **3 товч** — сонголтыг хэрхэн тодруулахыг сонгоно:
+1. Дүүрэн дөрвөлжин — **Highlight**: сонгогдоогүй хэсэг саарал.
+2. Хагас дөрвөлжин — **Highlight B/W**: хар цагаан маск (сонгогдсон — цагаан).
+3. **A/B** — **Highlight Difference**: засварын өмнө, дараах **ялгааг** харуулна.
+
+> Tooltip зурагт гараагүй — нэрсийг Resolve-ийн гарын авлагаар бичсэн. Хулганаа тавьсан зургийг илгээвэл баталгаажуулна.
+
+Холбоотой: [[highlight]].
+`,
+
+"clear-all-tracking-points": `
+## Зориулалт
+Tracker самбарын толгойн **⟲** товч (tooltip: **Clear All Tracking Points**) — тухайн нодын **мөрдөлтийн бүх өгөгдлийг** (цэгүүд, муруй) устгана. Цонх, эффект мөрдөлтөөс өмнөх байрлалдаа буцна.
+
+## Хэзээ хэрэглэх
+- Мөрдөлт буруу объект дагасан, эсвэл хэт олон кадарт алдагдсан бол бүгдийг цэвэрлээд шинээр эхлэх.
+- Цонхыг өөр объект дээр шилжүүлэх үед.
+
+> Буцаах: [k:Ctrl+Z]. Бичлэгт нөлөөлнө — мөрдөлт арилснаар цонх хөдлөхөө болино.
+
+Холбоотой: [[tracker-mode-buttons]], [[window-tracker]].
+`,
+
+"tracker-method-menu": `
+## Зориулалт
+Tracker самбарын баруун доод **⌄** жагсаалт — объектыг **ямар аргаар** мөрдөхийг сонгоно. Таны зурагт 3 мөр:
+- **Cloud Tracker** — Resolve өөрөө олон цэг олж мөрдөнө. Window горимын анхдагч. [[cloud-tracker]].
+- **Point Tracker** — цэгийг гараар тавина. FX горимд анхдагч. [[point-tracker]].
+- **AI IntelliTrack** — DaVinci Neural Engine-ээр мөрдөх (Studio). Хүн, амьтан гэх мэт хэлбэр өөрчлөгддөг объектод. [[intellitrack]].
+
+## Аль нь хэзээ
+Эхлээд **Cloud Tracker** → алдвал **AI IntelliTrack** → жижиг, тод цэг бол **Point Tracker**.
+
+> AI IntelliTrack-ийн тохиргоо Resolve 21-д баталгаажаагүй.
+`,
+
+"tracker-options-menu": `
+## Зориулалт
+Tracker самбарын толгойн баруун захын **…** жагсаалт — мөрдөлтийн өгөгдлийг удирдах командууд. Таны зурагт (FX горимд) 4 бүлэг:
+1. **Reset Track Data on Active Window** — идэвхтэй цонхны мөрдөлтийг л арилгах. [[reset-track-data-on-active-window]].
+   **Clear Selected Track Data** — графикт сонгосон мужийг арилгах. [[clear-selected-track-data]].
+   **Delete Keyframe** — мөрдөлтийн түлхүүр кадар устгах (Frame горимоор гараар тавьсан). [[delete-keyframe]].
+   **Clear All Tracking Points** — бүгдийг. [[clear-all-tracking-points]].
+2. **Show Track** — viewer дээр мөрдөлтийн зам. [[show-track]].
+3. **Copy Track Data**, **Paste Track Data** — өөр нод руу мөрдөлт хуулах. [[copy-track-data-paste-track-data]].
+4. **Classic Stabilizer** (саарал), **Use GPU Acceleration** ✓ (саарал). [[classic-stabilizer]].
+
+> Горим бүрт (Window, Stabilizer, FX) идэвхтэй мөр өөр байж болно.
+`,
+
+"reset-track-data-on-active-window": `
+## Зориулалт
+Нэг нодод хэд хэдэн Power Window байхад **зөвхөн идэвхтэй (сонгосон) цонхны** мөрдөлтийг арилгана. Бусад цонхны мөрдөлт хэвээр.
+
+## Хэзээ хэрэглэх
+Хүний нүүрэнд нэг, гарт нэг цонх мөрдсөн — гарынх алдаатай бол зөвхөн тэр цонхыг сонгоод энэ командаар цэвэрлэж, дахин мөрдөнө.
+
+Холбоотой: [[tracker-options-menu]], [[clear-all-tracking-points]].
+`,
+
+"clear-selected-track-data": `
+## Зориулалт
+Tracker-ийн **графикт сонгосон мужийн** (кадруудын) мөрдөлтийг арилгана. Муруй дээр чирж муж сонгоод командыг өгнө.
+
+## Хэзээ хэрэглэх
+Мөрдөлт клипийн дунд хэдэн кадарт «үсэрсэн» бол тэр хэсгийг л цэвэрлээд, тэндээс дахин мөрдөнө (эсвэл Frame горимоор гараар засна). [[clip-frame-tracker]].
+
+Холбоотой: [[tracker-graph]].
+`,
+
+"show-track": `
+## Зориулалт
+Viewer дээр мөрдөлтийн цэгүүд кадраас кадарт **хэрхэн хөдөлсөн замыг** (траектори) зурна.
+
+## Хэрэглэх
+Мөрдсөний дараа асаагаад замыг харна: жигд муруй — сайн; огцом эргэлт, зигзаг — алдаатай кадар. Viewer дээр л харагдана, бичлэгт орохгүй.
+
+Холбоотой: [[tracker-graph]], [[tracker-options-menu]].
+`,
+
+"copy-track-data-paste-track-data": `
+## Зориулалт
+Нэг нодын **мөрдөлтийн өгөгдлийг хуулж**, өөр нод эсвэл цонхонд **буулгана**. Нэг объектыг хэд хэдэн засвар (нүүрний гэрэл, нүдний тод байдал, арьсны зөөлрүүлэлт) дагах үед дахин мөрдөх шаардлагагүй.
+
+## Хэрэглэх
+1. Мөрдсөн нодыг сонгоод Tracker … → **Copy Track Data**.
+2. Шинэ нод үүсгэж цонх зурна.
+3. Tracker … → **Paste Track Data** — цонх ижил хөдөлгөөнөөр дагана.
+
+Холбоотой: [[window-tracker]].
+`,
+
+"classic-stabilizer": `
+## Зориулалт
+**Classic Stabilizer** — Resolve-ийн өмнөх хувилбаруудын **тогтворжуулах алгоритм**. Шинэ алгоритм тохиромжгүй (жишээ нь хуучин төслийг ижил үр дүнтэй нээх) үед сонгоно.
+
+## Таны зурагт
+**Саарал** — FX горимд идэвхгүй; Stabilizer горимд идэвхждэг байх магадлалтай (баталгаажаагүй). Доорх **Use GPU Acceleration** ✓ ч мөн саарал.
+
+Холбоотой: [[tracker-mode-buttons]], [[stabilization]].
+`
+
+});
+
+</script>
 <!-- long:end -->
 <script>
 /* ── js/50-sim-pages.js ── */
@@ -15366,6 +15931,54 @@ Viewer-ийн толгойн баруун талын **…** жагсаалт �
       <div class="wsl hs" data-t="bars"></div>
     </div>`;
 
+
+  /* ── Color viewer-ийн wipe-ийн мөр (2026-09-26): [id, tooltip, класс] — A/B саарал, tooltip гараагүй ── */
+  const CL_WIPE = [["horizontal-wipe", "Horizontal"], ["vertical-wipe", "Vertical"], ["diagonal-wipe", "Diagonal"],
+    ["mix-wipe", "Mix", "act"], ["alpha-wipe", "Alpha"], ["wipe-style-toolbar-color-viewer", "A/B — tooltip гараагүй", "dim"],
+    ["box-wipe", "Box"], ["venetian-blind-wipe", "Venetian Blind"], ["checker-board-wipe", "Checker Board"]];
+
+  /* ── Tracker - Window самбар (2026-09-26) ── */
+  const CL_TRACKER = () => `
+          <div class="cp-pane trk" data-tabpane="cp:tracker" hidden>
+            <div class="pane-h"><b class="hs" data-t="window-tracker">Tracker - Window</b><span class="sp"></span>
+              <span class="hs on" data-t="tracker-mode-buttons" title="Window">⊕</span><span class="hs" data-t="tracker-mode-buttons" title="Stabilizer">▣</span><span class="hs" data-t="tracker-mode-buttons" title="FX">fx</span>
+              <span class="hs" data-t="clear-all-tracking-points" title="Clear All Tracking Points">⟲</span><span class="hs mi" data-t="tracker-options-menu">…</span></div>
+            <div class="trk-bar">
+              <span class="hs" data-t="tracker-transport">⇤ ◀ ‖ ⇄ ▶ ⇥</span>
+              <span class="trk-ck hs" data-t="pan-tilt-zoom-rotate-3d-tracker"><i></i><b style="color:#3ec28f">Pan</b><i></i><b style="color:#6f8ff0">Tilt</b><i></i><b style="color:#e04fc7">Zoom</b><i></i><b style="color:#e3d25a">Rotate</b><i></i><b style="color:#4fb6e0">3D</b></span>
+              <span class="trk-seg hs" data-t="clip-frame-tracker"><b class="on">Clip</b><b>Frame</b></span>
+            </div>
+            <div class="trk-graph hs" data-t="tracker-graph">
+              <div class="trk-ru">${["00:00:00:00", "00:00:04:18", "00:00:09:12", "00:00:14:05", "00:00:18:23", "00:00:23:17"].map((t) => `<span>${t}</span>`).join("")}</div>
+              <div class="trk-ph"></div>
+              <div class="trk-val"><b style="color:#3ec28f">0.00</b><b style="color:#6f8ff0">0.00</b><b style="color:#e04fc7">0.00</b><b style="color:#e3d25a">0.00</b></div>
+            </div>
+            <div class="trk-foot">
+              <span class="hs" data-t="interactive-mode"><i class="cb"></i> Interactive Mode</span>
+              <span class="dim hs" data-t="interactive-mode-tools" title="Insert">⬚</span><span class="dim hs" data-t="interactive-mode-tools" title="Set Point">↖</span><span class="dim hs" data-t="interactive-mode-tools" title="Delete">🗑</span><span class="sp"></span>
+              <b class="dd mi hs" data-t="tracker-method-menu">Cloud Tracker ⌄</b>
+            </div>
+          </div>`;
+
+  /* ── Keyframes самбар (Color, 2026-09-26) ── */
+  const CL_KEYFRAMES = () => `
+          <div class="cp-pane kfc" data-tabpane="cr:keyframes" hidden>
+            <div class="pane-h"><b class="hs" data-t="keyframes-panel-color">Keyframes</b><span class="sp"></span>
+              <b class="hs mi" data-t="keyframes-filter-color">All ⌄</b><span class="kfc-zoom hs" data-t="keyframes-panel-color"><i></i></span></div>
+            <div class="kfc-body">
+              <div class="kfc-names">
+                <div class="kfc-tc hs" data-t="timecode">00:00:30:00</div>
+                <div class="kfc-n master hs" data-t="master-keyframes">Master</div>
+                ${[1, 2, 3, 4].map((n) => `<div class="kfc-n hs" data-t="corrector-keyframes"><span class="ic">● ▪ ◆ ›</span>Corrector ${n}</div>`).join("")}
+                <div class="kfc-n hs" data-t="sizing-keyframes"><span class="ic">● ▪ ◆ ›</span>Sizing</div>
+              </div>
+              <div class="kfc-lanes">
+                <div class="kfc-ru"><span>00:00:00:00</span><span>00:00:10:08</span><span>00:00:20:16</span></div>
+                <div class="kfc-l master"><i></i></div>${"<div class=\"kfc-l\"><i></i></div>".repeat(5)}
+              </div>
+            </div>
+          </div>`;
+
   S.color = () => `
   <div class="rs" data-page="color">
     ${H.MENU()}
@@ -15380,7 +15993,7 @@ Viewer-ийн толгойн баруун талын **…** жагсаалт �
        ${H.TG("openfx", "✦", "Effects")}
        ${H.TG("lightbox", "▦", "Lightbox")}`, false)}
     <div class="rs-row2">
-      <span class="hs" data-t="zoom-slider">9% ⌄</span><span class="hs" data-t="viewer-mode">▭ ▦ ▭ ▭</span>
+      <span class="hs" data-t="zoom-slider">12.5% ⌄</span><span class="hs act" data-t="image-wipe" data-tab="vr:wipe">◧</span><span class="hs" data-t="split-screen" data-tab="vr:split">▦</span><span class="hs" data-t="highlight" data-tab="vr:hl">◐</span>
       <span class="sp"></span>
       <b class="hs" data-t="timeline">SE…0s ⌄</b><span class="tc hs" data-t="timecode">00:00:00:00 ⌄</span>
       <span class="hs" data-t="viewer-mode">▭ ⌄ ▦ ⌄ ⚙ ⌄</span><span class="hs" data-t="reset">⟲</span><span class="hs" data-t="full-screen-window">⛶</span><span>…</span>
@@ -15394,6 +16007,10 @@ Viewer-ийн толгойн баруун талын **…** жагсаалт �
     <div class="rs-body">
       <div class="cl-top">
         <div class="pane vw hs" data-t="viewer" style="flex:0 0 49%">
+          <div class="cl-wipe hs" data-t="wipe-style-toolbar-color-viewer" data-tabpane="vr:wipe">${CL_WIPE.map(([id, tip, cls]) =>
+            `<span class="wb ${cls || ""} hs" data-t="${id}" title="${tip}">${S.icon(id === "wipe-style-toolbar-color-viewer" ? "ab-wipe" : id)}</span>`).join("")}</div>
+          <div class="cl-wipe" data-tabpane="vr:split" hidden><b class="dd mi hs" data-t="split-screen-mode-menu">Version ⌄</b></div>
+          <div class="cl-wipe hs" data-t="highlight-mode-buttons" data-tabpane="vr:hl" hidden><span class="wb act hs" data-t="highlight-mode-buttons">■</span><span class="wb hs" data-t="highlight-mode-buttons">◧</span><span class="wb hs" data-t="highlight-mode-buttons" style="font-size:9px">A/B</span></div>
           <div class="pane-b" style="display:flex;flex-direction:column">
             <div class="vw-screen dark"><div class="img" style="width:36%"></div></div>
             <div class="vw-foot">
@@ -15436,19 +16053,20 @@ Viewer-ийн толгойн баруун талын **…** жагсаалт �
 
       <div class="pal-rail hs" data-t="primaries">
         <span class="pi hs" data-t="camera-raw" title="Camera Raw">◉</span><span class="pi hs" data-t="shot-match" title="Color Match">▦</span>
-        <span class="pi act hs" data-t="color-wheels" title="Color Wheels">◑</span><span class="pi hs" data-t="hdr-palette" title="HDR">✸</span>
+        <span class="pi act hs" data-t="color-wheels" data-tab="cp:wheels" title="Color Wheels">◑</span><span class="pi hs" data-t="hdr-palette" title="HDR">✸</span>
         <span class="pi hs" data-t="splitter-combiner" title="RGB Mixer">⁂</span><span class="pi hs" data-t="motion-effects" title="Motion Effects">⧗</span>
         <span class="pi hs" data-t="curves" title="Curves">∿</span><span class="pi hs" data-t="color-warper" title="Color Warper">⬚</span>
         <span class="pi hs" data-t="qualifier" title="Qualifier">◌</span><span class="pi hs" data-t="power-window" title="Windows">▭</span>
-        <span class="pi hs" data-t="window-tracker" title="Tracker">⊹</span><span class="pi hs" data-t="magic-mask" title="Magic Mask">✦</span>
+        <span class="pi hs" data-t="window-tracker" data-tab="cp:tracker" title="Tracker">⊹</span><span class="pi hs" data-t="magic-mask" title="Magic Mask">✦</span>
         <span class="pi hs" data-t="blur-sharpen-mist" title="Blur">◍</span><span class="pi hs" data-t="matte" title="Key">◪</span>
         <span class="pi hs" data-t="node-sizing" title="Sizing">⤢</span><span class="pi hs" data-t="switch-eye-to" title="Stereo 3D">3D</span>
         <span class="sp"></span>
-        <span class="pi hs" data-t="keyframe-editor" title="Keyframes">◆</span><span class="pi hs" data-t="scopes" title="Scopes">∿</span><span class="pi hs" data-t="metadata" title="Info">ⓘ</span>
+        <span class="pi hs" data-t="keyframes-panel-color" data-tab="cr:keyframes" title="Keyframes">◆</span><span class="pi act hs" data-t="scopes" data-tab="cr:scopes" title="Scopes">∿</span><span class="pi hs" data-t="metadata" title="Info">ⓘ</span>
       </div>
 
       <div class="cl-bottom">
         <div class="pane" style="flex:0 0 49%">
+          <div class="cp-pane" data-tabpane="cp:wheels">
           <div class="pane-h"><b>Primaries - Color Wheels</b><span class="sp"></span>
             <span class="hs" data-t="color-wheels">◉</span><span class="hs" data-t="bars">▮▮</span><span class="hs" data-t="log-wheels">◐</span><span class="hs" data-t="reset">⟲</span></div>
           <div class="pane-b" style="display:flex;flex-direction:column">
@@ -15474,14 +16092,19 @@ Viewer-ийн толгойн баруун талын **…** жагсаалт �
               <span class="hs" data-t="lum-mix">Lum Mix <b>100.00</b></span>
             </div>
           </div>
+          </div>
+          ${CL_TRACKER()}
         </div>
-        <div class="pane scopes hs" data-t="scopes" style="flex:1">
+        <div class="pane scopes" style="flex:1">
+          <div class="cp-pane hs" data-t="scopes" data-tabpane="cr:scopes">
           <div class="pane-h"><b>Scopes</b><span class="sp"></span>
             <b class="hs" data-t="parade">Parade ⌄</b><span class="hs" data-t="scopes">⚌ ⛶ …</span></div>
           <div class="pane-b" style="display:flex">
             <div class="scope-scale">${["1023","896","768","640","512","384","256","128","0"].map((v) => `<span>${v}</span>`).join("")}</div>
             <div class="scope-box parade hs" data-t="parade"><div class="grid"></div><div class="tr r"></div><div class="tr g"></div><div class="tr b"></div></div>
           </div>
+          </div>
+          ${CL_KEYFRAMES()}
         </div>
       </div>
     </div>
@@ -16504,6 +17127,51 @@ Viewer-ийн толгойн баруун талын **…** жагсаалт �
       ["show-overlays-during-playback", "Show Overlays During Playback"],
       "-",
       ["marker", "Markers", "", "›"]
+    ]},
+
+    /* Color viewer — Split Screen асаалттай үед 2 дахь мөрийн «Version ⌄» (11 мөр, 2026-09-26) */
+    "split-screen-mode-menu": { label: "Split Screen Mode Menu", verified: true, items: [
+      ["split-screen-mode-menu", "Current Group"],
+      ["split-screen-mode-menu", "Highlight Modes"],
+      ["split-screen-mode-menu", "Neighbor Clips"],
+      ["split-screen-mode-menu", "Playheads"],
+      ["split-screen-mode-menu", "Selected Album"],
+      ["split-screen-mode-menu", "Selected Clips"],
+      ["split-screen-mode-menu", "Selected LUTs"],
+      ["split-screen-mode-menu", "Selected Still Grades"],
+      ["split-screen-mode-menu", "Selected Still Images"],
+      ["split-screen-mode-menu", "Version", "✓"],
+      ["split-screen-mode-menu", "Versions and Original"]
+    ]},
+
+    /* Color → Tracker самбарын ⌄ — мөрдөх арга (3 мөр, 2026-09-26) */
+    "tracker-method-menu": { label: "Tracker Method Menu", verified: true, items: [
+      ["cloud-tracker", "Cloud Tracker", "✓"],
+      ["point-tracker", "Point Tracker"],
+      ["intellitrack", "AI IntelliTrack"]
+    ]},
+
+    /* Color → Tracker самбарын … (FX горимд, 2026-09-26) */
+    "tracker-options-menu": { label: "Tracker Options Menu", verified: true, items: [
+      ["reset-track-data-on-active-window", "Reset Track Data on Active Window"],
+      ["clear-selected-track-data", "Clear Selected Track Data"],
+      ["delete-keyframe", "Delete Keyframe"],
+      ["clear-all-tracking-points", "Clear All Tracking Points"],
+      "-",
+      ["show-track", "Show Track"],
+      "-",
+      ["copy-track-data-paste-track-data", "Copy Track Data"],
+      ["copy-track-data-paste-track-data", "Paste Track Data"],
+      "-",
+      ["classic-stabilizer", "Classic Stabilizer", "", "", "none"],
+      ["use-gpu-acceleration-tracker", "Use GPU Acceleration", "✓", "", "none"]
+    ]},
+
+    /* Color → Keyframes самбарын All ⌄ (3 мөр) */
+    "keyframes-filter-color": { label: "Keyframes Filter (Color)", verified: true, items: [
+      ["keyframes-filter-color", "All", "✓"],
+      ["keyframes-filter-color", "Color"],
+      ["sizing-keyframes", "Sizing"]
     ]}
   };
 
@@ -16666,6 +17334,16 @@ Viewer-ийн толгойн баруун талын **…** жагсаалт �
     "full-extent-zoom": svg(`<rect x="2.5" y="4.5" width="19" height="12" ${sw(1.4)}/><path d="M5.5 8.5h13M5.5 12.5h8" ${sw(1.2)}/><circle cx="20" cy="15.5" r="3.6" fill="${DK}" ${sw(1.6)}/><path d="M22.6 18.1l3 3" ${sw(2)} stroke-linecap="round"/>`),
     "detail-zoom": svg(`<path d="M3 6h14M3 10h10M3 14h8M3 18h8" ${sw(1.3)}/><circle cx="18.5" cy="14.5" r="4" ${sw(1.6)}/><path d="M21.4 17.4l3.2 3.2" ${sw(2)} stroke-linecap="round"/>`),
     "custom-zoom": svg(`<path d="M3 7h22M5 7v4M9 7v2.5M13 7v4M17 7v2.5M21 7v4" ${sw(1.2)}/><circle cx="18.5" cy="15.5" r="3.6" fill="${DK}" ${sw(1.6)}/><path d="M21.1 18.1l3 3" ${sw(2)} stroke-linecap="round"/>`),
+    /* ═══ Color viewer — wipe-ийн хэлбэр (2026-09-26-ны зургаас) ═══ */
+    "horizontal-wipe": svg(`<path d="M14 4v16" ${sw(1.8)}/><path d="M10.5 8.5 7 12l3.5 3.5z" fill="currentColor"/><path d="M17.5 8.5 21 12l-3.5 3.5z" fill="currentColor"/>`),
+    "vertical-wipe": svg(`<path d="M5 12h18" ${sw(1.8)}/><path d="M10.5 9.5 14 5.5l3.5 4zM10.5 14.5 14 18.5l3.5-4z" fill="currentColor"/>`),
+    "diagonal-wipe": svg(`<path d="M7 5.5h7l7 13h-7z" fill="currentColor" opacity=".55"/><path d="M6 4.5l16 15" ${sw(1.8)}/>`),
+    "mix-wipe": svg(`<path d="M4 6l9 6-9 6zM24 6l-9 6 9 6z" fill="currentColor"/>`),
+    "alpha-wipe": svg(`<rect x="5" y="6" width="9" height="12" fill="currentColor"/>` + [0, 1, 2].map((r) => [0, 1, 2].map((c) => ((r + c) % 2 ? "" : `<rect x="${14 + c * 3}" y="${6 + r * 4}" width="3" height="4" fill="currentColor" opacity=".7"/>`)).join("")).join("")),
+    "ab-wipe": svg(`<text x="14" y="16" text-anchor="middle" font-size="10" font-family="Inter,Arial,sans-serif" fill="currentColor">A/B</text>`),
+    "box-wipe": svg(`<rect x="4" y="6" width="20" height="12" rx="1" ${sw(1.4)}/><rect x="12" y="9" width="8" height="5" fill="currentColor"/><rect x="6" y="9" width="5" height="6" fill="currentColor" opacity=".45"/>`),
+    "venetian-blind-wipe": svg(`<rect x="4" y="5" width="20" height="14" ${sw(1.2)}/><path d="M4 8.5h20M4 12h20M4 15.5h20" ${sw(1.2)}/>`),
+    "checker-board-wipe": svg(`<rect x="4" y="5" width="20" height="14" ${sw(1.2)}/>` + [0, 1, 2].map((r) => [0, 1, 2, 3, 4].map((c) => ((r + c) % 2 ? `<rect x="${4 + c * 4}" y="${5 + r * 4.67}" width="4" height="4.67" fill="currentColor" opacity=".6"/>` : "")).join("")).join("")),
     "jog-wheel": svg(`<path d="M7 8.5 3.5 12 7 15.5M21 8.5l3.5 3.5-3.5 3.5" ${sw(1.5)} stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="12" r="3.2" fill="currentColor"/>`)
   };
 

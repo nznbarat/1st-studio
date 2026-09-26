@@ -1,0 +1,42 @@
+/* ── Ангилал 31 · Color хуудас — viewer-ийн харьцуулах (wipe) мөр, Tracker, Keyframes ──
+   Resolve Studio 21-ийн Color хуудас, 2026-09-26-ны дэлгэцийн зургууд:
+   viewer-ийн хоёр дахь мөрийн wipe хэлбэрийн товчнууд (tooltip: Horizontal, Vertical, Diagonal, Mix, Alpha,
+   Box, Venetian Blind, Checker Board; A/B-ийн tooltip гараагүй),
+   Tracker - Window самбар (Pan, Tilt, Zoom, Rotate, 3D, Clip / Frame, Interactive Mode, Cloud Tracker),
+   Keyframes самбар (Master, Corrector 1–4, Sizing). */
+
+RM.dict.add({ id:"color-viewer-tracker", label:"Color — viewer-ийн wipe, Tracker, Keyframes", icon:"◐", page:"color",
+note:"Color хуудасны viewer-ийн дээд хоёр мөр (харьцуулах wipe-ийн хэлбэр), Tracker самбарын Window горим, Keyframes самбар. Tooltip-ийг зурагт гарснаар; гараагүйг тайлбарт нь тэмдэглэсэн.", terms:[
+["Image Wipe","Зургийн харьцуулалт (wipe)","Viewer-ийн дээд мөрийн зүүн талын ◧ товч (tooltip зурагт гараагүй; дарахад wipe-ийн хэлбэрийн мөр гарсан тул Image Wipe гэж баталгаажсан). Одоогийн кадрыг Gallery-ийн зурагтай (still) эсвэл өөр клиптэй нэг дэлгэцэнд хагаслан харьцуулна. Асаахад доор нь wipe-ийн хэлбэрийн мөр гарна.","Ctrl+W","Color → viewer-ийн дээд мөр ◧"],
+["Wipe Style Toolbar (Color Viewer)","Wipe-ийн хэлбэрийн мөр","Image Wipe асаалттай үед viewer-ийн хоёр дахь мөрөнд гарах 9 товч: Horizontal, Vertical, Diagonal, Mix, Alpha, A/B, Box, Venetian Blind, Checker Board. A/B-ээс бусад нь tooltip-оор баталгаажсан; A/B зурагт саарал.","","Color → viewer-ийн 2 дахь мөр"],
+["Horizontal (Wipe)","Хэвтээ харьцуулалт","Wipe-ийн шугам босоо байрлаж, зүүн тал нь нэг зураг, баруун тал нь нөгөө зураг (◂|▸ дүрс). Шугамыг viewer дээр чирж зөөнө.","","Wipe-ийн мөр, 1 дэх товч"],
+["Vertical (Wipe)","Босоо харьцуулалт","Wipe-ийн шугам хэвтээ — дээд тал нэг зураг, доод тал нөгөө зураг.","","Wipe-ийн мөр, 2 дахь товч"],
+["Diagonal (Wipe)","Ташуу харьцуулалт","Wipe-ийн шугам ташуу — кадрыг диагоналаар хоёр хувааж харьцуулна.","","Wipe-ийн мөр, 3 дахь товч"],
+["Mix (Wipe)","Холих харьцуулалт","Хоёр зургийг шугамаар биш, бүх кадраар нь тунгалгаар холино (▶◀ дүрс) — өнгө, гэрлийн өөрчлөлтийг бүхэлд нь харах.","","Wipe-ийн мөр, 4 дэх товч"],
+["Alpha (Wipe)","Альфа харьцуулалт","Одоогийн клипийн тунгалаг (alpha) хэсгээр нөгөө зургийг харуулна — түлхүүр, маскийн ирмэг шалгах.","","Wipe-ийн мөр, 5 дахь товч"],
+["Box (Wipe)","Хайрцган харьцуулалт","Кадрын голд тэгш өнцөгт хайрцаг — дотор нь нэг зураг, гадна нь нөгөө зураг. Нүүр, гол объектыг хэсэгчлэн харьцуулахад.","","Wipe-ийн мөр, 7 дахь товч"],
+["Venetian Blind (Wipe)","Хөшигний харьцуулалт","Кадрыг олон хэвтээ туузаар ээлжлэн хувааж, нэг тууз нэг зураг, дараагийнх нь нөгөө зураг — хөшигний хавтас мэт.","","Wipe-ийн мөр, 8 дахь товч"],
+["Checker Board (Wipe)","Шатрын нүдэн харьцуулалт","Кадрыг шатрын хөлөг шиг нүднүүдэд хувааж, нүд ээлжлэн хоёр зургийг харуулна — бүх кадраар жигд харьцуулах.","","Wipe-ийн мөр, 9 дэх товч"],
+["Tracker Mode Buttons","Tracker-ийн горимын товч","Tracker самбарын толгойн баруун талын гурван дүрс (tooltip-оор баталгаажсан): ⊕ Window, шоо — Stabilizer, fx — FX. Сонгосон горим самбарын нэрэнд гарна: «Tracker - Window», «Tracker - FX».","","Color → Tracker самбарын толгой"],
+["Clear All Tracking Points","Бүх мөрдөлтийн цэгийг арилгах","Tracker самбарын толгойн ⟲ товч (tooltip: Clear All Tracking Points). Мөрдөлтийн бүх цэг, өгөгдлийг устгаж, дахин мөрдөх боломжтой болгоно.","","Color → Tracker самбарын толгой ⟲"],
+["Tracker Method Menu","Мөрдөх аргын цэс","Tracker самбарын баруун доод ⌄ жагсаалт — 3 мөр: Cloud Tracker, Point Tracker, AI IntelliTrack. Window горимд анхдагч нь Cloud Tracker, FX горимд Point Tracker (зурагт).","","Color → Tracker самбарын доод мөр ⌄"],
+["Tracker Transport","Мөрдөлтийн товчнууд","Tracker самбарын зүүн дээд 6 товч: |◀ ◀ ‖ ⇄ ▶ ▶| — нэг кадар хойш, хойш мөрдөх, зогсоох, хоёр тийш мөрдөх, урагш мөрдөх, нэг кадар урагш. Tooltip зурагт гараагүй.","","Color → Tracker самбар"],
+["Pan / Tilt / Zoom / Rotate / 3D (Tracker)","Мөрдөх шинж","Tracker-ийн чагтууд — юуг мөрдөхийг сонгоно: Pan (хэвтээ, ногоон), Tilt (босоо, хөх), Zoom (хэмжээ, ягаан), Rotate (эргэлт, шар), 3D (перспектив, цэнхэр). Зурагт бүгд чагттай. Графикийн муруй ижил өнгөтэй.","","Color → Tracker самбар"],
+["Clip / Frame (Tracker)","Clip / Frame горим","Tracker-ийн баруун дээд хоёр товч. Clip (зурагт сонгогдсон) — цонхыг зөөвөл бүх клипийн турш хамт шилжинэ; Frame — зөвхөн тухайн кадарт өөрчилж, гараар кадар кадраар засна.","","Color → Tracker самбар"],
+["Tracker Graph","Мөрдөлтийн график","Tracker самбарын дунд хэсэг — клипийн timecode-той шугам, заагч, мөрдөлтийн муруй. Доод талд одоогийн кадрын Pan, Tilt, Zoom, Rotate утга (зурагт 0.00 ×4).","","Color → Tracker самбар"],
+["Interactive Mode Tools","Interactive Mode-ийн хэрэгсэл","Interactive Mode чагтын хажуугийн гурван дүрс (tooltip-оор баталгаажсан): Insert — хүрээнд мөрдөх цэг нэмэх, Set Point — цэгийг гараар тавих, Delete — цэг устгах.","","Color → Tracker самбарын доод мөр"],
+["Split Screen Mode Menu","Split Screen-ийн горимын цэс","Viewer-ийн ▦ (Split Screen) асаалттай үед хоёр дахь мөрөнд гарах «Version ⌄» жагсаалт — 11 мөр: Current Group, Highlight Modes, Neighbor Clips, Playheads, Selected Album, Selected Clips, Selected LUTs, Selected Still Grades, Selected Still Images, Version (зурагт сонгогдсон), Versions and Original.","","Color → viewer-ийн 2 дахь мөр (Split Screen)"],
+["Highlight Mode Buttons","Highlight-ийн горимын товч","Viewer-ийн ◐ (Highlight) асаалттай үед хоёр дахь мөрөнд гарах 3 товч: дүүрэн дөрвөлжин, хагас дөрвөлжин, A/B. Tooltip зурагт гараагүй — Resolve-ийн гарын авлагаар Highlight, Highlight B/W, Highlight Difference.","","Color → viewer-ийн 2 дахь мөр (Highlight)"],
+["Keyframes Panel (Color)","Keyframes самбар (Color)","Color хуудасны баруун доод Keyframes самбар: timecode, All ⌄ шүүлтүүр, томруулах гүйлгэгч; мөр бүр — Master, Corrector 1–4 (нод бүр), Sizing. Мөр бүрийн эхэнд ● , 🔒, ◆ дүрс ба › дэлгэх сум.","","Color → палитрын мөрийн баруун тал → Keyframes"],
+["Master (Keyframes)","Master мөр","Keyframes самбарын хамгийн дээд мөр — клипийн бүх түлхүүр кадрыг нэгтгэж харуулна; эндээс зөөвөл бүх нодын түлхүүр кадар хамт зөөгдөнө (Resolve-ийн гарын авлагаар).","","Keyframes самбар (Color)"],
+["Corrector (Keyframes)","Corrector мөр","Keyframes самбарт нод бүрийн мөр (зурагт Corrector 1–4 — клипт 4 нод). › дэлгэхэд тухайн нодын параметр бүрийн мөр гарна.","","Keyframes самбар (Color)"],
+["Sizing (Keyframes)","Sizing мөр","Keyframes самбарын Sizing мөр — Sizing палитрын (Input/Output/Node Sizing) хөдөлгөөний түлхүүр кадар.","","Keyframes самбар (Color)"],
+["Keyframes Filter (Color)","Keyframes шүүлтүүр","Keyframes самбарын баруун дээд «All ⌄» — 3 мөр: All (бүгд, зурагт сонгогдсон), Color (зөвхөн өнгөний нодууд), Sizing (зөвхөн Sizing).","","Keyframes самбар (Color)"],
+["Tracker Options Menu","Tracker-ийн … цэс","Tracker самбарын толгойн … жагсаалт: Reset Track Data on Active Window, Clear Selected Track Data, Delete Keyframe, Clear All Tracking Points; Show Track; Copy Track Data, Paste Track Data; Classic Stabilizer, Use GPU Acceleration (хоёулаа саарал, сүүлийнх нь чагттай).","","Color → Tracker самбар …"],
+["Reset Track Data on Active Window","Идэвхтэй цонхны мөрдөлтийг буцаах","Сонгосон (идэвхтэй) Power Window-ийн мөрдөлтийн өгөгдлийг л арилгаж, бусад цонхных хэвээр үлдэнэ.","","Tracker-ийн … цэс"],
+["Clear Selected Track Data","Сонгосон мөрдөлтийг арилгах","Графикт сонгосон хэсгийн (кадрын мужийн) мөрдөлтийн өгөгдлийг арилгана — алдаатай хэсгийг дахин мөрдөхөд.","","Tracker-ийн … цэс"],
+["Show Track","Мөрдөлтийн замыг харуулах","Viewer дээр мөрдөлтийн цэгүүдийн замыг (траектори) харуулна — мөрдөлт хаана алдагдсаныг нүдээр шалгах.","","Tracker-ийн … цэс"],
+["Copy Track Data / Paste Track Data","Мөрдөлтийг хуулах / буулгах","Нэг нодын мөрдөлтийн өгөгдлийг хуулж, өөр нод эсвэл цонхонд буулгана — нэг объектыг олон засвар дагуулахад дахин мөрдөхгүй.","","Tracker-ийн … цэс"],
+["Classic Stabilizer","Хуучин тогтворжуулагч","Resolve-ийн өмнөх хувилбарын тогтворжуулах алгоритм. Зурагт саарал — Stabilizer горимд л идэвхждэг байх магадлалтай.","","Tracker-ийн … цэс"],
+["Use GPU Acceleration (Tracker)","GPU-гээр хурдасгах","Мөрдөлтийн тооцоонд видео картыг ашиглана. Зурагт чагттай, саарал.","","Tracker-ийн … цэс"]
+]});

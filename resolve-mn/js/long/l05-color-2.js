@@ -497,8 +497,8 @@ Tracker самбарын **Window** горим нь Power Window-ийг хөдө
 
 ## Хэрэглэх алхам
 1. Цонх зурна ([[power-window]]).
-2. Tracker самбар → горим **Window** (унадаг цэс: Window / Stabilizer / FX).
-3. Мөрдөх шинж: **Pan, Tilt, Zoom, Rotate, Perspective 3D** чагт. Ердийн: Pan, Tilt, Zoom асаалттай.
+2. Tracker самбар → толгойн баруун талын дүрсээр горим сонгоно: ⊕ **Window**, шоо — **Stabilizer**, fx — **FX** (Resolve 21-д самбарын нэр «Tracker - Window» болно). [[tracker-mode-buttons]].
+3. Мөрдөх шинж: **Pan, Tilt, Zoom, Rotate, 3D** чагт (таны Resolve 21-ийн зурагт бүгд чагттай). [[pan-tilt-zoom-rotate-3d-tracker]].
 4. **Track Forward** (▶) — заагчаас эхлэн кадар бүрд мөрдөнө. Track Reverse — ухраан. Заагчийг клипийн эхлэлд аваачаад эхлэх нь зүйтэй.
 5. Мөрдөлтийн график самбарт харагдана (X, Y, Zoom).
 6. Цонх зөрсөн кадарт **Interactive Mode** асааж, мөрдөх цэгүүдийг гараар зааж (объект дээр), дахин мөрдөнө.

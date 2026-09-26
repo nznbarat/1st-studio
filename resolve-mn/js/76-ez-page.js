@@ -87,38 +87,26 @@
 
   function build() {
     const S = G.build();
-    const root = document.getElementById("fz");
-    root.appendChild(el("nav", { class: "fz-nav", "aria-label": "Бүлгүүд" }, [
-      el("a", { class: "brand", href: "#top" }, [el("b", { text: "Edit" }), el("span", { text: " хэрэгслийн мөр" })]),
-      el("div", { class: "chips" }, [el("a", { href: "#suuri", text: "Нөлөө" })].concat(
-        E.groups.map((g) => el("a", { href: "#g-" + g.id, text: g.title })), [el("a", { href: "#jishee", text: "Жишээ" })])),
-      el("div", { class: "out" }, [el("a", { href: "index.html", text: "Толь" }), el("a", { href: "interface.html#edit", text: "Загвар" }), el("a", { href: "fusion-zaavar.html", text: "Fusion" })])
-    ]));
-    root.appendChild(el("header", { class: "hero", id: "top" }, [
-      el("p", { class: "eyebrow", text: "DaVinci Resolve Studio 21 · Edit хуудас" }),
-      el("h1", { text: "Edit хэрэгслийн мөр" }),
-      el("p", { class: "lead", html: fmt("Timeline-ийн хэрэгслийн мөрийн **товч бүр**, viewer дээрх **удирдлагын горим** юу хийдэг, бичлэгт **ямар нөлөө** үзүүлдэг вэ. Карт бүрт хөтөч дээр шууд туршдаг жишээ бий — клип зөөж, тайрч, шигтгэж, **Өмнө / Дараа**-аар харьцуулна.") }),
-      buildToolbar()
-    ]));
-    root.appendChild(buildBasics());
-    E.groups.forEach((g, gi) => {
-      const sec = el("section", { class: "grp", id: "g-" + g.id }, [
-        el("div", { class: "grp-h" }, [
-          el("p", { class: "eyebrow", text: "Бүлэг " + (gi + 1) + " / " + E.groups.length + " · " + g.en }),
-          el("h2", { text: g.title }),
-          el("p", { class: "lead", html: fmt(g.intro) })
-        ])
-      ]);
-      E.tools.filter((t) => t.group === g.id).forEach((t) => sec.appendChild(G.ui.buildTool(t, S, CFG)));
-      root.appendChild(sec);
+    G.ui.buildLessonsPage({
+      root: document.getElementById("fz"),
+      brand: [el("b", { text: "Edit" }), el("span", { text: " хэрэгслийн мөр" })],
+      navOut: [el("a", { href: "index.html", text: "Толь" }), el("a", { href: "interface.html#edit", text: "Загвар" }), el("a", { href: "fusion-zaavar.html", text: "Fusion" })],
+      hero: el("header", { class: "hero", id: "top" }, [
+        el("p", { class: "eyebrow", text: "DaVinci Resolve Studio 21 · Edit хуудас" }),
+        el("h1", { text: "Edit хэрэгслийн мөр" }),
+        el("p", { class: "lead", html: fmt("Timeline-ийн хэрэгслийн мөрийн **товч бүр**, viewer дээрх **удирдлагын горим** — хичээл бүр тусдаа хуудас: юу хийдэг, бичлэгт **ямар нөлөө** үзүүлдэг вэ. Хичээл бүрт хөтөч дээр шууд туршдаг жишээ бий — клип зөөж, тайрч, шигтгэж, **Өмнө / Дараа**-аар харьцуулна.") }),
+        buildToolbar()
+      ]),
+      basics: buildBasics(),
+      groups: E.groups, tools: E.tools, impacts: E.impacts,
+      buildTool: (t) => G.ui.buildTool(t, S, CFG),
+      recipes: buildRecipes(), recipesTitle: "Хамтдаа хэрэглэх 4 жишээ",
+      baseTitle: "Edit хэрэгслийн мөр",
+      footer: el("footer", { class: "fz-foot" }, [
+        el("p", { html: fmt("**Эх сурвалж.** Товчны дараалал, tooltip, цэсний мөр — таны Resolve Studio 21-ийн 2026-09-26-ны дэлгэцийн зургаас. Үйлдлийн тайлбар — Blackmagic-ийн гарын авлага, Resolve-ийн түгээмэл ажиллагаанаас; баталгаажаагүйг картанд тэмдэглэсэн.") }),
+        el("p", { html: fmt("**Жишээнүүд** хөтөч дээр ойролцоогоор дуурайлгасан — Resolve-ийн бодит тооцоолол биш. Кадрыг кодоор зурсан; A · B · C клип нь жишээний нэр.") })
+      ])
     });
-    root.appendChild(buildRecipes());
-    root.appendChild(el("footer", { class: "fz-foot" }, [
-      el("p", { html: fmt("**Эх сурвалж.** Товчны дараалал, tooltip, цэсний мөр — таны Resolve Studio 21-ийн 2026-09-26-ны дэлгэцийн зургаас. Үйлдлийн тайлбар — Blackmagic-ийн гарын авлага, Resolve-ийн түгээмэл ажиллагаанаас; баталгаажаагүйг картанд тэмдэглэсэн.") }),
-      el("p", { html: fmt("**Жишээнүүд** хөтөч дээр ойролцоогоор дуурайлгасан — Resolve-ийн бодит тооцоолол биш. Кадрыг кодоор зурсан; A · B · C клип нь жишээний нэр.") })
-    ]));
-    G.ui.watchNav("#suuri, .grp, #jishee");
-    G.ui.jumpToHash();
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);

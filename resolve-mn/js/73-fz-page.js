@@ -83,42 +83,26 @@
 
   function build() {
     const S = G.build();
-    const root = document.getElementById("fz");
-    const nav = el("nav", { class: "fz-nav", "aria-label": "Бүлгүүд" }, [
-      el("a", { class: "brand", href: "#top" }, [el("b", { text: "Fusion" }), el("span", { text: " хэрэгслийн мөр" })]),
-      el("div", { class: "chips" }, [el("a", { href: "#nod", text: "Нод" })].concat(
-        G.groups.map((g) => el("a", { href: "#g-" + g.id, text: g.title })), [el("a", { href: "#jishee", text: "Жишээ" })])),
-      el("div", { class: "out" }, [el("a", { href: "index.html", text: "Толь" }), el("a", { href: "interface.html#fusion", text: "Загвар" })])
-    ]);
-    const hero = el("header", { class: "hero", id: "top" }, [
-      el("p", { class: "eyebrow", text: "DaVinci Resolve Studio 21 · Fusion хуудас" }),
-      el("h1", { text: "Fusion хэрэгслийн мөр" }),
-      el("p", { class: "lead", html: fmt("Viewer ба Nodes самбарын хоорондох **28 товч** тус бүр юу хийдэг, бичлэгт ямар нөлөө үзүүлдэг, Resolve дээр алхам алхмаар хэрхэн хэрэглэх вэ. Карт бүрт хөтөч дээр шууд туршдаг жишээ бий — слайдер хөдөлгөж, **Өмнө / Дараа**-аар харьцуулна.") }),
-      buildToolbar()
-    ]);
-    root.appendChild(nav);
-    root.appendChild(hero);
-    root.appendChild(buildBasics());
-    G.groups.forEach((g, gi) => {
-      const sec = el("section", { class: "grp", id: "g-" + g.id }, [
-        el("div", { class: "grp-h" }, [
-          el("p", { class: "eyebrow", text: "Бүлэг " + (gi + 1) + " / 6 · " + g.en }),
-          el("h2", { text: g.title }),
-          el("p", { class: "lead", html: fmt(g.intro) })
-        ])
-      ]);
-      G.tools.filter((t) => t.group === g.id).forEach((t) => sec.appendChild(buildTool(t, S)));
-      root.appendChild(sec);
+    G.ui.buildLessonsPage({
+      root: document.getElementById("fz"),
+      brand: [el("b", { text: "Fusion" }), el("span", { text: " хэрэгслийн мөр" })],
+      navOut: [el("a", { href: "index.html", text: "Толь" }), el("a", { href: "interface.html#fusion", text: "Загвар" })],
+      hero: el("header", { class: "hero", id: "top" }, [
+        el("p", { class: "eyebrow", text: "DaVinci Resolve Studio 21 · Fusion хуудас" }),
+        el("h1", { text: "Fusion хэрэгслийн мөр" }),
+        el("p", { class: "lead", html: fmt("Viewer ба Nodes самбарын хоорондох **28 товч** — хичээл бүр тусдаа хуудас: юу хийдэг, бичлэгт ямар нөлөө үзүүлдэг, Resolve дээр алхам алхмаар хэрхэн хэрэглэх вэ. Хичээл бүрт хөтөч дээр шууд туршдаг жишээ бий — слайдер хөдөлгөж, **Өмнө / Дараа**-аар харьцуулна.") }),
+        buildToolbar()
+      ]),
+      basics: buildBasics(),
+      groups: G.groups, tools: G.tools,
+      buildTool: (t) => buildTool(t, S),
+      recipes: buildRecipes(), recipesTitle: "Хамтдаа хэрэглэх 4 жишээ",
+      baseTitle: "Fusion хэрэгслийн мөр",
+      footer: el("footer", { class: "fz-foot" }, [
+        el("p", { html: fmt("**Эх сурвалж.** Товчны дараалал, tooltip, доод мөрийн тайлбар — таны Resolve Studio 21-ийн 2026-09-25-ны дэлгэцийн зургаас, 28 товч бүгд. Тохиргооны нэрс — Blackmagic-ийн Fusion гарын авлагаас; Resolve 21-д зарим нь өөр байж болно, баталгаажаагүйг картанд тэмдэглэсэн.") }),
+        el("p", { html: fmt("**Жишээнүүд** хөтөчийн шүүлтүүрээр ойролцоогоор дуурайлгасан — Fusion-ий бодит тооцоолол биш. Жишээний кадрыг кодоор зурсан.") })
+      ])
     });
-    root.appendChild(buildRecipes());
-    root.appendChild(el("footer", { class: "fz-foot" }, [
-      el("p", { html: fmt("**Эх сурвалж.** Товчны дараалал, tooltip, доод мөрийн тайлбар — таны Resolve Studio 21-ийн 2026-09-25-ны дэлгэцийн зургаас, 28 товч бүгд. Тохиргооны нэрс — Blackmagic-ийн Fusion гарын авлагаас; Resolve 21-д зарим нь өөр байж болно, баталгаажаагүйг картанд тэмдэглэсэн.") }),
-      el("p", { html: fmt("**Жишээнүүд** хөтөчийн шүүлтүүрээр ойролцоогоор дуурайлгасан — Fusion-ий бодит тооцоолол биш. Жишээний кадрыг кодоор зурсан.") })
-    ]));
-
-    /* одоо уншиж буй бүлгийг цэсэнд тодруулах */
-    G.ui.watchNav("#nod, .grp, #jishee");
-    G.ui.jumpToHash();
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
