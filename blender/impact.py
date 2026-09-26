@@ -53,15 +53,16 @@ CFG = {
     "dist0": 1400.0,      # эхлэх зай, метр
     # Хэдэн метрт зогсох. Солирын толгой камерын өмнө 15 м хүртэл сунах тул
     # үүнээс их байх ёстой — эс бөгөөс чулуу их бие рүү нэвт орно.
-    "stop": 18.0,
+    "stop": 23.0,
     "roll": 11.0,         # бүх хугацаанд эргэх өнцөг (градус) — чулуу эргэлддэг
     # Бидний дагаж яваа чулуу: камерын өмнө зүүн доор. Байрлалыг өнцгөөр
     # бодсон — 35 мм дээр кадрын хагас өнцөг хэвтээ 27.2°, босоо 16.1°,
     # диагональ 30.5°. Чулуу тэнхлэгээс 27.0°-д, өнцгийн радиус 18.9° тул
-    # 8.0°-46° мужийг эзэлж ЗҮҮН ДООД БУЛАНД тусна. Өмнө нь 4.6 м-т байсан
-    # нь 47.6° радиустай болж БҮХ кадрыг хаадаг байв.
+    # зөвхөн ЗҮҮН ДООД булангаар тусна: оройн ирмэг нь ndc_y 0.15 орчимд.
+    # Өмнө нь 4.6 м-т байхад 47.6° радиустай болж БҮХ кадрыг хаадаг,
+    # 11 м-т байхад ndc_y 0.32 хүрч сүүлийн 5 секундэд хөлгийг халхалдаг байв.
     "rock_r": 4.0,
-    "rock_at": (-2.7, -4.9, -11.0),
+    "rock_at": (-5.5, -7.3, -17.9),
 
     # Кадрын байрлал: (эхлэлд, төгсгөлд) ndc.
     # Эхэнд хөлөг төвөөс баруун-доош — од нь зүүн дээд буланд байгаа тул
@@ -531,7 +532,7 @@ def build_field(P0, Pe, fwd):
             pos = c + (e1 * math.cos(a) + e2 * math.sin(a)) * m
             r = rng.uniform(10.0, 60.0)
         out.append(build_rock("Rock_%02d" % i, pos, r, CFG["seed"] + 200 + i,
-                              rock, 2 if r < 20 else 3, 3))
+                              rock, 3 if r < 26 else 4, 3))
     return rock, out
 
 
@@ -678,9 +679,9 @@ def setup_glare():
         st.inputs["Type"].default_value = "Streaks"
         st.inputs["Quality"].default_value = "High"
         st.inputs["Threshold"].default_value = 6.0      # зөвхөн од цацарна
-        st.inputs["Strength"].default_value = 0.80
+        st.inputs["Strength"].default_value = 0.50
         st.inputs["Streaks"].default_value = 4
-        st.inputs["Fade"].default_value = 0.92
+        st.inputs["Fade"].default_value = 0.94
         st.inputs["Color Modulation"].default_value = 0.30
 
         ng.links.new(rl.outputs["Image"], fog.inputs["Image"])
