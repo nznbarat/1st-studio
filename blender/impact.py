@@ -2,7 +2,8 @@
 
 Камер нь СОЛИР дээр суусан (POV). Хийн аварга гаригийн солирын
 бүслүүр дотор алсаас хөлгийг олж хараад, тогтмол хурдаар АЖУУХАН
-ойртоно. Мөргөлтийг ХАРУУЛАХГҮЙ — 5.3 секундын өмнө тасална.
+ойртоно. Хүрэхээс 3 фреймийн (1/8 сек) өмнө тасална — мөргөлт
+"яалтгүй" мэдрэгдэнэ, гэхдээ дэлбэрэлт харагдахгүй.
 Хичкокийн "ширээн доорх бөмбөг": үзэгч юу болохыг мэдэж байгаа тул
 айдас дэлбэрэлтээс биш, хүлээлтээс үүснэ.
 
@@ -54,13 +55,17 @@ CFG = {
     #   72° дээр (өмнөх утга) ам нь нарийн зураас болж гялбаа алга болдог;
     #   44° дээр гялбаа сайхан ч хөлөг богиноссон мэт болно.
     "from": (-0.55, 0.76, -0.34),
-    "dist0": 1600.0,      # эхлэх зай, метр — хөлөг кадрын 14.6%
-    # ТАСЛАХ зай. Мөргөлтийг харуулахгүй: 260 м дээр хөлөг кадрын 89.7%,
-    # тэр хурдаараа үргэлжилбэл 5.3 секундын дараа мөргөнө.
-    "end": 260.0,
-    # Жинхэнэ мөргөлтийн зай — зөвхөн "мөргөлт хүртэл хэдэн сек" тооцоонд.
-    # Солирын толгой камерын өмнө 15 м хүртэл сунадаг тул 23 м.
-    "stop": 23.0,
+    # Солирын толгой хөлгийн их биед ХҮРЭХ мөч дэх камер->мөргөх цэгийн зай.
+    # BVH-ээр бодит mesh-ийг хэмжив: толгой кадрын зүүн доод буланд тул
+    # мөргөх цэгт биш, доод баруун хажууд (z = -8.1 м) хүрнэ.
+    "contact": 19.8,
+    # ТАСЛАХ зай = хүрэхээс 3 фреймийн (1/8 сек) өмнө: 19.8 + 3·44.7/24.
+    # Чулуу их биеэс ~4.6 м — диаметрийнхээ хагаст, нүдэнд хүрсэн мэт.
+    # Мөргөлт "яалтгүй" мэдрэгдэнэ, гэхдээ дэлбэрэлт харагдахгүй.
+    "end": 25.4,
+    # Эхлэх зай = таслах + 44.7 м/с · 30 сек. Хурдыг баталсан хувилбарынхаар
+    # (1600 -> 260 м) үлдээж, эхний 5.1 сек-ийг хасаад төгсгөлд 5.4 сек нэмэв.
+    "dist0": 1366.0,
     "roll": 11.0,         # бүх хугацаанд эргэх өнцөг (градус) — чулуу эргэлддэг
     # Бидний дагаж яваа чулуу: камерын өмнө зүүн доор. Байрлалыг өнцгөөр
     # бодсон — 35 мм дээр кадрын хагас өнцөг хэвтээ 27.2°, босоо 16.1°,
@@ -292,6 +297,94 @@ def disc(name, x, r, material, n=40):
 # ══════════════════════════════════════════════════════════════════════
 #  Хөлөг
 # ══════════════════════════════════════════════════════════════════════
+def add_panels(m, size=(4.2, 2.1, 2.1), seam=0.035, depth=0.05):
+    """Их биеийн хавтан: гурван тэнхлэгийн сараалжин оёдол + хавтан бүрийн
+    өнгө/барзгаршлын ялгаа. Объектын координатаар (метр) тул проекцгүй —
+    хажуу, дээд, доод бүх гадаргуу дээр оёдол гарна. Сүүлийн секундэд
+    камер их биеэс 25 м-т ирэхэд энэ оёдол л гадаргууг "жинхэнэ төмөр"
+    болгодог; үгүй бол хар хана дээр цонх л харагдана."""
+    nt = m.node_tree
+    b = nt.nodes["Principled BSDF"]
+    base = tuple(b.inputs["Base Color"].default_value)
+    rough = b.inputs["Roughness"].default_value
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(tc.outputs["Object"], sep.inputs["Vector"])
+
+    def mth(op, a, v=None):
+        n = nt.nodes.new("ShaderNodeMath")
+        n.operation = op
+        nt.links.new(a, n.inputs[0])
+        if v is not None:
+            n.inputs[1].default_value = v
+        return n.outputs[0]
+
+    seams = None
+    for ax, L in zip(("X", "Y", "Z"), size):
+        # 0 = хавтангийн төв, 0.5 = оёдол
+        d = mth("ABSOLUTE", mth("SUBTRACT", mth("FRACT", mth("DIVIDE", sep.outputs[ax], L)), 0.5))
+        mr = nt.nodes.new("ShaderNodeMapRange")
+        mr.inputs[1].default_value = 0.5 - seam
+        mr.inputs[2].default_value = 0.5
+        nt.links.new(d, mr.inputs[0])
+        seams = mr.outputs[0] if seams is None else _max(nt, seams, mr.outputs[0])
+    # хавтан бүрийн санамсаргүй утга: floor(coord / size)
+    mp = nt.nodes.new("ShaderNodeMapping")
+    mp.inputs["Scale"].default_value = tuple(1.0 / v for v in size)
+    nt.links.new(tc.outputs["Object"], mp.inputs["Vector"])
+    fl = nt.nodes.new("ShaderNodeVectorMath")
+    fl.operation = "FLOOR"
+    nt.links.new(mp.outputs["Vector"], fl.inputs[0])
+    wn = nt.nodes.new("ShaderNodeTexWhiteNoise")
+    wn.noise_dimensions = "3D"
+    nt.links.new(fl.outputs[0], wn.inputs["Vector"])
+    var = nt.nodes.new("ShaderNodeMapRange")
+    var.inputs[3].default_value = 0.78
+    var.inputs[4].default_value = 1.22
+    nt.links.new(wn.outputs["Value"], var.inputs[0])
+    # өнгө = суурь · ялгаа · (1 - 0.65·оёдол)
+    dark = nt.nodes.new("ShaderNodeMapRange")
+    dark.inputs[3].default_value = 1.0
+    dark.inputs[4].default_value = 0.35
+    nt.links.new(seams, dark.inputs[0])
+    k = nt.nodes.new("ShaderNodeMath")
+    k.operation = "MULTIPLY"
+    nt.links.new(var.outputs[0], k.inputs[0])
+    nt.links.new(dark.outputs[0], k.inputs[1])
+    col = nt.nodes.new("ShaderNodeMix")
+    col.data_type = "RGBA"
+    col.blend_type = "MULTIPLY"
+    col.inputs["Factor"].default_value = 1.0
+    col.inputs[6].default_value = base
+    ck = nt.nodes.new("ShaderNodeCombineXYZ")
+    for i in range(3):
+        nt.links.new(k.outputs[0], ck.inputs[i])
+    nt.links.new(ck.outputs[0], col.inputs[7])
+    nt.links.new(col.outputs[2], b.inputs["Base Color"])
+    # барзгаршил хавтан бүрээр ±0.12
+    rr = nt.nodes.new("ShaderNodeMapRange")
+    rr.inputs[3].default_value = max(0.05, rough - 0.12)
+    rr.inputs[4].default_value = min(1.0, rough + 0.12)
+    nt.links.new(wn.outputs["Value"], rr.inputs[0])
+    nt.links.new(rr.outputs[0], b.inputs["Roughness"])
+    # товгор: оёдол хонхор
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.55
+    bump.inputs["Distance"].default_value = depth
+    nt.links.new(seams, bump.inputs["Height"])
+    bump.invert = True
+    nt.links.new(bump.outputs["Normal"], b.inputs["Normal"])
+    return m
+
+
+def _max(nt, a, b):
+    n = nt.nodes.new("ShaderNodeMath")
+    n.operation = "MAXIMUM"
+    nt.links.new(a, n.inputs[0])
+    nt.links.new(b, n.inputs[1])
+    return n.outputs[0]
+
+
 def hull_wh(x):
     """Их биений тухайн x дээрх хагас өргөн, хагас өндөр (шугаман интерполяц)."""
     p = CFG["hull"]
@@ -316,6 +409,8 @@ def build_ship():
         # салаат цацраг нь хөлгөөс 70 м урт шаантаг гаргадаг байв.
         "core": mat("CORE", (0.0, 0.0, 0.0), 0.3, 0.0, (0.34, 0.62, 1.0), 18.0),
     }
+    add_panels(M["hull"])
+    add_panels(M["plate"], size=(2.6, 1.3, 1.3))
     root = bpy.data.objects.new("SHIP", None)
     bpy.context.collection.objects.link(root)
     parts = [loft("Hull", CFG["hull"], M["hull"], 16)]
@@ -410,6 +505,31 @@ def build_ship():
         parts.append(box("Win_%03d" % i, (x, y * 1.01, z),
                          (rng.uniform(1.6, 4.4), 0.5, rng.uniform(0.5, 1.1)),
                          M["win"]))
+
+    # Их биеийн гэрэлтүүлэгч — мөргөх орчмын баруун хажууд. Од урд талд тул
+    # бидний ойртох тал СҮҮДЭРТ: сүүлийн секундэд их бие хар хана болж,
+    # хар солир түүн дээр алга болдог байв. Дүүргэгч гэрлийг нэмбэл
+    # алсын силуэт алдагдана. Гэрэл зайны квадратаар сулардаг тул эдгээр
+    # 1000 м-т зөвхөн замын гэрэл шиг цэг, 25 м-т хавтанг гэрэлтүүлж,
+    # солирыг гэрэлтэй төмрийн өмнө ХАР СИЛУЭТ болгоно.
+    lamp = mat("LAMP", (0.0, 0.0, 0.0), 0.3, 0.0, (1.0, 0.86, 0.68), 40.0)
+    # Сүүлийнх нь солирын толгой хүрэх цэгийн (12.6, 10.8, -7.9) ЯГ АРД —
+    # ар гэрэл. Толгой камерт бэхлэгдсэн тул кадрт дээш "авчрах" боломжгүй
+    # (камертай хамт эргэнэ); харин цаанаас туссан гэрэл түүний ирмэгийг
+    # гэрэлтүүлж хар хавтангаас салгана.
+    for i, (x, z) in enumerate(((-6.0, -6.0), (8.0, 3.0), (22.0, -5.0), (36.0, 2.5),
+                                (13.0, -7.2))):
+        w, h = hull_wh(x)
+        y = w * (max(0.0, 1.0 - abs(z / h) ** 3.4)) ** (1.0 / 3.4)
+        ld = bpy.data.lights.new("HullLight_%d" % i, "POINT")
+        ld.energy = 1500.0
+        ld.shadow_soft_size = 0.25
+        ld.color = (1.0, 0.86, 0.68)
+        lo = bpy.data.objects.new("HullLight_%d" % i, ld)
+        bpy.context.collection.objects.link(lo)
+        lo.location = (x, y + 1.3, z)
+        parts.append(lo)
+        parts.append(box("HullLamp_%d" % i, (x, y + 0.35, z), (0.9, 0.5, 0.35), lamp))
 
     for p in parts:
         p.parent = root
@@ -1198,10 +1318,11 @@ def animate(cam, met, frames):
           % (frames, frames / 24.0, lens))
     print("   зай %.0f -> %.0f м, хурд %.1f м/с (%.0f км/ц) — ТОГТМОЛ"
           % (CFG["dist0"], CFG["end"], v, v * 3.6))
-    if CFG["end"] > CFG["stop"]:
+    if CFG["end"] > CFG["contact"]:
         R_end = CFG["end"]
-        print("   ТАСАЛНА: тэр хурдаараа мөргөлт хүртэл %.1f сек үлдэнэ (кадрын гадна)"
-              % ((R_end - CFG["stop"]) / v))
+        left = (R_end - CFG["contact"]) / v
+        print("   ТАСАЛНА: мөргөлт хүртэл %.3f сек (%.1f фрейм) үлдэнэ — кадрын гадна"
+              % (left, left * 24.0))
         print("   сүүлийн 3 сек-д хөлөг %.2f дахин томорно" % ((R_end + 3 * v) / R_end))
     print("   сек    зай м   хөлөг кадрын өргөний")
     for frac in (0.0, 0.25, 0.5, 0.7, 0.85, 0.93, 0.97, 1.0):
