@@ -8,6 +8,7 @@
  * Гаралт:      resolve-mn/resolve-toli.html    (толь)
  *              resolve-mn/resolve-dotor.html   (интерфейсийн загвар)
  *              resolve-mn/resolve-fusion-zaavar.html (Fusion хэрэгслийн заавар)
+ *              resolve-mn/resolve-edit-zaavar.html (Edit хэрэгслийн заавар)
  */
 import { readFileSync, writeFileSync, statSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -18,7 +19,7 @@ const base = join(root, "resolve-mn");
 
 /* Ганц файлын нэрс — хоорондоо холбогдоно */
 const OUT = { "index.html": "resolve-toli.html", "interface.html": "resolve-dotor.html",
-              "fusion-zaavar.html": "resolve-fusion-zaavar.html" };
+              "fusion-zaavar.html": "resolve-fusion-zaavar.html", "edit-zaavar.html": "resolve-edit-zaavar.html" };
 
 function build(srcName) {
   let html = readFileSync(join(base, srcName), "utf8");

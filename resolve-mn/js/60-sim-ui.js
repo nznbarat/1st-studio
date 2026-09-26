@@ -272,8 +272,21 @@
           S.select(termId, node, dim ? (ctx || "clip") : false);
         }
       });
+      /* Тусгай мөр (Edit → Timeline View Options, туг/marker-ийн өнгө):
+         "head" — гарчиг, "slider:NN" — гүйлгэгч (NN%), "button" — товч, "sw:sq|dot:#hex" — өнгөний дүрс. */
+      const k = key || "";
+      if (k === "head") row.classList.add("mhead");
+      if (k === "button") row.classList.add("mbtn");
       row.appendChild(el("span", { class: "ml", text: label }));
-      if (key)   row.appendChild(el("span", { class: "mk", text: key }));
+      if (k.indexOf("slider:") === 0) {
+        row.classList.add("mslide");
+        const t = el("span", { class: "mtrack" });
+        t.appendChild(el("i", { style: "left:" + parseFloat(k.slice(7)) + "%" }));
+        row.appendChild(t);
+      } else if (k.indexOf("sw:") === 0) {
+        const [, shape, color] = k.split(":");
+        row.appendChild(el("span", { class: "msw " + shape, style: "background:" + color }));
+      } else if (k && k !== "head" && k !== "button") row.appendChild(el("span", { class: "mk", text: k }));
       if (arrow) row.appendChild(el("span", { class: "ma", text: arrow }));
       pop.appendChild(row);
     });

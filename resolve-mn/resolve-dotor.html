@@ -194,6 +194,16 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
 .rs-menupop .mrow.dim:hover{background:rgba(58,110,165,.35)}
 .rs-menupop .mrow.dim:hover .ml{color:#c0c0c0}
 .rs-tools .tg.mi.open,.mi.open{color:#fff}
+/* Тусгай мөр — Timeline View Options-ийн гарчиг, гүйлгэгч, товч; туг/marker-ийн өнгө */
+.rs-menupop .mrow.mhead{color:var(--rs-dim2);padding-top:6px}
+.rs-menupop .mrow.mslide .ml{flex:0 0 46px;color:var(--rs-dim2)}
+.rs-menupop .mtrack{position:relative;flex:1;height:3px;background:#4a4a50;border-radius:2px;margin-right:4px}
+.rs-menupop .mtrack i{position:absolute;top:50%;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;background:#c9c9cd}
+.rs-menupop .mrow.mbtn{justify-content:center;margin:6px 14px 4px;width:calc(100% - 28px);border:1px solid #4a4a50;border-radius:3px;background:#323236}
+.rs-menupop .mrow.mbtn .ml{flex:0 1 auto}
+.rs-menupop .msw{width:9px;height:9px;flex-shrink:0}
+.rs-menupop .msw.dot{border-radius:50%}
+.rs-menupop .msw.sq{border-radius:1px}
 
 /* хэрэгслийн мөр 1 */
 .rs-tools{display:flex;align-items:center;gap:2px;background:var(--rs-tool);
@@ -647,6 +657,112 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
   transition:.2s;z-index:99;box-shadow:0 8px 26px rgba(0,0,0,.5)}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
+/* ═══ Edit хуудас (2026-09-26-ны зургууд) ═══ */
+/* timeline хэрэгслийн мөрийн SVG дүрс, идэвхтэй сонголтын улаан сум, ⌄ */
+.rs-tlbar .tl svg{width:19px;height:16px;display:block}
+.rs-tlbar .tl.red{color:var(--rs-red);background:none}
+.rs-tlbar .tl.dd{padding:5px 2px;margin-left:-4px;font-size:10px}
+.fx-list.scroll{overflow-y:auto}
+.ed-insp{overflow-y:auto}
+.ed-insp .insp-row .lb{width:84px}
+.eq-graph{position:relative;height:48px;margin:4px 0 6px 18px;border:1px solid #3a3a40;
+  background:repeating-linear-gradient(90deg,transparent 0 19%,#34343a 19% 19.4%)}
+.eq-graph span{position:absolute;left:-18px;font-size:8px;color:var(--rs-dim2)}
+.eq-graph span:nth-child(1){top:0}.eq-graph span:nth-child(2){top:40%}.eq-graph span:nth-child(3){bottom:0}
+.eq-graph i{position:absolute;left:0;right:0;top:50%;height:1px;background:#d4d4d6}
+.eq-bands{display:grid;grid-template-columns:repeat(6,1fr);gap:3px}
+.eq-b{display:grid;gap:2px;text-align:center;font-size:9px;color:var(--rs-dim)}
+.eq-b b{background:#1c1c20;border-radius:8px;font-weight:500;color:var(--rs-txt);font-size:9px}
+.eq-b span{background:#1c1c20;border-radius:2px;min-height:13px}
+.eq-b .eq-sh{background:none;color:var(--rs-txt)}
+/* timeline + Mixer самбар */
+.ed-tlwrap{flex:1;display:flex;min-height:0}
+.ed-tlwrap .rs-tl{flex:1;min-width:0}
+.mx-panel{display:none;width:170px;flex-shrink:0;border-left:1px solid var(--rs-line);background:var(--rs-pane);flex-direction:column}
+.mx-panel.open{display:flex}
+.mx-h{display:flex;justify-content:space-between;padding:6px 10px;background:var(--rs-head);font-size:11.5px}
+.mx-h b{font-weight:500}
+.mx-strips{flex:1;display:flex;gap:1px;background:var(--rs-line);min-height:0}
+.mx-s{flex:1;background:var(--rs-pane);display:flex;flex-direction:column;align-items:center;gap:5px;padding:4px 4px 6px;border-top:2px solid #2f8a57}
+.mx-n{font-size:10px;color:var(--rs-dim)}
+.mx-sm{display:flex;gap:3px;min-height:15px}
+.mx-sm span{width:15px;height:14px;border:1px solid #4a4a50;border-radius:2px;font-size:8px;display:grid;place-items:center;color:var(--rs-dim)}
+.mx-v{font:9.5px 'JetBrains Mono',monospace;color:var(--rs-txt)}
+.mx-f{position:relative;flex:1;width:52px;min-height:60px}
+.mx-f .fd{position:absolute;left:8px;top:0;bottom:0;width:3px;background:#141416}
+.mx-f .fd::after{content:"";position:absolute;left:-5px;top:24%;width:13px;height:9px;background:#9a9aa0;border-radius:1px}
+.mx-f .mt{position:absolute;right:6px;top:0;bottom:0;width:5px;background:#141416}
+.mx-f .sc{position:absolute;left:18px;top:0;font-size:7px;line-height:1.35;color:var(--rs-dim2)}
+/* Media Pool-ийн хайлтын мөр */
+.mp-search{display:none;flex-direction:column;gap:4px;padding:5px 8px;background:var(--rs-head);border-bottom:1px solid var(--rs-line);font-size:10.5px;color:var(--rs-dim)}
+.mp-search.open{display:flex}
+.mps-r{display:flex;align-items:center;gap:8px}
+.mps-in{flex:1;height:17px;border:1px solid var(--rs-red);border-radius:2px;background:#1c1c20}
+.mp-search b{font-weight:400;color:var(--rs-txt);background:#1c1c20;border-radius:2px;padding:1px 6px}
+/* цонх (Quick Export, Blackmagic Cloud Folder, Create Smart Bin) */
+.rs-dlg{display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:30;background:#28282c;
+  border:1px solid #0e0e10;border-radius:4px;box-shadow:0 18px 50px rgba(0,0,0,.7);font-size:11px}
+.rs-dlg.open{display:block}
+.dlg-t{text-align:center;padding:8px;font-weight:500;font-size:12px;border-bottom:1px solid var(--rs-line)}
+.dlg-t.l{text-align:left;padding-left:14px}
+.dlg-btns{display:flex;justify-content:flex-end;gap:10px;padding:10px 14px}
+.rs-dlg .btn{padding:4px 18px;border:1px solid #55555b;border-radius:12px;color:var(--rs-txt);white-space:nowrap}
+.rs-dlg .btn.red{border-color:var(--rs-red)}
+.rs-dlg .btn.off{color:var(--rs-dim2);border-color:#3a3a40}
+.rs-dlg .cb{display:inline-block;width:11px;height:11px;border:1px solid #6a6a70;border-radius:2px;vertical-align:-1px}
+.rs-dlg .cb.on{background:#d4d4d6}
+.rs-dlg .in{background:#1c1c20;border:1px solid #3a3a40;border-radius:2px;padding:2px 6px;color:var(--rs-dim)}
+.rs-dlg .in.red{border-color:var(--rs-red);color:var(--rs-txt)}
+.qe{width:640px}
+.qe-body{display:flex}
+.qe-l{flex:0 0 58%;border-right:1px solid var(--rs-line)}
+.qe-h{display:flex;justify-content:space-between;padding:6px 10px;border-bottom:1px solid var(--rs-line);color:var(--rs-dim)}
+.qe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px}
+.qe-p{background:#303035;border:1px solid transparent;border-radius:4px;padding:8px 4px;text-align:center;display:grid;gap:4px;font-size:10.5px}
+.qe-p.sel{border-color:var(--rs-red)}
+.qe-ic{font-size:13px;color:#fff}
+.qe-r{flex:1;display:flex;flex-direction:column}
+.qe-f{padding:8px 12px 4px}
+.qe-f small,.qe-kv small{display:block;font-size:8.5px;color:var(--rs-dim2)}
+.qe-f b{font-size:14px;font-weight:500}
+.qe-kv{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:4px 12px 10px;border-bottom:1px solid #3a3a40;font-weight:500}
+.qe-lim{padding:10px 12px;color:var(--rs-dim2);display:flex;align-items:center;gap:6px}
+.qe-r .dlg-btns{margin-top:auto}
+.bc{width:560px;overflow:hidden}
+.bc-top{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;font-size:15px;
+  background:radial-gradient(ellipse at 30% 0,#2a3a55,#1b2230 70%)}
+.bc-top b{font-weight:500}
+.bc-top span{font-size:10px;color:#c9ccd4}
+.bc-body{display:grid;gap:8px;padding:14px 20px}
+.bc-r{display:flex;align-items:center;gap:8px}
+.bc-r .lb{width:150px;text-align:right;color:var(--rs-dim)}
+.bc-r .in{flex:1}
+.bc-r .btn{padding:2px 12px}
+.bc-r .rd{width:10px;height:10px;border-radius:50%;border:1px solid #6a6a70}
+.bc-r .rd.on{background:#fff;box-shadow:inset 0 0 0 2px #28282c}
+.sb{width:620px}
+.sb-body{display:grid;gap:8px;padding:12px 14px}
+.sb-r{display:flex;align-items:center;gap:8px;color:var(--rs-dim)}
+.sb-r .in{flex:0 0 240px}
+.sb-r .dd{background:#1c1c20;border:1px solid #3a3a40;border-radius:2px;padding:2px 6px;color:var(--rs-txt);white-space:nowrap}
+.sb-r .dd.off{color:var(--rs-dim2)}
+.sb-r .dd.w{flex:1}
+.sb-r .pm{color:var(--rs-dim2);letter-spacing:.3em}
+/* viewer-ийн Guides самбар */
+.rs-pop{display:none;position:absolute;z-index:30;background:#28282c;border:1px solid #0e0e10;border-radius:3px;box-shadow:0 12px 36px rgba(0,0,0,.6)}
+.rs-pop.open{display:block}
+.rs-pop.guides{right:282px;top:92px;width:236px;padding:8px 12px 10px}
+.gd-h{font-size:11px;font-weight:500;margin:6px 0 4px}
+.gd-row{display:flex;flex-wrap:wrap;gap:6px 8px;padding-bottom:6px;border-bottom:1px solid #3a3a40}
+.gd-row:last-child{border-bottom:0}
+.gd{display:grid;justify-items:center;gap:2px;font-size:9px;color:var(--rs-dim);min-width:34px}
+.gd.on{color:#fff}
+.gd i{width:24px;height:15px;border:1px solid #7a7a80;display:block}
+.gd.on i{border-color:#fff;background:#3a3a40}
+.gd i.r0{width:15px}.gd i.r1{width:13px}.gd i.r2{width:9px}.gd i.r4{width:26px}
+.gd i.b1{width:20px}.gd i.b4,.gd i.b5,.gd i.b6{height:10px;margin-top:3px}
+.gd i.s1,.gd i.s2{border-style:dashed}.gd i.s3{border:0;background:radial-gradient(circle,#aaa 1.5px,transparent 2px) center/100% 100%}
+
 /* ── жижиг дэлгэц ── */
 @media (max-width:1100px){
   .insp{width:170px} .mp{width:210px} .nodes{width:230px} .gal{width:112px} .scopes{width:150px}
@@ -868,7 +984,8 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
 /* ── js/15-guide-ids.js ── */
 /* ═══ 15 · Жишээтэй заавартай нэр томьёонууд ═══
    Эдгээрийн картанд (толь) болон тайлбарт (загвар) "Жишээтэй заавар" холбоос гарна.
-   Эх нь fusion-zaavar.html — Fusion хэрэгслийн мөрийн 28 товч. */
+   Эх нь fusion-zaavar.html — Fusion хэрэгслийн мөрийн 28 товч,
+         edit-zaavar.html   — Edit хуудасны timeline-ийн мөр, viewer-ийн удирдлага (26). */
 (function (RM) {
   "use strict";
   RM.guideFusion = ["background-node", "fastnoise", "text-plus-node", "paint",
@@ -877,7 +994,13 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
     "rectangle-mask", "ellipse-mask", "polygon-mask", "b-spline-mask", "multipoly",
     "particle-emitter", "pdirectionalforce", "prender",
     "image-plane-3d", "shape-3d", "text-3d", "merge-3d", "camera-3d", "spot-light", "renderer-3d"];
-  RM.guideLink = (id) => RM.guideFusion.indexOf(id) !== -1 ? "resolve-fusion-zaavar.html#" + id : null;
+  RM.guideEdit = ["selection-mode", "trim-edit-mode", "blade", "dynamic-trim-mode-slip",
+    "insert", "overwrite", "replace", "snapping", "linked-selection", "position-lock",
+    "flag", "marker", "full-extent-zoom", "detail-zoom", "custom-zoom",
+    "timeline-view-options", "show-keyframe-tray", "voiceover",
+    "transform", "crop", "dynamic-zoom", "open-fx-overlay", "fusion-overlay", "annotations", "smart-reframe", "jog-wheel"];
+  RM.guideLink = (id) => RM.guideFusion.indexOf(id) !== -1 ? "resolve-fusion-zaavar.html#" + id
+    : RM.guideEdit.indexOf(id) !== -1 ? "resolve-edit-zaavar.html#" + id : null;
 })(window.RM);
 
 </script>
@@ -1123,8 +1246,8 @@ note:"Клип, timeline дээрх тэмдэг, тэмдэглэгээ, өнг
 ["Enable/Disable Clip","Клип идэвхгүй болгох","Клипийг устгалгүйгээр түр далдлах.","D"],
 ["Solo","Ганцаар сонсох","Зөвхөн сонгосон дууны замыг сонсох."],
 ["Mute","Дуугүй болгох","Тухайн замын дууг түр хаах."],
-["Snapping","Наалдац","Клип чирэхэд ойролцоох ирмэг, заагч рүү автоматаар наалдана.","N"],
-["Linked Selection","Холбоотой сонголт","Видео болон түүний дуу хамт сонгогдох эсэх. Унтраавал видеог дуунаас нь тусад нь зөөж болно.","Ctrl+Shift+L","Timeline цэс"]
+["Snapping","Наалдац","Клип чирэхэд ойролцоох ирмэг, заагч рүү автоматаар наалдана.","N","Edit → timeline хэрэгслийн мөр · tooltip: Snapping - N"],
+["Linked Selection","Холбоотой сонголт","Видео болон түүний дуу хамт сонгогдох эсэх. Унтраавал видеог дуунаас нь тусад нь зөөж болно.","Ctrl+Shift+L","Timeline цэс · Edit → timeline хэрэгслийн мөр · tooltip: Linked Selection - Ctrl+Shift+L"]
 ]});
 
 </script>
@@ -1193,19 +1316,19 @@ note:"Хугацаа шахсан ажилд зориулсан хялбаршу
 RM.dict.add({ id:"edit-op", label:"Edit — оруулах, тайрах", icon:"✂", page:"edit",
 note:"Клип оруулах долоон арга, тайралтын таван горим — монтажийн цөм.", terms:[
 ["Edit Page","Edit хуудас","Бүрэн хэмжээний монтажийн хуудас. Олон зам, нарийн тайралт, эффект, гарчиг — бүгд энд.","Shift+4"],
-["Insert","Шигтгэх","Клипийг заагчийн байрлалд оруулж, тэндээс хойших бүх клипийг баруун тийш түлхэнэ. Timeline урт болно.","F9"],
-["Overwrite","Дарж бичих","Клипийг заагчийн байрлалд тавьж, доор нь байсныг нь устгана. Timeline-ий урт өөрчлөгдөхгүй.","F10"],
-["Replace","Солих","Заагч байгаа клипийг шинэ клипээр бүхэлд нь солино. Урт нь хуучныхтай яг таарна.","F11"],
+["Insert","Шигтгэх","Клипийг заагчийн байрлалд оруулж, тэндээс хойших бүх клипийг баруун тийш түлхэнэ. Timeline урт болно. Товч нь Insert Clip.","F9","Edit → timeline хэрэгслийн мөр · tooltip: Insert Clip - F9"],
+["Overwrite","Дарж бичих","Клипийг заагчийн байрлалд тавьж, доор нь байсныг нь устгана. Timeline-ий урт өөрчлөгдөхгүй. Товч нь Overwrite Clip.","F10","Edit → timeline хэрэгслийн мөр · tooltip: Overwrite Clip - F10"],
+["Replace","Солих","Заагч байгаа клипийг шинэ клипээр бүхэлд нь солино. Урт нь хуучныхтай яг таарна. Товч нь Replace Clip.","F11","Edit → timeline хэрэгслийн мөр · tooltip: Replace Clip - F11"],
 ["Fit to Fill","Дүүргэж тааруулах","Эх клипийг In/Out хоёрын хооронд багтаахын тулд хурдыг нь өөрчилж сунгах эсвэл шахна.","Shift+F11"],
 ["Place on Top","Дээр нь тавих","Клипийг чөлөөтэй байгаа хамгийн дээд видео давхарга дээр байрлуулна.","F12"],
 ["Append to End","Төгсгөлд залгах","Клипийг timeline-ий хамгийн ард нэмнэ.","Shift+F12"],
 ["Ripple Overwrite","Долгиолон дарах","Сонгосон клипийг солиод, урт нь өөр бол хойших клипүүдийг зөрүүлж тохируулна.","Shift+F10"],
 ["Three Point Editing","Гурван цэгийн монтаж","In/Out дөрвөн цэгээс гурвыг нь заавал зааж өгвөл дөрөв дэх нь өөрөө тодорхойлогдоно гэсэн монтажийн үндсэн зарчим."],
-["Blade","Хутга","Клипийг заагч дээр огтолж хоёр хуваах хэрэглүүр. Видео огтлох хамгийн шууд арга.","B"],
+["Blade","Хутга","Клипийг заагч дээр огтолж хоёр хуваах хэрэглүүр. Видео огтлох хамгийн шууд арга. Товч нь Blade Edit Mode.","B","Edit → timeline хэрэгслийн мөр · tooltip: Blade Edit Mode - B"],
 ["Split Clip","Клип хуваах","Заагчийн байрлал дээр клипийг хоёр болгоно.","Ctrl+\\"],
 ["Join Clips","Клип нийлүүлэх","Салгасан хоёр хэсгийг буцаан нэг болгоно (эх файл нь залгаа бол).","Alt+\\"],
-["Selection Mode","Сонголтын горим","Ердийн сум — клип сонгож, чирэх горим. Trim цэсэнд \"Normal Edit Mode\" гэж бичигдэнэ.","A"],
-["Trim Edit Mode","Тайралтын горим","Огтлолтын цэгүүдийг чирж slip, slide, ripple, roll хийх горим. Trim цэсэнд \"Trim Mode\" гэж бичигдэнэ.","T"],
+["Selection Mode","Сонголтын горим","Ердийн сум — клип сонгож, чирэх горим. Trim цэсэнд \"Normal Edit Mode\" гэж бичигдэнэ.","A","Edit → timeline хэрэгслийн мөр · tooltip: Selection Mode - A"],
+["Trim Edit Mode","Тайралтын горим","Огтлолтын цэгүүдийг чирж slip, slide, ripple, roll хийх горим. Trim цэсэнд \"Trim Mode\" гэж бичигдэнэ.","T","Edit → timeline хэрэгслийн мөр · tooltip: Trim Edit Mode - T"],
 ["Ripple Delete","Долгиолон устгах","Клипийг устгаад үлдсэн зайг хааж, хойших клипүүдийг зөөнө. Timeline богиносно.","Shift+Backspace"],
 ["Lift / Delete","Өргөж авах","Клипийг устгаад орондоо хоосон зай үлдээнэ. Timeline-ий урт хэвээр.","Backspace"],
 ["Trim","Тайрах","Клипийн эхлэл эсвэл төгсгөлийн ирмэгийг чирж урт богино болгох."],
@@ -2379,7 +2502,7 @@ note:"Cut хуудасны timeline-ийн зүүн талын товчнууд 
 ["Insert Video Only","Зөвхөн видео шигтгэх","Эх клипийн зөвхөн видео хэсгийг timeline-д оруулна; дууг орхино. Cut хуудасны транспорт мөрийн зүүн захын эхний товч (tooltip-оор баталгаажсан).","","Cut → транспорт мөр → зүүн зах, 1"],
 ["Insert Audio Only","Зөвхөн дуу шигтгэх","Эх клипийн зөвхөн дууны хэсгийг timeline-д оруулна; дүрсийг орхино. Зүүн захын хоёр дахь товч (tooltip-оор баталгаажсан).","","Cut → транспорт мөр → зүүн зах, 2"],
 ["Ripple On","Ripple асаалттай (долгиолох унтраалга)","Доод timeline-ийн эхний товч — тайралт, устгалтын дараа хойших клипүүд автоматаар зөрж хоосон зай үлдээхгүй (ripple) горимын унтраалга. Tooltip одоогийн төлөвийг харуулна (зурагт: Ripple On).","","Cut → доод timeline → зүүн булан, 1"],
-["Dynamic Trim Mode (Slip)","Динамик тайралт (Slip)","Доод timeline-ийн хоёр дахь товч — Dynamic Trim горим; хаалтанд одоогийн дэд горим (Slip — клипийн агуулгыг урт өөрчлөлгүй гулсуулах). Тоглуулах товчоор (J K L) тайрна.","","Cut → доод timeline → зүүн булан, 2"],
+["Dynamic Trim Mode (Slip)","Динамик тайралт (Slip)","Доод timeline-ийн хоёр дахь товч — Dynamic Trim горим; хаалтанд одоогийн дэд горим (Slip — клипийн агуулгыг урт өөрчлөлгүй гулсуулах). Тоглуулах товчоор (J K L) тайрна.","W","Cut → доод timeline → зүүн булан, 2 · Edit → timeline хэрэгслийн мөр · tooltip: Dynamic Trim Mode (Slip) - W"],
 ["Enlarge Track","Замыг томруулах","Доод timeline-ийн замын толгойн эхний товч (⇕) — замын өндрийг томруулж жижигрүүлнэ. Tooltip-оор баталгаажсан.","","Cut → доод timeline → замын толгой, 1"],
 ["Lock Track","Замыг түгжих","Замын толгойн цоожны товч — замыг түгжвэл түүн дээрх клипүүд сонгогдохгүй, зөөгдөхгүй, тайрагдахгүй. Edit хуудасны Track Lock-той ижил.","","Cut → доод timeline → замын толгой, 2"],
 ["Solo Track On","Замыг соло болгох","Замын толгойн чихэвчний товч — зөвхөн энэ замын дууг сонсгож бусдыг түр дуугүй болгоно. Tooltip одоогийн үйлдлийг заана (зурагт: Solo Track On).","","Cut → доод timeline → замын толгой, 3"],
@@ -2457,6 +2580,148 @@ note:"Fusion хуудасны хэрэгслийн мөрийн баталгаа
 ["Effect Mask Layer","Эффект маскийн давхарга","Эффект маскийг аль давхаргаас авахыг сонгоно гэж ойлгогдоно. Таны зурагт: Auto. Түлхүүр кадартай.","","Inspector → Settings → Layers"],
 ["Comments (Fusion Inspector)","Тайлбар (Fusion Inspector)","Нодын тухай тэмдэглэл бичих талбар. Багийн ажилд, нарийн схемд юу хийснээ сануулахад.","","Inspector → Settings → Comments"],
 ["Status Bar (Fusion)","Төлөвийн мөр (Fusion)","Fusion хуудасны доод мөр. Хэрэгслийн товч дээр хулганаа тавихад нэр, тайлбар нь зүүн талд; Viewer дээр пикселийн байрлал, өнгө; баруун талд санах ойн хэрэглээ (зурагт: 9% - 2973 MB).","","Fusion → доод мөр"]
+]});
+
+</script>
+<script>
+/* ── js/dict/r28-edit-tses.js ── */
+/* ── Ангилал 28 · Edit хуудас — timeline-ийн хэрэгслийн мөр, viewer-ийн цэс ──
+   Resolve Studio 21-ийн Edit хуудас, 2026-09-26-ны дэлгэцийн зургууд:
+   viewer-ийн доод зүүн ▭⌄ жагсаалт (8 мөр), Timeline View Options цэс, timeline хэрэгслийн
+   мөрийн tooltip бүр (Show Keyframe Tray, Voiceover, Selection/Trim/Blade/Dynamic Trim,
+   Insert/Overwrite/Replace Clip, Snapping, Linked Selection, Position Lock, Full Extent/Detail/
+   Custom Zoom), туг, тэмдэглэгээний өнгөний жагсаалт, viewer-ийн Jog Wheel. */
+
+RM.dict.add({ id:"edit-tses", label:"Edit — timeline-ийн мөр, viewer-ийн цэс", icon:"✂", page:"edit",
+note:"Edit хуудасны timeline хэрэгслийн мөрийн товч бүр, түүний унждаг жагсаалт, viewer-ийн дэлгэц дээрх удирдлагын цэс. Tooltip, мөр бүр дэлгэцийн зургаас баталгаажсан; үйлдэл нь баталгаажаагүйг тайлбарт нь тэмдэглэсэн.", terms:[
+["Viewer Overlay Menu (Edit)","Viewer-ийн удирдлагын цэс (Edit)","Edit хуудасны viewer-ийн доод зүүн булангийн ▭ ⌄ жагсаалт. Viewer дээр аль удирдлага (on-screen control) гарахыг сонгоно: Transform, Crop, Dynamic Zoom, Open FX Overlay, Fusion Overlay, Annotations, Immersive, Smart Reframe — 8 мөр. Товчны tooltip зурагт хараахан гараагүй.","","Edit → viewer → доод зүүн ▭ ⌄"],
+["Open FX Overlay","OpenFX-ийн дэлгэц дээрх удирдлага","Клипэд тавьсан Resolve FX / OpenFX эффектийн бариулыг (төв цэг, хүрээ, чиглэл) viewer дээр гаргаж, хулганаар чирж тохируулах горим.","","Edit → viewer ▭ ⌄"],
+["Fusion Overlay","Fusion-ий дэлгэц дээрх удирдлага","Edit хуудсанд тавьсан Fusion эффект, Fusion гарчиг (Fusion Titles)-ийн удирдлагыг viewer дээр гаргана — Fusion хуудас руу шилжилгүй байрлал, хэмжээг чирж тохируулна.","","Edit → viewer ▭ ⌄"],
+["Annotations","Тэмдэглэл зурах","Viewer дээр шугам, сум зурж санал, засварын тэмдэглэл үлдээх горим. Зурсан тэмдэглэл тухайн кадрын тэмдэглэгээ (marker)-тэй хамт хадгалагдаж, эцсийн бичлэгт орохгүй.","","Edit → viewer ▭ ⌄"],
+["Immersive (Viewer)","Immersive харагдац","Viewer-ийн жагсаалтын «Immersive» мөр. Нэрнээсээ 180°/360°, Apple Immersive Video маягийн бичлэгийг viewer дотор эргүүлж харах горим гэж ойлгогдоно — яг үйлдэл баталгаажаагүй.","","Edit → viewer ▭ ⌄"],
+["Jog Wheel","Жог хүрд","Viewer-ийн транспорт мөрийн ‹ ● › удирдлага (tooltip: Jog Wheel). Дугуйг зүүн, баруун тийш чирэхэд бичлэгийг кадар кадраар удаан гүйлгэнэ — огтлох цэгийг нарийн олоход.","","Edit → viewer → транспорт мөр ‹ ● ›"],
+["Show Keyframe Tray","Түлхүүр кадрын тавиурыг харуулах","Timeline хэрэгслийн мөрийн 2 дахь товч (tooltip: Show Keyframe Tray). Нэрнээсээ timeline-д клипийн түлхүүр кадрын (keyframe) тавиур гаргах товч; яг хаана, яаж гарах нь баталгаажаагүй.","","Edit → timeline хэрэгслийн мөр, 2 дахь товч"],
+["Voiceover","Дуу бичлэг (Voiceover)","Timeline хэрэгслийн мөрийн 🎙 товч (tooltip: Voiceover). Микрофоноос өгүүлэгчийн дууг timeline-д шууд бичих самбар нээнэ. Timeline цэсний Record Voiceover-той ижил зорилготой.","","Edit → timeline хэрэгслийн мөр, 3 дахь товч 🎙"],
+["Position Lock","Байрлалын түгжээ","Timeline дээрх бүх клипийн байрлал, уртыг түгжинэ — зөөх, тайрах боломжгүй болж, харин өнгө, тунгалаг, эффект мэт шинжийг засаж болно (tooltip: Position Lock, товчлуургүй).","","Edit → timeline хэрэгслийн мөр 🔒"],
+["Full Extent Zoom","Бүтнээр харах томруулалт","Timeline-ийн бүх агуулгыг цонхонд багтааж харуулах томруулалтын горим (tooltip: Full Extent Zoom).","","Edit → timeline хэрэгслийн мөр, томруулалтын 1 дэх товч"],
+["Detail Zoom","Нарийвчилсан томруулалт","Заагчийн орчмыг ойроос томруулж харуулах горим — нарийн тайралтад (tooltip: Detail Zoom).","","Edit → timeline хэрэгслийн мөр, томруулалтын 2 дахь товч"],
+["Custom Zoom","Өөрийн томруулалт","Zoom гүйлгэгчээр (− ● +) өөрөө тохируулсан томруулалт руу буцах горим (tooltip: Custom Zoom).","","Edit → timeline хэрэгслийн мөр, томруулалтын 3 дахь товч"],
+["Flag Color Menu","Тугийн өнгөний цэс","Timeline хэрэгслийн мөрийн тугийн ⌄ жагсаалт: Clear All ба 16 өнгө (Blue, Cyan, Green, Yellow, Red, Pink, Purple, Fuchsia, Rose, Lavender, Sky, Mint, Lemon, Sand, Cocoa, Cream). Өнгө бүрийн дүрс — дөрвөлжин туг.","","Edit → timeline хэрэгслийн мөр → туг ⌄"],
+["Marker Color Menu","Тэмдэглэгээний өнгөний цэс","Timeline хэрэгслийн мөрийн тэмдэглэгээний (marker) ⌄ жагсаалт: Clear All ба тугийнхтай ижил 16 өнгө. Өнгө бүрийн дүрс — дугуй цэг.","","Edit → timeline хэрэгслийн мөр → marker ⌄"],
+["Flag Color","Тугийн өнгө","Туг тавих өнгө. Resolve 21-д 16 өнгө: Blue, Cyan, Green, Yellow, Red, Pink, Purple, Fuchsia, Rose, Lavender, Sky, Mint, Lemon, Sand, Cocoa, Cream. Туг клипэд бүхэлд нь хамаарна.","","Туг ⌄ жагсаалт"],
+["Clear All (Flags)","Бүх тугийг арилгах","Тугийн ⌄ жагсаалтын эхний мөр «Clear All». Нэрнээсээ тугийг бүгдийг нь арилгана; сонгосон клипээс үү, бүх timeline-аас уу гэдэг нь баталгаажаагүй.","","Туг ⌄ жагсаалт"],
+["Clear All (Markers)","Бүх тэмдэглэгээг арилгах","Тэмдэглэгээний ⌄ жагсаалтын эхний мөр «Clear All». Нэрнээсээ тэмдэглэгээг бүгдийг нь арилгана; хамрах хүрээ нь баталгаажаагүй.","","Marker ⌄ жагсаалт"],
+["Display Stacked Timelines","Timeline-уудыг таб болгож харуулах","Timeline самбарын дээд талд нээлттэй timeline-уудыг таб болгож харуулна — хэд хэдэн timeline-ийн хооронд хурдан шилжиж, клип хуулна. Зурагт чагтгүй.","","Edit → Timeline View Options ⚌"],
+["Display Subtitle Tracks","Хадмалын замыг харуулах","Хадмалын (subtitle) замуудыг timeline-д харуулна. Зурагт чагттай.","","Edit → Timeline View Options ⚌"],
+["Display Audio Waveforms","Дууны долгионыг харуулах","Дууны клип дээр долгион (waveform) зурна. Унтраавал timeline хөнгөн болох ч дуу хаана байгааг харахгүй. Зурагт чагттай.","","Edit → Timeline View Options ⚌"],
+["Display Non-Rectified Waveforms","Хоёр талт долгион","Дууны долгионыг голоос дээш доош (эерэг, сөрөг хагас) харуулна. Унтраавал зөвхөн доороос дээш нэг талт (rectified) долгион болно. Зурагт чагттай.","","Edit → Timeline View Options ⚌"],
+["Display Full Waveforms","Бүтэн долгион","Нэрнээсээ дууны долгионыг клипийн бүх өндрөөр харуулах тохиргоо. Яг ялгаа баталгаажаагүй. Зурагт чагтгүй.","","Edit → Timeline View Options ⚌"],
+["Display Waveform Borders","Долгионы хүрээ","Нэрнээсээ дууны долгионы ирмэгийг зураасаар тодруулах тохиргоо. Баталгаажаагүй. Зурагт чагтгүй.","","Edit → Timeline View Options ⚌"],
+["Display Scaled Waveforms","Түвшинд тохирсон долгион","Нэрнээсээ клипийн дууны түвшинг (Volume) өөрчлөхөд долгион нь хамт томорч, жижгэрэх тохиргоо. Баталгаажаагүй. Зурагт чагтгүй.","","Edit → Timeline View Options ⚌"],
+["Thumbnail View (Timeline)","Timeline дээрх клипийн зураг","Timeline View Options-ийн дэд цэс ›. Видео клип дээр зураг хэрхэн харагдахыг сонгоно (Resolve 20-д: Filmstrip, эхэн төгсгөлийн зураг, зураггүй). Media Pool-ийн Thumbnail View-ээс өөр. Мөрүүд зурагт задраагүй.","","Edit → Timeline View Options ⚌ → ›"],
+["Track Height","Замын өндөр","Timeline View Options-ийн доод хэсгийн Video, Audio хоёр гүйлгэгч — видео, дууны замын өндрийг тус тусад нь тохируулна. Өндөр зам дээр зураг, долгион тод харагдана.","","Edit → Timeline View Options ⚌"],
+["Set as Default View","Анхдагч харагдац болгох","Timeline View Options-ийн хамгийн доод товч. Одоогийн харагдацын тохиргоог (зам өндөр, долгион, зураг) шинэ timeline-д анхдагч болгож хадгална.","","Edit → Timeline View Options ⚌"],
+["Retime and Scaling","Хурд тооцоолол ба хэмжээс","Inspector → Video-ийн хэсэг. Хурд өөрчилсөн клипийн завсрын кадрыг хэрхэн үүсгэх (Retime Process), timeline-ийн хэмжээнд хэрхэн багтаах (Scaling) тохиргоо. Зурагт хураалттай — мөрүүд нь баталгаажаагүй.","","Edit → Inspector → Video"],
+["AI Super Scale","AI-аар нягтрал өсгөх","Inspector → Video-ийн хэсэг. Бага нягтралтай клипийг DaVinci Neural Engine-ээр 2–4 дахин томруулж, нарийн хэсгийг сэргээнэ (Studio). Зурагт хураалттай, асаалттай.","","Edit → Inspector → Video"],
+["Semi Tones","Хагас тон","Inspector → Audio-ийн дууны өндрийг (pitch) хагас тоноор өөрчлөх гүйлгэгч. +12 — нэг октав өндөр. Хурдыг өөрчлөхгүй. Зурагт 0.","","Edit → Inspector → Audio"],
+["Cents","Цент","Хагас тоны 1/100 — дууны өндрийг маш нарийн тааруулах гүйлгэгч (−100…+100). Зурагт 0.","","Edit → Inspector → Audio"],
+["Equalizer (Inspector)","Клипийн эквалайзер","Inspector → Audio-ийн 6 зурвастай (B1–B6) эквалайзер. Зурвас бүрт шүүлтүүрийн хэлбэр, давтамж (Hz), өсгөлт (dB), Q. Дээд талд давтамжийн график. Зурагт унтраалттай.","","Edit → Inspector → Audio"],
+["Q (EQ)","Q — зурвасын өргөн","Эквалайзерын зурвас хэр өргөн давтамжид нөлөөлөхийг заана. Бага Q (0.5) — өргөн, зөөлөн; их Q (5+) — нарийн, хурц. Зурагт B3–B5 1.0.","","Equalizer (Inspector)"],
+["Non-Additive Dissolve","Нэмэлтгүй уусгалт","Хоёр кадрыг нэмэлгүй, пиксел бүрт аль гэрэлтэйг нь сонгож уусгах шилжилт — тод хэсэг нь эрт гарч ирнэ. Effects → Video Transitions → Dissolve.","","Effects → Toolbox → Video Transitions → Dissolve"],
+["Iris Transitions","Iris шилжилтүүд","Дүрсээр (сум, загалмай, ромб, нүд, зургаан өнцөгт, зууван, таван өнцөгт, дөрвөлжин) нээгдэж хаагдах шилжилтүүд: Arrow, Cross, Diamond, Eye, Hexagon, Oval, Pentagon, Square Iris.","","Effects → Toolbox → Video Transitions → Iris"],
+["Motion Transitions","Motion шилжилтүүд","Нэг кадр нөгөөгөө түлхэж, гулсаж, хаалга мэт нээгдэж солигдох шилжилтүүд: Barn Door, Push, Slide, Split.","","Effects → Toolbox → Video Transitions → Motion"],
+["Shape Transitions","Shape шилжилтүүд","Дүрс томорч дараагийн кадрыг нээх шилжилтүүд: Box, Heart, Star, Triangle Left, Triangle Right.","","Effects → Toolbox → Video Transitions → Shape"],
+["Wipe Transitions","Wipe шилжилтүүд","Шугам, хэлбэр кадрыг арчиж дараагийнхыг гаргах шилжилтүүд: Band, Center, Clock, Edge, Radial, Spiral, Venetian Blind, X Wipe.","","Effects → Toolbox → Video Transitions → Wipe"],
+["Fusion Transitions","Fusion шилжилтүүд","Fusion дээр бүтээсэн бэлэн хөдөлгөөнт шилжилтүүд: Block Glitch, Box Twist, Box Wipe, Brightness Flash, Camera Shake, Checker Wipe, Circle Spin, Circles гэх мэт. Inspector-оос тохируулна.","","Effects → Toolbox → Video Transitions → Fusion Transitions"],
+["MultiText","Олон мөрт текст","Titles жагсаалтын гарчиг — нэг клипэд хэд хэдэн тусдаа текст (Text 1, Text 2 …) байрлуулах. Тус бүрийг өөр байрлал, фонттой болгоно.","","Effects → Toolbox → Titles"],
+["Left / Middle / Right Lower Third","Зүүн / дунд / баруун доод гарчиг","Titles жагсаалтын бэлэн доод гарчгууд (нэр, албан тушаал) — дэлгэцийн доод гуравны нэгт зүүн, голд, баруун талд байрлана.","","Effects → Toolbox → Titles"]
+]});
+
+</script>
+<script>
+/* ── js/dict/r29-edit-media-export.js ── */
+/* ── Ангилал 29 · Edit хуудас — Media Pool-ийн цэс, Quick Export, Blackmagic Cloud Folder ──
+   Resolve Studio 21-ийн Edit хуудас, 2026-09-26-ны дэлгэцийн зургууд:
+   Media Pool-ийн AI шинжилгээний ⌄ жагсаалт (3 мөр), харагдацын ⌄ жагсаалт (3 мөр + гүйлгэгч),
+   ☁ товчоор нээгдэх Blackmagic Cloud Folder цонх, дээд мөрийн Quick Export цонх (10 бэлдэц). */
+
+RM.dict.add({ id:"edit-media-export", label:"Edit — Media Pool, Quick Export, Cloud", icon:"⇧", page:"edit",
+note:"Edit хуудасны Media Pool-ийн дээд мөрийн унждаг жагсаалтууд, Blackmagic Cloud Folder цонх, Quick Export цонхны бэлдэц, талбар. Мөр бүр дэлгэцийн зургаас баталгаажсан.", terms:[
+["AI Analysis Menu (Media Pool)","AI шинжилгээний цэс","Media Pool-ийн дээд мөрийн ⌄ жагсаалт: Perform AI Analysis in all Clips (зурагт чагттай), Perform AI Analysis in Selected Clips, Audio Transcription.","","Edit → Media Pool → дээд мөр ⌄"],
+["Perform AI Analysis in all Clips","Бүх клипэд AI шинжилгээ","Media Pool-ийн бүх клипийг DaVinci Neural Engine-ээр шинжилж, агуулгаар (хүн, объект, үйлдэл, яриа) хайж олох боломжтой болгоно. Зурагт чагттай — асаалттай байх горим гэж ойлгогдоно.","","AI шинжилгээний ⌄ цэс"],
+["Perform AI Analysis in Selected Clips","Сонгосон клипэд AI шинжилгээ","Зөвхөн сонгосон клипүүдийг AI-аар шинжилнэ — том төсөлд хугацаа хэмнэнэ.","","AI шинжилгээний ⌄ цэс"],
+["Audio Transcription","Яриаг бичвэр болгох (Media Pool)","Клипийн яриаг бичвэр (transcript) болгоно — яриагаар хайх, бичвэрээс засварлах, хадмал үүсгэхэд. Зурагт саарал (клип сонгоогүй үед идэвхгүй бололтой).","","AI шинжилгээний ⌄ цэс"],
+["Media Pool View Menu","Media Pool-ийн харагдацын цэс","Media Pool-ийн ▦ ⌄ жагсаалт: Metadata View, Thumbnail View (зурагт чагттай), List View, доор нь зургийн хэмжээний гүйлгэгч.","","Edit → Media Pool → дээд мөр ▦ ⌄"],
+["Metadata View","Мэдээллийн карт харагдац","Клип бүрийг зураг ба гол мэдээлэл (нэр, урт, огноо, камер, тэмдэглэл)-тэй карт болгож харуулна — олон клипээс сонгоход.","","Media Pool-ийн харагдацын цэс"],
+["Blackmagic Cloud Folder","Blackmagic Cloud хавтас","Media Pool-ийн ☁ товчоор нээгдэх цонх. Blackmagic Cloud дээрх хавтсыг сонгож, түүний файлыг компьютер руу татах, синк хийх тохиргоо.","","Edit → Media Pool → дээд мөр ☁"],
+["Download Folder Location","Татах хавтасны байрлал","Blackmagic Cloud-оос татсан файл компьютерийн аль хавтсанд хадгалагдахыг заана (зурагт: хэрэглэгчийн хавтас\\DaVinci Resolve Media). Browse — өөрчлөх.","","Blackmagic Cloud Folder цонх"],
+["Sync Proxies Only","Зөвхөн прокси синк хийх","Cloud-оос зөвхөн жижиг прокси файлыг татна — хурдан, диск бага эзэлнэ; эцсийн гаргалтад эх файл хэрэгтэй.","","Blackmagic Cloud Folder цонх → For Media Files"],
+["Sync Proxies and Used Originals","Прокси ба хэрэглэсэн эх файлыг синк хийх","Прокси болон timeline-д хэрэглэсэн эх файлуудыг татна — эцсийн чанартай гаргах боломжтой. Зурагт сонгогдсон.","","Blackmagic Cloud Folder цонх → For Media Files"],
+["Go to Blackmagic Cloud","Blackmagic Cloud руу очих","Хөтөчөөр Blackmagic Cloud-ийн сайтыг нээж, хавтас, төсөл, эрхийг удирдана.","","Blackmagic Cloud Folder цонх"],
+["H.264 Master","H.264 мастер","Quick Export-ийн анхдагч бэлдэц (зурагт сонгогдсон): H.264, timeline-ийн нягтрал (зурагт 3840 x 2160), 24 fps, AAC стерео. Ерөнхий хэрэглээний жижиг, чанартай файл.","","Quick Export цонх"],
+["H.265 Master","H.265 мастер","Quick Export-ийн бэлдэц: H.265 (HEVC) — H.264-өөс ойролцоогоор хоёр дахин жижиг файлд ижил чанар. Хуучин төхөөрөмж тоглуулахгүй байж магадгүй.","","Quick Export цонх"],
+["HyperDeck (Quick Export)","HyperDeck бэлдэц","Blackmagic HyperDeck бичигч, тоглуулагч дээр шууд тоглох форматаар гаргах бэлдэц. Яг тохиргоо баталгаажаагүй.","","Quick Export цонх"],
+["Vimeo (Quick Export)","Vimeo бэлдэц","Vimeo-д тохирсон форматаар гаргаж, данстай холбосон бол шууд байршуулна.","","Quick Export цонх"],
+["TikTok (Quick Export)","TikTok бэлдэц","TikTok-т тохирсон форматаар гаргаж, данстай холбосон бол шууд байршуулна. Босоо timeline-д тохиромжтой.","","Quick Export цонх"],
+["Presentations (Quick Export)","Presentations бэлдэц","Blackmagic Cloud-ийн Presentations руу байршуулж, захиалагч хөтөчөөр үзэж сэтгэгдэл үлдээх бэлдэц. Яг ажиллагаа баталгаажаагүй.","","Quick Export цонх"],
+["Dropbox (Quick Export)","Dropbox бэлдэц","Гаргасан файлыг холбосон Dropbox данс руу шууд байршуулах бэлдэц.","","Quick Export цонх"],
+["Replay (Quick Export)","Replay бэлдэц","Quick Export-ийн «Replay» бэлдэц. Нэрнээсээ Blackmagic-ийн Replay (шууд нэвтрүүлгийн давталт) ажлын урсгалтай холбоотой гэж ойлгогдоно — баталгаажаагүй.","","Quick Export цонх"],
+["Limit Data Rate","Өгөгдлийн хурдыг хязгаарлах","Quick Export-ийн «Limit data rate to … Kb/s» чагт. Асаавал видеоны битийн хурдыг заасан утгаар (зурагт 80000 Kb/s) хязгаарлана — файл жижгэрч, чанар бага зэрэг буурна. Зурагт унтраалттай.","","Quick Export цонх"]
+]});
+
+</script>
+<script>
+/* ── js/dict/r30-edit-mediapool-guides.js ── */
+/* ── Ангилал 30 · Edit хуудас — Media Pool-ийн хайлт, эрэмбэ, «…» цэс, Smart Bin, viewer-ийн Guides ──
+   Resolve Studio 21, 2026-09-26-ны дэлгэцийн зургууд: ⌕ хайлтын мөр (Search In, Display),
+   ⇅ эрэмбэлэх жагсаалт (25 мөр), … тохиргооны жагсаалт (13 мөр), Create Smart Bin цонх,
+   viewer-ийн толгойн ⛶ ⌄ Guides самбар (Social Media, Broadcast and Film, Safe Area, Ruler). */
+
+RM.dict.add({ id:"edit-mediapool-guides", label:"Edit — Media Pool хайлт, эрэмбэ, Guides", icon:"⌕", page:"edit",
+note:"Media Pool-ийн хайлт, эрэмбэлэх, тохиргооны жагсаалт, ухаалаг хавтас (Smart Bin) үүсгэх цонх, viewer дээрх хүрээ, аюулгүй бүсийн шугам. Мөр бүр дэлгэцийн зургаас.", terms:[
+["Media Pool Search Bar","Media Pool-ийн хайлтын мөр","Media Pool-ийн ⌕ товчоор нээгдэх мөр: хайлтын талбар, зүүн талд шүүлтүүрийн ⌄, доор Search In (All Bins) ба Display (Full Clips).","","Edit → Media Pool → ⌕"],
+["Search In (Media Pool)","Хайх хүрээ","Хайлтыг аль хавтсанд хийхийг сонгоно — зурагт All Bins (бүх хавтас). Бусад сонголт зурагт задраагүй.","","Media Pool-ийн хайлтын мөр"],
+["Display (Media Pool Search)","Үр дүнг харуулах хэлбэр","Хайлтын үр дүнг ямар хэлбэрээр харуулахыг сонгоно — зурагт Full Clips (клипийг бүтнээр). AI хайлтад тохирох хэсгийг л харуулах сонголт байх магадлалтай — баталгаажаагүй.","","Media Pool-ийн хайлтын мөр"],
+["Media Pool Sort Menu","Media Pool-ийн эрэмбэлэх цэс","Media Pool-ийн ⇅ жагсаалт: Custom; File Name, Reel Name, Clip Name (зурагт чагттай), Start TC, Duration, Type, FPS, Audio Ch, Flags, Date Modified, Date Created, Date Added, Shot, Scene, Take, Camera #, Clip Color, File Path, Online Status; Ascending (✓) / Descending; Snap To Grid, Clean Up.","","Edit → Media Pool → ⇅"],
+["Ascending / Descending","Өсөх / буурах эрэмбэ","Сонгосон талбараар А→Я, 0→9, хуучнаас шинэ (Ascending, зурагт чагттай) эсвэл эсрэгээр (Descending) эрэмбэлнэ.","","Media Pool-ийн эрэмбэлэх цэс"],
+["Snap To Grid","Торонд наалдуулах","Thumbnail View-д клипийг чирж байрлуулахад тор (grid) руу наалдуулна. Зурагт чагттай боловч саарал (Custom эрэмбэ биш үед идэвхгүй бололтой).","","Media Pool-ийн эрэмбэлэх цэс"],
+["Clean Up","Цэгцлэх","Custom эрэмбэд гараар тарааж тавьсан клипүүдийг тор дээр эмх цэгцтэй болгоно. Зурагт саарал.","","Media Pool-ийн эрэмбэлэх цэс"],
+["Online Status","Файлын холбоосын төлөв","Клипийн эх файл олдож байгаа (online) эсвэл алга (offline, Media Offline) эсэх. Эрэмбэлэхэд алга болсон файлуудыг нэг дор олно.","","Media Pool-ийн эрэмбэлэх цэс"],
+["Media Pool Options Menu","Media Pool-ийн тохиргооны цэс","Media Pool-ийн … жагсаалт: IntelliSearch Mode ›, Reset IntelliSearch Analysis…, Show Filmstrip, Show Audio Waveforms ✓, Show Non-Rectified Audio Waveforms ✓, Show Import/Export Log, Show Smart Bins ✓, Show Power Bins, Update Usage for Entire Project…, Remove Unused Clips…, Export as PDF…, Deleted Timeline Backups….","","Edit → Media Pool → …"],
+["IntelliSearch Mode","IntelliSearch горим","Media Pool-ийн AI хайлтын (IntelliSearch) горимыг сонгох дэд цэс ›. Мөрүүд зурагт задраагүй.","","Media Pool → … цэс"],
+["Reset IntelliSearch Analysis","IntelliSearch шинжилгээг цэвэрлэх","Клипүүдийн AI шинжилгээний үр дүнг устгаж, дахин шинжлэх боломжтой болгоно.","","Media Pool → … цэс"],
+["Show Filmstrip","Кадрын туузыг харуулах","Media Pool-д сонгосон клипийн доор кадрын тууз (filmstrip) харуулна. Зурагт саарал — одоогийн харагдацад идэвхгүй бололтой.","","Media Pool → … цэс"],
+["Show Audio Waveforms (Media Pool)","Media Pool-д дууны долгион харуулах","Media Pool-ийн дууны клипийн зурагт долгион зурна. Зурагт чагттай.","","Media Pool → … цэс"],
+["Show Non-Rectified Audio Waveforms","Хоёр талт долгион (Media Pool)","Media Pool дахь долгионыг голоос дээш доош харуулна. Зурагт чагттай.","","Media Pool → … цэс"],
+["Show Import Log","Импортын бүртгэл","Медиа импортлох үед гарсан мэдээ, алдааны бүртгэлийг харуулна.","","Media Pool → … цэс"],
+["Show Export Log","Экспортын бүртгэл","Media Pool-оос экспортолсон зүйлсийн бүртгэлийг харуулна. Яг агуулга баталгаажаагүй.","","Media Pool → … цэс"],
+["Show Smart Bins","Ухаалаг хавтсыг харуулах","Media Pool-ийн зүүн талд Smart Bins хэсгийг харуулна. Зурагт чагттай.","","Media Pool → … цэс"],
+["Show Power Bins","Power Bin харуулах","Бүх төсөлд хамаарах Power Bins хэсгийг харуулна. Зурагт чагтгүй.","","Media Pool → … цэс"],
+["Update Usage for Entire Project","Хэрэглээг шинэчлэх","Клип бүр timeline-д хэдэн удаа хэрэглэгдсэнийг (Usage) бүх төслөөр дахин тоолно.","","Media Pool → … цэс"],
+["Remove Unused Clips","Хэрэглээгүй клипийг хасах","Аль ч timeline-д хэрэглээгүй клипүүдийг Media Pool-оос хасна (дискнээс устгахгүй).","","Media Pool → … цэс"],
+["Export as PDF","PDF болгож гаргах","Media Pool-ийн клипийн жагсаалтыг (зураг, мэдээлэлтэй) PDF файл болгоно. Яг агуулга баталгаажаагүй.","","Media Pool → … цэс"],
+["Deleted Timeline Backups","Устгасан timeline-ийн нөөц","Устгасан timeline-уудын нөөц хуулбарыг харуулж, буцааж сэргээх цонх.","","Media Pool → … цэс"],
+["Create Smart Bin","Ухаалаг хавтас үүсгэх","Нөхцөл (rule)-өөр клипийг автоматаар цуглуулах хавтас үүсгэх цонх: Name, Show in all projects, Match All of the following rules, нөхцлийн мөрүүд, Cancel / Create.","","Media Pool → хайлтын мөрийн товч · Smart Bins +"],
+["Show in All Projects","Бүх төсөлд харуулах","Create Smart Bin-ийн чагт. Асаавал энэ ухаалаг хавтас зөвхөн энэ төсөлд биш, бүх төсөлд гарна. Зурагт унтраалттай.","","Create Smart Bin цонх"],
+["Smart Bin Rules","Ухаалаг хавтасны нөхцөл","Match (All — бүгд, Any — аль нэг) ба нөхцлийн мөрүүд: ангилал, талбар, харьцуулалт (is), утга; − + товчоор хасах, нэмэх.","","Create Smart Bin цонх"],
+["AI Search Params","AI хайлтын параметр","Smart Bin-ийн нөхцлийн ангилал — AI (IntelliSearch) хайлтын тохиргоо. Зурагт: Search Option is Search All, Show Results Option is For All Faces.","","Create Smart Bin цонх"],
+["Viewer Guides Menu","Viewer-ийн хүрээ, шугамын самбар","Viewer-ийн толгойн ⛶ ⌄ самбар: Social Media (1:1, 4:5, 9:16, 1.91:1, 16:9), Broadcast and Film (Default, 1.33 … 2.40), Safe Area Guides (Extents, Action, Title, Center), Ruler Guides (Rulers, Guides).","","Edit → viewer-ийн толгой ⛶ ⌄"],
+["Social Media Guides","Сошиал медиагийн хүрээ","Viewer дээр 1:1, 4:5, 9:16, 1.91:1, 16:9 харьцааны хүрээ зурна — нэг бичлэгийг олон платформд тайрахад юу үлдэхийг харна. Зурагт 16:9 сонгогдсон.","","Viewer Guides самбар"],
+["Broadcast and Film Guides","Нэвтрүүлэг, киноны хүрээ","Viewer дээр 1.33, 1.77, 1.85, 2.35, 2.39, 2.40 харьцааны хүрээ зурна. Default — timeline-ийн харьцаа (tooltip: Timeline Aspect Ratio), зурагт сонгогдсон.","","Viewer Guides самбар"],
+["Safe Area Guides","Аюулгүй бүсийн шугам","Extents (зурагт сонгогдсон), Action, Title, Center — дэлгэцийн захад тайрагдахгүй бүс, гарчиг байрлах бүс, төвийн тэмдэг.","","Viewer Guides самбар"],
+["Proxy Menu (Viewer)","Проксины цэс (viewer)","Viewer-ийн толгойн ⌄ жагсаалт (прокси дүрстэй): Disable All Proxies, Prefer Proxies, Prefer Camera Originals (зурагт чагттай). Playback → Proxy Handling-тай ижил.","","Edit → viewer-ийн толгой"],
+["Timeline Resolution Menu (Viewer)","Timeline-ийн нягтралын цэс","Viewer-ийн толгойн ⌄ жагсаалт: Ultra HD 3840 x 2160 (зурагт чагттай), Full HD 1920 x 1080, Portrait 1080 x 1920, Square 1080 x 1080, Custom Timeline Settings. Timeline-ийн нягтралыг хурдан солих.","","Edit → viewer-ийн толгой"],
+["Portrait (1080 x 1920)","Босоо (1080 x 1920)","Timeline-ийн босоо нягтрал — TikTok, Reels, Shorts. Timeline-ийн нягтралын цэсийн мөр.","","Timeline-ийн нягтралын цэс"],
+["Square (1080 x 1080)","Дөрвөлжин (1080 x 1080)","Timeline-ийн дөрвөлжин нягтрал — Instagram пост. Timeline-ийн нягтралын цэсийн мөр.","","Timeline-ийн нягтралын цэс"],
+["Custom Timeline Settings","Timeline-ийн тохиргоог гараар","Timeline Settings цонх нээж нягтрал, кадрын хурд, өнгөний орон зайг гараар тохируулна.","","Timeline-ийн нягтралын цэс"],
+["Viewer Options Menu (Edit)","Viewer-ийн тохиргооны цэс (Edit)","Viewer-ийн толгойн … жагсаалт: Gang Viewers, Show All Video Frames, Show Timecode Toolbar; Previous / Next Timeline; Show Marker Overlays (✓), Show Timecode Overlays, Show Overlays During Playback; Markers ›.","","Edit → viewer-ийн толгой …"],
+["Gang Viewers","Viewer-уудыг холбох","Source ба Timeline viewer-ийн заагчийг хамт хөдөлгөнө — хоёр бичлэгийг кадраар харьцуулахад.","","Viewer-ийн … цэс"],
+["Show All Video Frames","Бүх кадрыг харуулах","Тоглуулалт удаашрах үед ч кадар алгасахгүй бүгдийг харуулна (дуу тасалдаж болно). Нарийн шалгалтад.","","Viewer-ийн … цэс"],
+["Show Timecode Toolbar","Тайм кодын мөрийг харуулах","Viewer-ийн доор тайм кодын нэмэлт мөр харуулна. Яг агуулга баталгаажаагүй.","","Viewer-ийн … цэс"],
+["Previous Timeline / Next Timeline","Өмнөх / дараагийн timeline","Нээлттэй timeline-уудын хооронд шилжинэ.","","Viewer-ийн … цэс"],
+["Show Marker Overlays","Тэмдэглэгээний тайлбарыг viewer-т харуулах","Заагч тэмдэглэгээн дээр ирэхэд түүний нэр, тайлбарыг viewer дээр харуулна. Зурагт чагттай.","","Viewer-ийн … цэс"],
+["Show Timecode Overlays","Тайм кодыг viewer-т харуулах","Viewer-ийн дүрс дээр тайм код давхарлаж харуулна (эцсийн бичлэгт орохгүй).","","Viewer-ийн … цэс"],
+["Show Overlays During Playback","Тоглуулах үед давхаргыг харуулах","Тэмдэглэгээ, тайм кодын давхаргыг тоглуулж байх үед ч харуулна. Зурагт чагтгүй.","","Viewer-ийн … цэс"]
 ]});
 
 </script>
@@ -12808,6 +13073,1453 @@ Fusion хуудасны **доод төлөвийн мөр** хоёр хэсэг
 });
 
 </script>
+<script>
+/* ── js/long/l17-edit-tses.js ── */
+/* ═════════════════════════════════════════════════════════════
+   Гарын авлагын дэлгэрэнгүй тайлбар · Edit хуудасны timeline-ийн хэрэгслийн мөр, viewer-ийн цэс
+   (2026-09-26-ны дэлгэцийн зургууд: viewer-ийн ▭⌄ жагсаалт, Timeline View Options, tooltip бүр,
+    туг, тэмдэглэгээний өнгө, Jog Wheel)
+   ═════════════════════════════════════════════════════════════ */
+RM.dict.long({
+
+"viewer-overlay-menu-edit": `
+## Зориулалт
+Edit хуудасны viewer-ийн **доод зүүн булангийн ▭ ⌄** жагсаалт нь viewer дээр ямар **дэлгэц дээрх удирдлага** (on-screen control) гарахыг сонгоно. Сонгосон горимд viewer дээр цагаан хүрээ, бариул, цэг гарч, клипийг хулганаар шууд чирж засна — Inspector-ийн тоог гараар бичихгүй.
+
+## Мөрүүд (Resolve Studio 21 — таны зурагт 8 мөр)
+1. **Transform** — байрлал, хэмжээ, эргэлт. [[transform]].
+2. **Crop** — дөрвөн талаас тайрах. [[crop]].
+3. **Dynamic Zoom** — эхлэл, төгсгөлийн хоёр хүрээ (ногоон, улаан). [[dynamic-zoom]].
+4. **Open FX Overlay** — Resolve FX эффектийн бариул. [[open-fx-overlay]].
+5. **Fusion Overlay** — Fusion эффект, гарчгийн удирдлага. [[fusion-overlay]].
+6. **Annotations** — viewer дээр зурж тэмдэглэх. [[annotations]].
+7. **Immersive** — immersive бичлэг харах горим. [[immersive-viewer]].
+8. **Smart Reframe** — AI хүрээлэлтийн цэг. [[smart-reframe]].
+
+## Бичлэгт нөлөөлөх үү
+- **Transform, Crop, Dynamic Zoom, Smart Reframe, Open FX, Fusion** — удирдлагаар чирсэн бүхэн Inspector-ийн утгыг өөрчилж, **бичлэгт шууд нөлөөлнө** (эцсийн файлд орно).
+- **Annotations** — зөвхөн тэмдэглэл; эцсийн бичлэгт **орохгүй**.
+- Горимыг сонгох нь өөрөө юу ч өөрчлөхгүй — зөвхөн аль бариул харагдахыг заана.
+
+> Товчны tooltip хараахан гараагүй — хулганаа ▭ ⌄ дээр тавиад зураг илгээвэл нэрийг нь баталгаажуулна.
+
+Холбоотой: [[viewer-overlay]], [[timeline-viewer]].
+`,
+
+"open-fx-overlay": `
+## Зориулалт
+**Open FX Overlay** горимд клипэд тавьсан **Resolve FX / OpenFX** эффектийн дэлгэц дээрх бариулууд viewer дээр гарна: гэрлийн толбоны төв, vignette-ийн голын цэг, blur-ийн хүрээ, чиглэлийн сум гэх мэт. Inspector дээр X, Y тоог гүйлгэхийн оронд цэгийг бичлэг дээр шууд чирнэ.
+
+## Хэрэглэх алхам
+1. Effects → **Resolve FX**-ээс эффектийг клип дээр чирнэ (жишээ нь Lens Flare, Vignette).
+2. Клипийг сонгоно; viewer-ийн ▭ ⌄ → **Open FX Overlay**.
+3. Viewer дээр гарсан цэг, хүрээг чирнэ. Inspector → **Effects** таб-ийн утга хамт өөрчлөгдөнө.
+4. Түлхүүр кадар тавибал (Inspector-ийн ◆) цэг цаг хугацаанд хөдөлнө.
+
+## Бичлэгт үзүүлэх нөлөө
+Эффектийн параметрийг өөрчилдөг тул **эцсийн бичлэгт нөлөөлнө**. Бариул өөрөө (цагаан цэг, шугам) бичлэгт харагдахгүй — зөвхөн засварлах үед.
+
+> Бүх эффект бариултай биш. Бариулгүй эффектэд энэ горим юу ч харуулахгүй.
+
+Холбоотой: [[openfx]], [[viewer-overlay-menu-edit]].
+`,
+
+"fusion-overlay": `
+## Зориулалт
+Edit хуудсанд тавьсан **Fusion эффект** (Effects → Fusion Effects) эсвэл **Fusion гарчиг** (Titles → Fusion Titles)-ийн дэлгэц дээрх удирдлагыг viewer дээр гаргана. Fusion хуудас руу шилжилгүй текстийн байрлал, хэмжээ, эффектийн төвийг чирж тохируулна.
+
+## Хэрэглэх алхам
+1. Fusion гарчиг эсвэл Fusion эффекттэй клипийг сонгоно.
+2. Viewer-ийн ▭ ⌄ → **Fusion Overlay**.
+3. Viewer дээр гарсан Fusion маягийн удирдлагыг (төвийн загалмай, хүрээ) чирнэ.
+4. Нарийн тохиргоо хэрэгтэй бол Inspector → **Video** эсвэл Fusion хуудас.
+
+## Бичлэгт үзүүлэх нөлөө
+Fusion нодын утгыг өөрчилдөг тул **бичлэгт нөлөөлнө**. Удирдлагын шугам өөрөө бичлэгт гарахгүй.
+
+> Энгийн Text (Edit хуудасны энгийн гарчиг)-ийн байрлалыг **Transform** горимоор засна; Fusion Overlay зөвхөн Fusion-д суурилсан зүйлд.
+
+Холбоотой: [[titles]], [[text-plus-node]], [[viewer-overlay-menu-edit]].
+`,
+
+"annotations": `
+## Зориулалт
+**Annotations** горимд viewer дээр **шугам, сум зурж** тэмдэглэл үлдээнэ: «энд өнгө засна», «энэ объектыг арилгана», «текстийг энд тавина». Хамтран ажиллагч, захиалагчтай санал солилцох, өөртөө сануулах зориулалттай.
+
+## Хэрэглэх алхам
+1. Заагчийг тэмдэглэх кадар дээр тавина.
+2. Viewer-ийн ▭ ⌄ → **Annotations**.
+3. Viewer-ийн дээд хэсэгт гарах хэрэгслээс зурах хэлбэр (чөлөөт шугам эсвэл сум), өнгө, зузааныг сонгоно.
+4. Viewer дээр зурна. Тэр кадарт автоматаар **тэмдэглэгээ (marker)** үүсэж, зураг түүнтэй хамт хадгалагдана.
+5. Устгах — зурсан зүйлийг сонгоод Delete, эсвэл маркерыг устгана.
+
+## Бичлэгт үзүүлэх нөлөө
+**Нөлөөлөхгүй.** Annotations эцсийн бичлэгт (Deliver) орохгүй — зөвхөн засварын үеийн тэмдэглэл.
+
+> Зурах хэрэгслийн яг нэр, байрлал Resolve 21-д баталгаажаагүй — Annotations сонгосон үеийн зураг илгээвэл нэмж тайлбарлана.
+
+Холбоотой: [[marker]], [[viewer-overlay-menu-edit]].
+`,
+
+"immersive-viewer": `
+## Зориулалт
+Viewer-ийн ▭ ⌄ жагсаалтын **Immersive** мөр. Resolve 20-оос immersive (180°, 360°, Apple Immersive Video) бичлэгтэй ажиллах боломж нэмэгдсэн тул энэ горим нь ийм бичлэгийг viewer дотор **эргүүлж харах, чиглэл сонгох** удирдлага гаргана гэж ойлгогдоно.
+
+## Одоогийн мэдэж байгаа зүйл
+- Нэр нь зурагт баталгаажсан (8 мөрийн 7 дахь).
+- Ердийн 16:9 бичлэгт хэрэглэх шаардлагагүй.
+
+> **Баталгаажаагүй:** яг ямар удирдлага гарах, ердийн бичлэгт юу хийх нь тодорхойгүй. Immersive сонгосны дараах viewer-ийн зургийг илгээнэ үү — таамаглалгүйгээр бичнэ.
+
+Холбоотой: [[viewer-overlay-menu-edit]].
+`,
+
+"jog-wheel": `
+## Зориулалт
+Viewer-ийн транспорт мөрийн зүүн талын **‹ ● ›** удирдлага (tooltip: **Jog Wheel**) — бичлэгийг **кадар кадраар удаан гүйлгэх** хүрд. Гол цэгийг (●) зүүн тийш чирвэл хойш, баруун тийш чирвэл урагш удаан явна; хэр хол чирнэ, төдий хурдан.
+
+## Jog Bar-аас ялгаа
+- **Jog Bar** — viewer-ийн доорх урт зурвас; чирэхэд клипийн аль ч хэсэг рүү **хурдан** үсэрнэ. [[jog-bar]].
+- **Jog Wheel** — байгаа газраасаа **нарийн, удаан** хөдөлнө. Огтлох, In/Out тавих кадрыг олоход.
+
+## Гараар хийх ижил үйлдэл
+- [k:←] [k:→] — нэг кадар хойш, урагш.
+- [k:J] [k:K] [k:L] — хойш тоглуулах, зогсоох, урагш тоглуулах; [k:K] барьж байгаад [k:J] эсвэл [k:L] — удаан.
+
+> Бичлэгт нөлөөлөхгүй — зөвхөн заагчийг хөдөлгөнө.
+
+Холбоотой: [[in-point]], [[timeline-viewer]].
+`,
+
+"show-keyframe-tray": `
+## Зориулалт
+Timeline хэрэгслийн мөрийн **2 дахь товч** (tooltip: **Show Keyframe Tray**). Нэрнээсээ timeline-д клипийн **түлхүүр кадрын (keyframe) тавиур** — клипийн доор эсвэл дээр түлхүүр кадрын ◆ тэмдгүүдийг харуулах хэсэг — нээх товч.
+
+## Дээд мөрийн Keyframes товчноос ялгаа
+Edit хуудасны **дээд** хэрэгслийн мөрөнд тусдаа **Keyframes** товч бий — Keyframe Editor самбарыг нээнэ. [[keyframe-editor]]. Show Keyframe Tray нь timeline-ийн **өөрийн** мөрөнд байгаа тул клип дээр шууд, жижгэвтэр тавиур гаргах товч байх магадлалтай.
+
+> **Баталгаажаагүй:** товчийг дарсны дараа юу гарахыг хараагүй. Түлхүүр кадартай клип сонгоод товчийг дарсан зургийг илгээнэ үү — тавиурын хэлбэр, үйлдлийг тайлбарлана.
+
+Холбоотой: [[keyframe]], [[keyframe-lanes]], [[keyframe-curves]].
+`,
+
+"voiceover": `
+## Зориулалт
+Timeline хэрэгслийн мөрийн **🎙 товч** (tooltip: **Voiceover**) — компьютерийн микрофоноос **өгүүлэгчийн дууг timeline-д шууд бичих** самбар нээнэ. Fairlight хуудас руу шилжилгүй, бичлэг үзэж байгаад тайлбар уншиж бичнэ.
+
+## Ерөнхий дараалал (Resolve 18.5-аас хойших Voiceover самбар)
+1. Заагчийг бичлэг эхлэх газарт тавина.
+2. **Voiceover** товч → самбар нээгдэнэ.
+3. Оролт (микрофон), бичих зам (дууны зам)-ыг сонгоно.
+4. Бичих товч → тоолол дуусаад ярина; зогсооход **шинэ дууны клип** timeline-д үүснэ.
+5. Дахин бичих бол ижил газраас дахин эхлүүлнэ — өмнөх нь давхарга (layer) болж үлдэнэ.
+
+## Бичлэгт үзүүлэх нөлөө
+Timeline-д **шинэ дууны клип нэмэгдэнэ** — эцсийн бичлэгт орно. Видеог өөрчлөхгүй.
+
+> **Баталгаажаагүй:** Resolve 21-ийн самбарын товч, тохиргооны яг нэрс. Самбарыг нээсэн зургийг илгээнэ үү.
+
+> Чихэвч зүүж бичнэ — чанга яригчаас timeline-ийн дуу микрофон руу орно.
+
+Холбоотой: [[record-voiceover]], [[mixer]].
+`,
+
+"position-lock": `
+## Зориулалт
+Timeline хэрэгслийн мөрийн **🔒 товч** (tooltip: **Position Lock**, товчлуургүй). Асаахад timeline дээрх **бүх клипийн байрлал, урт түгжигдэнэ**: зөөх, тайрах, хэрчих, шигтгэх боломжгүй. Гэхдээ клипийн **шинж** — өнгө (Color хуудас), Inspector-ийн Transform, тунгалаг, эффект, түлхүүр кадар — засагдана.
+
+## Хэзээ хэрэглэх
+- Монтаж батлагдсаны дараа (picture lock) — өнгө, дуу, эффект хийж байхдаа санамсаргүй клип хөдөлгөхгүйн тулд.
+- Timeline дээр түлхүүр кадар, opacity-г чирж засахад клип хамт хөдөлчих эрсдэлтэй үед.
+
+## Замын Lock-оос ялгаа
+- **Position Lock** — **бүх замын** клипийн **байрлалыг** түгжинэ, шинжийг засуулна.
+- **Track Lock** (замын толгойн 🔒) — **нэг замыг** бүхэлд нь түгжинэ; тэр замын клипийг сонгож ч болохгүй. [[track-lock]].
+
+## Бичлэгт үзүүлэх нөлөө
+Нөлөөлөхгүй — зөвхөн засварыг хамгаална.
+
+> Өмнө нь энэ товчийг загварт «Sync Lock» гэж андуурч холбосон байсныг засав — Resolve 21-ийн tooltip: Position Lock.
+
+Холбоотой: [[picture-lock]], [[linked-selection]].
+`,
+
+"full-extent-zoom": `
+## Зориулалт
+Timeline хэрэгслийн мөрийн баруун талын томруулалтын **1 дэх товч** (tooltip: **Full Extent Zoom**). Timeline-ийн **эхнээс төгсгөл хүртэл** бүх клипийг цонхонд багтааж харуулна. Таны зурагт товчийг дарахад 30 секундын клип timeline-ийн бүх өргөнийг эзэлсэн.
+
+## Гурван томруулалтын горим
+- **Full Extent Zoom** — бүхэлд нь. Бүтцийг харах, хол газар руу үсрэх.
+- **Detail Zoom** — заагчийн орчмыг ойроос. [[detail-zoom]].
+- **Custom Zoom** — гүйлгэгчээр өөрөө тохируулсан хэмжээ. [[custom-zoom]].
+Гурвуулаа нэг бүлэг — нэг нь идэвхтэй (цагаан) байна.
+
+## Гарын товчлуур
+[k:Shift+Z] — Zoom to Fit нь ижил үр дүнтэй. [[zoom-to-fit]].
+
+> Бичлэгт нөлөөлөхгүй — зөвхөн timeline-ийн харагдац.
+`,
+
+"detail-zoom": `
+## Зориулалт
+Томруулалтын **2 дахь товч** (tooltip: **Detail Zoom**). Timeline-ийг **заагчийн орчимд ойроос** томруулж, кадар бүр ялгарахуйц харуулна. Огтлолтыг кадраар тааруулах, богино клип, дууны нарийн хэсэгтэй ажиллахад.
+
+## Хэрэглэх
+1. Заагчийг ажиллах газарт тавина.
+2. **Detail Zoom** дарна — timeline тэр орчимд томроно.
+3. Ажил дуусаад **Full Extent Zoom**-оор бүхэлд нь харах руу буцна.
+
+> Бичлэгт нөлөөлөхгүй. Яг хэдэн кадар харагдах нь timeline-ийн урт, цонхны өргөнөөс хамаарна.
+
+Холбоотой: [[full-extent-zoom]], [[custom-zoom]], [[zoom-in-timeline]].
+`,
+
+"custom-zoom": `
+## Зориулалт
+Томруулалтын **3 дахь товч** (tooltip: **Custom Zoom**). Баруун талын **− ● +** гүйлгэгчээр өөрөө тохируулсан томруулалт руу буцна. Full Extent, Detail хоёрын аль нь ч тохиромжгүй үед хүссэн хэмжээгээ хадгалж ашиглана.
+
+## Хэрэглэх
+1. **Custom Zoom** дарна.
+2. − ● + гүйлгэгчийг чирж, эсвэл [k:Ctrl+=] [k:Ctrl+-]-ээр томруулна, жижигрүүлнэ.
+3. Бусад горим руу шилжээд буцахад энэ хэмжээ хадгалагдсан байна.
+
+> Бичлэгт нөлөөлөхгүй.
+
+Холбоотой: [[zoom-slider]], [[full-extent-zoom]], [[detail-zoom]].
+`,
+
+"flag-color-menu": `
+## Зориулалт
+Timeline хэрэгслийн мөрийн **туг ⌄** — тугийн товчны хажуугийн сум. Жагсаалтад **Clear All** ба **16 өнгө** (дүрс нь дөрвөлжин туг). Өнгө сонгоход тугийн товчны өнгө солигдож, дараагийн туг тэр өнгөөр тавигдана.
+
+## Мөрүүд (таны зурагт)
+- **Clear All** × — туг арилгах. [[clear-all-flags]].
+- Blue, Cyan, Green, Yellow, Red, Pink, Purple, Fuchsia, Rose, Lavender, Sky, Mint, Lemon, Sand, Cocoa, Cream. [[flag-color]].
+
+## Хэрэглэх
+1. ⌄ дээр дарж өнгө сонгоно (жишээ нь Green — бэлэн).
+2. Клипийг сонгоод тугийн товч дээр дарна — клипэд туг тавигдана.
+3. Media Pool-д тугаар шүүж, эсвэл Smart Bin-ээр цуглуулна.
+
+> Туг **клипэд бүхэлд нь** хамаарна (Media Pool-ийн эх клипэд). Тодорхой кадарт тэмдэг тавих бол marker. [[flag]], [[marker]].
+`,
+
+"marker-color-menu": `
+## Зориулалт
+Timeline хэрэгслийн мөрийн **marker ⌄** — тэмдэглэгээний товчны хажуугийн сум. Жагсаалтад **Clear All** ба тугийнхтай ижил **16 өнгө** (дүрс нь дугуй цэг). Сонгосон өнгө дараагийн тэмдэглэгээний өнгө болно.
+
+## Мөрүүд (таны зурагт)
+- **Clear All** × — тэмдэглэгээ арилгах. [[clear-all-markers]].
+- Blue, Cyan, Green, Yellow, Red, Pink, Purple, Fuchsia, Rose, Lavender, Sky, Mint, Lemon, Sand, Cocoa, Cream. [[marker-color]].
+
+## Хэрэглэх
+1. ⌄ дээр дарж өнгө сонгоно.
+2. Заагчийг кадар дээр тавиад marker товч эсвэл [k:M] — тэмдэглэгээ тавигдана.
+3. Клип сонгосон бол клип дээр, сонгоогүй бол timeline-ийн шугам дээр тавигдана.
+4. [k:M]-ийг хоёр дарвал нэр, тайлбар бичих цонх нээгдэнэ.
+
+Холбоотой: [[marker]], [[add-and-modify-marker]].
+`,
+
+"flag-color": `
+## Зориулалт
+Туг тавих өнгө. Resolve Studio 21-д **16 өнгө** бий (таны зурагт тугийн ⌄ жагсаалт): **Blue** (хөх), **Cyan** (цэнхэр), **Green** (ногоон), **Yellow** (шар), **Red** (улаан), **Pink** (ягаан), **Purple** (нил ягаан), **Fuchsia** (фукси), **Rose** (сарнай ягаан), **Lavender** (лаванда), **Sky** (тэнгэрийн цэнхэр), **Mint** (гаа ногоон), **Lemon** (нимбэг шар), **Sand** (элсний шаргал), **Cocoa** (какао бор), **Cream** (цөцгий цагаан).
+
+## Өнгөний утга
+Resolve өнгөнд утга оноодоггүй — өөрөө тогтооно. Жишээ дүрэм:
+- Green — бэлэн, хэрэглэнэ.
+- Red — асуудалтай, засах.
+- Yellow — эргэлзээтэй, дахин үзэх.
+- Blue — B-roll, нэмэлт зураг.
+
+> Багаар ажиллахдаа өнгөний дүрмээ бичиж тохирно.
+
+Холбоотой: [[flag]], [[flag-color-menu]].
+`,
+
+"marker-color": `
+## Зориулалт
+Тэмдэглэгээ (marker)-ийн өнгө — тэмдэглэгээг **төрлөөр нь ангилах**. Resolve Studio 21-д тугийнхтай ижил **16 өнгө**: Blue, Cyan, Green, Yellow, Red, Pink, Purple, Fuchsia, Rose, Lavender, Sky, Mint, Lemon, Sand, Cocoa, Cream (таны зурагт marker ⌄ жагсаалт).
+
+## Өнгө сонгох гурван арга
+1. Тавихын өмнө — timeline хэрэгслийн мөрийн marker ⌄-ээс. [[marker-color-menu]].
+2. Тавьсны дараа — тэмдэглэгээг хоёр товшиж нээгдэх цонхны Color.
+3. Cut хуудсанд — Set Color and Add Marker. [[set-color-and-add-marker]].
+
+## Жишээ дүрэм
+- Red — засах ёстой.
+- Green — хөгжмийн цохилт, огтлох цэг.
+- Blue — хадмал, текст тавих газар.
+- Purple — эффект нэмэх газар.
+
+> Edit Index (Markers) жагсаалтад өнгөөр шүүж, бүх улаан тэмдэглэгээгээр дараалан явна. [[edit-index]].
+`,
+
+"clear-all-flags": `
+## Зориулалт
+Тугийн ⌄ жагсаалтын эхний мөр **Clear All** (баруун талд ×). Нэрнээсээ **тугийг бүгдийг нь арилгана** — бүх өнгийн.
+
+## Хамрах хүрээ
+Туг нь Media Pool-ийн эх клипэд хамаардаг тул энэ команд **сонгосон клипийн** тугийг арилгадаг байх магадлалтай. Бүх timeline-аас арилгадаг эсэх нь баталгаажаагүй.
+
+> **Баталгаажаагүй.** Туг тавьсан хоёр клипээс нэгийг сонгоод Clear All дарахад юу болсныг зурагт авбал тодорхой болно.
+
+> Mark цэсний **Clear Flags** ижил төстэй команд. [[clear-flags]].
+
+Холбоотой: [[flag-color-menu]], [[flag]].
+`,
+
+"clear-all-markers": `
+## Зориулалт
+Тэмдэглэгээний ⌄ жагсаалтын эхний мөр **Clear All** (баруун талд ×). Нэрнээсээ **тэмдэглэгээг бүгдийг нь арилгана**.
+
+## Хамрах хүрээ
+Сонгосон клипийн тэмдэглэгээ үү, timeline-ийн шугам дээрх тэмдэглэгээ үү, эсвэл бүгд үү гэдэг нь **баталгаажаагүй**. Mark цэсний Delete All Markers нь сонголтоос хамаарч ажилладаг. [[delete-all-markers]].
+
+> Арилгасан тэмдэглэгээг [k:Ctrl+Z]-оор буцаана. Тэмдэглэгээнд Annotations зураг хадгалагдсан бол тэр нь хамт устана.
+
+Холбоотой: [[marker-color-menu]], [[marker]].
+`,
+
+"timeline-view-options": `
+## Зориулалт
+Edit хуудасны timeline хэрэгслийн мөрийн **хамгийн зүүн товч** (⚌). Timeline **хэрхэн харагдахыг** тохируулна — юу ч бичлэгт өөрчлөгдөхгүй. Resolve 21-д дүрс товчтой самбар биш, **жагсаалт** хэлбэртэй (таны зурагт).
+
+## Мөрүүд (таны зурагт, ✓ — асаалттай)
+- **Display Stacked Timelines** — timeline-уудыг таб болгох. [[display-stacked-timelines]].
+- **Display Subtitle Tracks** ✓ — хадмалын зам. [[display-subtitle-tracks]].
+- **Display Audio Waveforms** ✓ — дууны долгион. [[display-audio-waveforms]].
+- **Display Clip Names** ✓ — клипийн нэр. [[display-clip-names]].
+- **Display Clip Durations** ✓ — клипийн урт (Cut хуудсанд ганц тоогоор «Duration»). [[display-clip-duration]].
+- **Thumbnail View ›** — клип дээрх зургийн хэлбэр. [[thumbnail-view-timeline]].
+- **Viewer Background ›** — viewer-ийн дэвсгэр. [[viewer-background]].
+- **Fixed Playhead** — заагч голд тогтох (Edit-д унтраалттай). [[fixed-playhead]].
+- **Display Non-Rectified Waveforms** ✓, **Display Full Waveforms**, **Display Waveform Borders**, **Display Scaled Waveforms** — долгионы хэлбэр. [[display-non-rectified-waveforms]].
+- **Track Height** — Video, Audio гүйлгэгч. [[track-height]].
+- **Set as Default View** — анхдагч болгох товч. [[set-as-default-view]].
+
+> Бүгд зөвхөн **харагдац** — бичлэг, дуу өөрчлөгдөхгүй. Timeline удаан хөдөлбөл долгион, зургийг унтрааж хөнгөлнө.
+
+> Товчны tooltip зурагт гараагүй — хулганаа ⚌ дээр тавиад авсан зургийг илгээвэл нэрийг баталгаажуулна.
+
+Холбоотой: [[timeline-options]] (Cut хуудасны хувилбар).
+`,
+
+"display-stacked-timelines": `
+## Зориулалт
+**Display Stacked Timelines** асаахад timeline самбарын дээд хэсэгт нээлттэй timeline бүр **таб** болж гарна. Табыг товшиж timeline хооронд шилжинэ; нэгийг нь нөгөөгийнхөө доор давхарлан (stack) нэгэн зэрэг харж, клипийг нэгээс нөгөө рүү чирж хуулна.
+
+## Хэрэглэх жишээ
+- 16:9 ба 9:16 хувилбарыг зэрэг засах.
+- «Сонголт» timeline-аас хэрэгтэй хэсгийг гол timeline руу чирэх.
+- Хуучин хувилбартай харьцуулах.
+
+> Таны зурагт **унтраалттай**. Бичлэгт нөлөөлөхгүй.
+
+Холбоотой: [[timeline-view-options]], [[timeline]].
+`,
+
+"display-subtitle-tracks": `
+## Зориулалт
+Хадмалын (subtitle) замуудыг timeline-д **харуулах эсвэл нуух**. Таны зурагт **асаалттай** (✓).
+
+## Хэзээ унтраах
+Хадмал бэлэн болсон, одоо зөвхөн дүрс засаж байгаа бол нуугаад timeline-д зай гаргана. Нуусан ч хадмал устахгүй, viewer дээр харагдах эсэх нь хадмалын замын өөрийн тохиргооноос хамаарна.
+
+> Бичлэгт нөлөөлөхгүй — Deliver дээр хадмал гаргах эсэхийг тусад нь сонгоно. [[subtitle-export]].
+
+Холбоотой: [[subtitle]], [[create-subtitles-from-audio]].
+`,
+
+"display-audio-waveforms": `
+## Зориулалт
+Дууны клип дээр **долгион (waveform)** зурах эсэх. Таны зурагт **асаалттай** (✓) — A1 замын ногоон клип дээрх цагаан хээ бол долгион.
+
+## Яагаад чухал
+- Хүний яриа хаана эхэлж, дуусахыг долгионоор харж огтолно.
+- Хөгжмийн цохилт (оргил) дээр видеог огтолно.
+- Дуугүй хэсэг (шулуун шугам)-ийг олж хасна.
+
+> Маш урт timeline дээр долгион зурах нь компьютерийг ачаална — удаан бол түр унтраана. Бичлэгт нөлөөлөхгүй.
+
+Холбоотой: [[audio-waveform]], [[display-non-rectified-waveforms]], [[track-height]].
+`,
+
+"display-non-rectified-waveforms": `
+## Зориулалт
+Дууны долгионыг **хоёр талтай** — голын шугамаас дээш (эерэг) ба доош (сөрөг) — зурна. Таны зурагт **асаалттай** (✓), тиймээс A1 клипийн долгион голоороо тэгш хэмтэй харагдаж байна.
+
+## Rectified ба Non-Rectified
+- **Non-Rectified** (асаалттай) — дууны долгионы жинхэнэ хэлбэр: дээш доош. Fairlight, дууны программуудын ердийн харагдац.
+- **Rectified** (унтраавал) — сөрөг хагасыг эерэг болгож, **доороос дээш нэг талт** зурна. Ижил өндөрт долгион хоёр дахин том харагдаж, намуухан дууг ч ялгахад хялбар.
+
+> Зөвхөн харагдац — дуу өөрчлөгдөхгүй.
+
+Холбоотой: [[display-audio-waveforms]], [[display-full-waveforms]].
+`,
+
+"display-full-waveforms": `
+## Зориулалт
+Нэрнээсээ дууны долгионыг клипийн **бүх өндрөөр** (нэрийн мөрийг оролцуулан, эсвэл хагас биш бүтэн хэлбэрээр) харуулах тохиргоо. Таны зурагт **унтраалттай**.
+
+> **Баталгаажаагүй:** асаахад яг юу өөрчлөгдөхийг хараагүй. Асааж, унтраасан хоёр зургийг (ижил газар) илгээвэл ялгааг нь тайлбарлана.
+
+> Зөвхөн харагдац — дуу өөрчлөгдөхгүй.
+
+Холбоотой: [[display-non-rectified-waveforms]], [[display-waveform-borders]].
+`,
+
+"display-waveform-borders": `
+## Зориулалт
+Нэрнээсээ дууны долгионы **ирмэгийг зураасаар** тодруулж зурах тохиргоо — ногоон клип дээр цагаан долгион бүдэг харагдах үед хэлбэрийг нь ялгахад. Таны зурагт **унтраалттай**.
+
+> **Баталгаажаагүй:** асаасан үеийн зургийг илгээнэ үү.
+
+> Зөвхөн харагдац — дуу өөрчлөгдөхгүй.
+
+Холбоотой: [[display-full-waveforms]], [[display-scaled-waveforms]].
+`,
+
+"display-scaled-waveforms": `
+## Зориулалт
+Нэрнээсээ клипийн **дууны түвшинг** (Inspector → Audio → Volume, эсвэл клип дээрх түвшний шугам) өөрчлөхөд долгион нь **хамт томорч, жижгэрэх** тохиргоо. Унтраалттай үед долгион эх файлын түвшинг харуулж, та түвшинг багасгасан ч хэвээр харагдана. Таны зурагт **унтраалттай**.
+
+> **Баталгаажаагүй:** клипийн Volume-ийг −10 dB болгож, асаасан, унтраасан хоёр зургийг илгээвэл баталгаажуулна.
+
+Холбоотой: [[display-audio-waveforms]], [[track-height]].
+`,
+
+"thumbnail-view-timeline": `
+## Зориулалт
+Timeline View Options-ийн **Thumbnail View ›** дэд цэс — timeline дээрх **видео клипт зураг хэрхэн харагдахыг** сонгоно. Media Pool-ийн Thumbnail View (клипүүдийг зурган карт болгох)-оос **өөр**. [[thumbnail-view]].
+
+## Resolve 20-д байсан сонголтууд
+- **Filmstrip** — клипийн бүх уртаар дараалсан зураг (таны зурагт V1 клип ийм).
+- **Thumbnail** — зөвхөн эхэн, төгсгөлийн зураг.
+- **Simple** — зураггүй, зөвхөн өнгөт хавтан ба нэр; хамгийн хөнгөн.
+
+> **Баталгаажаагүй:** Resolve 21-ийн дэд цэсний мөрүүд зурагт задраагүй. › дээр хулганаа тавьсан зургийг илгээнэ үү.
+
+> Зөвхөн харагдац — бичлэгт нөлөөлөхгүй.
+
+Холбоотой: [[timeline-view-options]].
+`,
+
+"track-height": `
+## Зориулалт
+Timeline View Options-ийн доод хэсгийн **Track Height** — **Video**, **Audio** хоёр гүйлгэгч. Видео, дууны замын өндрийг тус тусад нь тохируулна.
+
+## Хэзээ өндөр, хэзээ нам
+- **Өндөр видео зам** — клип дээрх зураг том харагдаж, хүссэн кадраа олоход.
+- **Өндөр дууны зам** — долгион том, яриа, цохилтыг нарийн харж огтлоход.
+- **Нам зам** — олон замтай төсөлд бүгдийг нэг дэлгэцэнд багтаах.
+
+## Нэг замыг л өндөрсгөх
+Замын толгойн доод ирмэгийг чирвэл зөвхөн тэр зам өндөрсөнө. [[enlarge-track]].
+
+> Зөвхөн харагдац. Тохиргоогоо хадгалах бол **Set as Default View**. [[set-as-default-view]].
+`,
+
+"set-as-default-view": `
+## Зориулалт
+Timeline View Options-ийн **хамгийн доод товч**. Одоогийн харагдацын тохиргоог — долгион, клипийн нэр, урт, Thumbnail View, Track Height — **шинэ timeline-ийн анхдагч** болгож хадгална. Дараа нь шинэ timeline нээхэд дахин тохируулах шаардлагагүй.
+
+## Хэрэглэх
+1. Timeline View Options-ийг хүссэнээрээ тохируулна.
+2. **Set as Default View** дарна.
+3. Шинэ timeline үүсгэж шалгана.
+
+> Одоо байгаа бусад timeline-ийн харагдацад нөлөөлөх эсэх нь **баталгаажаагүй**. Бичлэгт нөлөөлөхгүй.
+
+Холбоотой: [[timeline-view-options]], [[track-height]].
+`,
+
+"slip": `
+## Зориулалт
+**Slip** — клипийн timeline дээрх **байрлал, уртыг хөдөлгөлгүй**, дотор нь эх бичлэгийн **аль хэсэг** харагдахыг гулсуулна. Хүрээ хэвээр, «цонхны» цаана бичлэг гүйнэ гэж төсөөл.
+
+## Хэрхэн хийх
+- **Trim Edit Mode** [k:T] → клипийн **дээд хагасаас** зүүн, баруун тийш чирнэ. Viewer 4 хуваагдаж, шинэ эхлэл, төгсгөлийн кадрыг харуулна. [[trim-edit-mode]].
+- **Dynamic Trim Mode (Slip)** [k:W] → клип сонгоод [k:J] [k:K] [k:L]-ээр. [[dynamic-trim-mode-slip]].
+- Гараар: клип сонгоод [k:,] [k:.] (1 кадар).
+
+## Бичлэгт үзүүлэх нөлөө
+Клипийн **эхлэл, төгсгөлийн кадр өөрчлөгдөнө** — жишээ нь хөдөлгөөн эхлэхээс өмнөх илүүдэл кадрыг гаргаж, үйлдэл эрт эхэлдэг болно. Timeline-ийн нийт урт, бусад клип хэвээр.
+
+> Эх файлд In-ээс өмнө, Out-оос хойш **илүү кадар (handle)** байх ёстой — байхгүй бол гулсахгүй.
+
+Холбоотой: [[slide]], [[roll]].
+`,
+
+"slide": `
+## Зориулалт
+**Slide** — клипийн **агуулгыг хэвээр**, түүнийг timeline дээр хөрш хоёр клипийнх нь **хооронд зөөнө**. Өмнөх клип уртасч, дараагийнх нь богиносно (эсвэл эсрэгээр); нийт урт хэвээр.
+
+## Хэрхэн хийх
+- **Trim Edit Mode** [k:T] → клипийн **доод хагасаас** (нэрний мөр орчмоос) чирнэ. [[trim-edit-mode]].
+- Dynamic Trim-ийн дэд горимыг Slide болгоод [k:J] [k:K] [k:L]. [[dynamic-trim]].
+
+## Бичлэгт үзүүлэх нөлөө
+Зөөсөн клип **эрт эсвэл орой** гарна; хөрш хоёр клипийн огтлолт шилжинэ. Бусад бүх клип байрандаа.
+
+> Хөрш клипүүдэд илүү кадар байх ёстой.
+
+Холбоотой: [[slip]], [[roll]].
+`,
+
+"retime-and-scaling": `
+## Зориулалт
+Inspector → **Video** таб-ийн **Retime and Scaling** хэсэг. Хоёр асуултад хариулна:
+- **Retime** — клипийн хурдыг өөрчилсөн (удаашруулсан) үед байхгүй **завсрын кадрыг яаж үүсгэх** вэ.
+- **Scaling** — клипийн хэмжээ timeline-ийнхээс өөр үед **яаж багтаах** вэ.
+
+## Resolve 20-д байсан мөрүүд
+- **Retime Process** — Nearest (кадрыг давтах, шуугиантай), Frame Blend (хоёр кадрыг холих, зөөлөн), Optical Flow (хөдөлгөөнийг тооцоолж шинэ кадр зурах, хамгийн гөлгөр).
+- **Motion Estimation** — Optical Flow-ийн нарийвчлал (Speed Warp — Studio, AI).
+- **Scaling** — Crop, Fit, Fill, Stretch. [[crop-fit-fill-stretch]].
+- **Resize Filter** — томруулах, жижигрүүлэх шүүлтүүр (Sharper, Smoother гэх мэт).
+
+## Бичлэгт үзүүлэх нөлөө
+**Шууд нөлөөлнө:** удаашруулсан хөдөлгөөн жигд эсвэл «шүдтэй» харагдах, кадрын ирмэг хар зураастай, эсвэл тайрагдсан байх нь эндээс шалтгаална.
+
+> **Баталгаажаагүй:** таны зурагт хэсэг хураалттай. › дээр дарж задалсан зургийг илгээвэл Resolve 21-ийн мөрүүдийг баталгаажуулна.
+
+Холбоотой: [[speed-change]], [[retime-controls]].
+`,
+
+"ai-super-scale": `
+## Зориулалт
+Inspector → **Video** таб-ийн **AI Super Scale** хэсэг (Studio). Бага нягтралтай клипийг (жишээ нь 720p, 1080p) **DaVinci Neural Engine**-ээр 2×, 3×, 4× томруулж, энгийн томруулалтаас илүү **нарийн ширхэг сэргээнэ**. Өмнөх хувилбаруудад Clip Attributes цонхонд байсан **Super Scale**-ийг клип бүрт Inspector-оос асаадаг болсон. [[super-scale]].
+
+## Хэзээ хэрэглэх
+- 1080p бичлэгийг 4K timeline-д тавих.
+- Хуучин, бага нягтралтай архивын бичлэг.
+- Хүчтэй zoom хийсэн (Transform → Zoom 2.0) клипийн бүдгэрлийг багасгах.
+
+## Бичлэгт үзүүлэх нөлөө
+Клипийн **нарийвчлал нэмэгдэнэ** — ирмэг, үс, бичвэр тодорно. Тооцоолол хүнд тул тоглуулалт удаашрах магадлалтай; Render Cache асаана.
+
+> Таны зурагт хэсэг хураалттай, унтраалга нь улаан (асаалттай) харагдана. Доторх тохиргооны нэрс баталгаажаагүй — задалсан зураг хэрэгтэй.
+
+Холбоотой: [[resolution]].
+`,
+
+"semi-tones": `
+## Зориулалт
+Inspector → **Audio** таб-ийн **Semi Tones** гүйлгэгч — дууны **өндрийг (pitch) хагас тоноор** өөрчилнө. Хурд, урт өөрчлөгдөхгүй.
+
+## Утга
+- **+12** — нэг октав өндөр (хүүхэд мэт, «хулгана» дуу).
+- **−12** — нэг октав нам (бүдүүн, аймшигтай).
+- **±1…3** — хөгжмийг өөр аянд тааруулах, дуу хоолойг бага зэрэг өөрчлөх.
+Таны зурагт **0**.
+
+> Нарийн тааруулалт — **Cents**. [[cents]].
+
+> Их хэмжээгээр өөрчлөхөд дуу «металл» болж чанар алдагдана.
+
+Холбоотой: [[pitch]], [[equalizer-inspector]].
+`,
+
+"cents": `
+## Зориулалт
+Inspector → **Audio** таб-ийн **Cents** гүйлгэгч — дууны өндрийг **хагас тоны 1/100**-аар маш нарийн тааруулна. 100 цент = 1 хагас тон.
+
+## Хэзээ хэрэглэх
+- Хоёр хөгжим, хөгжмийн зэмсэг бага зэрэг «зөрсөн» сонсогдох үед тааруулах.
+- Semi Tones-оор ойролцоо тааруулаад Cents-ээр нарийвчлах.
+Таны зурагт **0**.
+
+> Бичлэгийн дуунд нөлөөлнө (эцсийн файлд орно).
+
+Холбоотой: [[semi-tones]].
+`,
+
+"equalizer-inspector": `
+## Зориулалт
+Inspector → **Audio** таб-ийн **Equalizer** — клипийн дууны **давтамжийг** (бүдүүн, дунд, нарийн) тус бүрд нь өсгөж, бууруулна. Fairlight хуудас руу шилжилгүй клип бүрт. Таны зурагт **унтраалттай** (унтраалга саарал).
+
+## Бүтэц (таны зурагт)
+- Дээд талд **график**: хэвтээ — давтамж (Hz: 62, 250, 1K, 4K, 16K), босоо — өсгөлт (dB).
+- Доор **6 зурвас: B1 … B6**. Зурвас бүрт шүүлтүүрийн хэлбэрийн ⌄ жагсаалт, давтамж (Hz), өсгөлт (dB), **Q**.
+- Зурагт: B1 — 50 Hz (доод шүүлтүүр маягийн дүрс), B2 — 500 Hz, B3 — 239 Hz, B4 — 1.2K, B5 — 3.5K, B6 — 10.0K (дээд шүүлтүүр маягийн дүрс); B2–B5-ийн өсгөлт 0.0 dB, B3–B5-ийн Q 1.0.
+
+## Түгээмэл засвар
+- **Ярианы бүдүүн дууг цэвэрлэх** — B1-ийг 80–100 Hz доод шүүлтүүр (low cut).
+- **Ярианы тод байдал** — 2–5 kHz орчимд +2…+4 dB.
+- **«Хайрцагны» дуу** — 300–500 Hz орчимд −3 dB.
+- **Исгэрэх (s, ш)** — 6–8 kHz-д бага зэрэг бууруулах.
+
+## Бичлэгт үзүүлэх нөлөө
+Клипийн дууг **шууд өөрчилнө** — эцсийн файлд орно.
+
+> Шүүлтүүрийн хэлбэрийн ⌄ жагсаалтын мөрүүд баталгаажаагүй — нээсэн зургийг илгээнэ үү.
+
+Холбоотой: [[q-eq]], [[eq]].
+`,
+
+"q-eq": `
+## Зориулалт
+Эквалайзерын зурвас бүрийн **Q** — өсгөлт, бууралт хэр **өргөн давтамжид** тархахыг заана.
+- **Бага Q** (0.3–0.7) — өргөн, зөөлөн муруй. Ерөнхий өнгө аяс засахад.
+- **Дунд Q** (≈1.0) — таны зурагт B3–B5. Ердийн засвар.
+- **Их Q** (5–10+) — маш нарийн, хурц «ховил». Тодорхой шуугиан (жишээ нь 50 Hz гүн) хасахад.
+
+> Q нь зөвхөн хонх (bell) хэлбэрийн зурвасд утгатай; шүүлтүүр, тавиур (shelf) хэлбэрт өөр утгатай байж болно.
+
+Холбоотой: [[equalizer-inspector]].
+`,
+
+"non-additive-dissolve": `
+## Зориулалт
+**Non-Additive Dissolve** — хоёр кадрыг ердийн байдлаар холихгүй, пиксел бүрт **аль гэрэлтэй нь** (тод хэсэг) давамгайлан гарч ирэх уусгалт. Эхний кадрын бараан хэсэг рүү дараагийн кадрын тод хэсэг эрт «нэвчинэ».
+
+## Бусад уусгалттай харьцуулбал
+- **Cross Dissolve** — энгийн, жигд холилт. [[cross-dissolve]].
+- **Additive Dissolve** — хоёрыг нэмж, дунд нь **гэрэлтэж** харагдана. [[additive-dissolve]].
+- **Non-Additive Dissolve** — тод хэсэг давамгайлж, бараан хэсэг хожуу солигдоно. Гэрлийн эх үүсвэр, гал, од зэрэгтэй кадарт сонирхолтой.
+
+## Хэрэглэх
+Effects → Toolbox → **Video Transitions** → **Dissolve** → огтлолт дээр чирнэ.
+
+Холбоотой: [[transition]], [[smooth-cut]].
+`,
+
+"additive-dissolve": `
+## Зориулалт
+**Additive Dissolve** — хоёр кадрыг пиксел бүрээр **нэмж** холих уусгалт. Шилжилтийн дунд хоёулаа бүрэн хүчтэй давхцаж, зураг **гэрэлтэж, цайж** харагдана — «гэрлийн гялбаа» маягийн шилжилт.
+
+## Хэзээ хэрэглэх
+- Дурсамж, зүүд рүү шилжих.
+- Тод, гэрэлтэй хоёр кадрын хооронд эрч нэмэх.
+
+> Бараан кадрын хооронд бараг Cross Dissolve шиг харагдана; тод кадарт хэт цайж магадгүй — шилжилтийн уртыг богиносгоно.
+
+Холбоотой: [[cross-dissolve]], [[non-additive-dissolve]].
+`,
+
+"blur-dissolve": `
+## Зориулалт
+**Blur Dissolve** — эхний кадр **бүдгэрч** (blur) байж дараагийн, бас бүдгэрсэн кадр руу уусаад, дараа нь тодорно. Фокус алдаж, дахин олох мэт.
+
+## Хэзээ хэрэглэх
+- Цаг хугацаа, газар солигдох.
+- Дурсамж руу орох, гарах.
+- Дуу, хөгжим зөөлөн шилжих үе.
+
+> Inspector → Transition таб-аас бүдгэрлийн хүчийг тохируулна (тохиргооны нэрс баталгаажаагүй).
+
+Холбоотой: [[cross-dissolve]], [[transition]].
+`,
+
+"smooth-cut": `
+## Зориулалт
+**Smooth Cut** — ярилцлагаас «өө, аан» гэх мэт жижиг хэсгийг хассаны дараа үлдэх **үсрэлт (jump cut)**-ийг Optical Flow-оор нөхөж, огтлолтыг **үл мэдэгдэх** болгох шилжилт.
+
+## Хэрэглэх
+1. Ярилцлагын хоёр хэсгийн хоорондох илүүдлийг хасна (хүн бараг хөдлөөгүй байх ёстой).
+2. Effects → **Dissolve** → **Smooth Cut**-ийг огтлолт дээр чирнэ.
+3. Шилжилтийн уртыг **2–6 кадар** гэх мэт маш богино болгоно.
+
+## Бичлэгт үзүүлэх нөлөө
+Хоёр кадрын хоорондох хөдөлгөөнийг тооцоолж шинэ завсрын кадр зурна — толгой, гар бага хөдөлсөн бол огтлолт мэдэгдэхгүй.
+
+> Хүн их хөдөлсөн эсвэл ар дэвсгэр өөрчлөгдсөн бол гажиг гарна — тэр үед B-roll тавь.
+
+Холбоотой: [[transition]], [[jump-cut]].
+`,
+
+"iris-transitions": `
+## Зориулалт
+**Iris** бүлгийн шилжилтүүд — дараагийн кадр **хэлбэрийн дотроос** томорч гарч ирнэ (эсвэл хэлбэр жижгэрч хаагдана). Хуучин кино, хүүхэлдэйн киноны хэв маяг.
+
+## Жагсаалт (таны зурагт)
+Arrow Iris (сум), Cross Iris (загалмай), Diamond Iris (ромб), Eye Iris (нүд), Hexagon Iris (зургаан өнцөгт), Oval Iris (зууван), Pentagon Iris (таван өнцөгт), Square Iris (дөрвөлжин) — доошоо үргэлжилнэ.
+
+## Тохируулах
+Шилжилтийг сонгоод Inspector → **Transition** таб: төвийн байрлал, ирмэгийн зөөлөн, хүрээний өнгө гэх мэт (нэрс баталгаажаагүй).
+
+> Мэргэжлийн кино, баримтат кинонд ховор — хөгжилтэй, ретро хэв маягт тохиромжтой.
+
+Холбоотой: [[transition]], [[shape-transitions]].
+`,
+
+"motion-transitions": `
+## Зориулалт
+**Motion** бүлгийн шилжилтүүд — кадрууд **хөдөлж** солигдоно (таны зурагт 4):
+- **Barn Door** — хоёр хаалга мэт голоос хоёр тийш нээгдэнэ.
+- **Push** — шинэ кадр хуучныг **түлхэж** гаргана.
+- **Slide** — шинэ кадр хуучны **дээгүүр гулсаж** орно (хуучин нь хөдлөхгүй).
+- **Split** — хуучин кадр хэд хэдэн хэсэгт хуваагдаж хоёр тийш явна.
+
+## Анхаарах
+Inspector → Transition таб-аас чиглэл (зүүнээс, дээрээс …) сонгоно.
+
+> Энэ **Slide** шилжилт нь Trim-ийн **Slide** тайралтаас огт өөр. [[slide]].
+
+Холбоотой: [[transition]], [[wipe-transitions]].
+`,
+
+"shape-transitions": `
+## Зориулалт
+**Shape** бүлгийн шилжилтүүд — дараагийн кадр **дүрсийн хэлбэрээр** томорч нээгдэнэ (таны зурагт 5): **Box** (дөрвөлжин), **Heart** (зүрх), **Star** (од), **Triangle Left**, **Triangle Right** (гурвалжин).
+
+## Iris-ээс ялгаа
+Iris-тэй төстэй ч Shape-д хөгжилтэй, чимэглэлийн дүрс (зүрх, од) голлоно. Хурим, төрсөн өдөр, хүүхдийн бичлэгт.
+
+> Inspector → Transition таб-аас төв, ирмэгийн зөөлөн, хүрээ тохируулна (нэрс баталгаажаагүй).
+
+Холбоотой: [[iris-transitions]], [[transition]].
+`,
+
+"wipe-transitions": `
+## Зориулалт
+**Wipe** бүлгийн шилжилтүүд — **шугам эсвэл хэлбэр** кадрыг «арчиж» дараагийнхыг гаргана (таны зурагт 8):
+- **Band Wipe** — хэвтээ туузууд ээлжлэн.
+- **Center Wipe** — голоос хоёр тийш.
+- **Clock Wipe** — цагийн зүү мэт эргэж.
+- **Edge Wipe** — нэг ирмэгээс нөгөө рүү шулуун шугам.
+- **Radial Wipe** — төвөөс цацраг хэлбэрээр.
+- **Spiral Wipe** — мушгиа хэлбэрээр.
+- **Venetian Blind Wipe** — хөшигний хавтас мэт.
+- **X Wipe** — X хэлбэрээр.
+
+## Анхаарах
+Inspector → Transition-оос ирмэгийн зөөлөн (softness), хүрээний өнгө, өнцгийг тохируулна. Зөөлөн ирмэгтэй Edge Wipe нь уусгалтаас илүү «хөдөлгөөнтэй» боловч тайван.
+
+Холбоотой: [[transition]], [[motion-transitions]].
+`,
+
+"fusion-transitions": `
+## Зориулалт
+**Fusion Transitions** — Fusion хуудсанд бүтээсэн, **бэлэн хөдөлгөөнт** шилжилтүүд. Энгийн шилжилтээс илүү эффекттэй: гажилт, чичиргээ, гэрэл, эргэлт. Таны зурагт: Block Glitch, Box Twist, Box Wipe, Brightness Flash, Camera Shake, Checker Wipe, Circle Spin, Circles … (доошоо үргэлжилнэ).
+
+## Хэрэглэх
+1. Огтлолт дээр чирнэ.
+2. Шилжилтийг сонгоод Inspector → **Transition** таб-аас тохируулна.
+3. Илүү нарийн засвар — шилжилт дээр баруун товч → **Open in Fusion Page** (нэр баталгаажаагүй).
+
+## Анхаарах
+> Fusion шилжилт тоглуулалтыг удаашруулдаг — Render Cache асаана.
+> Нэр нь тодорхой: Glitch — дижитал гажилт, Camera Shake — камер чичрэх, Brightness Flash — цагаан гялбаа.
+
+Холбоотой: [[transition]], [[fusion-page]].
+`,
+
+"multitext": `
+## Зориулалт
+Titles жагсаалтын **MultiText** — нэг гарчгийн клипэд **хэд хэдэн тусдаа текст** (Text 1, Text 2 …) байрлуулна. Тус бүр өөр фонт, хэмжээ, өнгө, байрлалтай; нэг клип учраас timeline-д зам нэмэх шаардлагагүй.
+
+## Хэзээ хэрэглэх
+- Нэр ба албан тушаалыг өөр хэмжээтэй.
+- Дэлгэцийн хоёр өөр газар тайлбар.
+- Хадмал ба гарчгийг хамт.
+
+> Resolve 20-оос нэмэгдсэн гарчиг. Inspector-ийн яг тохиргооны нэрс баталгаажаагүй.
+
+Холбоотой: [[text]], [[titles]].
+`,
+
+"left-middle-right-lower-third": `
+## Зориулалт
+Titles жагсаалтын **Left Lower Third**, **Middle Lower Third**, **Right Lower Third** — ярилцлага, мэдээнд **хүний нэр, албан тушаал**-ыг дэлгэцийн доод гуравны нэгт гаргах бэлэн гарчиг. Нэр нь байрлалыг заана: зүүн, дунд, баруун.
+
+## Хэрэглэх
+1. Titles → хүссэн Lower Third-ийг V2 зам руу, ярилцлагын клипийн дээр чирнэ.
+2. Inspector → Title таб-д нэр, албан тушаалыг бичнэ.
+3. Урт нь ихэвчлэн 4–6 секунд.
+
+> Хүн дэлгэцийн зүүн талд бол гарчгийг баруун талд (эсвэл эсрэгээр) тавьж нүүрийг бүү халх.
+
+Холбоотой: [[lower-third]], [[multitext]].
+`,
+
+"opacity": `
+## Зориулалт
+Inspector → Video → **Composite** хэсгийн **Opacity** — клипийн **тунгалаг бус байдал** (0–100). 100 — бүрэн харагдана (таны зурагт 100.00), 0 — бүрэн тунгалаг, доорх зам харагдана.
+
+## Хэрэглэх жишээ
+- V2 дээрх зургийг 50 болгож доорх бичлэгтэй хагас хольж харуулах.
+- ◆ түлхүүр кадраар 0 → 100 болгож зөөлөн гаргах (fade in).
+- Composite Mode-той хамт — жишээ нь Screen + 60 гэрлийн толбо нэмэх. [[composite-mode]].
+
+## Бичлэгт үзүүлэх нөлөө
+Шууд нөлөөлнө. Доор зам байхгүй бол тунгалаг хэсэг **хар** болно.
+
+> Timeline дээр клипийн дээд захын цагаан шугамыг чирж ч Opacity өөрчилж болно (зам өндөр байх үед).
+`
+
+});
+
+</script>
+<script>
+/* ── js/long/l18-edit-media-export.js ── */
+/* ═════════════════════════════════════════════════════════════
+   Гарын авлагын дэлгэрэнгүй тайлбар · Edit — Media Pool-ийн цэс, Quick Export, Blackmagic Cloud Folder
+   (2026-09-26-ны дэлгэцийн зургууд)
+   ═════════════════════════════════════════════════════════════ */
+RM.dict.long({
+
+"ai-analysis-menu-media-pool": `
+## Зориулалт
+Media Pool-ийн дээд мөрийн зүүн талын **⌄ жагсаалт** (Media Pool-ийн хоёр дахь дүрс товчны хажууд). Клипүүдийг **AI-аар шинжлэх** командууд.
+
+## Мөрүүд (таны зурагт)
+1. **Perform AI Analysis in all Clips** ✓ — бүх клип. [[perform-ai-analysis-in-all-clips]].
+2. **Perform AI Analysis in Selected Clips** — сонгосон клип. [[perform-ai-analysis-in-selected-clips]].
+3. **Audio Transcription** — яриаг бичвэр болгох (зурагт саарал). [[audio-transcription]].
+
+## Юунд хэрэгтэй
+Шинжилгээ хийсэн клипийг **агуулгаар нь хайна**: «хүн», «сансрын хувцас», «ярьж байна» гэх мэт — Media Pool-ийн хайлтаар. Олон зуун клиптэй төсөлд хэрэгтэй клипээ секундэд олно.
+
+> Бичлэгт нөлөөлөхгүй — зөвхөн нэмэлт мэдээлэл (metadata) үүсгэнэ.
+
+> Товчны tooltip зурагт гараагүй — хулганаа тавьсан зургийг илгээвэл нэрийг баталгаажуулна.
+`,
+
+"perform-ai-analysis-in-all-clips": `
+## Зориулалт
+Media Pool-ийн **бүх клипийг** DaVinci Neural Engine-ээр шинжилнэ: кадр дахь хүн, нүүр, объект, үйлдэл, яриа. Үр дүнг хайлтад ашиглана.
+
+## Чагт
+Таны зурагт энэ мөр **чагттай** — нэг удаагийн команд биш, асаалттай үед шинэ клип импортлоход **автоматаар** шинжилдэг горим гэж ойлгогдоно.
+
+## Анхаарах
+> Олон, урт клиптэй бол шинжилгээ удаан, GPU ачаална — компьютер удаашрах үед сонгосон клипээр хязгаарлана. [[perform-ai-analysis-in-selected-clips]].
+
+> **Баталгаажаагүй:** шинжилгээний үр дүн Media Pool-д хаана, ямар нэрээр харагдах. Шинжилгээний дараах Media Pool (List View) эсвэл хайлтын зургийг илгээнэ үү.
+
+Холбоотой: [[ai-analysis-menu-media-pool]], [[metadata]].
+`,
+
+"perform-ai-analysis-in-selected-clips": `
+## Зориулалт
+Media Pool-д **сонгосон клипүүдийг** л AI-аар шинжилнэ. Бүх төслийг шинжлэх шаардлагагүй, эсвэл шинэ клип нэмсэн үед хэрэглэнэ.
+
+## Хэрэглэх
+1. Media Pool-д клипүүдийг сонгоно ([k:Ctrl] эсвэл [k:Shift] барьж).
+2. AI шинжилгээний ⌄ → **Perform AI Analysis in Selected Clips**.
+3. Дуусахыг хүлээгээд хайлтаар шалгана.
+
+> Бичлэгт нөлөөлөхгүй.
+
+Холбоотой: [[perform-ai-analysis-in-all-clips]].
+`,
+
+"audio-transcription": `
+## Зориулалт
+Клипийн **яриаг бичвэр** (transcript) болгоно. Бичвэрийг:
+- үгээр **хайж** хэрэгтэй хэсгээ олох,
+- бичвэрээс мөр сонгож timeline-д **засварлах** (Text-Based Editing), [[text-based-editing]]
+- **хадмал** үүсгэхэд ашиглана. [[create-subtitles-from-audio]].
+
+## Таны зурагт
+Мөр **саарал** (идэвхгүй), дүрс нь бичвэрийн хуудас. Клип сонгоогүй үед идэвхгүй байдаг бололтой — клип сонгоод дахин нээж шалгана уу.
+
+> Монгол хэлний танилт Resolve-д байгаа эсэх **баталгаажаагүй** — хэлний жагсаалтын зургийг илгээвэл нэмнэ.
+`,
+
+"media-pool-view-menu": `
+## Зориулалт
+Media Pool-ийн дээд мөрийн **▦ ⌄** жагсаалт — клипүүд Media Pool-д **ямар хэлбэрээр** харагдахыг сонгоно.
+
+## Мөрүүд (таны зурагт)
+- **Metadata View** — карт: зураг + мэдээлэл. [[metadata-view]].
+- **Thumbnail View** ✓ — том зураг (одоогийн). [[thumbnail-view]].
+- **List View** — хүснэгт: нэр, урт, нягтрал, кодек … баганаар. [[list-view]].
+- Доор **гүйлгэгч** — зургийн хэмжээ (Thumbnail View-д).
+
+## Аль нь хэзээ
+- Бичлэг **нүдээр** сонгох — Thumbnail View.
+- Олон клипийг **эрэмбэлэх, шүүх** (огноо, нэр, кодек) — List View.
+- Зураг ба мэдээллийг **хамт** — Metadata View.
+
+> Бичлэгт нөлөөлөхгүй.
+`,
+
+"metadata-view": `
+## Зориулалт
+Media Pool-ийн **Metadata View** — клип бүр жижиг **карт**: зүүн талд зураг, баруун талд нэр, урт, огноо, камер, үзэгдэл/авалтын дугаар, тэмдэглэл гэх мэт гол мэдээлэл.
+
+## Хэзээ хэрэглэх
+- Зураг авалтын өдөр, камер, үзэгдлээр ялгах.
+- Тэмдэглэл (Comments), үнэлгээ (Good Take) бичсэн клипийг харах.
+- Media Pool-ийн дээд мөрийн эрэмбэлэх (⇅) товчоор картуудыг бүлэглэх.
+
+> Картад харагдах талбаруудыг тохируулах арга Resolve 21-д баталгаажаагүй.
+
+Холбоотой: [[media-pool-view-menu]], [[metadata]].
+`,
+
+"blackmagic-cloud-folder": `
+## Зориулалт
+Media Pool-ийн дээд мөрийн **☁ товчоор** нээгдэх **Blackmagic Cloud Folder** цонх — Blackmagic Cloud дээрх хавтсыг Resolve-той холбож, түүний медиаг **компьютер руу татах**, синк хийх.
+
+## Талбарууд (таны зурагт)
+- **Blackmagic Cloud Folder** — «No Folder Selected»; **Select** товчоор Cloud-ийн хавтас сонгоно.
+- **Download Folder Location** — татсан файл хадгалах хавтас; **Browse** — өөрчлөх. [[download-folder-location]].
+- **For Media Files** — **Sync Proxies Only** эсвэл **Sync Proxies and Used Originals** (сонгогдсон). [[sync-proxies-only]], [[sync-proxies-and-used-originals]].
+- Доор: **Go to Blackmagic Cloud**, **Cancel**, **Download** (хавтас сонгоогүй тул саарал).
+
+## Хэзээ хэрэглэх
+- Зураг авалтын талбайгаас (жишээ нь Blackmagic камер) Cloud руу шууд илгээсэн бичлэгийг студид татах.
+- Хоёр монтажчин өөр газраас нэг төслийн медиаг хуваалцах.
+
+> Blackmagic Cloud данс шаардлагатай. [[blackmagic-cloud-account]].
+
+> Зурагт таны хэрэглэгчийн хавтасны зам харагдсан — энд зориуд бичээгүй.
+`,
+
+"download-folder-location": `
+## Зориулалт
+Blackmagic Cloud-оос татсан медиа компьютерийн **аль хавтсанд** хадгалагдахыг заана. Анхдагч нь хэрэглэгчийн хавтас доторх **DaVinci Resolve Media** (таны зурагт).
+
+## Зөвлөмж
+- Системийн C: диск биш, **хурдан, том** диск (SSD, гадаад диск) сонгоно — 4K эх файл маш их зай эзэлнэ.
+- Төсөл бүрт тусдаа хавтас үүсгэвэл дараа нь цэвэрлэхэд хялбар.
+
+> **Browse** товчоор өөрчилнө.
+
+Холбоотой: [[blackmagic-cloud-folder]].
+`,
+
+"sync-proxies-only": `
+## Зориулалт
+Cloud-оос **зөвхөн прокси** (жижиг, хөнгөн хувилбар) файлыг татна.
+
+## Давуу, сул тал
+- **Давуу:** хурдан татагдана, диск бага эзэлнэ, сул компьютер дээр гөлгөр тоглоно.
+- **Сул:** эцсийн гаргалт (Deliver) эх файлаар хийгдэх ёстой — дараа нь эх файлыг татах эсвэл эх файлтай компьютер дээр гаргана.
+
+> Прокси гэж юу вэ — [[proxy-media]].
+
+Холбоотой: [[sync-proxies-and-used-originals]].
+`,
+
+"sync-proxies-and-used-originals": `
+## Зориулалт
+Cloud-оос прокси болон **timeline-д хэрэглэсэн эх файлуудыг** татна (таны зурагт **сонгогдсон**). Хэрэглээгүй эх файлыг татахгүй тул бүгдийг татахаас хэмнэлттэй.
+
+## Хэзээ сонгох
+- Энэ компьютер дээр **эцсийн гаргалт** хийх бол.
+- Өнгө засах (Color) — прокси биш эх файл дээр засах нь зөв.
+
+> Timeline-д шинэ клип нэмэх бүрд түүний эх файл нэмж татагдах эсэх баталгаажаагүй.
+
+Холбоотой: [[sync-proxies-only]], [[blackmagic-cloud-folder]].
+`,
+
+"go-to-blackmagic-cloud": `
+## Зориулалт
+Blackmagic Cloud Folder цонхны зүүн доод товч — хөтөчөөр **Blackmagic Cloud**-ийн сайтыг нээнэ. Тэнд хавтас үүсгэх, хэн рүү хуваалцах, эрх (үзэх, засах) тохируулах, хадгалах зай шалгана.
+
+> Resolve дотроос хавтас үүсгэх боломжгүй бол энэ товчоор эхлээд сайтад үүсгэнэ.
+
+Холбоотой: [[blackmagic-cloud-folder]], [[blackmagic-cloud-account]].
+`,
+
+"h-264-master": `
+## Зориулалт
+**Quick Export**-ийн анхдагч бэлдэц (таны зурагт улаан хүрээтэй, сонгогдсон). Timeline-ийг **H.264** кодекоор нэг товшилтоор гаргана.
+
+## Таны зурагт харагдсан тохиргоо
+- **Filename** — SEEDANCE_v1_30s (timeline-ийн нэр).
+- **Resolution** — 3840 x 2160 (timeline-ийн нягтрал).
+- **Video Codec** — H.264. **Frame Rate** — 24 fps.
+- **Audio** — Stereo. **Audio Codec** — AAC. **Duration** — 31s.
+- **Limit data rate to** — унтраалттай. [[limit-data-rate]].
+
+## Хэзээ хэрэглэх
+Ихэнх тохиолдолд: захиалагчид илгээх, утсаар үзэх, сошиалд байршуулах. H.264-ийг бараг бүх төхөөрөмж тоглуулна.
+
+## Хэрэглэх
+1. Дээд мөрийн **Quick Export**.
+2. **H.264 Master** сонгоно — баруун талд тохиргоо харагдана.
+3. **Export** → хадгалах газраа сонгоно.
+
+> Нарийн тохиргоо (битийн хурд, аудио суваг, хадмал) хэрэгтэй бол **Deliver** хуудас. [[h-264]].
+`,
+
+"h-265-master": `
+## Зориулалт
+Quick Export-ийн **H.265 (HEVC)** бэлдэц. Ижил чанарт H.264-өөс **ойролцоогоор хоёр дахин жижиг** файл.
+
+## Анхаарах
+- 4K, HDR бичлэгт тохиромжтой.
+- Хуучин компьютер, ТВ, зарим хөтөч H.265 тоглуулахгүй байж магадгүй — захиалагч юугаар үзэхийг асуу.
+- Кодлох хугацаа урт; GPU кодлогч байвал хурдан.
+
+Холбоотой: [[h-265-hevc]], [[h-264-master]].
+`,
+
+"hyperdeck-quick-export": `
+## Зориулалт
+Quick Export-ийн **HyperDeck** бэлдэц — Blackmagic **HyperDeck** бичигч/тоглуулагч (шууд нэвтрүүлэг, дэлгэцэнд тоглуулах төхөөрөмж) шууд тоглуулах форматаар гаргана.
+
+> **Баталгаажаагүй:** Resolve 21-ийн энэ бэлдэцийн кодек, нягтрал. Бэлдэцийг сонгосон үеийн баруун талын тохиргооны зургийг илгээнэ үү.
+
+Холбоотой: [[quick-export]].
+`,
+
+"vimeo-quick-export": `
+## Зориулалт
+Quick Export-ийн **Vimeo** бэлдэц — Vimeo-д тохирсон форматаар гаргана. Resolve-ийн тохиргоонд (Preferences → Internet Accounts) Vimeo данс холбосон бол **шууд байршуулна**: нэр, тайлбар, нууцлалыг цонхонд бичнэ.
+
+> Данс холбоогүй бол зөвхөн файл гаргана.
+
+Холбоотой: [[quick-export]], [[youtube-preset]].
+`,
+
+"tiktok-quick-export": `
+## Зориулалт
+Quick Export-ийн **TikTok** бэлдэц — TikTok-т тохирсон форматаар гаргаж, данс холбосон бол **шууд байршуулна**.
+
+## Анхаарах
+- TikTok босоо (9:16) — timeline-ийг 1080×1920 болгож, **Smart Reframe**-ээр гол объектыг хүрээнд байлгана. [[smart-reframe]].
+- Хэвтээ timeline-ийг гаргавал дээр доор нь хар зурвас гарна.
+
+Холбоотой: [[quick-export]].
+`,
+
+"presentations-quick-export": `
+## Зориулалт
+Quick Export-ийн **Presentations** бэлдэц — бичлэгийг **Blackmagic Cloud**-ийн **Presentations** руу байршуулна. Захиалагч хөтөчөөр үзэж, **кадар дээр сэтгэгдэл** үлдээнэ; сэтгэгдэл Resolve-ийн timeline-д тэмдэглэгээ болж ирдэг гэж Blackmagic тайлбарладаг.
+
+> **Баталгаажаагүй:** Resolve 21-д яг ийм ажиллах эсэх. Blackmagic Cloud данс шаардлагатай. [[blackmagic-cloud-account]].
+
+Холбоотой: [[quick-export]].
+`,
+
+"dropbox-quick-export": `
+## Зориулалт
+Quick Export-ийн **Dropbox** бэлдэц — гаргасан файлыг холбосон **Dropbox** данс руу шууд байршуулна; захиалагч руу холбоос илгээхэд хялбар.
+
+> Данс холбох — Preferences → Internet Accounts (Resolve 21-д баталгаажаагүй).
+
+Холбоотой: [[quick-export]].
+`,
+
+"replay-quick-export": `
+## Зориулалт
+Quick Export-ийн **Replay** бэлдэц (таны зурагт хамгийн доод мөрөнд). Blackmagic-ийн **Replay** — шууд нэвтрүүлэг, спортын давталт (replay) хийх ажлын урсгал; энэ бэлдэц түүнд тохирсон форматаар гаргадаг байх магадлалтай.
+
+> **Баталгаажаагүй:** яг зориулалт, формат. Replay-г сонгосон үеийн баруун талын тохиргооны зургийг илгээнэ үү.
+
+Холбоотой: [[quick-export]].
+`,
+
+"limit-data-rate": `
+## Зориулалт
+Quick Export-ийн **Limit data rate to … Kb/s** чагт. Асаавал видеоны **битийн хурдыг** (секундэд хэдэн килобит) заасан утгаас хэтрүүлэхгүй. Таны зурагт **унтраалттай**, утга нь **80000 Kb/s** (≈ 80 Мбит/с).
+
+## Тооцоо
+Файлын хэмжээ ≈ битийн хурд × хугацаа. 80000 Kb/s × 31 с ≈ 2 480 000 Kb ≈ **310 МБ**.
+- 4K YouTube-д 35 000–45 000 Kb/s хангалттай.
+- 1080p-д 8 000–16 000 Kb/s.
+
+## Бичлэгт үзүүлэх нөлөө
+Бага утга — **жижиг файл**, гэхдээ хөдөлгөөн ихтэй, нарийн ширхэгтэй (од, тоос, ус) кадарт **блок, бүдэгрэл** гарна.
+
+Холбоотой: [[bit-rate]], [[h-264-master]].
+`
+
+});
+
+</script>
+<script>
+/* ── js/long/l19-edit-mediapool-guides.js ── */
+/* ═════════════════════════════════════════════════════════════
+   Гарын авлагын дэлгэрэнгүй тайлбар · Edit — Media Pool-ийн хайлт, эрэмбэ, «…» цэс, Smart Bin, viewer-ийн Guides
+   (2026-09-26-ны дэлгэцийн зургууд)
+   ═════════════════════════════════════════════════════════════ */
+RM.dict.long({
+
+"media-pool-search-bar": `
+## Зориулалт
+Media Pool-ийн дээд мөрийн **⌕** товчийг дарахад хавтасны жагсаалтын дээр **хайлтын мөр** нээгдэнэ.
+
+## Бүрэлдэхүүн (таны зурагт)
+- Зүүн талд **шүүлтүүрийн ⌄** — юугаар хайхыг (нэр, мэдээлэл, AI) сонгох цэс (мөрүүд нь баталгаажаагүй).
+- **Хайлтын талбар** — бичихэд Media Pool шууд шүүгдэнэ.
+- Баруун талд хоёр дүрс товч — нэг нь хайлтаас **ухаалаг хавтас** (Smart Bin) үүсгэх, нөгөө нь хүн/нүүрээр хайх ⌄ байх магадлалтай (tooltip баталгаажаагүй). [[create-smart-bin]].
+- **Search In: All Bins** — хайх хүрээ. [[search-in-media-pool]].
+- **Display: Full Clips** — үр дүнгийн хэлбэр. [[display-media-pool-search]].
+
+## Хайлтын жишээ
+- Нэрээр: «Cockpit» — бүх cockpit клип.
+- AI шинжилгээ хийсэн бол агуулгаар: «сансрын нисгэгч». [[perform-ai-analysis-in-all-clips]].
+
+> Хайлтыг арилгахад Media Pool бүх клипээ буцааж харуулна.
+`,
+
+"media-pool-sort-menu": `
+## Зориулалт
+Media Pool-ийн **⇅** жагсаалт — клипүүдийг **ямар талбараар, ямар чиглэлд** эрэмбэлэхийг сонгоно.
+
+## Мөрүүд (таны зурагт)
+- **Custom** — гараар чирж байрлуулсан дараалал.
+- Талбар: **File Name**, **Reel Name**, **Clip Name** ✓, **Start TC**, **Duration**, **Type**, **FPS**, **Audio Ch**, **Flags**, **Date Modified**, **Date Created**, **Date Added**, **Shot**, **Scene**, **Take**, **Camera #**, **Clip Color**, **File Path**, **Online Status**.
+- **Ascending** ✓ / **Descending** — чиглэл. [[ascending-descending]].
+- **Snap To Grid** (✓, саарал), **Clean Up** (саарал) — Custom эрэмбийн туслах. [[snap-to-grid]], [[clean-up]].
+
+## Түгээмэл хэрэглээ
+- **Date Created** — зураг авалтын дарааллаар.
+- **Duration** — хамгийн богино/урт клипийг олох.
+- **Scene / Take** — киноны зураг авалтын дугаараар.
+- **Online Status** — алга болсон (offline) файлуудыг нэг дор. [[online-status]].
+
+> Эрэмбэ зөвхөн Media Pool-ийн харагдац — timeline, бичлэгт нөлөөлөхгүй.
+`,
+
+"snap-to-grid": `
+## Зориулалт
+Thumbnail View-д клипийг гараар чирж байрлуулахад (Custom эрэмбэ) **тор руу наалдуулна** — клипүүд эгнээ, баганаараа тэгш байрлана.
+
+## Таны зурагт
+Чагттай, гэхдээ **саарал** — Clip Name-ээр эрэмбэлсэн үед гараар байрлуулах боломжгүй тул идэвхгүй. **Custom** сонгосны дараа идэвхжинэ гэж ойлгогдоно.
+
+Холбоотой: [[clean-up]], [[media-pool-sort-menu]].
+`,
+
+"clean-up": `
+## Зориулалт
+Custom эрэмбэд гараар тарааж тавьсан клипүүдийг **тор дээр эмх цэгцтэй** болгож, хоосон зайг арилгана.
+
+## Таны зурагт
+**Саарал** — Custom эрэмбэ биш үед идэвхгүй.
+
+Холбоотой: [[snap-to-grid]], [[media-pool-sort-menu]].
+`,
+
+"online-status": `
+## Зориулалт
+Клипийн эх файл **олдож байгаа** (online) эсвэл **алга** (offline) эсэх. Файлыг зөөсөн, дискийг салгасан, нэрийг өөрчилсөн бол клип offline болж, viewer-т улаан **Media Offline** гарна.
+
+## Засах
+1. Media Pool-ийг **Online Status**-ээр эрэмбэлж offline клипүүдийг нэг дор олно.
+2. Сонгоод баруун товч → **Relink Selected Clips** (эсвэл Media Pool-ийн relink товч) → файлын шинэ байрлалыг заана.
+
+> Нэр нь баталгаажсан; Relink командын яг нэр Resolve 21-д баталгаажаагүй.
+
+Холбоотой: [[media-offline]].
+`,
+
+"media-pool-options-menu": `
+## Зориулалт
+Media Pool-ийн дээд мөрийн баруун захын **…** жагсаалт — Media Pool-ийн харагдац, AI хайлт, бүртгэл, цэвэрлэгээний командууд.
+
+## Мөрүүд (таны зурагт, 7 бүлэг)
+1. **IntelliSearch Mode ›**, **Reset IntelliSearch Analysis…** — AI хайлт. [[intellisearch-mode]].
+2. **Show Filmstrip** (саарал).
+3. **Show Audio Waveforms** ✓, **Show Non-Rectified Audio Waveforms** ✓.
+4. **Show Import Log**, **Show Export Log**.
+5. **Show Smart Bins** ✓, **Show Power Bins**. [[smart-bin]], [[power-bin]].
+6. **Update Usage for Entire Project…**, **Remove Unused Clips…** [[remove-unused-clips]].
+7. **Export as PDF…**; **Deleted Timeline Backups…** [[deleted-timeline-backups]].
+
+> «…»-тэй төгссөн мөр цонх нээнэ.
+`,
+
+"intellisearch-mode": `
+## Зориулалт
+**IntelliSearch** — Resolve-ийн **AI хайлт**: клипийг агуулгаар нь (хүн, нүүр, объект, үйлдэл, яриа) хайна. **IntelliSearch Mode ›** дэд цэсээр хайлтын горимыг сонгоно.
+
+## Ажиллах дараалал
+1. Клипүүдийг шинжилнэ — AI шинжилгээний ⌄ → Perform AI Analysis. [[perform-ai-analysis-in-all-clips]].
+2. ⌕ хайлтын мөрөнд бичнэ. [[media-pool-search-bar]].
+3. Үр дүнг Smart Bin болгож хадгална. [[ai-search-params]].
+
+> **Баталгаажаагүй:** дэд цэсний мөрүүд. › дээр хулганаа тавьсан зургийг илгээнэ үү.
+
+Холбоотой: [[reset-intellisearch-analysis]].
+`,
+
+"update-usage-for-entire-project": `
+## Зориулалт
+Клип бүр timeline-уудад **хэдэн удаа хэрэглэгдсэнийг** (Usage) бүх төслөөр дахин тоолно. List View-ийн **Usage** баганад тоо гарна.
+
+## Хэзээ хэрэглэх
+- Аль клипийг хэрэглээгүйг мэдэх (Usage = 0).
+- **Remove Unused Clips**-ийн өмнө тоог шинэчлэх. [[remove-unused-clips]].
+
+> Бичлэгт нөлөөлөхгүй.
+`,
+
+"remove-unused-clips": `
+## Зориулалт
+Аль ч timeline-д **хэрэглээгүй** клипүүдийг Media Pool-оос хасна. Том төслийг цэгцлэх, архивлах (Project Archive), медиа удирдах (Media Management) өмнө.
+
+## Анхаарах
+> Клип **Media Pool-оос** л хасагдана — дискэн дээрх файл **устахгүй**.
+> Дараа хэрэг болох B-roll, хөгжмийг ч хасна — эхлээд хэрэгтэйгээ timeline эсвэл тусдаа хавтсанд хадгал; хавтас (bin) хамаарах эсэх баталгаажаагүй.
+> Буцаах: [k:Ctrl+Z].
+
+Холбоотой: [[update-usage-for-entire-project]], [[media-management]].
+`,
+
+"deleted-timeline-backups": `
+## Зориулалт
+**Устгасан timeline-уудын нөөц хуулбарыг** харуулах цонх — санамсаргүй устгасан timeline-ийг сэргээнэ.
+
+## Хэрэглэх
+1. Media Pool → … → **Deleted Timeline Backups…**
+2. Жагсаалтаас timeline-ийг огноогоор нь олно.
+3. Сэргээх товч (нэр баталгаажаагүй) → Media Pool-д буцаж орно.
+
+> Нөөц хэдий хугацаанд хадгалагдах нь баталгаажаагүй. Чухал ажлыг File → Export → Timeline, эсвэл Project Archive-аар тусад нь хадгал.
+
+Холбоотой: [[create-timeline-backup]].
+`,
+
+"create-smart-bin": `
+## Зориулалт
+**Create Smart Bin** цонх — **нөхцөл (rule)**-д тохирсон клипүүдийг автоматаар цуглуулдаг **ухаалаг хавтас** үүсгэнэ. Клипийг гараар хуулахгүй: шинэ клип нөхцөлд тохирвол өөрөө орно. [[smart-bin]].
+
+## Цонхны хэсгүүд (таны зурагт)
+- **Name** — хавтасны нэр (анхдагч «Smart Bin 1»).
+- **Show in all projects** — бүх төсөлд. [[show-in-all-projects]].
+- **Match All of the following rules** — нөхцөл бүгд биелэх (All) эсвэл аль нэг (Any). [[smart-bin-rules]].
+- Нөхцлийн мөр: ☑ **AI Search Params** · **Search Option** · is · **Search All**; ☑ **AI Search Params** · **Show Results Option** · is · **For All Faces**. [[ai-search-params]].
+- Мөр бүрийн баруун талд **−** (хасах), **+** (нэмэх).
+- **Cancel**, **Create**.
+
+## Жишээ нөхцөл
+- Keyword is «Interview» — ярилцлагын бүх клип.
+- Flags is Green — ногоон тугтай клип.
+- Duration less than 00:00:02:00 — 2 секундээс богино.
+
+> Энэ цонх хайлтын мөрийн товчоос нээгдсэн тул AI хайлтын нөхцөлөөр урьдчилан бөглөгдсөн.
+`,
+
+"show-in-all-projects": `
+## Зориулалт
+Create Smart Bin-ийн баруун дээд **Show in all projects** чагт. Асаавал энэ ухаалаг хавтас (нөхцөлтэй нь) **бүх төсөлд** гарна — жишээ нь «Ногоон тугтай клип», «Ярилцлага» гэх мэт байнга хэрэглэдэг шүүлтүүрийг нэг удаа үүсгэнэ.
+
+> Таны зурагт **унтраалттай**. Хавтас зөвхөн нөхцөл — клип төсөл бүрийнхээрээ өөр байна.
+
+Холбоотой: [[create-smart-bin]], [[power-bin]].
+`,
+
+"smart-bin-rules": `
+## Зориулалт
+Ухаалаг хавтасны **нөхцлүүд**. Мөр бүр 4 хэсэгтэй: **ангилал** (жишээ нь Media Pool Properties, Metadata, AI Search Params) → **талбар** → **харьцуулалт** (is, contains, greater than …) → **утга**.
+
+## Match
+- **All** — бүх нөхцөл зэрэг биелсэн клип (таны зурагт; саарал — ганц бүлэгтэй тул).
+- **Any** — аль нэг нь биелсэн клип.
+
+## Товч
+- **☑** — мөрийг түр идэвхгүй болгох.
+- **−** / **+** — мөр хасах, нэмэх.
+
+> Ангиллын бүрэн жагсаалт баталгаажаагүй — эхний ⌄-ийг нээсэн зургийг илгээнэ үү.
+
+Холбоотой: [[create-smart-bin]].
+`,
+
+"ai-search-params": `
+## Зориулалт
+Smart Bin-ийн нөхцлийн ангилал **AI Search Params** — IntelliSearch-ийн (AI хайлт) тохиргоог нөхцөл болгон хадгална. Хайлтын мөрөөс ухаалаг хавтас үүсгэхэд автоматаар бөглөгдөнө.
+
+## Таны зурагт
+- **Search Option** is **Search All** — бүх төрлөөр (хүн, объект, яриа …) хайх.
+- **Show Results Option** is **For All Faces** — илэрсэн бүх нүүрний үр дүнг харуулах.
+
+> Бусад утгын жагсаалт баталгаажаагүй.
+
+Холбоотой: [[intellisearch-mode]], [[smart-bin-rules]].
+`,
+
+"viewer-guides-menu": `
+## Зориулалт
+Viewer-ийн толгойн **⛶ ⌄** самбар — viewer дээр **хүрээ, аюулгүй бүс, шугам** зурах. Зөвхөн харагдац — бичлэгт **орохгүй**.
+
+## Хэсгүүд (таны зурагт)
+- **Social Media** — 1:1, 4:5, 9:16, 1.91:1, **16:9** (сонгогдсон). [[social-media-guides]].
+- **Broadcast and Film** — **Default** (сонгогдсон, tooltip: Timeline Aspect Ratio), 1.33, 1.77, 1.85, 2.35, 2.39, 2.40. [[broadcast-and-film-guides]].
+- **Safe Area Guides** — **Extents** (сонгогдсон), Action, Title, Center. [[safe-area-guides]].
+- **Ruler Guides** — Rulers, Guides. [[rulers]], [[guides]].
+
+> Хүрээ нь тайралт биш — зөвхөн «энэ шугамаас гадуурх хэсэг тэр платформд тайрагдана» гэж харуулна. Жинхэнэ харьцааг Timeline Settings эсвэл Smart Reframe-ээр өөрчилнө. [[smart-reframe]].
+`,
+
+"social-media-guides": `
+## Зориулалт
+Viewer дээр сошиал платформын **харьцааны хүрээ** зурна:
+- **1:1** — дөрвөлжин (Instagram пост).
+- **4:5** — босоо хагас (Instagram, Facebook feed).
+- **9:16** — бүтэн босоо (TikTok, Reels, Shorts).
+- **1.91:1** — хэвтээ өргөн (линк, зар).
+- **16:9** — ердийн хэвтээ (YouTube) — таны зурагт сонгогдсон.
+
+## Хэрэглэх
+16:9 бичлэгийг 9:16 болгохоор төлөвлөж байвал 9:16 хүрээг асааж, гол объект хүрээ дотор байх эсэхийг шалгаад Transform эсвэл Smart Reframe-ээр засна.
+
+> Бичлэгт нөлөөлөхгүй.
+`,
+
+"broadcast-and-film-guides": `
+## Зориулалт
+Viewer дээр ТВ, киноны **стандарт харьцааны хүрээ** зурна:
+- **Default** — timeline-ийн өөрийн харьцаа (tooltip: **Timeline Aspect Ratio**) — таны зурагт сонгогдсон.
+- **1.33** (4:3 хуучин ТВ), **1.77** (16:9), **1.85** (кино театрын өргөн), **2.35 / 2.39 / 2.40** (CinemaScope, өргөн дэлгэц).
+
+## Хэрэглэх
+«Кино шиг» өргөн харагдуулах бол 2.39 хүрээг асааж, хүрээнээс гадуур чухал зүйл байгаа эсэхийг шалгана. Жинхэнэ хар зурвас нэмэх бол Timeline → Output Blanking. [[aspect-ratio-mask]].
+
+> Бичлэгт нөлөөлөхгүй.
+`,
+
+"safe-area-guides": `
+## Зориулалт
+**Аюулгүй бүсийн шугам** — дэлгэцийн захад тайрагдаж болзошгүй хэсгийг харуулна. [[safe-area]].
+- **Extents** — кадрын гадна хүрээ (таны зурагт сонгогдсон).
+- **Action** — үйл явдал (чухал хөдөлгөөн) энэ дотор байх ёстой (ойролцоогоор 93%).
+- **Title** — гарчиг, бичвэр энэ дотор (ойролцоогоор 90%).
+- **Center** — голын загалмай.
+
+> Гарчиг, лого, хадмалыг Title шугамын дотор байрлуулбал ямар ч дэлгэцэнд тайрагдахгүй. Бичлэгт нөлөөлөхгүй.
+`,
+
+"search-in-media-pool": `
+## Зориулалт
+Хайлтын мөрийн **Search In** — хайлтыг **аль хавтсанд** хийхийг сонгоно. Таны зурагт **All Bins** — Master доторх бүх хавтас (01_Holog_T…, 02_Suirel_A… гэх мэт)-аас нэг дор хайна.
+
+## Хэзээ өөрчлөх
+Тухайн хавтсанд л хайх бол (жишээ нь зөвхөн «06_Cockpit») одоогийн хавтсыг сонгоно — үр дүн цөөн, хурдан.
+
+> Жагсаалтын бусад мөр зурагт задраагүй.
+
+Холбоотой: [[media-pool-search-bar]].
+`,
+
+"display-media-pool-search": `
+## Зориулалт
+Хайлтын мөрийн **Display** — хайлтын үр дүнг **ямар хэлбэрээр** харуулахыг сонгоно. Таны зурагт **Full Clips** — нөхцөлд тохирсон клипийг **бүтнээр нь** харуулна.
+
+## Хэзээ хэрэгтэй
+AI (IntelliSearch) хайлтаар урт клипийн дотроос «хүн инээж байгаа» гэх мэт **хэсгийг** олоход бүтэн клип биш, яг тохирсон **хэсгийг** харуулах сонголт байх магадлалтай.
+
+> **Баталгаажаагүй:** бусад сонголтын нэр. ⌄-ийг нээсэн зургийг илгээнэ үү.
+
+Холбоотой: [[media-pool-search-bar]], [[intellisearch-mode]].
+`,
+
+"prores-422-hq": `
+## Зориулалт
+**ProRes 422 HQ** — Apple-ийн **засварт зориулсан** өндөр чанартай кодек. Quick Export-д бэлдэц болж бий (таны зурагт). H.264-өөс **5–10 дахин том** файл, гэхдээ чанар алдагдал бараг үгүй, дахин засварлахад хөнгөн.
+
+## Хэзээ хэрэглэх
+- Өөр программ (After Effects, Premiere), өнгөчин, дуучин руу **дамжуулах** (intermediate).
+- Архивын **мастер** хуулбар.
+- ТВ станц ProRes шаардсан үед.
+
+## Анхаарах
+> Сошиал, захиалагчид үзүүлэхэд хэт том — H.264 Master хэрэглэнэ. [[h-264-master]].
+> Windows дээр Resolve Studio ProRes кодлодог — таны Quick Export-д байгаа нь баталгаа.
+
+Холбоотой: [[prores]], [[quick-export]].
+`,
+
+"youtube-preset": `
+## Зориулалт
+**YouTube** бэлдэц — YouTube-д тохирсон форматаар (H.264/H.265, timeline-ийн нягтрал, AAC дуу) гаргана. Quick Export (таны зурагт 5 дахь) ба Deliver хуудсанд бий.
+
+## Шууд байршуулах
+Preferences → **Internet Accounts** хэсэгт YouTube данс холбосон бол гаргалтын үед **шууд байршуулна**: нэр, тайлбар, нууцлал (Public, Unlisted, Private) бичнэ.
+
+## Анхаарах
+> 4K timeline-ийг 4K-аар байршуулвал YouTube илүү сайн кодек (VP9/AV1) өгдөг — 1080p үзэгчдэд ч чанар сайжирна.
+> Босоо (9:16) бичлэг Shorts болж орно.
+
+Холбоотой: [[quick-export]], [[h-264-master]].
+`,
+
+"proxy-menu-viewer": `
+## Зориулалт
+Viewer-ийн толгойн **прокси дүрстэй ⌄** жагсаалт — timeline тоглуулахад **прокси** (жижиг хөнгөн хуулбар) эсвэл **эх файл** ашиглахыг сонгоно. Playback → Proxy Handling-тэй ижил. [[proxy-handling]].
+
+## Мөрүүд (таны зурагт)
+- **Disable All Proxies** — прокси огт ашиглахгүй.
+- **Prefer Proxies** — прокси байвал түүгээр (хурдан тоглуулалт).
+- **Prefer Camera Originals** ✓ — эх файлаар (таны одоогийн).
+
+## Бичлэгт нөлөөлөх үү
+Зөвхөн **тоглуулалтын чанар, хурд**. Deliver-ийн гаргалт анхдагчаар эх файлаар хийгдэнэ.
+
+> Сул компьютер дээр 4K тоглуулалт тасалдвал: Media Pool-д клипүүд → баруун товч → Generate Proxy Media, дараа нь **Prefer Proxies**. [[proxy-generation]].
+`,
+
+"timeline-resolution-menu-viewer": `
+## Зориулалт
+Viewer-ийн толгойн **⌄ жагсаалт** — timeline-ийн **нягтралыг** (хэмжээ, харьцаа) хурдан солино. Timeline Settings цонх руу орохгүйгээр 16:9, босоо, дөрвөлжин хувилбар хооронд шилжинэ.
+
+## Мөрүүд (таны зурагт)
+- **Ultra HD 3840 x 2160** ✓ — одоогийн timeline. [[uhd]].
+- **Full HD 1920 x 1080**. [[full-hd]].
+- **Portrait 1080 x 1920** — босоо. [[portrait-1080-x-1920]].
+- **Square 1080 x 1080** — дөрвөлжин. [[square-1080-x-1080]].
+- **Custom Timeline Settings** — бүх тохиргоо. [[custom-timeline-settings]].
+
+## Бичлэгт нөлөөлөх үү
+**Тийм** — timeline-ийн нягтрал өөрчлөгдвөл эцсийн гаргалтын хэмжээ, клипийн хүрээлэлт өөрчлөгдөнө. 16:9 клип босоо timeline-д дээр доороо хар зурвастай эсвэл тайрагдсан харагдана — Smart Reframe эсвэл Transform-оор засна. [[smart-reframe]].
+
+> **Баталгаажаагүй:** одоогийн timeline-ийг шууд өөрчлөх үү, эсвэл шинэ хувилбар үүсгэх үү. Portrait сонгосны дараах зургийг илгээнэ үү. Эрсдэлгүй туршихын тулд эхлээд timeline-ийг Duplicate хий.
+`,
+
+"viewer-options-menu-edit": `
+## Зориулалт
+Viewer-ийн толгойн баруун талын **…** жагсаалт — viewer-ийн харагдац, timeline хооронд шилжих, давхаргын тохиргоо.
+
+## Мөрүүд (таны зурагт)
+- **Gang Viewers** — хоёр viewer-ийг хамт хөдөлгөх. [[gang-viewers]].
+- **Show All Video Frames** — кадар алгасахгүй. [[show-all-video-frames]].
+- **Show Timecode Toolbar**.
+- **Previous Timeline**, **Next Timeline** — timeline солих.
+- **Show Marker Overlays** ✓ — тэмдэглэгээний нэр, тайлбар viewer-т. [[show-marker-overlays]].
+- **Show Timecode Overlays** — тайм код viewer-т.
+- **Show Overlays During Playback** — тоглуулах үед давхарга.
+- **Markers ›** — тэмдэглэгээний дэд цэс (мөрүүд задраагүй).
+
+> Бүгд зөвхөн харагдац — бичлэгт нөлөөлөхгүй.
+`,
+
+"gang-viewers": `
+## Зориулалт
+**Gang Viewers** асаахад **Source** ба **Timeline** viewer-ийн заагч **хамт** хөдөлнө: нэгийг гүйлгэхэд нөгөө нь ижил зайгаар гүйнэ.
+
+## Хэзээ хэрэглэх
+- Хоёр дублийг (take) кадраар харьцуулах.
+- Replace, Match Frame хийхийн өмнө хоёр бичлэгийг тэгшлэх.
+
+> Хоёр viewer (Dual Viewer) горимд л утгатай — таны зурагт нэг viewer горим.
+`,
+
+"show-all-video-frames": `
+## Зориулалт
+Компьютер хүнд timeline-ийг бодит хурдаар тоглуулж чадахгүй үед Resolve анхдагчаар **кадар алгасаж** дууг жигд байлгадаг. **Show All Video Frames** асаавал кадар **алгасахгүй** — бүгдийг харуулна, харин тоглуулалт удааширч, дуу тасалдана.
+
+## Хэзээ хэрэглэх
+Хурдан хөдөлгөөн, гялбаа, нэг кадрын алдаа (flash frame) шалгах үед.
+
+> Бичлэгт нөлөөлөхгүй.
+`,
+
+"show-marker-overlays": `
+## Зориулалт
+Заагч **тэмдэглэгээн дээр** ирэхэд түүний **нэр, тайлбар**-ыг viewer-ийн дүрс дээр харуулна. Таны зурагт **асаалттай** (✓).
+
+## Хэрэглээ
+Засварын тэмдэглэл («энд өнгө засна») бичсэн бол тоглуулж байхад viewer дээр шууд уншигдана. Annotations-ийн зураг ч мөн адил харагдана. [[annotations]].
+
+> Эцсийн бичлэгт орохгүй.
+
+Холбоотой: [[marker]], [[show-overlays-during-playback]].
+`
+
+});
+
+</script>
 <!-- long:end -->
 <script>
 /* ── js/50-sim-pages.js ── */
@@ -13179,6 +14891,45 @@ Fusion хуудасны **доод төлөвийн мөр** хоёр хэсэг
   /* ═══════════ EDIT ═══════════
      Хэрэглэгч Resolve-ийн үндсэн хос дэлгэцтэй байхыг сонгосон.
      (Өөрийнх нь Resolve дээр Single Viewer Mode асаалттай байсан.) */
+  /* ── Edit хуудас — 2026-09-26-ны зургууд: timeline хэрэгслийн мөрийн tooltip бүр,
+     viewer-ийн ▭⌄ жагсаалт, Inspector-ийн Video/Audio таб, Effects-ийн шилжилтийн жагсаалт,
+     Mixer самбар, Quick Export ба Blackmagic Cloud Folder цонх ── */
+
+  /* Timeline хэрэгслийн мөр: [id, дүрс (SVG байхгүй үед), tooltip, нэмэлт класс] — зүүнээс баруун */
+  const ED_TOOLS = [
+    [["timeline-view-options", "⚌", "", "mi"], ["show-keyframe-tray", "◈", "Show Keyframe Tray"], ["voiceover", "🎙", "Voiceover"]],
+    [["selection-mode", "↖", "Selection Mode - A", "act red"], ["trim-edit-mode", "⇹", "Trim Edit Mode - T"],
+     ["blade", "✂", "Blade Edit Mode - B"], ["dynamic-trim-mode-slip", "⧎", "Dynamic Trim Mode (Slip) - W"]],
+    [["insert", "⊟", "Insert Clip - F9"], ["overwrite", "⊡", "Overwrite Clip - F10"], ["replace", "⊗", "Replace Clip - F11"]],
+    [["snapping", "∩", "Snapping - N"], ["linked-selection", "∞", "Linked Selection - Ctrl+Shift+L"], ["position-lock", "⊠", "Position Lock"]],
+    [["flag", "⚑", ""], ["flag-color-menu", "⌄", "", "mi dd"], ["marker", "◆", ""], ["marker-color-menu", "⌄", "", "mi dd"]],
+    [["full-extent-zoom", "⤢", "Full Extent Zoom", "act"], ["detail-zoom", "⊕", "Detail Zoom"], ["custom-zoom", "⊖", "Custom Zoom"]]
+  ];
+  const ED_TOOLBAR = () => ED_TOOLS.map((g) => g.map(([id, ic, tip, cls]) =>
+    `<span class="tl ${cls || ""} hs" data-t="${id}"${tip ? ` title="${tip}"` : ""}>${/dd/.test(cls || "") ? ic : S.icon(id, ic)}</span>`
+  ).join("")).join('<span class="div"></span>');
+
+  /* Effects → Video Transitions — бүлэг бүрийн мөр (зурагт харагдсанаар) */
+  const ED_FX = [
+    ["crossfade", "Cross Fade", [["crossfade", "Cross Fade +3 dB"], ["crossfade", "Cross Fade −3 dB"], ["crossfade", "Cross Fade 0 dB", 1]]],
+    ["cross-dissolve", "Dissolve", [["additive-dissolve", "Additive Dissolve"], ["blur-dissolve", "Blur Dissolve"], ["cross-dissolve", "Cross Dissolve", 1],
+      ["dip-to-color-dissolve", "Dip To Color Dissolve"], ["non-additive-dissolve", "Non-Additive Dissolve"], ["smooth-cut", "Smooth Cut"]]],
+    ["iris-transitions", "Iris", ["Arrow", "Cross", "Diamond", "Eye", "Hexagon", "Oval", "Pentagon", "Square"].map((n) => ["iris-transitions", n + " Iris"])],
+    ["motion-transitions", "Motion", ["Barn Door", "Push", "Slide", "Split"].map((n) => ["motion-transitions", n])],
+    ["shape-transitions", "Shape", ["Box", "Heart", "Star", "Triangle Left", "Triangle Right"].map((n) => ["shape-transitions", n])],
+    ["wipe-transitions", "Wipe", ["Band", "Center", "Clock", "Edge", "Radial", "Spiral", "Venetian Blind", "X"].map((n) => ["wipe-transitions", n + " Wipe"])],
+    ["fusion-transitions", "Fusion Transitions", ["Block Glitch", "Box Twist", "Box Wipe", "Brightness Flash", "Camera Shake", "Checker Wipe", "Circle Spin"].map((n) => ["fusion-transitions", n])]
+  ];
+  const ED_FXLIST = () => ED_FX.map(([sid, title, rows]) =>
+    `<div class="fx-sec hs" data-t="${sid}">${title} <span>⌃</span></div>` +
+    rows.map(([id, n, red]) => `<div class="fx-row hs" data-t="${id}"><i${red ? ' class="red"' : ""}></i>${n}</div>`).join("")
+  ).join("");
+
+  const ROW = (id, lb, body, kf) => `<div class="insp-row hs" data-t="${id}"><span class="lb">${lb}</span>${body}<span class="kf">${kf == null ? "◆ ⟲" : kf}</span></div>`;
+  const SEC = (id, title, on, mini) => `<div class="insp-sec hs" data-t="${id}"><div class="t"><span class="tog${on ? " on" : ""}"></span> ${title} <span class="sp"></span><span class="mini">${mini || "⚌ ⟲"}</span></div></div>`;
+  const EQ_BANDS = [["B1", "⌒", "50", "", ""], ["B2", "⊐", "500", "0.0", ""], ["B3", "◇", "239", "0.0", "1.0"],
+                    ["B4", "◇", "1.2K", "0.0", "1.0"], ["B5", "◇", "3.5K", "0.0", "1.0"], ["B6", "⌒", "10.0K", "", ""]];
+
   S.edit = () => `
   <div class="rs" data-page="edit">
     ${H.MENU()}
@@ -13188,20 +14939,20 @@ Fusion хуудасны **доод төлөвийн мөр** хоёр хэсэг
        ${H.TG("edit-index", "≣", "Index")}
        ${H.TG("sound-library", "♫", "Sound Library")}
        ${H.TG("keyframe-editor", "◆", "Keyframes")}`,
-      `${H.TG("quick-export", "⇧", "Quick Export")}
-       ${H.TG("mixer", "⇅", "Mixer")}
+      `<span class="tg hs" data-t="quick-export" data-toggle="quickexport"><span class="ic">⇧</span>Quick Export</span>
+       <span class="tg hs" data-t="mixer" data-toggle="mixer"><span class="ic">⇅</span>Mixer</span>
        ${H.TG("metadata", "ⓘ", "Metadata")}
        ${H.TG("inspector", "◧", "Inspector", true)}
        <span class="tg hs" data-t="viewer-mode">▭</span>`)}
     <div class="rs-row2">
       <span class="hs" data-t="panel-toggle">▯ ⌄</span><span>‹ ›</span><span class="hs" data-t="audio-sync">⧖</span>
-      <span class="hs" data-t="import-media">▦ ⌄</span><span class="hs" data-t="blackmagic-cloud-account">☁</span>
-      <b class="hs" data-t="bin">Se…</b><span class="hs" data-t="thumbnail-view">▦ ⌄</span>
-      <span class="hs" data-t="help-search">⌕</span><span>⇅ …</span>
+      <span class="hs mi" data-t="ai-analysis-menu-media-pool">▦ ⌄</span><span class="hs" data-t="blackmagic-cloud-folder" data-toggle="cloudfolder">☁</span>
+      <b class="hs" data-t="bin">M…</b><span class="hs mi" data-t="media-pool-view-menu">▦ ⌄</span>
+      <span class="hs" data-t="media-pool-search-bar" data-toggle="mpsearch">⌕</span><span class="hs mi" data-t="media-pool-sort-menu">⇅</span><span class="hs mi" data-t="media-pool-options-menu">…</span>
       <span class="sp"></span>
       <span class="hs" data-t="zoom-slider">14% ⌄</span><span class="hs" data-t="viewer-mode">▭ ▭ ▭</span>
       <span class="sp"></span>
-      <span class="hs" data-t="viewer-mode">▭ ⌄ ▦ ⌄ ⚙ ⌄</span><span class="hs" data-t="reset">⟲ …</span>
+      <span class="hs" data-t="viewer-guides-menu" data-toggle="guides">⛶ ⌄</span><span class="hs mi" data-t="proxy-menu-viewer">▦ ⌄</span><span class="hs mi" data-t="timeline-resolution-menu-viewer">✧ ⌄</span><span class="hs" data-t="reset">⊘</span><span class="hs mi" data-t="viewer-options-menu-edit">…</span>
       <span class="hs" data-t="viewer-mode">▭ ▯</span>
       <b class="hs" data-t="timeline-viewer" style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${H.CLIP}</b><span>…</span>
     </div>
@@ -13209,12 +14960,18 @@ Fusion хуудасны **доод төлөвийн мөр** хоёр хэсэг
       <div class="rs-top" style="flex:0 0 48%">
         <div class="ed-left">
           <div class="pane" style="flex:0 0 58%">
+            <div class="mp-search hs" data-t="media-pool-search-bar" data-panel="mpsearch">
+              <div class="mps-r"><span class="hs" data-t="media-pool-search-bar">◫ ⌄</span><span class="mps-in"></span>
+                <span class="hs" data-t="create-smart-bin" data-toggle="smartbin">⊞</span><span class="hs" data-t="ai-search-params">⚇ ⌄</span></div>
+              <div class="mps-r"><span class="hs" data-t="search-in-media-pool">Search In <b>All Bins ⌄</b></span><span class="sp"></span>
+                <span class="hs" data-t="display-media-pool-search">Display <b>Full Clips ⌄</b></span></div>
+            </div>
             <div class="pane-b" style="display:flex">
               <div style="width:178px;flex-shrink:0;border-right:1px solid var(--rs-line);overflow:hidden">
                 ${H.BINS(H.BIN_LIST.slice(0, 7), "")}
               </div>
               <div style="flex:1;display:flex;flex-direction:column">
-                <div class="pane-h hs" data-t="bin"><span>Master / Seedance</span></div>
+                <div class="pane-h hs" data-t="bin"><span>Master</span></div>
                 ${H.THUMBS(2)}
               </div>
             </div>
@@ -13225,24 +14982,14 @@ Fusion хуудасны **доод төлөвийн мөр** хоёр хэсэг
                 <div class="fx-h hs" data-t="effects-library">▾ Toolbox</div>
                 <div class="fx-i hs" data-t="transition">Video Transitions</div>
                 <div class="fx-i hs" data-t="crossfade">Audio Transitions</div>
-                <div class="fx-i hs" data-t="titles">Titles</div>
-                <div class="fx-i hs" data-t="generator">Generators</div>
-                <div class="fx-i hs" data-t="effects">Effects</div>
+                <div class="fx-i hs" data-t="titles">› Titles</div>
+                <div class="fx-i hs" data-t="generator">› Generators</div>
+                <div class="fx-i hs" data-t="effects">› Effects</div>
                 <div class="fx-h hs" data-t="openfx">▾ Resolve FX</div>
                 <div class="fx-h hs" data-t="favorite-keywords">▾ Favorites</div>
-                <div class="fx-i hs" data-t="openfx">Resolve FX</div>
+                <div class="fx-i hs" data-t="openfx">› Resolve FX</div>
               </div>
-              <div class="fx-list">
-                <div class="fx-sec hs" data-t="crossfade">Cross Fade <span>⌃</span></div>
-                <div class="fx-row hs" data-t="crossfade"><i></i>Cross Fade +3 dB</div>
-                <div class="fx-row hs" data-t="crossfade"><i></i>Cross Fade −3 dB</div>
-                <div class="fx-row hs" data-t="crossfade"><i class="red"></i>Cross Fade 0 dB</div>
-                <div class="fx-sec hs" data-t="cross-dissolve">Dissolve <span>⌃</span></div>
-                <div class="fx-row hs" data-t="add"><i></i>Additive Dissolve</div>
-                <div class="fx-row hs" data-t="blur-fusion"><i></i>Blur Dissolve</div>
-                <div class="fx-row hs" data-t="cross-dissolve"><i class="red"></i>Cross Dissolve</div>
-                <div class="fx-row hs" data-t="dip-to-color-dissolve"><i></i>Dip To Color Dissolve</div>
-              </div>
+              <div class="fx-list scroll">${ED_FXLIST()}</div>
             </div>
           </div>
         </div>
@@ -13252,45 +14999,63 @@ Fusion хуудасны **доод төлөвийн мөр** хоёр хэсэг
             <div class="vw-screen"><span class="vw-mark l hs" data-t="in-point">⇥</span><div class="img"></div><span class="vw-mark r hs" data-t="out-point">⇥</span></div>
             <div class="vw-foot">
               <div class="vw-jog hs" data-t="jog-bar"><div class="bar"></div></div>
-              ${H.TRANSPORT("", '<span class="hs" data-t="viewer-mode">▭ ⌄</span><span class="hs" data-t="in-point">‹ ● ›</span><span class="sp"></span>')}
+              ${H.TRANSPORT("", '<span class="hs" data-t="viewer-mode">▭ ⌄</span><span class="hs" data-t="jog-wheel" title="Jog Wheel">‹ ● ›</span><span class="sp"></span>')}
             </div>
           </div>
         </div>
         <div class="pane vw hs" data-t="timeline-viewer" style="flex:1">
-          <div class="vw-head"><span class="tc">00:00:30:01</span><span class="sp"></span><b class="hs" data-t="timeline">${H.TIMELINE} ⌄</b><span class="sp"></span><span class="tc">01:00:00:00</span></div>
+          <div class="vw-head"><span class="tc">00:00:30:01</span><span class="sp"></span><b class="hs" data-t="timeline">${H.TIMELINE} ⌄</b><span class="sp"></span><span class="tc">01:00:01:16</span></div>
           <div class="pane-b" style="display:flex;flex-direction:column">
             <div class="vw-screen"><span class="vw-mark l hs" data-t="in-point">⇥</span><div class="img"></div><span class="vw-mark r hs" data-t="out-point">⇥</span></div>
             <div class="vw-foot">
               <div class="vw-jog hs" data-t="jog-bar"><div class="bar"></div></div>
-              ${H.TRANSPORT("", '<span class="hs" data-t="viewer-mode">▭ ⌄</span><span class="hs" data-t="in-point">‹ ● ›</span><span class="sp"></span>')}
+              ${H.TRANSPORT("", '<span class="hs mi" data-t="viewer-overlay-menu-edit">▭ ⌄</span><span class="hs" data-t="jog-wheel" title="Jog Wheel">‹ ● ›</span><span class="sp"></span>')}
             </div>
           </div>
         </div>
         <div class="pane insp hs" data-t="inspector" style="width:270px">
           <div class="insp-tabs six">
-            <div class="act hs" data-t="inspector">▣<br>Video</div><div class="hs" data-t="mixer">♫<br>Audio</div>
-            <div class="hs" data-t="effects">✦<br>Effects</div><div class="hs" data-t="transition">◫<br>Transition</div>
-            <div class="hs" data-t="camera-raw">▨<br>Image</div><div class="hs" data-t="metadata">▤<br>File</div>
+            <div class="act hs" data-t="inspector" data-tab="ei:video">▣<br>Video</div><div class="hs" data-t="mixer" data-tab="ei:audio">♫<br>Audio</div>
+            <div class="off hs" data-t="effects">✦<br>Effects</div><div class="off hs" data-t="transition">◫<br>Transition</div>
+            <div class="off hs" data-t="camera-raw">▨<br>Image</div><div class="hs" data-t="metadata">▤<br>File</div>
           </div>
-          <div class="pane-b">
+          <div class="pane-b ed-insp" data-tabpane="ei:video">
             <div class="insp-sec hs" data-t="transform">
               <div class="t"><span class="tog on"></span> Transform <span class="sp"></span><span class="mini">⚌ ◆ ⟲</span></div>
-              ${["Zoom","zoom","1.000","1.000"].length ? `
-              <div class="insp-row hs" data-t="zoom"><span class="lb">Zoom</span><span class="xy">X <b>1.000</b> ⧉ Y <b>1.000</b></span><span class="kf">◆ ⟲</span></div>
-              <div class="insp-row hs" data-t="position"><span class="lb">Position</span><span class="xy">X <b>0.000</b> Y <b>0.000</b></span><span class="kf">◆ ⟲</span></div>
-              <div class="insp-row hs" data-t="rotation-angle"><span class="lb">Rotation Angle</span><span class="sl" style="--p:50%"></span><b>0.000</b><span class="kf">◆ ⟲</span></div>
-              <div class="insp-row hs" data-t="anchor-point"><span class="lb">Anchor Point</span><span class="xy">X <b>0.000</b> Y <b>0.000</b></span><span class="kf">◆ ⟲</span></div>
-              <div class="insp-row hs" data-t="pitch-yaw"><span class="lb">Pitch</span><span class="sl" style="--p:50%"></span><b>0.000</b><span class="kf">◆ ⟲</span></div>
-              <div class="insp-row hs" data-t="pitch-yaw"><span class="lb">Yaw</span><span class="sl" style="--p:50%"></span><b>0.000</b><span class="kf">◆ ⟲</span></div>
-              <div class="insp-row hs" data-t="flip"><span class="lb">Flip</span><span class="xy">⇔ ⇕</span><span class="kf">⟲</span></div>` : ""}
+              ${ROW("zoom", "Zoom", '<span class="xy">X <b>1.000</b> ⧉ Y <b>1.000</b></span>')}
+              ${ROW("position", "Position", '<span class="xy">X <b>0.000</b> Y <b>0.000</b></span>')}
+              ${ROW("rotation-angle", "Rotation Angle", '<span class="sl" style="--p:50%"></span><b>0.000</b>')}
+              ${ROW("anchor-point", "Anchor Point", '<span class="xy">X <b>0.000</b> Y <b>0.000</b></span>')}
+              ${ROW("pitch-yaw", "Pitch", '<span class="sl" style="--p:50%"></span><b>0.000</b>')}
+              ${ROW("pitch-yaw", "Yaw", '<span class="sl" style="--p:50%"></span><b>0.000</b>')}
+              ${ROW("flip", "Flip", '<span class="xy">⇔ ⇕</span>', "⟲")}
             </div>
             <div class="insp-sec hs" data-t="smart-reframe"><div class="t">› AI Smart Reframe</div></div>
-            <div class="insp-sec hs" data-t="crop"><div class="t"><span class="tog on"></span> Cropping <span class="sp"></span><span class="mini">⚌ ◆ ⟲</span></div></div>
-            <div class="insp-sec hs" data-t="dynamic-zoom"><div class="t">› Dynamic Zoom</div></div>
-            <div class="insp-sec hs" data-t="composite-mode"><div class="t">› Composite</div></div>
-            <div class="insp-sec hs" data-t="speed-change"><div class="t">› Speed Change</div></div>
-            <div class="insp-sec hs" data-t="stabilization"><div class="t">› Stabilization</div></div>
-            <div class="insp-sec hs" data-t="lens-correction"><div class="t">› Lens Correction</div></div>
+            ${SEC("crop", "Cropping", true, "⚌ ◆ ⟲")}
+            ${SEC("dynamic-zoom", "Dynamic Zoom", false)}
+            <div class="insp-sec hs" data-t="composite-mode">
+              <div class="t"><span class="tog on"></span> Composite <span class="sp"></span><span class="mini">⚌ ◆ ⟲</span></div>
+              ${ROW("composite-mode", "Composite Mode", '<span class="val dd">Normal ⌄</span>', "⟲")}
+              ${ROW("opacity", "Opacity", '<span class="sl" style="--p:100%"></span><b>100.00</b>')}
+            </div>
+            ${SEC("speed-change", "Speed Change", false, "⚌ ◆ ⟲")}
+            ${SEC("stabilization", "Stabilization", true)}
+            ${SEC("lens-correction", "Lens Correction", true, "⚌ ◆ ⟲")}
+            ${SEC("retime-and-scaling", "Retime and Scaling", true)}
+            ${SEC("ai-super-scale", "AI Super Scale", true)}
+          </div>
+          <div class="pane-b ed-insp" data-tabpane="ei:audio" hidden>
+            <div class="insp-sec"><div class="t sub">⋮ дээд хэсэг зурагт гараагүй</div>
+              ${ROW("semi-tones", "Semi Tones", '<span class="sl" style="--p:50%"></span><b>0</b>', "⟲")}
+              ${ROW("cents", "Cents", '<span class="sl" style="--p:50%"></span><b>0</b>', "⟲")}
+            </div>
+            ${SEC("speed-change", "Speed Change", false)}
+            <div class="insp-sec hs" data-t="equalizer-inspector">
+              <div class="t"><span class="tog"></span> Equalizer <span class="sp"></span><span class="mini">⚌ ⟲</span></div>
+              <div class="eq-graph"><span>0</span><span>−30</span><span>−60</span><i></i></div>
+              <div class="eq-bands">${EQ_BANDS.map(([b, sh, hz, db, q]) =>
+                `<div class="eq-b hs" data-t="${q ? "q-eq" : "equalizer-inspector"}"><b>${b}</b><span class="eq-sh">${sh} ⌄</span><span>${hz}</span><span>${db || "&nbsp;"}</span><span>${q || "&nbsp;"}</span></div>`).join("")}</div>
+            </div>
           </div>
         </div>
       </div>
@@ -13298,26 +15063,16 @@ Fusion хуудасны **доод төлөвийн мөр** хоёр хэсэг
       <div class="rs-tlbar hs" data-t="toolbar-timeline">
         <span class="hs" data-t="help-search">⌕ ⌄</span><span>…</span>
         <span class="sp"></span>
-        <span class="tl hs" data-t="timeline-menu">⚌</span><span class="tl hs" data-t="track">◈</span><span class="tl hs" data-t="record-voiceover">🎙</span>
-        <span class="div"></span>
-        <span class="tl act hs" data-t="selection-mode">↖</span><span class="tl hs" data-t="trim-edit-mode">⇹</span>
-        <span class="tl hs" data-t="dynamic-trim">⧎</span><span class="tl hs" data-t="blade">✂</span>
-        <span class="div"></span>
-        <span class="tl hs" data-t="insert">⊟</span><span class="tl hs" data-t="overwrite">⊡</span><span class="tl hs" data-t="replace">⊗</span>
-        <span class="div"></span>
-        <span class="tl act hs" data-t="snapping">∩</span><span class="tl act hs" data-t="linked-selection">∞</span><span class="tl hs" data-t="sync-lock">⊠</span>
-        <span class="div"></span>
-        <span class="tl hs" data-t="flag">⚑</span><span class="tl hs" data-t="marker">◆ ⌄</span>
-        <span class="div"></span>
-        <span class="tl hs" data-t="zoom-to-fit">⤢</span><span class="tl hs" data-t="zoom-in-timeline">⊕</span><span class="tl hs" data-t="zoom-out-timeline">⊖</span>
+        ${ED_TOOLBAR()}
         <span class="zoom hs" data-t="zoom-slider">−<span class="zb"></span>+</span>
         <span class="sp"></span>
         <span class="tl hs" data-t="mute">🔈</span>
       </div>
 
+      <div class="ed-tlwrap">
       <div class="rs-tl">
         <div class="tl-ruler hs" data-t="timeline-ruler" style="padding-left:0">
-          <div class="tl-bigtc hs" data-t="timecode">01:00:00:00</div>
+          <div class="tl-bigtc hs" data-t="timecode">01:00:01:16</div>
           <div class="tk"><span>01:00:00:00</span></div><div class="tk"><span>01:00:08:00</span></div>
           <div class="tk"><span>01:00:16:00</span></div><div class="tk"><span>01:00:24:00</span></div>
           <div class="tk"><span>01:00:32:00</span></div>
@@ -13348,8 +15103,81 @@ Fusion хуудасны **доод төлөвийн мөр** хоёр хэсэг
           </div>
         </div>
       </div>
+      <div class="mx-panel hs" data-t="mixer" data-panel="mixer">
+        <div class="mx-h"><b>Mixer</b><span>⋯</span></div>
+        <div class="mx-strips">
+          ${[["A1", true], ["Bus1", false]].map(([n, solo]) => `
+          <div class="mx-s hs" data-t="${n === "A1" ? "mixer" : "main-bus"}">
+            <div class="mx-n">${n}</div>
+            <div class="mx-sm">${solo ? '<span class="hs" data-t="solo">S</span>' : ""}<span class="hs" data-t="mute">M</span></div>
+            <div class="mx-v">0.0</div>
+            <div class="mx-f"><i class="fd"></i><i class="mt"></i><span class="sc">0<br>5<br>10<br>15<br>20<br><br>30<br><br>40<br>50</span></div>
+          </div>`).join("")}
+        </div>
+      </div>
+      </div>
     </div>
     ${H.PAGES("edit")}
+
+    <div class="rs-pop guides hs" data-t="viewer-guides-menu" data-panel="guides">
+      <div class="gd-h">Social Media</div>
+      <div class="gd-row hs" data-t="social-media-guides">${["1:1", "4:5", "9:16", "1.91:1", "16:9"].map((r, i) => `<span class="gd${i === 4 ? " on" : ""}"><i class="r${i}"></i>${r}</span>`).join("")}</div>
+      <div class="gd-h">Broadcast and Film</div>
+      <div class="gd-row hs" data-t="broadcast-and-film-guides">${["Default", "1.33", "1.77", "1.85", "2.35", "2.39", "2.40"].map((r, i) => `<span class="gd${i === 0 ? " on" : ""}"${i === 0 ? ' title="Timeline Aspect Ratio"' : ""}><i class="b${i}"></i>${r}</span>`).join("")}</div>
+      <div class="gd-h">Safe Area Guides</div>
+      <div class="gd-row hs" data-t="safe-area-guides">${["Extents", "Action", "Title", "Center"].map((r, i) => `<span class="gd${i === 0 ? " on" : ""}"><i class="s${i}"></i>${r}</span>`).join("")}</div>
+      <div class="gd-h">Ruler Guides</div>
+      <div class="gd-row"><span class="gd hs" data-t="rulers"><i class="g0"></i>Rulers</span><span class="gd hs" data-t="guides"><i class="g1"></i>Guides</span></div>
+    </div>
+
+    <div class="rs-dlg sb hs" data-t="create-smart-bin" data-panel="smartbin">
+      <div class="dlg-t l">Create Smart Bin</div>
+      <div class="sb-body">
+        <div class="sb-r"><span class="lb">Name:</span><span class="in red">Smart Bin 1</span><span class="sp"></span><span class="hs" data-t="show-in-all-projects"><span class="cb"></span> Show in all projects</span></div>
+        <div class="sb-r hs" data-t="smart-bin-rules"><span class="lb">Match</span><span class="dd off">All ⌄</span> of the following rules:</div>
+        <div class="sb-r rule hs" data-t="ai-search-params"><span class="cb on"></span><span class="dd">AI Search Params ⌄</span><span class="dd">Search Option ⌄</span><span class="dd off">is ⌄</span><span class="dd w">Search All ⌄</span><span class="pm">− +</span></div>
+        <div class="sb-r rule hs" data-t="ai-search-params"><span class="cb on"></span><span class="dd">AI Search Params ⌄</span><span class="dd">Show Results Option ⌄</span><span class="dd off">is ⌄</span><span class="dd w">For All Faces ⌄</span><span class="pm">− +</span></div>
+      </div>
+      <div class="dlg-btns"><span class="sp"></span><span class="btn hs" data-t="create-smart-bin" data-toggle="smartbin">Cancel</span><span class="btn red hs" data-t="create-smart-bin">Create</span></div>
+    </div>
+
+    <div class="rs-dlg qe hs" data-t="quick-export" data-panel="quickexport">
+      <div class="dlg-t">Quick Export</div>
+      <div class="qe-body">
+        <div class="qe-l">
+          <div class="qe-h"><span>Export Settings</span><span>▦ ☰</span></div>
+          <div class="qe-grid">
+            ${[["h-264-master", "H.264 Master", "H.264", 1], ["hyperdeck-quick-export", "HyperDeck", "H.264"], ["h-265-master", "H.265 Master", "H.265"],
+               ["prores-422-hq", "ProRes 422 HQ", "ProRes"], ["youtube-preset", "YouTube", "▶"], ["vimeo-quick-export", "Vimeo", "v"],
+               ["tiktok-quick-export", "TikTok", "♪"], ["presentations-quick-export", "Presentations", "▣"], ["dropbox-quick-export", "Dropbox", "◆"],
+               ["replay-quick-export", "Replay", "«"]].map(([id, n, ic, sel]) =>
+              `<div class="qe-p${sel ? " sel" : ""} hs" data-t="${id}"><span class="qe-ic">${ic}</span>${n}</div>`).join("")}
+          </div>
+        </div>
+        <div class="qe-r hs" data-t="h-264-master">
+          <div class="qe-h"><span>H.264 Master</span></div>
+          <div class="qe-f"><small>Filename</small><b>${H.TIMELINE}</b></div>
+          <div class="qe-kv">
+            <div><small>Resolution</small>3840 x 2160</div><div><small>Video Codec</small>H.264</div><div><small>Frame Rate</small>24 fps</div>
+            <div><small>Audio</small>Stereo</div><div><small>Audio Codec</small>AAC</div><div><small>Duration</small>31s</div>
+          </div>
+          <div class="qe-lim hs" data-t="limit-data-rate"><span class="cb"></span>Limit data rate to <span class="in">80000</span> Kb/s</div>
+          <div class="dlg-btns"><span class="btn hs" data-t="quick-export" data-toggle="quickexport">Cancel</span><span class="btn red hs" data-t="quick-export">Export</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rs-dlg bc hs" data-t="blackmagic-cloud-folder" data-panel="cloudfolder">
+      <div class="bc-top"><b>Blackmagic Cloud Folder</b><span>Blackmagicdesign</span></div>
+      <div class="bc-body">
+        <div class="bc-r hs" data-t="blackmagic-cloud-folder"><span class="lb">Blackmagic Cloud Folder</span><span class="in">No Folder Selected</span><span class="btn">Select</span></div>
+        <div class="bc-r hs" data-t="download-folder-location"><span class="lb">Download Folder Location</span><span class="in">C:\\Users\\…\\DaVinci Resolve Media</span><span class="btn">Browse</span></div>
+        <div class="bc-r hs" data-t="sync-proxies-only"><span class="lb">For Media Files</span><span class="rd"></span>Sync Proxies Only</div>
+        <div class="bc-r hs" data-t="sync-proxies-and-used-originals"><span class="lb"></span><span class="rd on"></span>Sync Proxies and Used Originals</div>
+      </div>
+      <div class="dlg-btns"><span class="btn hs" data-t="go-to-blackmagic-cloud">Go to Blackmagic Cloud</span><span class="sp"></span>
+        <span class="btn hs" data-t="blackmagic-cloud-folder" data-toggle="cloudfolder">Cancel</span><span class="btn off hs" data-t="blackmagic-cloud-folder">Download</span></div>
+    </div>
   </div>`;
 
 })(window.RM);
@@ -14490,6 +16318,192 @@ Fusion хуудасны **доод төлөвийн мөр** хоёр хэсэг
       "-",
       ["view-clip-info-display", "View Clip Info Display…"],
       ["show-clip-gain-line", "Show Clip Gain Line", "✓"]
+    ]},
+
+    /* ═══ Edit хуудас (2026-09-26-ны зургууд) ═══
+       Viewer-ийн доод зүүн ▭ ⌄ — дэлгэц дээрх удирдлагын горим (8 мөр, тусгаарлагчгүй). */
+    "viewer-overlay-menu-edit": { label: "Viewer Overlay Menu (Edit)", verified: true, items: [
+      ["transform", "Transform"],
+      ["crop", "Crop"],
+      ["dynamic-zoom", "Dynamic Zoom"],
+      ["open-fx-overlay", "Open FX Overlay"],
+      ["fusion-overlay", "Fusion Overlay"],
+      ["annotations", "Annotations"],
+      ["immersive-viewer", "Immersive"],
+      ["smart-reframe", "Smart Reframe"]
+    ]},
+
+    /* Timeline хэрэгслийн мөрийн хамгийн зүүн ⚌ — Timeline View Options.
+       ✓ — зурагт чагттай. "head", "slider:NN", "button" — цэсний тусгай мөр (60-sim-ui.js). */
+    "timeline-view-options": { label: "Timeline View Options", verified: true, items: [
+      ["display-stacked-timelines", "Display Stacked Timelines"],
+      ["display-subtitle-tracks", "Display Subtitle Tracks", "✓"],
+      ["display-audio-waveforms", "Display Audio Waveforms", "✓"],
+      ["display-clip-names", "Display Clip Names", "✓"],
+      ["display-clip-duration", "Display Clip Durations", "✓"],
+      "-",
+      ["thumbnail-view-timeline", "Thumbnail View", "", "›"],
+      ["viewer-background", "Viewer Background", "", "›"],
+      "-",
+      ["fixed-playhead", "Fixed Playhead"],
+      "-",
+      ["display-non-rectified-waveforms", "Display Non-Rectified Waveforms", "✓"],
+      ["display-full-waveforms", "Display Full Waveforms"],
+      ["display-waveform-borders", "Display Waveform Borders"],
+      ["display-scaled-waveforms", "Display Scaled Waveforms"],
+      "-",
+      ["track-height", "Track Height", "head"],
+      ["track-height", "Video", "slider:46"],
+      ["track-height", "Audio", "slider:38"],
+      ["set-as-default-view", "Set as Default View", "button"]
+    ]},
+
+    /* Туг ⌄ — Clear All + 16 өнгө (дөрвөлжин туг) */
+    "flag-color-menu": { label: "Flag Color Menu", verified: true, items: [
+      ["clear-all-flags", "Clear All", "×"],
+      ["flag-color", "Blue", "sw:sq:#2f7ff5"],
+      ["flag-color", "Cyan", "sw:sq:#27cfd8"],
+      ["flag-color", "Green", "sw:sq:#2fc24a"],
+      ["flag-color", "Yellow", "sw:sq:#f0a232"],
+      ["flag-color", "Red", "sw:sq:#e8392f"],
+      ["flag-color", "Pink", "sw:sq:#f040b8"],
+      ["flag-color", "Purple", "sw:sq:#9a3cf0"],
+      ["flag-color", "Fuchsia", "sw:sq:#e2346c"],
+      ["flag-color", "Rose", "sw:sq:#f39ab8"],
+      ["flag-color", "Lavender", "sw:sq:#a79cf0"],
+      ["flag-color", "Sky", "sw:sq:#8fd6f4"],
+      ["flag-color", "Mint", "sw:sq:#72d46a"],
+      ["flag-color", "Lemon", "sw:sq:#e6e45a"],
+      ["flag-color", "Sand", "sw:sq:#e8a66c"],
+      ["flag-color", "Cocoa", "sw:sq:#9a6b52"],
+      ["flag-color", "Cream", "sw:sq:#f4efe4"]
+    ]},
+
+    /* Marker ⌄ — Clear All + 16 өнгө (дугуй цэг) */
+    "marker-color-menu": { label: "Marker Color Menu", verified: true, items: [
+      ["clear-all-markers", "Clear All", "×"],
+      ["marker-color", "Blue", "sw:dot:#2f7ff5"],
+      ["marker-color", "Cyan", "sw:dot:#27cfd8"],
+      ["marker-color", "Green", "sw:dot:#2fc24a"],
+      ["marker-color", "Yellow", "sw:dot:#f0a232"],
+      ["marker-color", "Red", "sw:dot:#e8392f"],
+      ["marker-color", "Pink", "sw:dot:#f040b8"],
+      ["marker-color", "Purple", "sw:dot:#9a3cf0"],
+      ["marker-color", "Fuchsia", "sw:dot:#e2346c"],
+      ["marker-color", "Rose", "sw:dot:#f39ab8"],
+      ["marker-color", "Lavender", "sw:dot:#a79cf0"],
+      ["marker-color", "Sky", "sw:dot:#8fd6f4"],
+      ["marker-color", "Mint", "sw:dot:#72d46a"],
+      ["marker-color", "Lemon", "sw:dot:#e6e45a"],
+      ["marker-color", "Sand", "sw:dot:#e8a66c"],
+      ["marker-color", "Cocoa", "sw:dot:#9a6b52"],
+      ["marker-color", "Cream", "sw:dot:#f4efe4"]
+    ]},
+
+    /* Media Pool-ийн дээд мөр — AI шинжилгээний ⌄ (3 мөр) */
+    "ai-analysis-menu-media-pool": { label: "AI Analysis Menu (Media Pool)", verified: true, items: [
+      ["perform-ai-analysis-in-all-clips", "Perform AI Analysis in all Clips", "✓"],
+      ["perform-ai-analysis-in-selected-clips", "Perform AI Analysis in Selected Clips"],
+      "-",
+      ["audio-transcription", "Audio Transcription", "", "", "none"]
+    ]},
+
+    /* Media Pool-ийн харагдац ▦ ⌄ — 3 мөр + зургийн хэмжээний гүйлгэгч */
+    "media-pool-view-menu": { label: "Media Pool View Menu", verified: true, items: [
+      ["metadata-view", "Metadata View"],
+      ["thumbnail-view", "Thumbnail View", "✓"],
+      ["list-view", "List View"],
+      "-",
+      ["thumbnail-view", "Size", "slider:3"]
+    ]},
+
+    /* Media Pool-ийн эрэмбэлэх ⇅ — Custom, 19 талбар, чиглэл, Custom-ийн туслах (саарал) */
+    "media-pool-sort-menu": { label: "Media Pool Sort Menu", verified: true, items: [
+      ["media-pool-sort-menu", "Custom"],
+      "-",
+      ["media-pool-sort-menu", "File Name"],
+      ["reel-name", "Reel Name"],
+      ["media-pool-sort-menu", "Clip Name", "✓"],
+      ["media-pool-sort-menu", "Start TC"],
+      ["media-pool-sort-menu", "Duration"],
+      ["media-pool-sort-menu", "Type"],
+      ["media-pool-sort-menu", "FPS"],
+      ["media-pool-sort-menu", "Audio Ch"],
+      ["flag", "Flags"],
+      ["media-pool-sort-menu", "Date Modified"],
+      ["media-pool-sort-menu", "Date Created"],
+      ["media-pool-sort-menu", "Date Added"],
+      ["media-pool-sort-menu", "Shot"],
+      ["media-pool-sort-menu", "Scene"],
+      ["media-pool-sort-menu", "Take"],
+      ["camera", "Camera #"],
+      ["clip-color", "Clip Color"],
+      ["media-pool-sort-menu", "File Path"],
+      ["online-status", "Online Status"],
+      "-",
+      ["ascending-descending", "Ascending", "✓"],
+      ["ascending-descending", "Descending"],
+      "-",
+      ["snap-to-grid", "Snap To Grid", "✓", "", "none"],
+      "-",
+      ["clean-up", "Clean Up", "", "", "none"]
+    ]},
+
+    /* Media Pool-ийн … — 13 мөр, 7 бүлэг */
+    "media-pool-options-menu": { label: "Media Pool Options Menu", verified: true, items: [
+      ["intellisearch-mode", "IntelliSearch Mode", "", "›"],
+      ["reset-intellisearch-analysis", "Reset IntelliSearch Analysis…"],
+      "-",
+      ["show-filmstrip", "Show Filmstrip", "", "", "none"],
+      "-",
+      ["show-audio-waveforms-media-pool", "Show Audio Waveforms", "✓"],
+      ["show-non-rectified-audio-waveforms", "Show Non-Rectified Audio Waveforms", "✓"],
+      "-",
+      ["show-import-log", "Show Import Log"],
+      ["show-export-log", "Show Export Log"],
+      "-",
+      ["show-smart-bins", "Show Smart Bins", "✓"],
+      ["show-power-bins", "Show Power Bins"],
+      "-",
+      ["update-usage-for-entire-project", "Update Usage for Entire Project…"],
+      ["remove-unused-clips", "Remove Unused Clips…"],
+      "-",
+      ["export-as-pdf", "Export as PDF…"],
+      "-",
+      ["deleted-timeline-backups", "Deleted Timeline Backups…"]
+    ]},
+
+    /* Viewer-ийн толгой — прокси ⌄ (3 мөр) */
+    "proxy-menu-viewer": { label: "Proxy Menu (Viewer)", verified: true, items: [
+      ["proxy-handling", "Disable All Proxies"],
+      ["proxy-handling", "Prefer Proxies"],
+      ["proxy-handling", "Prefer Camera Originals", "✓"]
+    ]},
+
+    /* Viewer-ийн толгой — timeline-ийн нягтрал ⌄ */
+    "timeline-resolution-menu-viewer": { label: "Timeline Resolution Menu (Viewer)", verified: true, items: [
+      ["uhd", "Ultra HD 3840 x 2160", "✓"],
+      ["full-hd", "Full HD 1920 x 1080"],
+      ["portrait-1080-x-1920", "Portrait 1080 x 1920"],
+      ["square-1080-x-1080", "Square 1080 x 1080"],
+      "-",
+      ["custom-timeline-settings", "Custom Timeline Settings"]
+    ]},
+
+    /* Viewer-ийн толгой — … (9 мөр) */
+    "viewer-options-menu-edit": { label: "Viewer Options Menu (Edit)", verified: true, items: [
+      ["gang-viewers", "Gang Viewers"],
+      ["show-all-video-frames", "Show All Video Frames"],
+      ["show-timecode-toolbar", "Show Timecode Toolbar"],
+      "-",
+      ["previous-timeline-next-timeline", "Previous Timeline"],
+      ["previous-timeline-next-timeline", "Next Timeline"],
+      "-",
+      ["show-marker-overlays", "Show Marker Overlays", "✓"],
+      ["show-timecode-overlays", "Show Timecode Overlays"],
+      ["show-overlays-during-playback", "Show Overlays During Playback"],
+      "-",
+      ["marker", "Markers", "", "›"]
     ]}
   };
 
@@ -14631,7 +16645,28 @@ Fusion хуудасны **доод төлөвийн мөр** хоёр хэсэг
     "hdr-versions": svg(`<rect x="3" y="7" width="13" height="10" ${sw(1.2)}/><path d="M6.5 7V3.5h13v10H16" ${sw(1.2)}/>`, "0 0 24 20"),
     "hdr-pin": svg(`<path d="M13 2.5l7 7-2.2.6-3.4 3.4-.2 3.5-7.2-7.2 3.5-.2 3.4-3.4z" fill="currentColor"/><path d="M8.6 13.4 3.5 18.5" ${sw(1.6)} stroke-linecap="round"/>`, "0 0 24 20"),
     "hdr-lock": svg(`<rect x="5" y="9" width="13" height="9" rx="1.2" ${sw(1.4)}/><path d="M8 9V6a3.5 3.5 0 0 1 7 0" ${sw(1.4)}/>`, "0 0 24 20"),
-    "hdr-reset": svg(`<path d="M5.5 10a6.5 6.5 0 1 0 2-4.7" ${sw(1.4)}/><path d="M5 2.5v4h4" ${sw(1.4)}/><path d="M12 7v6M9 10h6" ${sw(1.3)}/>`, "0 0 24 20")
+    "hdr-reset": svg(`<path d="M5.5 10a6.5 6.5 0 1 0 2-4.7" ${sw(1.4)}/><path d="M5 2.5v4h4" ${sw(1.4)}/><path d="M12 7v6M9 10h6" ${sw(1.3)}/>`, "0 0 24 20"),
+
+    /* ═══ Edit хуудасны timeline хэрэгслийн мөр (2026-09-26-ны зургаас, зүүнээс баруун) ═══ */
+    "timeline-view-options": svg(`<path d="M4 6h15M4 10.5h15M4 15h8" ${sw(1.6)}/><path d="M14.5 16.5l3 3 6.5-7" ${sw(1.8)} stroke-linecap="round" stroke-linejoin="round"/>`),
+    "show-keyframe-tray": svg(`<path d="M10 5.5 16.5 12 10 18.5 3.5 12z" ${sw(1.4)}/><path d="M18 5.5 24.5 12 18 18.5 11.5 12z" fill="currentColor" opacity=".85"/>`),
+    "voiceover": svg(`<rect x="10.5" y="2.5" width="7" height="12" rx="3.5" fill="currentColor"/><path d="M7.5 11.5a6.5 6.5 0 0 0 13 0M14 18v3.5M10.5 21.5h7" ${sw(1.5)} stroke-linecap="round"/>`),
+    "selection-mode": svg(`<path d="M9 3v16.5l4.2-4.1 3.1 6.1 2.7-1.3-3.1-6h5.8z" fill="currentColor"/>`),
+    "trim-edit-mode": svg(`<rect x="3" y="6" width="8.5" height="12" ${sw(1.4)}/><rect x="16.5" y="6" width="8.5" height="12" ${sw(1.4)}/><path d="M14 3.5v17" ${sw(1.6)}/><path d="M11.5 10l2 2-2 2M16.5 10l-2 2 2 2" ${sw(1.2)}/>`),
+    "blade": svg(`<rect x="3" y="8" width="22" height="8.5" rx="1.5" ${sw(1.4)}/><path d="M7 12.2h3M12.5 12.2h3M18 12.2h3" stroke="currentColor" stroke-width="2.4"/><path d="M3 12.2h1.2M23.8 12.2H25" ${sw(1)}/>`),
+    "dynamic-trim-mode-slip": svg(`<path d="M14 3.5v17" ${sw(1.6)}/><path d="M9.5 8l-4 4 4 4M18.5 8l4 4-4 4" ${sw(1.6)} stroke-linecap="round" stroke-linejoin="round"/><path d="M3 5v14M25 5v14" ${sw(1)} stroke-dasharray="1.6 1.6"/>`),
+    "insert": svg(`<rect x="10" y="2" width="8" height="6.5" fill="currentColor"/><path d="M14 9v3.5M12 11l2 2 2-2" ${sw(1.3)}/><rect x="2" y="14" width="9.5" height="7.5" ${sw(1.4)}/><rect x="16.5" y="14" width="9.5" height="7.5" ${sw(1.4)}/><path d="M12.5 17.7h3" ${sw(1)} stroke-dasharray="1 1"/>`),
+    "overwrite": svg(`<rect x="3" y="12" width="22" height="9.5" ${sw(1.4)}/><rect x="9.5" y="2.5" width="9" height="7" ${sw(1.4)}/><rect x="9.5" y="12" width="9" height="9.5" fill="currentColor" opacity=".85"/><path d="M14 9.5v2.5" ${sw(1.4)}/>`),
+    "replace": svg(`<rect x="3" y="13" width="22" height="8.5" ${sw(1.4)}/><rect x="9.5" y="2.5" width="9" height="7" fill="currentColor" opacity=".85"/><path d="M6.5 11V6.5h2.5M21.5 11V6.5H19" ${sw(1.3)}/><path d="M5 9.5l1.5 1.8 1.5-1.8M20 9.5l1.5 1.8 1.5-1.8" ${sw(1.1)}/>`),
+    "snapping": svg(`<path d="M19.5 5.5a8 8 0 1 0 1.8 8.6" ${sw(2.2)} stroke-linecap="round"/><path d="M17.5 3.5l3.5 1.8-1.4 3.6" ${sw(1.6)} stroke-linecap="round" stroke-linejoin="round"/>`),
+    "linked-selection": svg(`<path d="M12.2 15.8l-2.6 2.6a3.4 3.4 0 0 1-4.8-4.8l3.6-3.6a3.4 3.4 0 0 1 4.8 0" ${sw(2)} stroke-linecap="round"/><path d="M15.8 8.2l2.6-2.6a3.4 3.4 0 0 1 4.8 4.8l-3.6 3.6a3.4 3.4 0 0 1-4.8 0" ${sw(2)} stroke-linecap="round"/>`),
+    "position-lock": svg(`<rect x="7" y="10.5" width="14" height="10.5" rx="1.4" ${sw(1.5)}/><path d="M10 10.5V7.5a4 4 0 0 1 8 0v3" ${sw(1.5)}/><path d="M10 14h8M10 17.5h8" ${sw(1.2)}/>`),
+    "flag": svg(`<path d="M9 3.5h11v16l-5.5-3.6L9 19.5z" fill="#3a8cf2"/>`),
+    "marker": svg(`<path d="M8.5 4.5h11v9.5L14 19.5l-5.5-5.5z" fill="#3a8cf2"/>`),
+    "full-extent-zoom": svg(`<rect x="2.5" y="4.5" width="19" height="12" ${sw(1.4)}/><path d="M5.5 8.5h13M5.5 12.5h8" ${sw(1.2)}/><circle cx="20" cy="15.5" r="3.6" fill="${DK}" ${sw(1.6)}/><path d="M22.6 18.1l3 3" ${sw(2)} stroke-linecap="round"/>`),
+    "detail-zoom": svg(`<path d="M3 6h14M3 10h10M3 14h8M3 18h8" ${sw(1.3)}/><circle cx="18.5" cy="14.5" r="4" ${sw(1.6)}/><path d="M21.4 17.4l3.2 3.2" ${sw(2)} stroke-linecap="round"/>`),
+    "custom-zoom": svg(`<path d="M3 7h22M5 7v4M9 7v2.5M13 7v4M17 7v2.5M21 7v4" ${sw(1.2)}/><circle cx="18.5" cy="15.5" r="3.6" fill="${DK}" ${sw(1.6)}/><path d="M21.1 18.1l3 3" ${sw(2)} stroke-linecap="round"/>`),
+    "jog-wheel": svg(`<path d="M7 8.5 3.5 12 7 15.5M21 8.5l3.5 3.5-3.5 3.5" ${sw(1.5)} stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="12" r="3.2" fill="currentColor"/>`)
   };
 
   /* Нэр → SVG; байхгүй бол тэмдэгт буцаана */
@@ -14915,8 +16950,21 @@ Fusion хуудасны **доод төлөвийн мөр** хоёр хэсэг
           S.select(termId, node, dim ? (ctx || "clip") : false);
         }
       });
+      /* Тусгай мөр (Edit → Timeline View Options, туг/marker-ийн өнгө):
+         "head" — гарчиг, "slider:NN" — гүйлгэгч (NN%), "button" — товч, "sw:sq|dot:#hex" — өнгөний дүрс. */
+      const k = key || "";
+      if (k === "head") row.classList.add("mhead");
+      if (k === "button") row.classList.add("mbtn");
       row.appendChild(el("span", { class: "ml", text: label }));
-      if (key)   row.appendChild(el("span", { class: "mk", text: key }));
+      if (k.indexOf("slider:") === 0) {
+        row.classList.add("mslide");
+        const t = el("span", { class: "mtrack" });
+        t.appendChild(el("i", { style: "left:" + parseFloat(k.slice(7)) + "%" }));
+        row.appendChild(t);
+      } else if (k.indexOf("sw:") === 0) {
+        const [, shape, color] = k.split(":");
+        row.appendChild(el("span", { class: "msw " + shape, style: "background:" + color }));
+      } else if (k && k !== "head" && k !== "button") row.appendChild(el("span", { class: "mk", text: k }));
       if (arrow) row.appendChild(el("span", { class: "ma", text: arrow }));
       pop.appendChild(row);
     });

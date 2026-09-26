@@ -1,0 +1,2276 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0d141c">
+<!-- ГАНЦ ФАЙЛЫН ХУВИЛБАР — tools/build-resolve-mn.mjs-ээр үүссэн. Гараар бүү зас.
+     Эх код: resolve-mn/ хавтас. -->
+<title>Edit хэрэгслийн мөр</title>
+<meta name="description" content="DaVinci Resolve 21-ийн Edit хуудасны timeline-ийн хэрэгслийн мөр, viewer-ийн удирдлага: юу хийдэг, бичлэгт үзүүлэх нөлөө, алхам алхмаар заавар, хөтөч дээр туршдаг жишээ.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%82%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet" media="print" onload="this.media='all';this.onload=null">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+<style>
+/* ── css/guide.css ── */
+/* ═══════════════════════════════════════════════════════════
+   Fusion хэрэгслийн мөрийн заавар
+   Толь, загвартай нэг өнгө: бараан хөх ногоон суурь, гянт улбар шар
+   (tungsten), өдрийн хөх (daylight). Зориуд ганц бараан загвар —
+   Resolve өөрөө бараан тул.
+   ═══════════════════════════════════════════════════════════ */
+:root{
+  color-scheme:dark;
+  --ink:#0d141c; --panel:#141e29; --panel2:#18242f; --line:#25333f;
+  --text:#e9eff5; --dim:#93a5b5; --dim2:#5d6f80;
+  --tungsten:#f5a83c; --daylight:#6fb7dc;
+  /* Resolve-ийн өөрийн саарал — хэрэгслийн мөрийн хуулбарт */
+  --rs-bar:#28282e; --rs-bar2:#232328; --rs-edge:#0f0f11; --rs-icon:#b0b0b4; --rs-txt:#d4d4d6;
+  /* Fusion-ий оролтын өнгө */
+  --port-y:#e8c547; --port-g:#62c46a; --port-b:#4a8ee6;
+  --disp:'Oswald','Arial Narrow',system-ui,sans-serif;
+  --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--ink);color:var(--text);font:15px/1.6 var(--body);-webkit-font-smoothing:antialiased}
+a{color:var(--daylight);text-decoration:none}
+a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--daylight);outline-offset:2px}
+h1,h2,h3{font-family:var(--disp);font-weight:600;text-wrap:balance;margin:0;line-height:1.15}
+p{margin:0}
+kbd{font:500 .82em var(--mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--panel2);color:var(--text);white-space:nowrap}
+b{font-weight:600;color:#fff}
+img{max-width:100%}
+
+#fz{padding-inline:clamp(16px,4vw,40px);padding-block:0 60px;max-width:1240px;margin:0 auto}
+
+/* ── дээд цэс ── */
+.fz-nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;gap:16px;
+  margin-inline:calc(clamp(16px,4vw,40px) * -1);padding:10px clamp(16px,4vw,40px);
+  background:rgba(13,20,28,.93);border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.fz-nav .brand{font:600 15px var(--disp);letter-spacing:.06em;text-transform:uppercase;color:var(--text);white-space:nowrap}
+.fz-nav .brand b{color:var(--tungsten)}
+.fz-nav .chips{display:flex;gap:4px;overflow-x:auto;flex:1;min-width:0;scrollbar-width:none}
+.fz-nav .chips::-webkit-scrollbar{display:none}
+.fz-nav .chips a,.fz-nav .out a{font-size:12.5px;color:var(--dim);padding:5px 8px;border-radius:6px;white-space:nowrap;border:1px solid transparent}
+.fz-nav .chips a:hover,.fz-nav .out a:hover{color:var(--text);text-decoration:none;background:var(--panel2)}
+.fz-nav .chips a.on{color:var(--tungsten);border-color:var(--line);background:var(--panel)}
+.fz-nav .out{display:flex;gap:4px}
+@media (max-width:640px){.fz-nav .out{display:none}.fz-nav{gap:10px}}
+
+/* ── нүүр ── */
+.eyebrow{font:500 11.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.hero{padding-block:44px 28px;display:grid;gap:14px}
+.hero h1{font-size:clamp(34px,6vw,60px);letter-spacing:.01em;text-transform:uppercase}
+.lead{color:var(--dim);max-width:66ch;font-size:16px}
+.lead b{color:var(--text)}
+
+/* Resolve-ийн хэрэгслийн мөрийн хуулбар */
+.tb-wrap{margin-top:12px;background:var(--rs-bar);border:1px solid var(--rs-edge);border-radius:6px;overflow:hidden;
+  box-shadow:0 18px 40px rgba(0,0,0,.35)}
+.tb-scroll{overflow-x:auto}
+.tb{display:flex;align-items:center;justify-content:center;gap:2px;padding:9px 14px;min-width:max-content}
+.tb-b{width:35px;height:34px;display:grid;place-items:center;color:var(--rs-icon);border-radius:4px}
+.tb-b:hover,.tb-b:focus-visible{background:#3a3a42;color:#fff;text-decoration:none}
+.tb-b svg{width:26px;height:22px;display:block}
+.tb-div{width:1px;height:24px;background:#3a3a40;margin:0 6px;flex-shrink:0}
+.tb-status{display:flex;justify-content:space-between;gap:16px;padding:6px 14px;background:var(--rs-bar2);border-top:1px solid var(--rs-edge);
+  font-size:12.5px;color:#8e8e94}
+.tb-hint.on{color:var(--rs-txt)}
+.tb-mem{font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* ── нод хэрхэн ажилладаг ── */
+.basics{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:36px;padding-block:28px 40px;border-top:1px solid var(--line)}
+.basics h2,.grp-h h2,.recipes h2{font-size:clamp(24px,3.4vw,34px);text-transform:uppercase;letter-spacing:.02em}
+.basics-text{display:grid;gap:14px;align-content:start}
+.basics-text>p{color:var(--dim);max-width:62ch}
+.basics-list{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px 22px}
+.basics-list h3{font-size:18px;margin-bottom:10px;letter-spacing:.02em}
+.basics-list ol{margin:0;padding-left:20px;display:grid;gap:8px;color:var(--dim)}
+@media (max-width:860px){.basics{grid-template-columns:1fr}}
+
+.flow{display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px;padding:18px;background:var(--rs-bar);border:1px solid var(--rs-edge);border-radius:6px;
+  background-image:linear-gradient(#2f2f36 1px,transparent 1px),linear-gradient(90deg,#2f2f36 1px,transparent 1px);background-size:34px 34px}
+.nd{display:inline-flex;align-items:center;min-height:28px;padding:3px 12px;background:#3c3c42;border:1px solid #4a4a50;border-radius:3px;
+  font-size:12.5px;color:var(--rs-txt);white-space:nowrap}
+.nd.sel{border-color:#e0433c;box-shadow:0 0 0 1px #e0433c}
+.nd.src{border-left:3px solid var(--port-y)}
+.nd.out{border-right:3px solid #fff}
+.ar{color:var(--port-y);font-weight:600}
+.ports{list-style:none;margin:0;padding:0;display:grid;gap:7px;color:var(--dim);font-size:14px}
+.pt{display:inline-block;width:12px;height:12px;margin-right:8px;vertical-align:-1px;clip-path:polygon(0 0,100% 50%,0 100%)}
+.pt.y{background:var(--port-y)} .pt.g{background:var(--port-g)} .pt.b{background:var(--port-b)}
+.pt.o{background:#fff;clip-path:none;width:10px;height:10px}
+
+/* ── бүлэг ── */
+.grp{padding-top:30px;border-top:1px solid var(--line)}
+.grp-h{display:grid;gap:10px;padding-bottom:6px}
+
+/* ── хэрэгслийн карт ── */
+.tool{padding-block:34px;border-bottom:1px dashed var(--line)}
+.tool:last-child{border-bottom:0}
+.tool-h{display:flex;gap:16px;align-items:center}
+.tool-ic{width:58px;height:50px;flex-shrink:0;display:grid;place-items:center;background:var(--rs-bar);border:1px solid var(--rs-edge);border-radius:6px;color:#cfcfd3}
+.tool-ic svg{width:36px;height:31px;display:block}
+.tool-n{font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim2)}
+.tool-h h3{font-size:clamp(24px,3vw,30px);letter-spacing:.01em}
+.tool-mn{color:var(--tungsten);font-size:14px}
+.tool-tip{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin-top:14px}
+.tool-tip span{font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--dim2)}
+.tool-tip code{font:13px var(--body);color:var(--rs-txt);background:var(--rs-bar2);border:1px solid var(--rs-edge);border-radius:4px;padding:3px 10px}
+
+.tool-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:34px;margin-top:20px}
+.tool-text{display:grid;gap:18px;align-content:start}
+.tool-text h4{font:600 11.5px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:0 0 6px}
+.tool-text p,.tool-text li{color:#c6d2dd;max-width:64ch}
+.tool-text ol,.tool-text ul{margin:0;padding-left:20px;display:grid;gap:5px}
+.tool-text section.effect{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.tool-text section.effect h4{color:var(--tungsten)}
+.params{display:grid;grid-template-columns:minmax(0,11.5rem) minmax(0,1fr);gap:6px 14px;margin:0}
+.params dt{font:500 12.5px/1.5 var(--mono);color:var(--tungsten)}
+.params dd{margin:0;color:#c6d2dd;font-size:14px}
+.tips ul{list-style:none;padding-left:0}
+.tips li{padding-left:18px;position:relative}
+.tips li::before{content:"";position:absolute;left:2px;top:.62em;width:7px;height:7px;border:1.5px solid var(--daylight);transform:rotate(45deg)}
+.unsure{font-size:13.5px;color:var(--dim)!important;border:1px dashed var(--line);border-radius:8px;padding:8px 12px}
+.unsure b{color:var(--daylight)}
+.tool-links{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px}
+@media (max-width:920px){
+  .tool-body{grid-template-columns:1fr}
+  .tool-demo{order:-1}
+  .params{grid-template-columns:1fr;gap:2px 0}
+  .params dd{margin-bottom:6px}
+}
+
+/* ── жишээ ── */
+.tool-demo{display:grid;gap:10px;align-content:start}
+@media (min-width:921px){.tool-demo{position:sticky;top:70px;align-self:start}}
+.stage{position:relative;aspect-ratio:16/9;max-width:100%;overflow:hidden;background:#000;border:1px solid var(--rs-edge);border-radius:6px;container-type:inline-size;isolation:isolate}
+.stage.checker{background:conic-gradient(#2a2f36 25%,#1a1d22 0 50%,#2a2f36 0 75%,#1a1d22 0) 0 0/18px 18px}
+.stage .ly{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.stage canvas.ly{image-rendering:auto}
+.stage .defs{position:absolute;width:0;height:0}
+.ab{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.seg{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:3px}
+.seg button{font:500 13px var(--body);color:var(--dim);background:none;border:0;border-radius:6px;padding:5px 14px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--tungsten);color:#1a1206}
+.ab-hint{font-size:12px;color:var(--dim2)}
+.ctrls{display:grid;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.crow{display:grid;grid-template-columns:minmax(0,10.5rem) minmax(0,1fr) 3.6rem;align-items:center;gap:10px}
+.crow label{font:500 12px var(--mono);color:var(--dim)}
+.crow output{font:500 12px var(--mono);color:var(--text);text-align:right;font-variant-numeric:tabular-nums}
+.crow input[type=range]{width:100%;accent-color:var(--tungsten)}
+.crow.sel{grid-template-columns:minmax(0,10.5rem) minmax(0,1fr)}
+.crow select{font:13px var(--body);color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:5px 8px;width:100%}
+.crow.chk{grid-template-columns:auto minmax(0,1fr);gap:8px}
+.crow.chk input{accent-color:var(--tungsten);width:16px;height:16px;margin:0}
+.crow.chk label{color:var(--text)}
+.crow.off{opacity:.45}
+.btnrow{grid-template-columns:auto}
+.cbtn{font:500 13px var(--body);color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:6px 12px;cursor:pointer;justify-self:start}
+.cbtn:hover{border-color:var(--tungsten);color:var(--tungsten)}
+@media (max-width:520px){.crow{grid-template-columns:minmax(0,1fr) 3.4rem}.crow label{grid-column:1/-1}.crow.sel{grid-template-columns:1fr}}
+.extra{display:flex;gap:14px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.extra p{font-size:13px;color:var(--dim)}
+.fz-graph{width:112px;height:112px;flex-shrink:0}
+
+/* жишээний давхаргууд */
+.fz-title{display:flex;align-items:flex-end;justify-content:center;padding-bottom:10%}
+.fz-title span{font-family:var(--disp);font-weight:600;color:#fff;line-height:1;white-space:nowrap}
+.fz-fg{position:absolute;width:30%;height:auto;left:50%;top:50%;transform:translate(-50%,-50%)}
+.fz-leak{background:linear-gradient(115deg,transparent 22%,rgba(255,140,40,.6) 44%,rgba(255,215,150,.22) 56%,transparent 72%);mix-blend-mode:screen}
+.fz-outline{pointer-events:none}
+.fz-outline path{stroke:var(--tungsten);stroke-width:2;vector-effect:non-scaling-stroke}
+.fz-outline path.cmp{stroke:var(--daylight);stroke-dasharray:6 5}
+.fz-outline rect{fill:var(--ink);stroke:var(--tungsten);stroke-width:1.5;vector-effect:non-scaling-stroke}
+.fz-arrow{position:absolute;left:84%;top:18%;width:0;height:0}
+.fz-arrow i{position:absolute;left:0;top:-1px;height:2px;background:var(--daylight);transform-origin:0 50%}
+.fz-arrow i::after{content:"";position:absolute;right:-2px;top:-5px;border:6px solid transparent;border-left:9px solid var(--daylight);border-right:0}
+.fz-arrow::before{content:"хүч";position:absolute;left:-14px;top:-26px;font:500 11px var(--mono);color:var(--daylight)}
+.fz-arrow{transform-origin:0 0}
+
+/* 3D */
+.fz-3d{perspective:900px;perspective-origin:50% 38%;background:radial-gradient(ellipse at 50% 28%,#1c2432,#07090d 72%);overflow:hidden}
+.fz-3d.plain{background:none}
+.fz-floor{position:absolute;left:-60%;right:-60%;bottom:-8%;height:70%;transform:rotateX(80deg);transform-origin:50% 100%;
+  background-image:linear-gradient(rgba(111,183,220,.2) 1px,transparent 1px),linear-gradient(90deg,rgba(111,183,220,.2) 1px,transparent 1px);background-size:5cqw 5cqw;
+  -webkit-mask-image:linear-gradient(to top,#000 20%,transparent);mask-image:linear-gradient(to top,#000 20%,transparent)}
+.fz-3d.plain .fz-floor{display:none}
+.fz-world{position:absolute;inset:0;transform-style:preserve-3d}
+.fz-plane{position:absolute;left:50%;top:50%;width:58%;height:auto;transform:translate(-50%,-50%);box-shadow:0 0 0 1px rgba(111,183,220,.35)}
+.fz-plane.back{width:64%;transform:translate(-50%,-55%) translateZ(-200px)}
+.fz-plane.back2{width:70%;transform:translate(-50%,-64%) translateZ(-260px)}
+.fz-cube{position:absolute;left:50%;top:50%;width:var(--s);height:var(--s);transform-style:preserve-3d;--s:22cqw;transform:translate(-50%,-50%)}
+.fz-cube .f{position:absolute;inset:0;background:#9aa2ac;filter:brightness(var(--l));border:1px solid rgba(0,0,0,.35);background-size:cover;background-position:center}
+.fz-cube .front{transform:translateZ(calc(var(--s) / 2))}
+.fz-cube .back{transform:rotateY(180deg) translateZ(calc(var(--s) / 2))}
+.fz-cube .right{transform:rotateY(90deg) translateZ(calc(var(--s) / 2))}
+.fz-cube .left{transform:rotateY(-90deg) translateZ(calc(var(--s) / 2))}
+.fz-cube .top{transform:rotateX(90deg) translateZ(calc(var(--s) / 2))}
+.fz-cube .bottom{transform:rotateX(-90deg) translateZ(calc(var(--s) / 2))}
+.fz-cube.small{--s:11cqw;transform:translate(-50%,-50%) translate3d(13cqw,5cqw,40px) rotateY(32deg) rotateX(-16deg)}
+.fz-cube.mid{--s:15cqw;transform:translate(-50%,-50%) translate3d(4cqw,7cqw,20px) rotateX(-14deg) rotateY(36deg)}
+.fz-sphere{position:absolute;left:50%;top:50%;width:26cqw;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);
+  background:radial-gradient(circle at 34% 30%,#f2f4f7,#8f969e 46%,#262a30 82%)}
+.fz-sphere.tex{background:radial-gradient(circle at 34% 30%,rgba(255,255,255,.32),rgba(0,0,0,0) 46%,rgba(0,0,0,.78) 86%),var(--src);background-size:100% 100%,300% 100%}
+.fz-t3d{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:700 11cqw/1 var(--disp);letter-spacing:.02em;white-space:nowrap}
+.fz-t3d.small{font-size:6cqw;color:#f3c768;transform:translate(-50%,-50%) translate3d(-12cqw,8cqw,90px)}
+.fz-grp{position:absolute;inset:0;transform-style:preserve-3d}
+.fz-shadow{position:absolute;left:50%;top:50%;width:24cqw;height:9cqw;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.8),transparent);
+  transform:translate(-40%,5cqw)}
+.fz-3d.flat .f{filter:none}
+.fz-3d.zpass{background:#000}
+.fz-3d.zpass .fz-plane{filter:brightness(0) invert(.25);box-shadow:none}
+.fz-3d.zpass .f{background:#e8e8e8;filter:brightness(calc(.8 + var(--l) * .2));border-color:#bbb}
+.fz-3d.zpass .fz-floor{background-image:linear-gradient(to top,#d4d4d4,#000)}
+.fz-cam{overflow:hidden;background:#000}
+.fz-cam .fz-world{inset:0}
+.fz-lay{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+
+/* ── хамтын жишээ ── */
+.recipes{padding-top:34px;border-top:1px solid var(--line);display:grid;gap:12px}
+.rgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:10px}
+.recipe{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;display:grid;gap:12px;align-content:start}
+.recipe h3{font-size:20px;letter-spacing:.02em}
+.recipe .flow{padding:12px}
+.recipe .side{list-style:none;margin:0;padding:0;font-size:14px;color:var(--dim)}
+.recipe .why{color:var(--dim);font-size:14px}
+.recipe ol{margin:0;padding-left:20px;display:grid;gap:4px;color:#c6d2dd;font-size:14px}
+@media (max-width:860px){.rgrid{grid-template-columns:1fr}}
+
+.fz-foot{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);display:grid;gap:8px;color:var(--dim);font-size:13.5px;max-width:80ch}
+.fz-foot b{color:var(--text)}
+
+/* ═══════════════════════════════════════════════════════════
+   Edit хуудасны заавар (edit-zaavar.html) — нэмэлт
+   ═══════════════════════════════════════════════════════════ */
+:root{--imp-edit:#f5a83c;--imp-image:#e0433c;--imp-audio:#62c46a;--imp-note:#b48cf0;--imp-view:#6fb7dc;--imp-protect:#c9ccd4}
+.tool-h .impact{margin-left:auto;align-self:flex-start}
+.impact{display:inline-block;font:500 11px var(--mono);letter-spacing:.04em;padding:3px 8px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.impact.edit{color:var(--imp-edit)} .impact.image{color:var(--imp-image)} .impact.audio{color:var(--imp-audio)}
+.impact.note{color:var(--imp-note)} .impact.view{color:var(--imp-view)} .impact.protect{color:var(--imp-protect)}
+@media (max-width:640px){.tool-h{flex-wrap:wrap}.tool-h .impact{margin-left:74px}}
+.imp-list{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:14px;color:var(--dim)}
+.imp-list li{display:grid;grid-template-columns:13.5rem minmax(0,1fr);gap:10px;align-items:start}
+.imp-list .impact{justify-self:start}
+@media (max-width:640px){.imp-list li{grid-template-columns:1fr;gap:4px}}
+.tool-ic .glyph{font-size:22px}
+.tb-b.red{color:#e0433c}
+.tb-b.on{background:#3a3a42;color:#fff}
+.tb-dd{color:var(--rs-icon);font-size:11px;margin:0 4px 0 -4px}
+.tb-dd:hover{text-decoration:none;color:#fff}
+.tb-zoom{display:flex;align-items:center;gap:6px;margin-left:10px;color:var(--rs-icon);font-size:14px}
+.tb-zoom i{width:70px;height:2px;background:#55555b;position:relative}
+.tb-zoom i::after{content:"";position:absolute;left:60%;top:-4px;width:10px;height:10px;border-radius:50%;background:#b0b0b4}
+.chips-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}
+.tchip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px 4px 6px;background:var(--rs-bar);border:1px solid var(--rs-edge);border-radius:6px;color:var(--rs-txt);font-size:13px}
+.tchip svg{width:20px;height:17px}
+.tchip:hover{text-decoration:none;border-color:var(--tungsten)}
+
+/* ── жижиг timeline (жишээ) ── */
+.stage.ez-stage{background:#1d1d21;aspect-ratio:16/8.6}
+.ez-tl{position:absolute;inset:0;display:flex;flex-direction:column;font-family:var(--body);--hd:11%;--vh:44%;--ah:38%}
+.ez-ru{position:relative;height:9%;margin-left:var(--hd);background:#26262b;border-bottom:1px solid #111;
+  background-image:repeating-linear-gradient(90deg,#3a3a40 0 1px,transparent 1px 2.5%);background-size:100% 35%;background-repeat:repeat-x;background-position:0 100%}
+.ez-ru span{position:absolute;top:8%;transform:translateX(3px);font:500 2cqw var(--mono);color:#8e8e94;white-space:nowrap}
+.ez-mk{position:absolute;bottom:0;width:2.2cqw;height:2.2cqw;transform:translateX(-50%);background:var(--mc);clip-path:polygon(0 0,100% 0,100% 60%,50% 100%,0 60%)}
+.ez-rows{flex:1;display:flex;flex-direction:column;gap:2px;padding-top:4px;min-height:0}
+.ez-row{display:flex;min-height:0}
+.ez-row.v{height:var(--vh)} .ez-row.a{height:var(--ah)}
+.ez-rows .ez-row.a:nth-child(3){height:24%}
+.ez-hd{width:var(--hd);flex-shrink:0;display:grid;place-items:center;background:#222126;color:#d4d4d6;font:500 2.1cqw var(--mono);border-right:1px solid #111}
+.ez-lane{position:relative;flex:1;background:#28282e;overflow:hidden}
+.ez-clip{position:absolute;top:4%;bottom:4%;border-radius:3px;overflow:hidden;border:1px solid rgba(0,0,0,.6);opacity:var(--op,1);transition:opacity .15s}
+.ez-clip.v{background:hsl(var(--h) 30% 32%)}
+.ez-clip.a{background:linear-gradient(hsl(145 38% 38%),hsl(145 38% 32%))}
+.ez-clip.chg{outline:2px solid var(--tungsten);outline-offset:-2px;z-index:2}
+.ez-clip.rec{background:linear-gradient(#9c2a24,#7e201b)!important;outline:2px solid #ff5a4f}
+.ez-clip.cut::before{content:"";position:absolute;inset:0 auto 0 0;width:2px;background:#fff;opacity:.8}
+.ez-clip.shake{animation:ezShake .35s}
+@keyframes ezShake{20%,60%{transform:translateX(-4px)}40%,80%{transform:translateX(4px)}}
+@media (prefers-reduced-motion:reduce){.ez-clip.shake{animation:none}}
+.ez-img{position:absolute;inset:0 0 34% 0;background-size:auto 100%;background-repeat:repeat-x;background-position:calc(var(--i) * -5cqw) 50%;
+  filter:saturate(.8);mix-blend-mode:normal}
+.ez-img::after{content:"";position:absolute;inset:0;background:hsl(var(--h) 60% 45% / .28)}
+.ez-img.ends{background-repeat:no-repeat;background-size:auto 100%;background-position:left 50%}
+.ez-img.ends::before{content:"";position:absolute;right:0;top:0;bottom:0;width:18cqw;max-width:50%;background-image:inherit;background-size:auto 100%;background-position:right 50%}
+.ez-img.simple{display:none}
+.ez-clip.v .ez-cn{position:absolute;left:0;right:0;bottom:0;height:34%;background:hsl(var(--h) 28% 44%)}
+.ez-cn{display:flex;align-items:center;gap:1cqw;padding:0 .8cqw;font:500 1.9cqw var(--body);color:#fff;white-space:nowrap;overflow:hidden}
+.ez-clip.a .ez-cn{position:absolute;left:0;right:0;bottom:0;height:40%;background:rgba(0,0,0,.18)}
+.ez-cn small{font:400 1.6cqw var(--mono);color:rgba(255,255,255,.75)}
+.ez-wave{position:absolute;inset:6% 0 42% 0;background-size:12cqw 100%;background-repeat:repeat-x;background-position:calc(var(--i) * -4cqw) 0;opacity:.8}
+.ez-gap{position:absolute;top:4%;bottom:4%;background:repeating-linear-gradient(45deg,rgba(224,67,60,.35) 0 4px,transparent 4px 9px);border:1px dashed rgba(224,67,60,.7);border-radius:3px}
+.ez-ghost{position:absolute;top:4%;bottom:4%;border:1.5px dashed rgba(255,255,255,.55);border-radius:3px;z-index:3;pointer-events:none}
+.ez-snap{position:absolute;top:-4px;bottom:-400%;width:2px;margin-left:-1px;background:#f5d13c;box-shadow:0 0 8px #f5d13c;z-index:5}
+.ez-off{position:absolute;right:3px;top:3px;z-index:3;font:600 2cqw var(--mono);color:#fff;background:#e0433c;border-radius:3px;padding:0 4px}
+.ez-flag{position:absolute;left:4px;top:4px;z-index:3;width:2.4cqw;height:2.8cqw;background:var(--fc);clip-path:polygon(0 0,100% 0,100% 100%,50% 74%,0 100%)}
+.ez-cmk{position:absolute;top:0;z-index:3;width:2cqw;height:2cqw;transform:translateX(-50%);background:var(--mc);clip-path:polygon(0 0,100% 0,100% 60%,50% 100%,0 60%)}
+.ez-phwrap{position:absolute;left:var(--hd);right:0;top:0;bottom:12%;pointer-events:none}
+.ez-ph{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:#e0433c;z-index:6}
+.ez-ph::before{content:"";position:absolute;top:0;left:-5px;border:6px solid transparent;border-top:8px solid #e0433c}
+.ez-info{min-height:12%;display:flex;align-items:center;padding:0 2cqw;background:#18181b;border-top:1px solid #111;font:2.1cqw/1.3 var(--body);color:#c9cdd4}
+.ez-info b{color:#fff} .ez-info .up{color:#f5a83c} .ez-info .dn{color:#6fb7dc}
+@container (max-width:420px){.ez-info{font-size:2.6cqw}.ez-cn small{display:none}}
+
+/* ── viewer жишээ ── */
+.stage.ez-black{background:#000}
+.ez-box{position:absolute;inset:0;border:1px solid rgba(255,255,255,.9);pointer-events:none}
+.ez-box i{position:absolute;width:9px;height:9px;margin:-5px 0 0 -5px;background:#fff;border:1px solid #000}
+.ez-box i.tl{left:0;top:0}.ez-box i.tr{left:100%;top:0}.ez-box i.bl{left:0;top:100%}.ez-box i.br{left:100%;top:100%}
+.ez-box i.t{left:50%;top:0}.ez-box i.b{left:50%;top:100%}.ez-box i.l{left:0;top:50%}.ez-box i.r{left:100%;top:50%}
+.ez-box b{position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;border:1.5px solid #e0433c}
+.ez-box.crop{inset:auto}
+.ez-mini{position:absolute;left:3%;top:4%;width:30%;aspect-ratio:16/9;border:1px solid rgba(255,255,255,.6);box-shadow:0 4px 18px rgba(0,0,0,.6);background:#000;z-index:3}
+.ez-mini img{width:100%;height:100%;display:block;opacity:.75}
+.ez-mini i{position:absolute;border:2px solid}
+.ez-mini i.g{border-color:#3ddc6a}.ez-mini i.r{border-color:#ff4d3d}.ez-mini i.c{border:1px dashed #f5d13c}
+.ez-flare{mix-blend-mode:screen;pointer-events:none}
+.ez-handle{position:absolute;width:22px;height:22px;margin:-11px 0 0 -11px;border:1.5px solid #fff;border-radius:50%;box-shadow:0 0 0 1px #000}
+.ez-handle::before,.ez-handle::after{content:"";position:absolute;background:#fff;left:50%;top:-8px;bottom:-8px;width:1px}
+.ez-handle::after{top:50%;left:-8px;right:-8px;bottom:auto;width:auto;height:1px}
+.ez-title{position:absolute;transform:translate(-50%,-50%);font:700 6.2cqw/1 var(--disp);letter-spacing:.06em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.7);white-space:nowrap}
+.ez-fh{position:absolute;width:0;height:0}
+.ez-fh::before{content:"";position:absolute;left:-26px;top:-1px;width:52px;height:2px;background:#46e0a0}
+.ez-fh::after{content:"";position:absolute;top:-26px;left:-1px;height:52px;width:2px;background:#46e0a0}
+.ez-draw{cursor:crosshair;touch-action:none}
+.ez-tag{position:absolute;right:2%;top:3%;font:500 2.1cqw var(--mono);color:#fff;background:rgba(0,0,0,.55);padding:2px 8px;border-radius:4px}
+.ez-dim{filter:brightness(.3) saturate(.6)}
+.ez-win{position:absolute;top:0;bottom:0;overflow:hidden;outline:2px solid #fff;box-shadow:0 0 0 1px #000}
+.ez-win img{position:absolute;top:0;height:100%;max-width:none;object-fit:cover}
+.ez-ref{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#46e0a0;border:2px solid #fff}
+.ez-tc{position:absolute;left:50%;bottom:16%;transform:translateX(-50%);font:600 4cqw var(--mono);color:#fff;background:rgba(0,0,0,.6);padding:2px 12px;border-radius:4px}
+.ez-jw{position:absolute;left:50%;bottom:4%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;color:#ddd;font-size:3cqw;background:rgba(20,20,22,.8);padding:2px 14px;border-radius:12px}
+.ez-jw i{width:10px;height:10px;border-radius:50%;background:#fff;display:block}
+.stage.ez-unknown{background:repeating-linear-gradient(45deg,#1a1d22 0 12px,#1e2228 12px 24px)}
+.ez-q{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:10px;text-align:center;padding:0 12%}
+.ez-q b{font:700 12cqw/1 var(--disp);color:var(--daylight)}
+.ez-q p{color:var(--dim);font-size:14px}
+
+</style>
+</head>
+<body>
+<main id="fz"></main>
+<script>
+/* ── js/00-core.js ── */
+/* ═════════════════════════════════════════════════════════════
+   DaVinci Resolve — Монгол хөтөч
+   00 · Цөм: нэрийн орон зай, туслах функцууд
+   ═════════════════════════════════════════════════════════════ */
+(function (global) {
+  "use strict";
+
+  const RM = (global.RM = global.RM || {});
+
+  RM.version = "1.0";
+
+  /* ── DOM туслахууд ── */
+  RM.$  = (sel, root) => (root || document).querySelector(sel);
+  RM.$$ = (sel, root) => Array.prototype.slice.call((root || document).querySelectorAll(sel));
+
+  RM.el = function (tag, attrs, kids) {
+    const n = document.createElement(tag);
+    if (attrs) {
+      for (const k in attrs) {
+        if (k === "class") n.className = attrs[k];
+        else if (k === "text") n.textContent = attrs[k];
+        else if (k === "html") n.innerHTML = attrs[k];
+        else if (k.slice(0, 2) === "on") n.addEventListener(k.slice(2), attrs[k]);
+        else if (attrs[k] != null && attrs[k] !== false) n.setAttribute(k, attrs[k]);
+      }
+    }
+    if (kids) (Array.isArray(kids) ? kids : [kids]).forEach((k) => {
+      if (k == null) return;
+      n.appendChild(typeof k === "string" ? document.createTextNode(k) : k);
+    });
+    return n;
+  };
+
+  /* HTML-д аюулгүй болгох */
+  RM.esc = function (s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  };
+
+  /* Хайлтын үрийг тодруулах */
+  RM.mark = function (text, q) {
+    const safe = RM.esc(text);
+    if (!q) return safe;
+    const needle = RM.esc(q).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    try {
+      return safe.replace(new RegExp("(" + needle + ")", "gi"), "<mark>$1</mark>");
+    } catch (e) { return safe; }
+  };
+
+  /* ── Гарын авлагын бичвэр → HTML (мини-markdown) ──
+     хоосон мөр — догол;  ## — дэд гарчиг;  - / 1. — жагсаалт;  > — анхааруулга;
+     **тод**;  [k:Ctrl+S] — товчлуур;  [[id]] / [[id|нэр]] — толины холбоос. */
+  RM.md = function (src) {
+    const xref = (id, label) => {
+      const r = RM.dict && RM.dict.byId ? RM.dict.byId[id] : null;
+      return '<a class="xref" href="#" data-id="' + id + '">' +
+             (label != null ? label : (r ? RM.esc(r.en) : id)) + "</a>";
+    };
+    const inline = (s) => RM.esc(s)
+      .replace(/\[k:((?:[^\]]|\](?=\]))+)\]/g, (m, k) => "<kbd>" + k + "</kbd>")
+      .replace(/\[\[([a-z0-9-]+)\|([^\]]+)\]\]/g, (m, id, lb) => xref(id, lb))
+      .replace(/\[\[([a-z0-9-]+)\]\]/g, (m, id) => xref(id))
+      .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+
+    const lines = String(src == null ? "" : src).replace(/\r/g, "").split("\n");
+    let out = "", para = [], list = null, tag = "", note = [];
+    const flushP = () => { if (para.length) { out += "<p>" + inline(para.join(" ")) + "</p>"; para = []; } };
+    const flushL = () => { if (list) { out += "<" + tag + ">" + list.map((x) => "<li>" + inline(x) + "</li>").join("") + "</" + tag + ">"; list = null; } };
+    const flushN = () => { if (note.length) { out += '<div class="note">' + inline(note.join(" ")) + "</div>"; note = []; } };
+    const flush = () => { flushP(); flushL(); flushN(); };
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      let m;
+      if (!line) { flush(); continue; }
+      if ((m = /^##\s+(.+)$/.exec(line)))       { flush(); out += "<h4>" + inline(m[1]) + "</h4>"; continue; }
+      if ((m = /^[-•]\s+(.+)$/.exec(line)))     { flushP(); flushN(); if (!list || tag !== "ul") { flushL(); list = []; tag = "ul"; } list.push(m[1]); continue; }
+      if ((m = /^\d+[.)]\s+(.+)$/.exec(line)))  { flushP(); flushN(); if (!list || tag !== "ol") { flushL(); list = []; tag = "ol"; } list.push(m[1]); continue; }
+      if ((m = /^>\s?(.*)$/.exec(line)))        { flushP(); flushL(); note.push(m[1]); continue; }
+      flushL(); flushN(); para.push(line);
+    }
+    flush();
+    return '<div class="md">' + out + "</div>";
+  };
+
+  /* Кирилл/латин ялгаагүй жижигрүүлэлт */
+  RM.norm = function (s) {
+    return String(s == null ? "" : s).toLowerCase().replace(/ё/g, "е").trim();
+  };
+
+  /* Хугацаа хойшлуулагч (хайлтын оролтод) */
+  RM.debounce = function (fn, ms) {
+    let t = 0;
+    return function () {
+      const args = arguments, self = this;
+      clearTimeout(t);
+      t = setTimeout(() => fn.apply(self, args), ms || 120);
+    };
+  };
+
+  /* Түр зуурын мэдэгдэл */
+  RM.toast = function (msg) {
+    let box = RM.$("#toast");
+    if (!box) {
+      box = RM.el("div", { id: "toast" });
+      document.body.appendChild(box);
+    }
+    box.textContent = msg;
+    box.classList.add("on");
+    clearTimeout(RM.toast._t);
+    RM.toast._t = setTimeout(() => box.classList.remove("on"), 1800);
+  };
+
+  /* Санах ойд хадгалах (localStorage аюулгүй) */
+  RM.store = {
+    get(key, fallback) {
+      try {
+        const v = localStorage.getItem("rm." + key);
+        return v == null ? fallback : JSON.parse(v);
+      } catch (e) { return fallback; }
+    },
+    set(key, val) {
+      try { localStorage.setItem("rm." + key, JSON.stringify(val)); } catch (e) { /* үл хайхрах */ }
+    },
+    del(key) {
+      try { localStorage.removeItem("rm." + key); } catch (e) { /* үл хайхрах */ }
+    }
+  };
+
+  /* Хуулах */
+  RM.copy = function (text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(
+        () => RM.toast("Хуулагдлаа: " + text),
+        () => RM.toast("Хуулж чадсангүй")
+      );
+      return;
+    }
+    const ta = RM.el("textarea", { style: "position:fixed;opacity:0" });
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); RM.toast("Хуулагдлаа: " + text); }
+    catch (e) { RM.toast("Хуулж чадсангүй"); }
+    ta.remove();
+  };
+
+})(window);
+
+</script>
+<script>
+/* ── js/53-sim-icons.js ── */
+/* ═════════════════════════════════════════════════════════════
+   53 · Загварын дүрсүүд (SVG)
+
+   Resolve Studio 21-ийн дэлгэцийн зурагнаас (2026-09-25) хэлбэр бүрийг
+   нь дагаж гараар зурсан SVG. Blackmagic-ийн эх зургийг хуулаагүй —
+   ижил хэлбэр, харьцаа, өнгөтэй шинээр зурсан.
+   Үндсэн өнгө нь currentColor (товчны өнгө), бараан дэвсгэр нь тогтмол.
+   ═════════════════════════════════════════════════════════════ */
+(function (RM) {
+  "use strict";
+
+  const S = (RM.sim = RM.sim || {});
+  const DK = "#26262a";     /* товчны доторх бараан дүүргэлт */
+  const FL = "#1a1a1d";     /* 3D дүрсний шал */
+  const sw = (w) => `fill="none" stroke="currentColor" stroke-width="${w}"`;
+  const svg = (body, vb) => `<svg viewBox="${vb || "0 0 28 24"}" width="${vb ? 22 : 22}" height="${vb ? 16 : 19}" aria-hidden="true">${body}</svg>`;
+  const dot = (x, y, r) => `<circle cx="${x}" cy="${y}" r="${r}" fill="currentColor"/>`;
+  const pt = (x, y) => `<circle cx="${x}" cy="${y}" r="1.45" fill="${DK}" stroke="currentColor" stroke-width="1"/>`;
+  const FLOOR = `<path d="M2 18.5 14 13.5 26 18.5 14 23.5z" fill="${FL}"/>`;
+
+  /* тогтмол "санамсаргүй" тоо — дүрс бүр ижил гарна */
+  const rnd = (i) => { const v = Math.sin(i * 12.9898) * 43758.5453; return v - Math.floor(v); };
+
+  /* FastNoise — жижиг нүднүүдийн сүүдэр */
+  let noise = `<defs><filter id="rmFnBlur" x="0" y="0" width="100%" height="100%"><feGaussianBlur stdDeviation=".45"/></filter>
+    <clipPath id="rmFnClip"><rect x="4" y="4.5" width="20" height="15"/></clipPath></defs><g filter="url(#rmFnBlur)" clip-path="url(#rmFnClip)">`;
+  for (let r = 0; r < 9; r++) for (let c = 0; c < 12; c++) {
+    noise += `<rect x="${(4 + c * 1.67).toFixed(2)}" y="${(4.5 + r * 1.67).toFixed(2)}" width="1.7" height="1.7" fill="currentColor" opacity="${(0.1 + 0.75 * rnd(r * 12 + c + 1)).toFixed(2)}"/>`;
+  }
+  noise += "</g>";
+
+  /* Color Corrector — цэгүүдийн цагираг */
+  let ring = dot(14, 12, 1.6);
+  for (let i = 0; i < 10; i++) {
+    const a = (i / 10) * Math.PI * 2, rr = [1.6, 1.15, 1.4, 1.0, 1.5][i % 5];
+    ring += dot((14 + Math.cos(a) * 7.6).toFixed(2), (12 + Math.sin(a) * 7.6).toFixed(2), rr);
+  }
+
+  /* Brightness / Contrast — туяа */
+  let rays = "";
+  for (let i = 0; i < 8; i++) {
+    const a = (i / 8) * Math.PI * 2;
+    rays += dot((14 + Math.cos(a) * 8.4).toFixed(2), (12 + Math.sin(a) * 8.4).toFixed(2), i % 2 ? 0.9 : 1.2);
+  }
+
+  /* Channel Booleans — цэгэн дүүргэлт */
+  let dots = "";
+  for (let y = 10.8; y < 20; y += 1.7) for (let x = 11.3; x < 23.5; x += 1.7) dots += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r=".45" fill="currentColor" opacity=".7"/>`;
+
+  const scatter = (list) => list.map(([x, y, r]) => dot(x, y, r)).join("");
+
+  S.ICON = {
+    /* ── 1. Үүсгэгч, текст, будалт ── */
+    "background-node": svg(`<rect x="3.5" y="4.5" width="21" height="15" rx="1" fill="${DK}" stroke="currentColor" stroke-width="1.3"/>
+      <path d="M6 18 9.4 7.2M9 18l2.8-8.4M12 18l2.1-6.3M15 18l1.5-4.3M18 18l.9-2.4M21 18l.3-.9" ${sw(1.2)}/>`),
+    "fastnoise": svg(noise),
+    "text-plus-node": svg(`<rect x="5" y="2.5" width="18" height="19" rx="1.5" fill="#38383e"/>
+      <path d="M8.5 6.5h11v3.4h-.9l-.5-1.8h-3v9.3l1.5.5v.6h-5.2v-.6l1.5-.5V8.1h-3l-.5 1.8h-.9z" fill="currentColor"/>`),
+    "paint": svg(`<path d="M24.5 2.5 15 12.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M15.8 11.2 12.6 14.4c-1.3 1.3-1.1 3.6-3.2 4.8 2.6.7 5.4-.3 6.7-2.2.9-1.2 1-2.3 1.9-3.3z" fill="currentColor"/>
+      <path d="M3 21c1.5-2.6 3.7-3.8 4.6-2.8.8.9-1.3 2.5-.3 3 .9.4 2.3-.5 3.4-1.2" ${sw(1.2)} stroke-linecap="round" opacity=".55"/>`),
+
+    /* ── 2. Өнгө, бүдгэрүүлэлт ── */
+    "color-corrector-fusion": svg(ring),
+    "color-curves-fusion": svg(`<rect x="5" y="3.5" width="18" height="17" ${sw(1)} opacity=".75"/>
+      <path d="M11 3.5v17M17 3.5v17M5 9.2h18M5 14.8h18" ${sw(0.7)} opacity=".45"/>
+      <path d="M5 20.5C12 20.5 13 3.5 23 3.5" ${sw(1.5)}/>`),
+    "brightness-contrast": svg(`<circle cx="14" cy="12" r="4.6" ${sw(1.6)}/><path d="M14 7.4a4.6 4.6 0 0 1 0 9.2z" fill="currentColor"/>${rays}`),
+    "blur-fusion": svg(`<path d="M14 2.8C11 7.2 8 10.8 8 14.8a6 6 0 0 0 12 0c0-4-3-7.6-6-12z" fill="currentColor"/>
+      <path d="M11 15.2a3.2 3.2 0 0 0 2.4 3" fill="none" stroke="${DK}" stroke-width="1.3" stroke-linecap="round"/>`),
+
+    /* ── 3. Нийлүүлэх, хувиргах ── */
+    "merge": svg(`<rect x="10.5" y="3.5" width="14" height="11" rx=".8" ${sw(1.1)} opacity=".6"/>
+      <rect x="8" y="7" width="14" height="12" rx=".8" fill="#2e2e33" stroke="currentColor" stroke-width="1.3"/>
+      <path d="M3 9.5v6h6.5M7.4 13.3l2.4 2.2-2.4 2.2" ${sw(1.3)}/>`),
+    "multimerge": svg(`<rect x="12.5" y="3" width="13" height="11" rx=".8" ${sw(1)} opacity=".45"/>
+      <rect x="10.5" y="5" width="13" height="12" rx=".8" ${sw(1)} opacity=".7"/>
+      <rect x="8.5" y="7.5" width="14" height="12" rx=".8" fill="#2e2e33" stroke="currentColor" stroke-width="1.3"/>
+      <path d="M3 5.5v11.5h7M3 11h7M8 9l2.2 2L8 13M8 15l2.2 2L8 19" ${sw(1.2)}/>`),
+    "channel-booleans": svg(`<rect x="3.5" y="3" width="15" height="11" fill="#5c5c62"/>
+      <rect x="9.5" y="9" width="15" height="12" fill="${DK}" stroke="currentColor" stroke-width="1.2"/>${dots}`),
+    "matte-control": svg(`<rect x="4" y="2.5" width="20" height="13" fill="#7a7a80"/><path d="M4 2.5h12L4 15.5z" fill="#8f8f95"/>
+      <circle cx="13" cy="8.8" r="4" fill="#141417"/>
+      <path d="M5 20.5h18" ${sw(1)}/>${dot(13, 20.5, 1.5)}`),
+    "transform-fusion": svg(`<rect x="6" y="6.5" width="16" height="12" rx="1" fill="#2e2e33" stroke="currentColor" stroke-width="1.3"/>
+      <path d="M17.5 3.2a5 5 0 0 1 7 4.3M22.4 6.2l2.1 1.8 1.6-2.3M10.5 21.8a5 5 0 0 1-7-4.3M5.6 18.8 3.5 17l-1.6 2.3" ${sw(1.3)}/>`),
+
+    /* ── 4. Маск ── */
+    "rectangle-mask": svg(`<rect x="7" y="5" width="14" height="14" ${sw(1.2)}/>${pt(7, 5)}${pt(21, 5)}${pt(7, 19)}${pt(21, 19)}`),
+    "ellipse-mask": svg(`<circle cx="14" cy="12" r="7" ${sw(1.2)}/>${pt(14, 5)}${pt(21, 12)}${pt(14, 19)}${pt(7, 12)}`),
+    "polygon-mask": svg(`<path d="M12 12 17.5 4M12 12l11 3.5M12 12 4 17.5M12 12l.5 9" ${sw(1.1)}/>${pt(12, 12)}${pt(17.5, 4)}${pt(23, 15.5)}${pt(4, 17.5)}${pt(12.5, 21)}`),
+    "b-spline-mask": svg(`<path d="M4 19C8 7.5 20 7.5 24 19" ${sw(1.2)}/>${pt(4, 19)}${pt(9.5, 7)}${pt(18.5, 7)}${pt(24, 19)}`),
+    "multipoly": svg(`<path d="M3 9c3-4.5 6 3 9 0s6-4.5 9 0l3-1.5M3 17c3 4.5 6-3 9 0s6 4.5 9 0l3 1.5" ${sw(1.1)}/>
+      ${pt(3, 9)}${pt(12, 8.2)}${pt(21, 8)}${pt(25, 7)}${pt(3, 17)}${pt(12, 17.8)}${pt(24.5, 18.5)}`),
+
+    /* ── 5. Бөөмс ── */
+    "particle-emitter": svg(`<path d="M4 19.5 10 16.5 17 18.5 11 21.5z" ${sw(1)}/>
+      ${scatter([[10, 18.4, 1], [11.5, 15, .9], [13.5, 13, 1], [10, 11.5, .8], [15.5, 10, .9], [12.5, 8, .8], [17.5, 7, .9], [14.5, 5, .8], [19.5, 4, .8], [17, 2.8, .7], [20.5, 9.2, .8], [18.5, 12.3, .8], [8.5, 14.2, .7], [22, 6, .7]])}`),
+    "pdirectionalforce": svg(`${scatter([[8, 3, .9], [11, 2.4, .8], [14, 3.4, .9], [17, 2.4, .8], [20, 3.4, .9], [10, 6, .8], [13, 5.4, .9], [16, 6, .8], [19, 6, .8], [22.5, 5.5, .7]])}
+      <path d="M9 21a4 4 0 1 1 3.2-6.4" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M19 10.5v10M14 15.5h10M17.6 11.9l1.4-1.4 1.4 1.4M17.6 19.1l1.4 1.4 1.4-1.4M15.4 14.1 14 15.5l1.4 1.4M22.6 14.1l1.4 1.4-1.4 1.4" ${sw(1)}/>`),
+    "prender": svg(`<rect x="7" y="4" width="16" height="11" fill="#303035"/>
+      <path d="M4 8V3h4.5M24 15v5h-4.5" ${sw(1.2)}/>
+      ${scatter([[10, 6.5, .8], [13, 5.5, .8], [16.5, 7, .9], [12, 9, .8], [15, 9.8, .8], [18.5, 8.5, .8], [20.5, 10.8, .8], [17.5, 12.3, .8], [14, 12, .7], [20, 5.5, .7]])}
+      <path d="M4 21.5 11 14" ${sw(1.1)} stroke-dasharray="1.2 1.6"/>`),
+
+    /* ── 6. 3D ── */
+    "image-plane-3d": svg(`${FLOOR}<path d="M10 17.5V7l8.5-3.5v10.8z" fill="currentColor"/><path d="M10 17.5 18.5 14.3" stroke="${DK}" stroke-width=".8"/>`),
+    "shape-3d": svg(`${FLOOR}<path d="M5.5 15.5 9.5 4.5l4 11z" fill="currentColor" opacity=".8"/>
+      <path d="M16 9.5 20 8l4 1.5v5L20 16l-4-1.5z" fill="currentColor" opacity=".7"/><path d="M16 9.5 20 11l4-1.5M20 11v5" stroke="${DK}" stroke-width=".8" fill="none"/>
+      <circle cx="14" cy="15.5" r="4.3" fill="currentColor"/>`),
+    "text-3d": svg(`${FLOOR}<path d="M9.5 3.8h11.2l-.5 3.5h-.8l-.2-1.7h-3.2l-1.3 10.2 1.4.5-.1.8h-4.9l.1-.8 1.5-.5 1.3-10.2h-3.1l-.6 1.7h-.8z" fill="currentColor"/>
+      <path d="M20.7 3.8l.8.8-.5 3.5h-.8M15.3 16.3l.8.6" stroke="currentColor" stroke-width=".9" fill="none" opacity=".6"/>`),
+    "merge-3d": svg(`${FLOOR}<path d="M4 8.5v6h6.5M8.2 12.3l2.4 2.2-2.4 2.2" ${sw(1.4)}/><circle cx="18" cy="13.8" r="4.6" fill="currentColor"/>`),
+    "camera-3d": svg(`${FLOOR}<path d="M5.5 7.5 14.5 5.5l5 2v8l-9 2-5-2z" fill="#2e2e33" stroke="currentColor" stroke-width="1.2"/>
+      <path d="M19.5 9.5l4.5-2.2v8.2l-4.5-1.7z" ${sw(1.2)}/><rect x="8.2" y="9.3" width="4" height="3" ${sw(1)}/>`),
+    "spot-light": svg(`${FLOOR}<path d="M5.5 7.8 9.5 6v8.4l-4-1.6z" fill="currentColor"/><circle cx="12.8" cy="10.2" r="4.3" fill="#2e2e33" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M19 6.3l2.6-1.6M20 10.2h3.2M19 14.1l2.6 1.6M12.8 16.8v2.4" ${sw(1.3)} stroke-linecap="round"/>`),
+    "renderer-3d": svg(`${FLOOR}<path d="M4 8V3.5h4.5M24 8V3.5h-4.5" ${sw(1.2)}/>
+      <path d="M8 13.5a6 6 0 0 1 12 0z" fill="currentColor"/><path d="M8 13.5h12a6 6 0 0 1-12 0z" fill="#56565c"/>`),
+
+    /* ── Fusion Inspector ── */
+    "insp-image": svg(`<rect x="3" y="2" width="22" height="15" fill="${DK}" stroke="currentColor" stroke-width="1.2"/>${dot(9, 6.5, 1.5)}
+      <path d="M1.5 12 7 9.5l6 3.5 6-4.5 7.5 5.5" ${sw(1.2)}/>`, "0 0 28 20"),
+    "insp-audio": svg(`<rect x="3" y="2" width="19" height="15" fill="${DK}" stroke="currentColor" stroke-width="1.2" opacity=".8"/>
+      <path d="M7.5 7h3M9 5.5v3M14.5 3.5h2.6M15.8 2.2v2.6M10.5 12h2.6M11.8 10.7v2.6" ${sw(1)}/>
+      <path d="M17.5 17.5 24.5 5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>`, "0 0 28 20"),
+    "insp-settings": svg(`<rect x="3" y="2" width="20" height="14" fill="#3a3a40" stroke="currentColor" stroke-width="1.2"/>
+      <circle cx="21.5" cy="14.5" r="3.7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="1.4 1.5"/>
+      <circle cx="21.5" cy="14.5" r="2.7" fill="currentColor"/><circle cx="21.5" cy="14.5" r="1.1" fill="#1e1e22"/>`, "0 0 28 20"),
+    "hdr-versions": svg(`<rect x="3" y="7" width="13" height="10" ${sw(1.2)}/><path d="M6.5 7V3.5h13v10H16" ${sw(1.2)}/>`, "0 0 24 20"),
+    "hdr-pin": svg(`<path d="M13 2.5l7 7-2.2.6-3.4 3.4-.2 3.5-7.2-7.2 3.5-.2 3.4-3.4z" fill="currentColor"/><path d="M8.6 13.4 3.5 18.5" ${sw(1.6)} stroke-linecap="round"/>`, "0 0 24 20"),
+    "hdr-lock": svg(`<rect x="5" y="9" width="13" height="9" rx="1.2" ${sw(1.4)}/><path d="M8 9V6a3.5 3.5 0 0 1 7 0" ${sw(1.4)}/>`, "0 0 24 20"),
+    "hdr-reset": svg(`<path d="M5.5 10a6.5 6.5 0 1 0 2-4.7" ${sw(1.4)}/><path d="M5 2.5v4h4" ${sw(1.4)}/><path d="M12 7v6M9 10h6" ${sw(1.3)}/>`, "0 0 24 20"),
+
+    /* ═══ Edit хуудасны timeline хэрэгслийн мөр (2026-09-26-ны зургаас, зүүнээс баруун) ═══ */
+    "timeline-view-options": svg(`<path d="M4 6h15M4 10.5h15M4 15h8" ${sw(1.6)}/><path d="M14.5 16.5l3 3 6.5-7" ${sw(1.8)} stroke-linecap="round" stroke-linejoin="round"/>`),
+    "show-keyframe-tray": svg(`<path d="M10 5.5 16.5 12 10 18.5 3.5 12z" ${sw(1.4)}/><path d="M18 5.5 24.5 12 18 18.5 11.5 12z" fill="currentColor" opacity=".85"/>`),
+    "voiceover": svg(`<rect x="10.5" y="2.5" width="7" height="12" rx="3.5" fill="currentColor"/><path d="M7.5 11.5a6.5 6.5 0 0 0 13 0M14 18v3.5M10.5 21.5h7" ${sw(1.5)} stroke-linecap="round"/>`),
+    "selection-mode": svg(`<path d="M9 3v16.5l4.2-4.1 3.1 6.1 2.7-1.3-3.1-6h5.8z" fill="currentColor"/>`),
+    "trim-edit-mode": svg(`<rect x="3" y="6" width="8.5" height="12" ${sw(1.4)}/><rect x="16.5" y="6" width="8.5" height="12" ${sw(1.4)}/><path d="M14 3.5v17" ${sw(1.6)}/><path d="M11.5 10l2 2-2 2M16.5 10l-2 2 2 2" ${sw(1.2)}/>`),
+    "blade": svg(`<rect x="3" y="8" width="22" height="8.5" rx="1.5" ${sw(1.4)}/><path d="M7 12.2h3M12.5 12.2h3M18 12.2h3" stroke="currentColor" stroke-width="2.4"/><path d="M3 12.2h1.2M23.8 12.2H25" ${sw(1)}/>`),
+    "dynamic-trim-mode-slip": svg(`<path d="M14 3.5v17" ${sw(1.6)}/><path d="M9.5 8l-4 4 4 4M18.5 8l4 4-4 4" ${sw(1.6)} stroke-linecap="round" stroke-linejoin="round"/><path d="M3 5v14M25 5v14" ${sw(1)} stroke-dasharray="1.6 1.6"/>`),
+    "insert": svg(`<rect x="10" y="2" width="8" height="6.5" fill="currentColor"/><path d="M14 9v3.5M12 11l2 2 2-2" ${sw(1.3)}/><rect x="2" y="14" width="9.5" height="7.5" ${sw(1.4)}/><rect x="16.5" y="14" width="9.5" height="7.5" ${sw(1.4)}/><path d="M12.5 17.7h3" ${sw(1)} stroke-dasharray="1 1"/>`),
+    "overwrite": svg(`<rect x="3" y="12" width="22" height="9.5" ${sw(1.4)}/><rect x="9.5" y="2.5" width="9" height="7" ${sw(1.4)}/><rect x="9.5" y="12" width="9" height="9.5" fill="currentColor" opacity=".85"/><path d="M14 9.5v2.5" ${sw(1.4)}/>`),
+    "replace": svg(`<rect x="3" y="13" width="22" height="8.5" ${sw(1.4)}/><rect x="9.5" y="2.5" width="9" height="7" fill="currentColor" opacity=".85"/><path d="M6.5 11V6.5h2.5M21.5 11V6.5H19" ${sw(1.3)}/><path d="M5 9.5l1.5 1.8 1.5-1.8M20 9.5l1.5 1.8 1.5-1.8" ${sw(1.1)}/>`),
+    "snapping": svg(`<path d="M19.5 5.5a8 8 0 1 0 1.8 8.6" ${sw(2.2)} stroke-linecap="round"/><path d="M17.5 3.5l3.5 1.8-1.4 3.6" ${sw(1.6)} stroke-linecap="round" stroke-linejoin="round"/>`),
+    "linked-selection": svg(`<path d="M12.2 15.8l-2.6 2.6a3.4 3.4 0 0 1-4.8-4.8l3.6-3.6a3.4 3.4 0 0 1 4.8 0" ${sw(2)} stroke-linecap="round"/><path d="M15.8 8.2l2.6-2.6a3.4 3.4 0 0 1 4.8 4.8l-3.6 3.6a3.4 3.4 0 0 1-4.8 0" ${sw(2)} stroke-linecap="round"/>`),
+    "position-lock": svg(`<rect x="7" y="10.5" width="14" height="10.5" rx="1.4" ${sw(1.5)}/><path d="M10 10.5V7.5a4 4 0 0 1 8 0v3" ${sw(1.5)}/><path d="M10 14h8M10 17.5h8" ${sw(1.2)}/>`),
+    "flag": svg(`<path d="M9 3.5h11v16l-5.5-3.6L9 19.5z" fill="#3a8cf2"/>`),
+    "marker": svg(`<path d="M8.5 4.5h11v9.5L14 19.5l-5.5-5.5z" fill="#3a8cf2"/>`),
+    "full-extent-zoom": svg(`<rect x="2.5" y="4.5" width="19" height="12" ${sw(1.4)}/><path d="M5.5 8.5h13M5.5 12.5h8" ${sw(1.2)}/><circle cx="20" cy="15.5" r="3.6" fill="${DK}" ${sw(1.6)}/><path d="M22.6 18.1l3 3" ${sw(2)} stroke-linecap="round"/>`),
+    "detail-zoom": svg(`<path d="M3 6h14M3 10h10M3 14h8M3 18h8" ${sw(1.3)}/><circle cx="18.5" cy="14.5" r="4" ${sw(1.6)}/><path d="M21.4 17.4l3.2 3.2" ${sw(2)} stroke-linecap="round"/>`),
+    "custom-zoom": svg(`<path d="M3 7h22M5 7v4M9 7v2.5M13 7v4M17 7v2.5M21 7v4" ${sw(1.2)}/><circle cx="18.5" cy="15.5" r="3.6" fill="${DK}" ${sw(1.6)}/><path d="M21.1 18.1l3 3" ${sw(2)} stroke-linecap="round"/>`),
+    "jog-wheel": svg(`<path d="M7 8.5 3.5 12 7 15.5M21 8.5l3.5 3.5-3.5 3.5" ${sw(1.5)} stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="12" r="3.2" fill="currentColor"/>`)
+  };
+
+  /* Нэр → SVG; байхгүй бол тэмдэгт буцаана */
+  S.icon = (key, fallback) => S.ICON[key] || fallback || "";
+})(window.RM);
+
+</script>
+<script>
+/* ── js/69-guide-ui.js ── */
+/* ═════════════════════════════════════════════════════════════
+   69 · Жишээтэй заавар — нийтлэг бүрэлдэхүүн (Fusion, Edit хоёр хуудас хамт хэрэглэнэ)
+
+   G.ui.buildControls(tool, specs, onChange) — слайдер, жагсаалт, чагт, товч
+   G.ui.buildDemo(tool, S, demos)            — жишээний самбар (Өмнө / Дараа)
+   G.ui.buildTool(tool, S, cfg)              — хэрэгслийн карт
+      cfg = { groups, total, demos, simPage, tipLabel, impacts }
+   G.ui.watchNav(sectionSelector)           — одоо уншиж буй бүлгийг цэсэнд тодруулах
+   ═════════════════════════════════════════════════════════════ */
+(function (RM) {
+  "use strict";
+
+  const G = (RM.fz = RM.fz || {});
+  const icon = (id) => (RM.sim && RM.sim.icon ? RM.sim.icon(id) : "");
+  let cid = 0;
+
+  function buildControls(tool, specs, onChange) {
+    const el = G.el;
+    const box = el("div", { class: "ctrls" });
+    const v = {}, inputs = {};
+    specs.forEach((sp) => {
+      const id = "c-" + tool.id + "-" + sp.id + "-" + ++cid;
+      if (sp.type === "button") {
+        const b = el("button", { type: "button", class: "cbtn", id, text: sp.label, onclick: () => onChange(sp.id) });
+        inputs[sp.id] = { inp: b, btn: true };
+        box.appendChild(el("div", { class: "crow btnrow" }, [b]));
+        return;
+      }
+      v[sp.id] = sp.value;
+      if (sp.type === "range") {
+        const out = el("output", { for: id });
+        const show = () => { const n = +v[sp.id]; out.textContent = (sp.fmt ? sp.fmt(n) : (Math.abs(n) >= 10 || sp.step >= 1 ? n.toFixed(0) : n.toFixed(2))) + (sp.unit || ""); };
+        const inp = el("input", { type: "range", id, min: sp.min, max: sp.max, step: sp.step, value: sp.value,
+          oninput: (e) => { v[sp.id] = +e.target.value; show(); onChange(); } });
+        show();
+        inputs[sp.id] = { inp, show };
+        box.appendChild(el("div", { class: "crow" }, [el("label", { for: id, text: sp.label }), inp, out]));
+      } else if (sp.type === "select") {
+        const sel = el("select", { id, onchange: (e) => { v[sp.id] = e.target.value; onChange(); } },
+          sp.options.map(([val, lb]) => el("option", { value: val, text: lb, selected: val === sp.value ? "selected" : null })));
+        inputs[sp.id] = { inp: sel };
+        box.appendChild(el("div", { class: "crow sel" }, [el("label", { for: id, text: sp.label }), sel]));
+      } else if (sp.type === "check") {
+        const cb = el("input", { type: "checkbox", id, checked: sp.value ? "checked" : null, onchange: (e) => { v[sp.id] = e.target.checked; onChange(); } });
+        inputs[sp.id] = { inp: cb };
+        box.appendChild(el("div", { class: "crow chk" }, [cb, el("label", { for: id, text: sp.label })]));
+      }
+    });
+    const ctl = {
+      set(k, val) { v[k] = val; const i = inputs[k]; if (!i) return; if (i.inp.type === "checkbox") i.inp.checked = !!val; else i.inp.value = val; if (i.show) i.show(); },
+      disable(k, on) { const i = inputs[k]; if (i) { i.inp.disabled = !!on; i.inp.closest(".crow").classList.toggle("off", !!on); } },
+      label(k, text) { const i = inputs[k]; if (i && i.btn) i.inp.textContent = text; }
+    };
+    return { box, v, ctl };
+  }
+
+  function buildDemo(tool, S, demos) {
+    const el = G.el;
+    const def = demos[tool.demo];
+    const wrap = el("div", { class: "tool-demo" });
+    if (!def) return wrap;
+    const stage = el("div", { class: "stage" + (def.checker ? " checker" : "") + (def.cls ? " " + def.cls : ""), role: "img", "aria-label": tool.en + " — хөтөч дээрх жишээ" });
+    wrap.appendChild(stage);
+    const st = def.init(stage, S, tool);
+    let before = false;
+    const run = (act) => def.update(c.v, before, st, c.ctl, act);
+    const c = buildControls(tool, def.controls, run);
+    if (!def.noAB) {
+      const bBefore = el("button", { type: "button", "aria-pressed": "false", text: def.abLabels ? def.abLabels[0] : "Өмнө" });
+      const bAfter = el("button", { type: "button", "aria-pressed": "true", text: def.abLabels ? def.abLabels[1] : "Дараа" });
+      const setAB = (b) => { before = b; bBefore.setAttribute("aria-pressed", b); bAfter.setAttribute("aria-pressed", !b); run(); };
+      bBefore.addEventListener("click", () => setAB(true));
+      bAfter.addEventListener("click", () => setAB(false));
+      wrap.appendChild(el("div", { class: "ab" }, [
+        el("div", { class: "seg", role: "group", "aria-label": "Өмнө, дараа харьцуулах" }, [bBefore, bAfter]),
+        el("span", { class: "ab-hint", text: def.hint || "Хөтөч дээрх ойролцоо дуурайлга" })
+      ]));
+    }
+    if (def.controls.length) wrap.appendChild(c.box);
+    if (def.extra) wrap.appendChild(el("div", { class: "extra" }, [def.extra(st), el("p", { text: def.extraText || "Муруй: хэвтээ — оролт, босоо — гаралт. Улаан, ногоон, цэнхэр — суваг бүр." })]));
+    run();
+    return wrap;
+  }
+
+  function buildTool(tool, S, cfg) {
+    const el = G.el, fmt = G.fmt;
+    const g = cfg.groups.find((x) => x.id === tool.group);
+    const imp = tool.impact && cfg.impacts ? cfg.impacts[tool.impact] : null;
+    const text = el("div", { class: "tool-text" }, [
+      el("section", {}, [el("h4", { text: "Юу хийдэг" }), el("p", { html: fmt(tool.what) })]),
+      el("section", { class: "effect" }, [el("h4", { text: "Бичлэгт үзүүлэх нөлөө" }), el("p", { html: fmt(tool.effect) })]),
+      el("section", {}, [el("h4", { text: "Resolve дээр алхам алхмаар" }), el("ol", {}, tool.steps.map((s) => el("li", { html: fmt(s) })))]),
+      el("section", {}, [el("h4", { text: "Гол тохиргоо" }),
+        el("dl", { class: "params" }, tool.params.flatMap(([k, d]) => [el("dt", { text: k }), el("dd", { html: fmt(d) })]))]),
+      el("section", { class: "tips" }, [el("h4", { text: "Анхаарах" }), el("ul", {}, tool.tips.map((t) => el("li", { html: fmt(t) })))]),
+      tool.unsure ? el("p", { class: "unsure", html: "<b>Баталгаажаагүй:</b> " + fmt(tool.unsure) }) : null,
+      el("p", { class: "tool-links" }, [
+        el("a", { href: "resolve-dotor.html#" + cfg.simPage + "." + (tool.simId || tool.id), text: "Загвар дээр харах →" }),
+        el("a", { href: "resolve-toli.html#" + (tool.dictId || tool.id), text: "Толь, гарын авлага →" })
+      ])
+    ]);
+    return el("article", { class: "tool", id: tool.id }, [
+      el("header", { class: "tool-h" }, [
+        el("span", { class: "tool-ic", html: icon(tool.iconId || tool.id) || '<span class="glyph">' + (tool.glyph || "•") + "</span>" }),
+        el("div", {}, [
+          el("p", { class: "tool-n", text: "№ " + tool.n + " / " + cfg.total + " · " + g.title }),
+          el("h3", { text: tool.en }),
+          el("p", { class: "tool-mn", text: tool.mn })
+        ]),
+        imp ? el("span", { class: "impact " + tool.impact, text: imp }) : null
+      ]),
+      el("p", { class: "tool-tip" }, [el("span", { text: cfg.tipLabel }), el("code", { text: tool.tip })]),
+      el("div", { class: "tool-body" }, [text, buildDemo(tool, S, cfg.demos)])
+    ]);
+  }
+
+  function watchNav(sel) {
+    if (!("IntersectionObserver" in window)) return;
+    const links = RM.$$(".fz-nav .chips a");
+    const io = new IntersectionObserver((es) => es.forEach((e) => {
+      if (!e.isIntersecting) return;
+      links.forEach((a) => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id));
+    }), { rootMargin: "-40% 0px -55% 0px" });
+    RM.$$(sel).forEach((s) => io.observe(s));
+  }
+
+  function jumpToHash() {
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (h && document.getElementById(h)) requestAnimationFrame(() => document.getElementById(h).scrollIntoView());
+  }
+
+  G.ui = { buildControls, buildDemo, buildTool, watchNav, jumpToHash };
+})(window.RM);
+
+</script>
+<script>
+/* ── js/74-ez-data.js ── */
+/* ═════════════════════════════════════════════════════════════
+   74 · Edit хуудасны заавар — агуулга
+
+   Tooltip, товчны дараалал, цэсний мөр — хэрэглэгчийн Resolve Studio 21-ийн
+   2026-09-26-ны дэлгэцийн зургаас. Үйлдлийн тайлбар — Blackmagic-ийн гарын
+   авлага, Resolve-ийн түгээмэл ажиллагаанаас; баталгаажаагүйг "unsure"-д.
+
+   impact — бичлэгт үзүүлэх нөлөөний төрөл (картын баруун дээд шошго):
+     edit    — монтажийг (клипийн байрлал, урт, дараалал) өөрчилнө
+     image   — дүрсийг (пиксел) өөрчилнө, эцсийн файлд орно
+     audio   — timeline-д дуу нэмнэ
+     note    — тэмдэглэл, эцсийн бичлэгт орохгүй
+     view    — зөвхөн харагдац
+     protect — засварыг хамгаална
+   ═════════════════════════════════════════════════════════════ */
+(function (RM) {
+  "use strict";
+
+  const E = (RM.ez = RM.ez || {});
+
+  E.impacts = {
+    edit: "Монтажийг өөрчилнө", image: "Дүрсийг өөрчилнө", audio: "Дуу нэмнэ",
+    note: "Тэмдэглэл · бичлэгт орохгүй", view: "Зөвхөн харагдац", protect: "Хамгаалалт"
+  };
+
+  E.groups = [
+    { id: "gorim", title: "Засварын горим", en: "Edit Modes",
+      intro: "Хулганаар timeline дээр юу хийхийг шийддэг **дөрвөн горим** — нэг нь л идэвхтэй (улаан). Горим өөр бол **ижил чирэлт өөр үр дүн** өгнө: Selection-д ирмэг чирэхэд хоосон зай үлдэнэ, Trim-д хойшхи клипүүд хамт зөрнө." },
+    { id: "oruulah", title: "Клип оруулах", en: "Edit Actions",
+      intro: "Source viewer-т нээсэн клипийг (эсвэл In/Out-оор тэмдэглэсэн хэсгийг) timeline-ийн **заагчийн байрлалд** оруулах гурван арга. Ялгаа нь: **хойшхи клипүүд юу болох вэ**." },
+    { id: "tuslah", title: "Туслах унтраалга", en: "Snapping · Linked · Lock",
+      intro: "Чирэх, сонгох, зөөх үйлдлийн **дүрмийг** өөрчилнө. Өөрсдөө бичлэгт юу ч хийхгүй — гэхдээ буруу байвал дуу зургаас салах, клип санамсаргүй хөдлөх зэрэг алдаа гарна." },
+    { id: "temdeg", title: "Туг, тэмдэглэгээ, томруулалт", en: "Flags · Markers · Zoom",
+      intro: "Timeline-ийн **зохион байгуулалт, харагдац**. Туг, тэмдэглэгээ — тэмдэглэл; томруулалт — timeline-ийг хэр ойроос харах. Эцсийн бичлэгт аль нь ч орохгүй." },
+    { id: "haragdats", title: "Timeline-ийн харагдац, дуу бичлэг", en: "View Options · Voiceover",
+      intro: "Хэрэгслийн мөрийн **зүүн гурван товч**: timeline-ийн харагдацын тохиргоо, түлхүүр кадрын тавиур, дуу бичих самбар." },
+    { id: "viewer", title: "Viewer дээрх удирдлага", en: "Viewer Overlays · Jog Wheel",
+      intro: "Viewer-ийн доод зүүн **▭ ⌄** жагсаалтаар viewer дээр ямар **бариул** гарахыг сонгоно. Бариулаар чирсэн бүхэн Inspector-ийн утгыг өөрчилж **дүрсэд нөлөөлнө** — Annotations-аас бусад. Жагсаалтын **Immersive** мөрийн үйлдэл баталгаажаагүй тул энд оруулаагүй." }
+  ];
+
+  E.tools = [
+  /* ═════ 1. Засварын горим ═════ */
+  { id: "selection-mode", n: 1, group: "gorim", en: "Selection Mode", mn: "Сонголтын горим", impact: "edit", demo: "selection",
+    tip: "Selection Mode - A",
+    what: "Ердийн **сум**. Клип сонгох, чирж зөөх, ирмэгийг чирж богиносгох/уртасгах. Resolve нээгдэхэд идэвхтэй байдаг горим.",
+    effect: "Клипийг зөөх, ирмэг чирэхэд **зөвхөн тэр клип** өөрчлөгдөнө: ард нь **хоосон зай** (gap) үлдэж, зөөсөн клип хөршийнхөө дээр очвол түүнийг **дарж бичнэ** (overwrite). Бусад клип байрандаа.",
+    steps: [
+      "[k:A] дарна — хэрэгслийн мөрийн улаан сум идэвхжинэ.",
+      "Клип дээр товшиж сонгоно; [k:Ctrl] барьж олныг, [k:Shift] барьж дарааллаар.",
+      "Клипийн голоос чирж зөөнө; ирмэгээс чирж тайрна.",
+      "Хоосон зайг хасах — зай дээр товшоод [k:Backspace] (Ripple Delete)."
+    ],
+    params: [
+      ["Ирмэг чирэх", "Хоосон зай үлдээнэ — хойшхи клип хөдлөхгүй."],
+      ["Голоос чирэх", "Клипийг зөөнө; доорх клипийг дарж бичнэ."],
+      ["[k:Shift]+чирэх", "Зөвхөн хэвтээ эсвэл босоо чиглэлд."]
+    ],
+    tips: [
+      "Хойшхи бүгдийг хамт зөрүүлэх бол **Trim Edit Mode** [k:T].",
+      "Snapping асаалттай бол ирмэг, заагч руу наалдана — нарийн байрлуулахад унтраа ([k:N]).",
+      "Ажлын дараа үргэлж [k:A] руу буцах зуршил — санамсаргүй хэрчилт, тайралтаас хамгаална."
+    ] },
+
+  { id: "trim-edit-mode", n: 2, group: "gorim", en: "Trim Edit Mode", mn: "Тайралтын горим", impact: "edit", demo: "trim",
+    tip: "Trim Edit Mode - T",
+    what: "Огтлолт, клипийг чирэхэд **ripple, roll, slip, slide** тайралт хийдэг горим. Хулгана хаана байгаагаас хамаарч заагчийн хэлбэр өөрчлөгдөж, аль тайралт болохыг харуулна.",
+    effect: "**Ripple** — клип уртасч/богиносож, хойшхи **бүх клип зөрнө**, timeline-ийн урт өөрчлөгдөнө. **Roll** — хоёр клипийн заагийг зөөнө, нийт урт хэвээр. **Slip** — клипийн байрлал хэвээр, **доторх кадрууд** гүйнэ. **Slide** — клип хөрш хоёрынхоо хооронд зөөгдөнө.",
+    steps: [
+      "[k:T] дарна.",
+      "Клипийн **ирмэг** дээр — ripple (нэг талын хаалт), **огтлолтын яг дунд** — roll (хоёр талын хаалт).",
+      "Клипийн **дээд хагас** дээр чирэх — slip; **доод хагас** (нэрний мөр) дээр — slide.",
+      "Чирэх үед viewer хуваагдаж шинэ эхлэл, төгсгөлийн кадрыг харуулна; тоо нь кадрын зөрүү.",
+      "Гараар: огтлолтыг [k:V]-ээр сонгоод [k:,] [k:.] — нэг кадраар."
+    ],
+    params: [
+      ["Ripple", "Урт өөрчлөгдөнө, хойшхи бүгд зөрнө."],
+      ["Roll", "Нэг клип уртасч нөгөө нь богиносно, нийт урт хэвээр."],
+      ["Slip", "Байрлал, урт хэвээр — эх бичлэгийн өөр хэсэг."],
+      ["Slide", "Агуулга хэвээр — байрлал өөрчлөгдөж хөршүүд тайрагдана."]
+    ],
+    tips: [
+      "Slip, slide, roll-д эх файлд **илүү кадар (handle)** хэрэгтэй — клипийг эх файлынхаа бүх уртаар тавьсан бол гулсахгүй.",
+      "Ripple тайралт **Auto Select** унтраалттай замыг зөрүүлэхгүй — дуу зургаас салвал шалга.",
+      "[k:U] — огтлолтын сонголтыг (зүүн тал, баруун тал, хоёулаа) солино."
+    ] },
+
+  { id: "blade", n: 3, group: "gorim", en: "Blade Edit Mode", mn: "Хэрчих горим", impact: "edit", demo: "blade",
+    tip: "Blade Edit Mode - B",
+    what: "Хутга. Клип дээр товшсон газарт **огтолж хоёр хувааж** өгнө. Хуваасан хэсэг тус бүр тусдаа клип болж, устгах, зөөх, өөр эффект тавих боломжтой.",
+    effect: "Timeline-ийн урт, дүрс **өөрчлөгдөхгүй** — зөвхөн клип хоёр болно. Огтлолт үл үзэгдэх: тоглуулахад ялгаагүй. Ялгаа нь дараагийн үйлдлээс (нэг хэсгийг устгах, эффект тавих) гарна.",
+    steps: [
+      "[k:B] дарна — заагч хутга болно.",
+      "Огтлох газраа товшино; Snapping асаалттай бол заагч руу наалдана.",
+      "**Linked Selection** асаалттай бол видео, дуу хоёулаа хэрчигдэнэ.",
+      "[k:A] дарж сонголтын горимд буцна."
+    ],
+    params: [
+      ["Хутгагүйгээр", "Заагчийг тавиад [k:Ctrl+\\\\] — Split Clip; сонгосон эсвэл Auto Select замын клипийг."],
+      ["Буцааж нийлүүлэх", "Огтлолтыг сонгоод [k:Alt+\\\\] — Join Clips."]
+    ],
+    tips: [
+      "Мэргэжлийн монтажчид хутганы горимд бараг ордоггүй — заагч + [k:Ctrl+\\\\] илүү хурдан, алдаа бага.",
+      "Хэрчсэн газарт нимгэн зураас харагдана — санамсаргүй хэрчилтийг Join Clips-ээр арилгана.",
+      "Эх файлд юу ч болохгүй — хоёр хэсэг ижил эх клипийг заана."
+    ] },
+
+  { id: "dynamic-trim-mode-slip", n: 4, group: "gorim", en: "Dynamic Trim Mode (Slip)", mn: "Динамик тайралт (Slip)", impact: "edit", demo: "dyntrim",
+    tip: "Dynamic Trim Mode (Slip) - W",
+    what: "Тайралтыг хулганаар биш **тоглуулах товчоор** ([k:J] [k:K] [k:L]) хийх горим. Хаалтанд одоогийн дэд горим — **Slip** (клипийн агуулгыг гулсуулах); Slide болгож сольж болно.",
+    effect: "Slip-д клипийн байрлал, урт хэвээр, **эхлэл, төгсгөлийн кадр** өөрчлөгдөнө — тоглуулж байгаад зогсоосон газарт тайрагдана. Хэмнэл, хөдөлгөөн «амьдаар» мэдрэгдэх тул хөгжим, үйлдлийн огтлолтод тохиромжтой.",
+    steps: [
+      "[k:W] дарна — горим асна.",
+      "Клипийг (эсвэл огтлолтыг) сонгоно.",
+      "[k:L] — урагш, [k:J] — хойш тоглуулна; [k:K] барьж [k:J]/[k:L] — удаан.",
+      "Хүссэн газарт [k:K]-оор зогсооно — тайралт тэнд тогтоно.",
+      "[k:W]-ээр горимоос гарна."
+    ],
+    params: [
+      ["Slip", "Клипийн доторх агуулгыг гулсуулна (хаалтанд харагдаж байгаа)."],
+      ["Slide", "Клипийг хөршүүдийн хооронд зөөнө — Trim цэснээс сольно."],
+      ["J · K · L", "Хойш · зогс · урагш; дахин дарахад хурдасна."]
+    ],
+    tips: [
+      "Горимоос гарахаа мартвал дараагийн [k:J]/[k:L] тоглуулалт клипийг гулсуулна.",
+      "Хаалтан дахь бичиг (Slip / Slide) нь одоогийн дэд горим — Cut хуудсанд ч ижил товч бий."
+    ] },
+
+  /* ═════ 2. Клип оруулах ═════ */
+  { id: "insert", n: 5, group: "oruulah", en: "Insert Clip", mn: "Шигтгэх", impact: "edit", demo: "insert", iconId: "insert",
+    tip: "Insert Clip - F9",
+    what: "Source viewer-ийн клипийг timeline-ийн **заагчийн байрлалд шигтгэнэ**: заагч дээрх клипийг хуваагаад, хойшхи **бүх клипийг баруун тийш түлхэнэ**.",
+    effect: "Timeline **уртасна** (оруулсан клипийн хэмжээгээр). Юу ч устахгүй. Хойшхи бүх клип, тэдгээртэй холбоотой тэмдэглэгээ хамт зөрнө.",
+    steps: [
+      "Media Pool-оос клипийг Source viewer-т нээнэ (хоёр товшилт).",
+      "Хэрэгтэй хэсгийг [k:I] ба [k:O]-оор тэмдэглэнэ.",
+      "Timeline-д заагчийг оруулах газарт тавина (Destination зам — V1, A1 улаан).",
+      "[k:F9] эсвэл **Insert Clip** товч — эсвэл Source viewer-ээс timeline viewer руу чирж Insert дээр тавина."
+    ],
+    params: [
+      ["Хаана", "Timeline-ийн заагч (эсвэл timeline-ийн In)."],
+      ["Аль зам руу", "Destination (улаан V1, A1) — замын толгойн сонголт."]
+    ],
+    tips: [
+      "Insert нь Auto Select асаалттай **бүх замыг** зөрүүлнэ — хөгжим, B-roll хамт хөдөлнө.",
+      "Оруулсан клипийн урт = Source-ийн In–Out; тэмдэглээгүй бол бүх клип."
+    ] },
+
+  { id: "overwrite", n: 6, group: "oruulah", en: "Overwrite Clip", mn: "Дарж бичих", impact: "edit", demo: "overwrite",
+    tip: "Overwrite Clip - F10",
+    what: "Клипийг заагчийн байрлалд тавьж, **доор нь байсныг дарж бичнэ**. Хойшхи клипүүд хөдлөхгүй.",
+    effect: "Timeline-ийн урт **өөрчлөгдөхгүй** (төгсгөлөөс хэтрэхгүй бол). Дарагдсан хэсэг timeline-аас **алга** болно (эх файлд юу ч болохгүй). B-roll тавих, алдаатай хэсгийг солиход.",
+    steps: [
+      "Source viewer-т клипийг нээж [k:I] [k:O] тэмдэглэнэ.",
+      "Timeline-ийн заагчийг тавина.",
+      "[k:F10] эсвэл **Overwrite Clip** товч."
+    ],
+    params: [
+      ["Ripple Overwrite", "[k:Shift+F10] — дарагдсан хэсгийн урттай тааруулж timeline-ийг сунгах/хураах."],
+      ["Place on Top", "Хоосон дээд зам руу тавих — доорх клип хэвээр үлдэнэ."]
+    ],
+    tips: [
+      "B-roll-ийг V2 зам руу **Overwrite** хийвэл V1-ийн ярилцлага хөндөгдөхгүй — Destination-ийг V2 болго.",
+      "Дуугүй B-roll тавих бол A1 Destination-ийг унтраа — ярилцлагын дуу дарагдахгүй."
+    ] },
+
+  { id: "replace", n: 7, group: "oruulah", en: "Replace Clip", mn: "Солих", impact: "edit", demo: "replace",
+    tip: "Replace Clip - F11",
+    what: "Timeline-ийн заагч дээрх клипийг Source-ийн клипээр **солино** — байрлал, урт нь хуучныхтай **яг адил** үлдэнэ.",
+    effect: "Timeline-ийн бүтэц хэвээр, зөвхөн **агуулга** солигдоно. Source-ийн заагч дээрх кадр timeline-ийн заагч дээрх кадартай тэгшлэгдэнэ — хөгжмийн цохилт, үйлдлийн цэгийг хадгалахад.",
+    steps: [
+      "Source viewer-т шинэ клипийг нээж, тэгшлэх кадар дээр заагчийг тавина.",
+      "Timeline-д солих клип дээр, тэгшлэх кадарт заагчийг тавина.",
+      "[k:F11] эсвэл **Replace Clip** товч."
+    ],
+    params: [
+      ["Урт", "Timeline дахь хуучин клипийнх — Source-ийн In/Out үл тооцогдоно."],
+      ["Тэгшлэл", "Хоёр заагч — ижил кадар ижил цэгт."]
+    ],
+    tips: [
+      "Шинэ клипийн эх файл хангалттай урт биш бол солихгүй (эсвэл хэсэгчлэн).",
+      "Эффект, өнгөний засвар хуучин клипийнх хэвээр үлдэх эсэх — баталгаажаагүй; шалгаж хэрэглэ."
+    ],
+    unsure: "Resolve 21-д Replace хийхэд Inspector-ийн засвар (Transform гэх мэт) шинэ клипт шилжих эсэх." },
+
+  /* ═════ 3. Туслах унтраалга ═════ */
+  { id: "snapping", n: 8, group: "tuslah", en: "Snapping", mn: "Наалдац", impact: "view", demo: "snapping",
+    tip: "Snapping - N",
+    what: "Клип, ирмэг, заагчийг чирэхэд ойролцоох **огтлолт, заагч, тэмдэглэгээ рүү соронз шиг наалдуулна**.",
+    effect: "Бичлэгт шууд нөлөөгүй — гэхдээ **цоорхой** (1–2 кадрын хар) болон **давхцал** үүсэхээс хамгаалдаг. Унтраалттай үед хоёр клипийн хооронд харагдахгүй жижиг зай үлдэж, тоглуулахад хар кадар анивчих нь түгээмэл алдаа.",
+    steps: [
+      "[k:N] эсвэл товчоор асааж, унтраана (идэвхтэй үед цайвар).",
+      "Клипийг чирж хөршийн ирмэгт ойртуулна — шугам гарч наалдана.",
+      "Нарийн (кадраар) байрлуулах үед түр унтраана."
+    ],
+    params: [
+      ["Наалдах цэг", "Клипийн ирмэг, заагч, тэмдэглэгээ, In/Out."],
+      ["Түр унтраах", "Чирж байхдаа [k:N] дарж болно (Resolve-ийн түгээмэл ажиллагаа)."]
+    ],
+    tips: [
+      "Хөгжмийн цохилт дээр тэмдэглэгээ тавиад Snapping-ээр огтлолтыг тэдгээрт наалдуулах — хурдан хэмнэлтэй монтаж.",
+      "Cut хуудсанд нэр нь **Snap** (Timeline Options дотор)."
+    ] },
+
+  { id: "linked-selection", n: 9, group: "tuslah", en: "Linked Selection", mn: "Холбоотой сонголт", impact: "view", demo: "linked",
+    tip: "Linked Selection - Ctrl+Shift+L",
+    what: "Асаалттай үед видео клипийг сонгоход түүнтэй **холбоотой дуу** (нэг файлаас) хамт сонгогдоно. Унтраавал видео, дууг тусад нь сонгож, зөөнө.",
+    effect: "Бичлэгт шууд нөлөөгүй. Гэхдээ унтраалттай үед зөвхөн видеог зөөвөл **дуу зургаас салж** (out of sync), ярианы уруул тохирохгүй болно — Resolve клип дээр улаан **+/− кадрын тоо** харуулна.",
+    steps: [
+      "[k:Ctrl+Shift+L] эсвэл товч.",
+      "J-cut, L-cut (дуу эрт/орой эхлэх) хийх бол түр унтрааж, дууны ирмэгийг тусад нь тайрна.",
+      "Дуусаад дахин асаана.",
+      "Нэг удаа зөвхөн нэгийг сонгох: [k:Alt] барьж товшино."
+    ],
+    params: [
+      ["Холбоос", "Клип дээрх 🔗 дүрс — нэг файлын видео, дуу."],
+      ["Салсан тэмдэг", "Улаан +12 / −12 — хэдэн кадраар зөрсөн."]
+    ],
+    tips: [
+      "Салсан клипийг буцааж тааруулах — улаан тоон дээр баруун товш → Slip/Move into place (нэр баталгаажаагүй).",
+      "Холбоосыг бүрмөсөн салгах — Clip → Link Clips-ийг унтраах."
+    ] },
+
+  { id: "position-lock", n: 10, group: "tuslah", en: "Position Lock", mn: "Байрлалын түгжээ", impact: "protect", demo: "poslock",
+    tip: "Position Lock",
+    what: "Timeline-ийн **бүх клипийн байрлал, уртыг** түгжинэ. Зөөх, тайрах, хэрчих боломжгүй; харин тунгалаг, Transform, өнгө, эффект засагдана.",
+    effect: "Бичлэгт нөлөөгүй — **монтажийг хамгаална**. Монтаж батлагдсаны дараа (picture lock) өнгө, дуу, эффект хийхэд санамсаргүй клип хөдлөхөөс сэргийлнэ.",
+    steps: [
+      "🔒 товчийг асаана (товчлуургүй — tooltip зөвхөн «Position Lock»).",
+      "Клип чирэхийг оролдоход хөдлөхгүй.",
+      "Inspector-т Opacity, Transform-ийг засаж шалгана — ажиллана.",
+      "Монтаж засах бол унтраана."
+    ],
+    params: [
+      ["Хамрах хүрээ", "Бүх зам, бүх клип."],
+      ["Track Lock-оос ялгаа", "Замын 🔒 — нэг замыг бүхэлд нь (сонгох ч боломжгүй)."]
+    ],
+    tips: [
+      "Өнгөчин, дуучинд timeline өгөхөөс өмнө асаах сайн зуршил.",
+      "Өмнө нь загварт «Sync Lock» гэж андуурч бичсэнийг зассан."
+    ] },
+
+  /* ═════ 4. Туг, тэмдэглэгээ, томруулалт ═════ */
+  { id: "flag", n: 11, group: "temdeg", en: "Flag", mn: "Туг", impact: "note", demo: "flag",
+    tip: "(товчны tooltip зурагт гараагүй) · ⌄: Clear All, Blue … Cream",
+    what: "Клипэд **бүхэлд нь** өнгөт туг тавина. Туг нь Media Pool-ийн **эх клипэд** хамаарна — тэр клипээс timeline-д хэдэн хэсэг байвал бүгд тугтай харагдана. ⌄ жагсаалтаас 16 өнгийн нэгийг сонгоно.",
+    effect: "Эцсийн бичлэгт **орохгүй**. Зөвхөн ангилал: «сайн дубль», «засах», «B-roll». Media Pool, Smart Bin-д тугаар шүүнэ.",
+    steps: [
+      "Туг ⌄ → өнгө сонгоно (жишээ нь Green).",
+      "Клипийг сонгоод тугийн товч.",
+      "Media Pool → Smart Bin → нөхцөл Flags is Green — бүх ногоон тугтай клип нэг дор."
+    ],
+    params: [
+      ["16 өнгө", "Blue, Cyan, Green, Yellow, Red, Pink, Purple, Fuchsia, Rose, Lavender, Sky, Mint, Lemon, Sand, Cocoa, Cream."],
+      ["Clear All", "Туг арилгах (хүрээ баталгаажаагүй)."]
+    ],
+    tips: [
+      "Кадар дээр тэмдэг хэрэгтэй бол **marker**; клип бүхэлд нь бол **flag**.",
+      "Өнгөний утгыг багаараа тохирч бич."
+    ],
+    unsure: "Тугийн товчны tooltip, Clear All-ийн хамрах хүрээ (сонгосон клип үү, бүгд үү)." },
+
+  { id: "marker", n: 12, group: "temdeg", en: "Marker", mn: "Тэмдэглэгээ", impact: "note", demo: "marker",
+    tip: "(товчны tooltip зурагт гараагүй) · ⌄: Clear All, Blue … Cream · [k:M]",
+    what: "**Тодорхой кадарт** өнгөт тэмдэг тавина. Клип сонгосон бол клип дээр, сонгоогүй бол timeline-ийн шугам дээр. Нэр, тайлбар, үргэлжлэх хугацаа бичиж болно.",
+    effect: "Эцсийн бичлэгт **орохгүй**. Хөгжмийн цохилт, засах газар, хадмал тавих цэг зэргийг тэмдэглэж, Snapping-ээр огтлолтыг тэдгээрт наалдуулна. YouTube-ийн бүлэг (chapter) болгож гаргаж болно.",
+    steps: [
+      "Marker ⌄ → өнгө.",
+      "Заагчийг кадар дээр тавиад [k:M] — тэмдэглэгээ.",
+      "[k:M]-ийг дахин (эсвэл хоёр товшилт) — нэр, тайлбар бичих цонх.",
+      "[k:Shift+↑] [k:Shift+↓] — өмнөх, дараагийн тэмдэглэгээ рүү үсрэх."
+    ],
+    params: [
+      ["Timeline marker", "Клип сонгоогүй үед — ruler дээр."],
+      ["Clip marker", "Клип сонгосон үед — клип дээр, клиптэй хамт зөөгдөнө."],
+      ["Duration", "Тэмдэглэгээг [k:Alt] барьж чирвэл хугацаатай болно."]
+    ],
+    tips: [
+      "Тоглуулж байхдаа [k:M] дарж хөгжмийн цохилтыг хэмнэлээр нь тэмдэглэ.",
+      "Annotations-ээр зурсан зураг тэмдэглэгээнд хадгалагдана."
+    ],
+    unsure: "Marker товчны tooltip, [k:Shift+↑]/[k:Shift+↓] Resolve 21-д хэвээр эсэх." },
+
+  { id: "full-extent-zoom", n: 13, group: "temdeg", en: "Full Extent Zoom", mn: "Бүтнээр харах", impact: "view", demo: "zoom-full",
+    tip: "Full Extent Zoom",
+    what: "Timeline-ийн **эхнээс төгсгөл хүртэл** бүгдийг цонхонд багтаана. Таны зурагт дарахад 30 секундын клип бүх өргөнийг эзэлсэн.",
+    effect: "Зөвхөн харагдац. Бүтэц, хэмнэлийг нэг дор харах, хол газар руу хурдан очих.",
+    steps: ["Томруулалтын 1 дэх товч.", "Эсвэл [k:Shift+Z] — Zoom to Fit."],
+    params: [["Горимын бүлэг", "Full Extent · Detail · Custom — нэг нь идэвхтэй."]],
+    tips: ["Урт төсөлд Full Extent-д клип маш нарийн — нэр, зураг харагдахгүй; Detail руу шилж."] },
+
+  { id: "detail-zoom", n: 14, group: "temdeg", en: "Detail Zoom", mn: "Нарийвчилсан томруулалт", impact: "view", demo: "zoom-detail",
+    tip: "Detail Zoom",
+    what: "**Заагчийн орчмыг** ойроос томруулна — кадар бүр ялгарахуйц.",
+    effect: "Зөвхөн харагдац. Огтлолтыг кадраар тааруулах, дууны нарийн хэсэг.",
+    steps: ["Заагчийг ажиллах газарт тавина.", "Томруулалтын 2 дахь товч."],
+    params: [["Төв", "Заагч — дэлгэцийн голд ойролцоо."]],
+    tips: ["Ажил дуусаад Full Extent-ээр бүхэлд нь шалга."] },
+
+  { id: "custom-zoom", n: 15, group: "temdeg", en: "Custom Zoom", mn: "Өөрийн томруулалт", impact: "view", demo: "zoom-custom",
+    tip: "Custom Zoom",
+    what: "**− ● +** гүйлгэгчээр тохируулсан өөрийн томруулалт руу буцна.",
+    effect: "Зөвхөн харагдац. Байнга ажилладаг «тохиромжтой» хэмжээгээ хадгална.",
+    steps: ["Томруулалтын 3 дахь товч.", "Гүйлгэгч эсвэл [k:Ctrl+=] / [k:Ctrl+-]."],
+    params: [["Гүйлгэгч", "Зүүн — жижиг, баруун — том."]],
+    tips: ["Full Extent / Detail руу шилжээд буцахад хэмжээ хадгалагдана."] },
+
+  /* ═════ 5. Timeline-ийн харагдац, дуу бичлэг ═════ */
+  { id: "timeline-view-options", n: 16, group: "haragdats", en: "Timeline View Options", mn: "Timeline-ийн харагдацын тохиргоо", impact: "view", demo: "tvo",
+    tip: "(tooltip зурагт гараагүй) · ⚌ жагсаалт — 13 мөр, Track Height, Set as Default View",
+    what: "Хэрэгслийн мөрийн **хамгийн зүүн ⚌** жагсаалт — долгион, клипийн нэр, урт, зураг, замын өндөр гэх мэт timeline **хэрхэн харагдахыг** тохируулна.",
+    effect: "**Бичлэгт огт нөлөөгүй.** Зөвхөн таны нүдэнд. Долгион, зураг унтраавал timeline хөнгөн, хурдан болно.",
+    steps: [
+      "⚌ дээр дарна.",
+      "Чагттай мөр — асаалттай; товшиж солино.",
+      "Track Height-ийн Video, Audio гүйлгэгчээр замын өндөр.",
+      "Тохирсон бол **Set as Default View** — шинэ timeline-д хэрэглэгдэнэ."
+    ],
+    params: [
+      ["Display Audio Waveforms", "Дууны долгион (зурагт ✓)."],
+      ["Display Clip Names / Durations", "Клипийн нэр, урт (✓)."],
+      ["Display Non-Rectified Waveforms", "Хоёр талт долгион (✓)."],
+      ["Thumbnail View ›", "Filmstrip, эхэн-төгсгөл, зураггүй (Resolve 20-ийн нэрс)."]
+    ],
+    tips: [
+      "Ярианд огтлолт хийхэд дууны зам өндөр, долгион асаалттай байх нь хамгийн тохиромжтой.",
+      "Display Full / Borders / Scaled Waveforms-ийн яг ялгааг баталгаажуулах зураг хэрэгтэй."
+    ] },
+
+  { id: "show-keyframe-tray", n: 17, group: "haragdats", en: "Show Keyframe Tray", mn: "Түлхүүр кадрын тавиур", impact: "view", demo: "unknown",
+    tip: "Show Keyframe Tray",
+    what: "Хэрэгслийн мөрийн 2 дахь товч. Нэрнээсээ timeline-д клипийн **түлхүүр кадрын тавиур** гаргана.",
+    effect: "Тавиур өөрөө харагдац — түүн дээрх ◆-г зөөвөл хөдөлгөөний цаг өөрчлөгдөж **дүрсэд нөлөөлнө** гэж ойлгогдоно.",
+    steps: ["Transform-д түлхүүр кадар (◆) тавьсан клип сонгоно.", "Товчийг дарна.", "Юу гарсныг зурагт авч илгээнэ үү."],
+    params: [["Дээд мөрийн Keyframes", "Тусдаа товч — Keyframe Editor самбар."]],
+    tips: ["Cut хуудасны Keyframes самбартай (Keyframe Curves, Lanes) төстэй байж магадгүй."],
+    unsure: "Товчийг дарсны дараах харагдац, үйлдэл — хараахан зурагт гараагүй." },
+
+  { id: "voiceover", n: 18, group: "haragdats", en: "Voiceover", mn: "Дуу бичих", impact: "audio", demo: "voiceover",
+    tip: "Voiceover",
+    what: "🎙 товч — микрофоноос **өгүүлэгчийн дууг timeline-д шууд бичих** самбар нээнэ. Бичлэгийг үзэж байгаад тайлбар уншина.",
+    effect: "Timeline-д **шинэ дууны клип** нэмэгдэж, эцсийн бичлэгт орно. Видео өөрчлөгдөхгүй.",
+    steps: [
+      "Заагчийг эхлэх газарт тавина.",
+      "🎙 → самбарт микрофон, бичих замыг сонгоно.",
+      "Бичих → ярих → зогсоох. Шинэ клип үүснэ.",
+      "Дахин бичвэл өмнөх нь давхарга болж үлдэнэ (Resolve 18.5+ ажиллагаа)."
+    ],
+    params: [["Оролт", "Микрофон — Windows-ийн дууны тохиргоонд харагдах төхөөрөмж."], ["Зам", "Бичих дууны зам (A2 гэх мэт)."]],
+    tips: ["Чихэвч зүү — чанга яригчийн дуу микрофонд орно.", "Timeline цэсний **Record Voiceover** ижил зорилготой."],
+    unsure: "Resolve 21-ийн самбарын товч, тохиргооны яг нэрс." },
+
+  /* ═════ 6. Viewer дээрх удирдлага ═════ */
+  { id: "transform", n: 19, group: "viewer", en: "Transform", mn: "Хувиргалт", impact: "image", demo: "transform",
+    tip: "Viewer ▭ ⌄ → Transform · Inspector → Video → Transform",
+    what: "Viewer дээр клипийн эргэн тойронд **цагаан хүрээ, бариул** гарна: булангаас чирж томруулах, дотроос чирж зөөх, гадна талаас эргүүлэх.",
+    effect: "Клипийн **хэмжээ, байрлал, эргэлт** өөрчлөгдөнө (Inspector → Zoom, Position, Rotation Angle). Томруулсан хэсэг тайрагдаж, жижигрүүлбэл ирмэгт **хар** (эсвэл доорх зам) гарна.",
+    steps: [
+      "Клипийг timeline-д сонгоно.",
+      "Viewer ▭ ⌄ → **Transform**.",
+      "Бариулаар чирнэ — Inspector-ийн тоо хамт өөрчлөгдөнө.",
+      "Хөдөлгөөн хийх бол Inspector-ийн ◆-оор түлхүүр кадар."
+    ],
+    params: [
+      ["Zoom X/Y", "1.000 — анхны хэмжээ (зурагт)."],
+      ["Position X/Y", "Пикселээр зөөх."],
+      ["Rotation Angle", "Градусаар эргүүлэх."],
+      ["Anchor Point", "Эргэлт, томруулалтын төв."]
+    ],
+    tips: ["1080p клипийг 4K timeline-д 2.0-оос их томруулбал бүдгэрнэ — AI Super Scale.", "Pitch, Yaw — 3D хазайлт."] },
+
+  { id: "crop", n: 20, group: "viewer", en: "Crop", mn: "Тайралт", impact: "image", demo: "crop",
+    tip: "Viewer ▭ ⌄ → Crop · Inspector → Video → Cropping",
+    what: "Viewer дээр кадрын **дөрвөн талд бариул** гарна — чирж ирмэгийг тайрна.",
+    effect: "Тайрсан хэсэг **тунгалаг** болж доорх зам (эсвэл хар) харагдана. Хэмжээ өөрчлөгдөхгүй — зөвхөн ирмэг далдлагдана. Хоёр бичлэгийг хажуу хажуугаар (split screen) тавих, кино шиг хар зурвас гаргахад.",
+    steps: ["Клип сонгоно.", "▭ ⌄ → **Crop**.", "Ирмэгийн бариулыг чирнэ.", "Inspector → Cropping → **Softness** — зөөлөн ирмэг."],
+    params: [["Crop Left/Right/Top/Bottom", "Тал бүрээс пикселээр."], ["Softness", "Ирмэгийн зөөлөн."], ["Retain Image Position", "Тайрахад дүрс хөдлөхгүй байх (Resolve 20-ийн нэр)."]],
+    tips: ["Бүх бичлэгт ижил хар зурвас — Timeline → Output Blanking илүү хялбар."] },
+
+  { id: "dynamic-zoom", n: 21, group: "viewer", en: "Dynamic Zoom", mn: "Хөдөлгөөнт томруулалт", impact: "image", demo: "dynzoom",
+    tip: "Viewer ▭ ⌄ → Dynamic Zoom · Inspector → Video → Dynamic Zoom",
+    what: "Viewer дээр **ногоон** (эхлэл) ба **улаан** (төгсгөл) хоёр хүрээ гарна. Клипийн турш хүрээ ногооноос улаан руу жигд шилжиж, зогсонги зурагт хөдөлгөөн өгнө (Ken Burns эффект).",
+    effect: "Клипийн турш **томруулалт, байрлал аажмаар өөрчлөгдөнө** — эцсийн бичлэгт орно. Түлхүүр кадаргүй.",
+    steps: [
+      "Inspector → **Dynamic Zoom** унтраалгыг асаана (зурагт унтраалттай).",
+      "▭ ⌄ → **Dynamic Zoom** — хоёр хүрээ гарна.",
+      "Ногоон, улаан хүрээг чирж хэмжээ, байрлалыг өгнө.",
+      "Inspector → **Ease** — жигд, аажим эхлэх, аажим дуусах."
+    ],
+    params: [["Ease", "Linear, Ease In, Ease Out, Ease In and Out."], ["Swap", "Эхлэл, төгсгөлийг солих."]],
+    tips: ["Хөдөлгөөн хэт хурдан бол клипийг урт болго.", "Ease In and Out — хамгийн байгалийн."] },
+
+  { id: "open-fx-overlay", n: 22, group: "viewer", en: "Open FX Overlay", mn: "OpenFX-ийн бариул", impact: "image", demo: "ofx",
+    tip: "Viewer ▭ ⌄ → Open FX Overlay",
+    what: "Клипэд тавьсан **Resolve FX** эффектийн дэлгэц дээрх бариулыг (төв цэг, хүрээ) viewer-т гаргана — жишээ нь гэрлийн толбоны төв.",
+    effect: "Эффектийн параметр өөрчлөгдөж **дүрсэд нөлөөлнө**. Бариул өөрөө бичлэгт харагдахгүй.",
+    steps: ["Effects → Resolve FX-ээс эффект (Lens Flare, Vignette …) клип дээр чирнэ.", "▭ ⌄ → **Open FX Overlay**.", "Цэгийг чирнэ; Inspector → Effects-ийн утга хамт өөрчлөгдөнө."],
+    params: [["Бариултай эффект", "Lens Flare, Light Rays, Vignette, Blur (хүрээтэй) гэх мэт."]],
+    tips: ["Бариулгүй эффектэд юу ч харагдахгүй — энэ хэвийн."] },
+
+  { id: "fusion-overlay", n: 23, group: "viewer", en: "Fusion Overlay", mn: "Fusion-ий бариул", impact: "image", demo: "fusionovl",
+    tip: "Viewer ▭ ⌄ → Fusion Overlay",
+    what: "Edit хуудсанд тавьсан **Fusion гарчиг, Fusion эффектийн** удирдлагыг viewer-т гаргана — Fusion хуудас руу шилжилгүй чирж тохируулна.",
+    effect: "Fusion нодын утга өөрчлөгдөж **дүрсэд нөлөөлнө**.",
+    steps: ["Titles → **Fusion Titles** (эсвэл Text+) клип сонгоно.", "▭ ⌄ → **Fusion Overlay**.", "Текстийн төвийн загалмайг чирнэ."],
+    params: [["Center", "Төвийн байрлал."], ["Size", "Хэмжээ (Inspector → Video)."]],
+    tips: ["Энгийн **Text** гарчигт Transform горимыг хэрэглэнэ."] },
+
+  { id: "annotations", n: 24, group: "viewer", en: "Annotations", mn: "Тэмдэглэл зурах", impact: "note", demo: "annotations",
+    tip: "Viewer ▭ ⌄ → Annotations",
+    what: "Viewer дээр **шугам, сум зурж** санал, засварын тэмдэглэл үлдээнэ. Зурсан зураг тэр кадрын тэмдэглэгээнд (marker) хадгалагдана.",
+    effect: "Эцсийн бичлэгт **орохгүй** — зөвхөн засварын үед харагдана. Жишээн дээр хулганаар (эсвэл хуруугаар) зурж үзээрэй.",
+    steps: ["Заагчийг кадар дээр тавина.", "▭ ⌄ → **Annotations**.", "Хэрэгсэл (шугам, сум), өнгө сонгоод зурна.", "Тэмдэглэгээ автоматаар үүснэ."],
+    params: [["Хэрэгсэл", "Чөлөөт шугам, сум (нэрс баталгаажаагүй)."], ["Өнгө, зузаан", "Viewer-ийн дээд хэсэгт."]],
+    tips: ["Захиалагчтай санал солилцоход Presentations (Blackmagic Cloud) илүү тохиромжтой."],
+    unsure: "Resolve 21-ийн зурах хэрэгслийн яг нэр, байрлал." },
+
+  { id: "smart-reframe", n: 25, group: "viewer", en: "Smart Reframe", mn: "Ухаалаг хүрээлэлт", impact: "image", demo: "reframe",
+    tip: "Viewer ▭ ⌄ → Smart Reframe · Inspector → Video → AI Smart Reframe",
+    what: "Хэвтээ 16:9 бичлэгийг босоо **9:16**, **1:1**, **4:5** болгоход DaVinci Neural Engine **гол объектыг өөрөө олж** хүрээнд байлгана (Studio).",
+    effect: "Кадар бүрийн **байрлал өөрчлөгдөнө** — голоос тайрсан бол объект таслагдах байсан газарт хүрээ түүнийг дагана.",
+    steps: [
+      "Timeline-ийн нягтралыг босоо болгоно (1080×1920).",
+      "Клип сонгоно → Inspector → **AI Smart Reframe**.",
+      "Object of Interest: **Auto** эсвэл **Reference Point** (▭ ⌄ → Smart Reframe-ээр цэг заана).",
+      "**Reframe** товч."
+    ],
+    params: [["Auto", "Объектыг өөрөө олох."], ["Reference Point", "Viewer дээр цэг заах."]],
+    tips: ["4K эх бичлэгийг 1080×1920 болгоход чанар алдахгүй.", "Guides → Social Media → 9:16 хүрээгээр урьдчилан шалга."] },
+
+  { id: "jog-wheel", n: 26, group: "viewer", en: "Jog Wheel", mn: "Жог хүрд", impact: "view", demo: "jog",
+    tip: "Jog Wheel",
+    what: "Viewer-ийн транспорт мөрийн **‹ ● ›** — зүүн, баруун тийш чирэхэд бичлэг **кадар кадраар** удаан гүйнэ.",
+    effect: "Бичлэгт нөлөөгүй — зөвхөн заагчийг хөдөлгөнө. Огтлох, In/Out тавих кадрыг нарийн олоход.",
+    steps: ["● -г барьж зүүн (хойш) эсвэл баруун (урагш) чирнэ.", "Хол чирэх тусам хурдан.", "Хүссэн кадарт тавиад [k:I] / [k:O] эсвэл [k:B]."],
+    params: [["Jog Bar", "Доорх урт зурвас — хурдан үсрэх."], ["[k:←] [k:→]", "Нэг кадар."]],
+    tips: ["[k:K] барьж [k:J]/[k:L] — гараар удаан тоглуулах ижил үр дүнтэй."] }
+  ];
+
+  /* Хамтын жишээ — хэрэгслүүдийг дараалан хэрэглэх */
+  E.recipes = [
+    { title: "Ярилцлагаас илүүдлийг хасах", chain: ["selection-mode", "blade", "snapping", "trim-edit-mode"],
+      why: "«Өө, аан», урт завсар, давтсан өгүүлбэрийг хасахад монтажийн 80% нь ийм хэрэгслээр хийгддэг.",
+      steps: [
+        "Дууны замын өндрийг ихэсгэж, долгионыг асаана (Timeline View Options).",
+        "Хасах хэсгийн эхэнд заагч → [k:Ctrl+\\\\], төгсгөлд → [k:Ctrl+\\\\].",
+        "Дундах хэсгийг сонгоод [k:Backspace] — Ripple Delete, хоосон зай үлдэхгүй.",
+        "Огтлолтын үсрэлтийг Effects → Dissolve → **Smooth Cut** эсвэл B-roll-оор далдална."
+      ] },
+    { title: "Хөгжмийн цохилтоор огтлох", chain: ["marker", "snapping", "blade", "overwrite"],
+      why: "Хэмнэлтэй монтажид огтлолт бүр хөгжмийн цохилт дээр буух ёстой.",
+      steps: [
+        "Хөгжмийг A2-т тавиад тоглуулж, цохилт бүрд [k:M] — тэмдэглэгээ.",
+        "Snapping асаалттай үед заагч тэмдэглэгээнд наалдана.",
+        "Тэмдэглэгээ бүрд заагч → хэрчих, эсвэл B-roll-ийг [k:F10]-оор дарж бичих."
+      ] },
+    { title: "B-roll-ийг ярилцлага дээр тавих", chain: ["overwrite", "linked-selection", "position-lock"],
+      why: "Ярилцлагын дууг хөндөлгүй дээр нь зураг тавих — хамгийн түгээмэл даалгавар.",
+      steps: [
+        "Destination-ийг **V2** болгож, **A1**-ийг унтраана.",
+        "Source-т B-roll-ийн In/Out → timeline-д заагч → [k:F10].",
+        "B-roll-ийн дууг хэрэглэхгүй бол Linked Selection унтрааж дууг устгана.",
+        "Монтаж батлагдсаны дараа Position Lock асаана."
+      ] },
+    { title: "Босоо хувилбар (TikTok, Reels)", chain: ["smart-reframe", "transform", "crop"],
+      why: "Нэг 16:9 бичлэгээс сошиалд 9:16 хувилбар.",
+      steps: [
+        "Timeline-ийг хуулж (Duplicate), шинэ timeline-ийн нягтралыг 1080×1920.",
+        "Бүх клип → AI Smart Reframe → Reframe.",
+        "Буруу хүрээлсэн клипийг Transform-оор гараар засна.",
+        "Quick Export → **TikTok** бэлдэц."
+      ] }
+  ];
+})(window.RM);
+
+</script>
+<script>
+/* ── js/71-fz-scene.js ── */
+/* ═════════════════════════════════════════════════════════════
+   71 · Fusion заавар — жишээний кадр ба туслах функцууд
+
+   Жишээнд хэрэглэгчийн бичлэгтэй төстэй сансрын кадрыг (цагирагтай гариг,
+   од, мананцар, цонхны төмөр) кодоор зурна. Давхарга тус бүрийг тусад нь
+   хадгалдаг — 3D камерын жишээнд parallax хийхэд.
+   ═════════════════════════════════════════════════════════════ */
+(function (RM) {
+  "use strict";
+
+  const G = (RM.fz = RM.fz || {});
+  const W = 640, H = 360;
+  G.W = W; G.H = H;
+
+  /* тогтмол санамсаргүй тоо — хуудас бүрд ижил кадр гарна */
+  function prng(seed) {
+    return function () {
+      seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  G.prng = prng;
+
+  const canvas = (w, h) => { const c = document.createElement("canvas"); c.width = w || W; c.height = h || H; return c; };
+  G.canvas = canvas;
+
+  /* гаригийн байрлал — маск, гэрлийн жишээнд ч хэрэглэнэ */
+  const P = { x: 420, y: 196, r: 104, tilt: -0.28 };
+  G.planet = P;
+
+  function drawBackground(ctx) {
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, "#03050b"); g.addColorStop(1, "#0b1424");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    [[160, 90, 230, "rgba(96,70,170,.22)"], [520, 300, 260, "rgba(40,96,170,.20)"], [300, 260, 180, "rgba(170,80,120,.10)"]]
+      .forEach(([x, y, r, c]) => {
+        const n = ctx.createRadialGradient(x, y, 0, x, y, r);
+        n.addColorStop(0, c); n.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = n; ctx.fillRect(0, 0, W, H);
+      });
+    const rnd = prng(7);
+    for (let i = 0; i < 460; i++) {
+      const x = rnd() * W, y = rnd() * H, r = 0.3 + rnd() * rnd() * 1.4, a = 0.35 + rnd() * 0.65;
+      ctx.fillStyle = "rgba(235,240,255," + a.toFixed(2) + ")";
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+    }
+    for (let i = 0; i < 9; i++) {
+      const x = rnd() * W, y = rnd() * H, r = 5 + rnd() * 6;
+      const s = ctx.createRadialGradient(x, y, 0, x, y, r);
+      s.addColorStop(0, "rgba(255,255,255,.95)"); s.addColorStop(0.15, "rgba(200,220,255,.45)"); s.addColorStop(1, "rgba(200,220,255,0)");
+      ctx.fillStyle = s; ctx.fillRect(x - r, y - r, r * 2, r * 2);
+    }
+  }
+
+  function ring(ctx, front) {
+    ctx.save();
+    ctx.translate(P.x, P.y); ctx.rotate(P.tilt);
+    if (front) { ctx.beginPath(); ctx.rect(-400, 0, 800, 300); ctx.clip(); }
+    for (let i = 0; i < 16; i++) {
+      const k = 1.34 + i * 0.045, a = [0.5, 0.35, 0.6, 0.2, 0.55, 0.45, 0.15, 0.5][i % 8];
+      ctx.strokeStyle = "rgba(" + (215 - i * 3) + "," + (196 - i * 4) + "," + (158 - i * 5) + "," + a + ")";
+      ctx.lineWidth = 3.2;
+      ctx.beginPath(); ctx.ellipse(0, 0, P.r * k, P.r * k * 0.23, 0, 0, Math.PI * 2); ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawPlanet(ctx) {
+    ring(ctx, false);
+    ctx.save();
+    ctx.beginPath(); ctx.arc(P.x, P.y, P.r, 0, Math.PI * 2); ctx.clip();
+    ctx.translate(P.x, P.y); ctx.rotate(P.tilt);
+    const cols = ["#e3cfa3", "#cdb27f", "#b8955f", "#d8c08e", "#a98452", "#c7a877", "#e1ca98", "#9d7a4c"];
+    const rnd = prng(3);
+    for (let y = -P.r - 20; y < P.r + 20; y += 7 + rnd() * 9) {
+      ctx.fillStyle = cols[Math.floor(rnd() * cols.length)];
+      ctx.fillRect(-P.r - 30, y, P.r * 2 + 60, 18);
+    }
+    ctx.restore();
+    ctx.save();
+    const sh = ctx.createRadialGradient(P.x + P.r * 0.35, P.y - P.r * 0.4, P.r * 0.1, P.x, P.y, P.r * 1.05);
+    sh.addColorStop(0, "rgba(255,245,220,.15)"); sh.addColorStop(0.55, "rgba(0,0,0,0)"); sh.addColorStop(1, "rgba(0,0,0,.88)");
+    ctx.fillStyle = sh; ctx.beginPath(); ctx.arc(P.x, P.y, P.r, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "rgba(255,230,190,.25)"; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.restore();
+    ring(ctx, true);
+  }
+
+  function drawStrut(ctx) {
+    ctx.save();
+    ctx.translate(-30, 40); ctx.rotate(0.62);
+    const g = ctx.createLinearGradient(0, -40, 0, 40);
+    g.addColorStop(0, "#2d323a"); g.addColorStop(0.5, "#1b1e24"); g.addColorStop(1, "#111317");
+    ctx.fillStyle = g; ctx.fillRect(-60, -38, 520, 76);
+    ctx.fillStyle = "rgba(170,200,230,.35)"; ctx.fillRect(-60, -38, 520, 2);
+    ctx.fillStyle = "rgba(0,0,0,.5)"; ctx.fillRect(-60, 34, 520, 4);
+    ctx.fillStyle = "#3a4048";
+    for (let x = 0; x < 460; x += 46) { ctx.beginPath(); ctx.arc(x, -22, 2.6, 0, Math.PI * 2); ctx.arc(x, 22, 2.6, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+    /* цонхны доод хүрээ */
+    const f = ctx.createLinearGradient(0, H - 26, 0, H);
+    f.addColorStop(0, "#23272e"); f.addColorStop(1, "#0d0f12");
+    ctx.fillStyle = f; ctx.fillRect(0, H - 22, W, 22);
+    ctx.fillStyle = "rgba(170,200,230,.25)"; ctx.fillRect(0, H - 22, W, 1.5);
+  }
+
+  /* Paint-ийн жишээнд: зураас ба тоос */
+  const SCRATCH = [[292, -6], [298, 60], [286, 130], [296, 205], [284, 270], [290, 366]];
+  G.scratch = SCRATCH;
+  function drawDamage(ctx) {
+    ctx.save();
+    ctx.strokeStyle = "rgba(240,244,250,.92)"; ctx.lineWidth = 5; ctx.lineCap = "round"; ctx.lineJoin = "round";
+    ctx.beginPath(); SCRATCH.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke();
+    ctx.fillStyle = "rgba(235,238,245,.9)";
+    [[260, 90, 4], [318, 170, 3], [275, 238, 5], [305, 300, 3]].forEach(([x, y, r]) => { ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); });
+    ctx.restore();
+  }
+
+  /* Merge-ийн жишээнд: тунгалаг дэвсгэртэй лого */
+  function drawLogo() {
+    const c = canvas(220, 220), ctx = c.getContext("2d");
+    ctx.fillStyle = "rgba(245,168,60,.96)";
+    ctx.beginPath(); ctx.arc(110, 110, 92, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "#1a1206"; ctx.lineWidth = 6;
+    ctx.beginPath(); ctx.arc(110, 110, 74, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = "#1a1206"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.font = "700 58px Oswald, 'Arial Narrow', sans-serif"; ctx.fillText("1ST", 110, 100);
+    ctx.font = "600 20px Inter, Arial, sans-serif"; ctx.fillText("STUDIO", 110, 146);
+    return c.toDataURL("image/png");
+  }
+
+  G.build = function () {
+    if (G.scene) return G.scene;
+    const bg = canvas(), planet = canvas(), strut = canvas(), full = canvas(), dirty = canvas();
+    drawBackground(bg.getContext("2d"));
+    drawPlanet(planet.getContext("2d"));
+    drawStrut(strut.getContext("2d"));
+    const f = full.getContext("2d");
+    f.drawImage(bg, 0, 0); f.drawImage(planet, 0, 0); f.drawImage(strut, 0, 0);
+    const d = dirty.getContext("2d");
+    d.drawImage(full, 0, 0); drawDamage(d);
+    const url = (c) => c.toDataURL("image/jpeg", 0.9);
+    G.scene = {
+      full, dirty,
+      src: url(full), dirtySrc: url(dirty),
+      bgSrc: url(bg), planetSrc: planet.toDataURL("image/png"), strutSrc: strut.toDataURL("image/png"),
+      logoSrc: drawLogo()
+    };
+    return G.scene;
+  };
+
+  /* ── жижиг туслахууд ── */
+  G.el = function (tag, attrs, kids) {
+    const n = document.createElement(tag);
+    if (attrs) for (const k in attrs) {
+      const v = attrs[k];
+      if (v == null || v === false) continue;
+      if (k === "class") n.className = v;
+      else if (k === "text") n.textContent = v;
+      else if (k === "html") n.innerHTML = v;
+      else if (k === "style") n.style.cssText = v;
+      else if (k.slice(0, 2) === "on") n.addEventListener(k.slice(2), v);
+      else n.setAttribute(k, v);
+    }
+    (kids || []).forEach((k) => k != null && n.appendChild(typeof k === "string" ? document.createTextNode(k) : k));
+    return n;
+  };
+
+  G.fmt = function (s) {
+    const esc = String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    return esc.replace(/\[k:([^\]]+)\]/g, "<kbd>$1</kbd>").replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+  };
+
+  G.reduced = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+  /* Зөөлөн ирмэгтэй маск (Alpha) зурах — shadowBlur-ийн аргаар, бүх хөтөчид ажиллана */
+  G.maskURL = function (drawShape, soft, invert) {
+    const c = canvas(W / 2, H / 2), ctx = c.getContext("2d");
+    ctx.save(); ctx.scale(0.5, 0.5);
+    ctx.fillStyle = "#fff";
+    if (soft > 0.3) {
+      /* shadowOffset, shadowBlur нь canvas-ийн пикселээр (scale-д үл хамаарна) — хагас хэмжээтэй тул */
+      ctx.shadowColor = "#fff"; ctx.shadowBlur = soft; ctx.shadowOffsetX = W * 1.5;
+      ctx.translate(-W * 3, 0);
+    }
+    ctx.beginPath(); drawShape(ctx); ctx.fill();
+    ctx.restore();
+    if (invert) {
+      const c2 = canvas(W / 2, H / 2), x = c2.getContext("2d");
+      x.fillStyle = "#fff"; x.fillRect(0, 0, W / 2, H / 2);
+      x.globalCompositeOperation = "destination-out"; x.drawImage(c, 0, 0);
+      return c2.toDataURL("image/png");
+    }
+    return c.toDataURL("image/png");
+  };
+
+  G.setMask = function (node, url) {
+    node.style.webkitMaskImage = node.style.maskImage = "url(" + url + ")";
+    node.style.webkitMaskSize = node.style.maskSize = "100% 100%";
+    node.style.webkitMaskRepeat = node.style.maskRepeat = "no-repeat";
+  };
+
+  /* Харагдах үед л хөдөлгөөн тоглуулах */
+  G.whenVisible = function (node, onChange) {
+    if (!("IntersectionObserver" in window)) { onChange(true); return; }
+    new IntersectionObserver((es) => es.forEach((e) => onChange(e.isIntersecting)), { rootMargin: "80px" }).observe(node);
+  };
+})(window.RM);
+
+</script>
+<script>
+/* ── js/75-ez-demos.js ── */
+/* ═════════════════════════════════════════════════════════════
+   75 · Edit хуудасны заавар — хөтөч дээрх жишээнүүд
+
+   Timeline-ийн жишээнд жижиг timeline зурна: V1, A1 (заримд A2) зам,
+   A · B · C клип, заагч. Клип бүрийн дотор эх бичлэгийн аль хэсэг
+   харагдаж байгааг (эх: 2.0–8.0 с) бичнэ — slip, roll-ийн ялгаа харагдана.
+   Viewer-ийн жишээнд 71-ийн сансрын кадрыг ашиглана.
+
+   Бүтэц: E.demos[нэр] = { controls, init(stage, S, tool) → st, update(v, before, st, ctl, act),
+                           noAB?, abLabels?, hint? }
+   ═════════════════════════════════════════════════════════════ */
+(function (RM) {
+  "use strict";
+
+  const E = RM.ez, G = RM.fz, el = G.el, W = G.W, H = G.H, P = G.planet;
+  const D = (E.demos = {});
+
+  const R = (id, label, min, max, step, value, unit, fmt) => ({ id, label, type: "range", min, max, step, value, unit, fmt });
+  const SEL = (id, label, options, value) => ({ id, label, type: "select", options, value });
+  const CHK = (id, label, value) => ({ id, label, type: "check", value });
+  const BTN = (id, label) => ({ id, label, type: "button" });
+  const sec = (n) => n.toFixed(1);
+  const FPS = 24;
+
+  /* ══════════ Timeline-ийн жижиг загвар ══════════ */
+  const HUE = { A: 208, B: 28, C: 152, S: 285, "B1": 28, "B2": 28, VO: 0 };
+  const copy = (arr) => arr.map((c) => Object.assign({}, c));
+
+  function tlInit(stage, S, tracks) {
+    stage.classList.add("ez-stage");
+    const root = el("div", { class: "ez-tl" });
+    const ruler = el("div", { class: "ez-ru" });
+    const rows = el("div", { class: "ez-rows" });
+    const ph = el("div", { class: "ez-ph" });
+    const info = el("div", { class: "ez-info", "aria-live": "polite" });
+    const lanes = {};
+    (tracks || ["V1", "A1"]).forEach((id) => {
+      const lane = el("div", { class: "ez-lane" });
+      lanes[id] = lane;
+      rows.appendChild(el("div", { class: "ez-row " + (id[0] === "V" ? "v" : "a") }, [el("span", { class: "ez-hd", text: id }), lane]));
+    });
+    const phWrap = el("div", { class: "ez-phwrap" }, [ph]);
+    root.appendChild(ruler); root.appendChild(rows); root.appendChild(phWrap); root.appendChild(info);
+    stage.appendChild(root);
+    return { root, ruler, lanes, ph, info, src: S.src, phWrap };
+  }
+
+  /* model = { T, t0?, ph, tracks: {V1:[clip], A1:[clip]}, ghosts: {V1:[{s,d}]}, marks:[{t,color,where}], snap, msg, opts } */
+  function tlRender(st, m) {
+    const T0 = m.t0 || 0, T = m.T, span = T - T0;
+    const pct = (t) => ((t - T0) / span * 100);
+    const o = m.opts || {};
+    /* шугам */
+    const step = span > 40 ? 10 : span > 12 ? 2 : span > 5 ? 1 : 0.5;
+    let rh = "";
+    for (let t = Math.ceil(T0 / step) * step; t <= T + 1e-6; t += step) rh += '<span style="left:' + pct(t) + '%">' + (step < 1 ? t.toFixed(1) : t.toFixed(0)) + "</span>";
+    (m.marks || []).filter((k) => k.where === "timeline").forEach((k) => { rh += '<i class="ez-mk" style="left:' + pct(k.t) + "%;--mc:" + k.color + '"></i>'; });
+    st.ruler.innerHTML = rh;
+    /* зам бүр */
+    for (const id in st.lanes) {
+      const lane = st.lanes[id], clips = (m.tracks[id] || []).slice().sort((a, b) => a.s - b.s);
+      let h = "";
+      /* хоосон зай — видео замд, клипүүдийн хооронд */
+      if (id[0] === "V" && !o.noGaps) {
+        let end = 0;
+        clips.forEach((c) => { if (c.s - end > 0.05 && end > 0) h += '<div class="ez-gap" style="left:' + pct(end) + "%;width:" + (pct(c.s) - pct(end)) + '%"></div>'; end = Math.max(end, c.s + c.d); });
+      }
+      ((m.ghosts || {})[id] || []).forEach((g) => { h += '<div class="ez-ghost" style="left:' + pct(g.s) + "%;width:" + (pct(g.s + g.d) - pct(g.s)) + '%"></div>'; });
+      clips.forEach((c) => {
+        if (c.s + c.d < T0 || c.s > T) return;
+        const left = pct(c.s), w = pct(c.s + c.d) - left;
+        const hue = c.hue != null ? c.hue : (HUE[c.n] != null ? HUE[c.n] : 200);
+        const cls = "ez-clip " + (id[0] === "V" ? "v" : "a") + (c.chg ? " chg" : "") + (c.rec ? " rec" : "") + (c.cut ? " cut" : "") + (c.shake ? " shake" : "");
+        const srcTxt = o.durs === false ? "" : (o.srcLabel !== false ? "эх " + sec(c.i) + "–" + sec(c.i + c.d) : sec(c.d) + " с");
+        const name = o.names === false ? "" : c.label || c.n;
+        let style = "left:" + left + "%;width:" + w + "%;--h:" + hue + ";--i:" + c.i + ";";
+        if (c.op != null) style += "--op:" + c.op + ";";
+        let inner = "";
+        if (id[0] === "V") {
+          const th = o.thumb || "film";
+          inner = '<span class="ez-img ' + th + '" style="background-image:url(' + st.src + ')"></span>';
+        } else {
+          inner = o.wave === false ? "" : '<span class="ez-wave" style=\'background-image:' + (o.nonrect === false ? WAVE.uni : WAVE.bi) + '\'></span>';
+        }
+        const badge = c.off ? '<b class="ez-off">' + (c.off > 0 ? "+" : "") + c.off + "</b>" : "";
+        const flag = c.flag ? '<i class="ez-flag" style="--fc:' + c.flag + '"></i>' : "";
+        const cm = (m.marks || []).filter((k) => k.where === "clip" && k.clip === c.n).map((k) => '<i class="ez-cmk" style="left:' + ((k.t - c.s) / c.d * 100) + "%;--mc:" + k.color + '"></i>').join("");
+        h += '<div class="' + cls + '" style="' + style + '">' + inner + badge + flag + cm +
+             '<span class="ez-cn"><b>' + name + "</b>" + (srcTxt ? "<small>" + srcTxt + "</small>" : "") + "</span></div>";
+      });
+      if (m.snap != null && id === Object.keys(st.lanes)[0]) h += '<div class="ez-snap" style="left:' + pct(m.snap) + '%"></div>';
+      lane.innerHTML = h;
+    }
+    /* заагч */
+    st.ph.style.left = pct(m.ph) + "%";
+    st.ph.hidden = m.ph == null || m.ph < T0 || m.ph > T;
+    st.info.innerHTML = "<span>" + (m.msg || "") + "</span>";
+  }
+
+  /* Дууны долгионы зураг — нэг удаа үүсгэнэ (хоёр талт ба нэг талт) */
+  const WAVE = (() => {
+    const r = G.prng(11); let bi = "", uni = "";
+    for (let x = 0; x < 120; x++) {
+      const a = Math.max(0.08, Math.min(1, 0.25 + 0.55 * Math.abs(Math.sin(x / 7)) * (0.5 + r()) + (r() < 0.08 ? 0.3 : 0)));
+      bi += '<rect x="' + x + '" y="' + (20 - a * 18).toFixed(1) + '" width=".7" height="' + (a * 36).toFixed(1) + '"/>';
+      uni += '<rect x="' + x + '" y="' + (40 - a * 38).toFixed(1) + '" width=".7" height="' + (a * 38).toFixed(1) + '"/>';
+    }
+    const url = (body) => 'url("data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40" preserveAspectRatio="none" width="120" height="40"><g fill="#fff">' + body + "</g></svg>") + '")';
+    return { bi: url(bi), uni: url(uni) };
+  })();
+
+  const endOf = (clips) => clips.reduce((e, c) => Math.max(e, c.s + c.d), 0);
+  const lenMsg = (clips, base) => {
+    const L = endOf(clips), dl = L - base;
+    return "Timeline-ийн урт: <b>" + sec(L) + " с</b>" + (Math.abs(dl) > 0.05 ? ' <span class="' + (dl > 0 ? "up" : "dn") + '">(' + (dl > 0 ? "+" : "") + sec(dl) + ")</span>" : " (хэвээр)");
+  };
+  const BASE = () => [{ n: "A", s: 0, d: 5, i: 1 }, { n: "B", s: 5, d: 6, i: 2 }, { n: "C", s: 11, d: 5, i: 0.5 }];
+
+  /* Нэг клипийг [a, b] хэсгээр дарж бичих (хасах) */
+  function carve(clips, a, b) {
+    const out = [];
+    clips.forEach((c) => {
+      const cs = c.s, ce = c.s + c.d;
+      if (ce <= a + 1e-6 || cs >= b - 1e-6) { out.push(c); return; }
+      if (cs < a) out.push(Object.assign({}, c, { d: a - cs, chg: true }));
+      if (ce > b) out.push(Object.assign({}, c, { s: b, d: ce - b, i: c.i + (b - cs), chg: true }));
+    });
+    return out;
+  }
+  /* t цэгт клипийг хоёр хуваах */
+  function split(clips, t, tag) {
+    const out = [];
+    clips.forEach((c) => {
+      if (t > c.s + 0.05 && t < c.s + c.d - 0.05) {
+        out.push(Object.assign({}, c, { d: t - c.s, label: c.n + "1", cut: tag }));
+        out.push(Object.assign({}, c, { s: t, d: c.s + c.d - t, i: c.i + (t - c.s), label: c.n + "2", cut: tag }));
+      } else out.push(c);
+    });
+    return out;
+  }
+  const both = (v, a) => ({ V1: v, A1: a || copy(v) });
+
+  /* ═════ 1. Selection Mode ═════ */
+  D.selection = {
+    controls: [SEL("act", "Хулганаар", [["move", "B-г голоос нь чирж зөөх"], ["trim", "B-ийн баруун ирмэгийг чирэх"]], "move"),
+               R("amt", "Хэр хол", 0, 3, 0.1, 2, " с")],
+    init: (stage, S) => tlInit(stage, S),
+    update(v, before, st) {
+      let c = BASE(); const base = endOf(c);
+      let msg = "Өмнө: A · B · C хоорондоо зайгүй. " + lenMsg(c, base);
+      const ghosts = {};
+      if (!before) {
+        const B = c[1];
+        ghosts.V1 = [{ s: B.s, d: B.d }];
+        if (v.act === "move") {
+          const ns = B.s + v.amt, others = carve([c[0], c[2]], ns, ns + B.d);
+          c = others.concat([Object.assign({}, B, { s: ns, chg: true })]);
+          msg = "B " + sec(v.amt) + " с зөөгдөж, ард нь <b>хоосон зай</b> үлдэв; C-ийн эхний " + sec(v.amt) + " с <b>дарагдав</b>. " + lenMsg(c, base);
+        } else {
+          c[1] = Object.assign({}, B, { d: B.d - v.amt, chg: true });
+          msg = "B богиносож <b>" + sec(v.amt) + " с хоосон зай</b> үлдэв — C хөдөлсөнгүй. " + lenMsg(c, base);
+        }
+      }
+      tlRender(st, { T: 20, ph: 8, tracks: both(c), ghosts: { V1: ghosts.V1, A1: ghosts.V1 }, msg });
+    }
+  };
+
+  /* ═════ 2. Trim Edit Mode — ripple, roll, slip, slide ═════ */
+  function trimModel(type, amt) {
+    const c = BASE(); const [A, B, C] = c;
+    if (type === "ripple") { B.d += amt; C.s += amt; B.chg = C.chg = true; }
+    else if (type === "roll") { B.d += amt; C.s += amt; C.d -= amt; C.i += amt; B.chg = C.chg = true; }
+    else if (type === "slip") { B.i += amt; B.chg = true; }
+    else if (type === "slide") { A.d += amt; B.s += amt; C.s += amt; C.d -= amt; C.i += amt; A.chg = B.chg = C.chg = true; }
+    return c;
+  }
+  const TRIM_TXT = {
+    ripple: "B-ийн төгсгөл чирэгдэж, хойшхи C <b>хамт зөрөв</b>.",
+    roll: "B|C огтлолт зөөгдөв: B уртсаж C богиносов (эсвэл эсрэгээр).",
+    slip: "B-ийн байрлал, урт хэвээр — <b>эх бичлэгийн өөр хэсэг</b> харагдана (эх … тоог хар).",
+    slide: "B хөршүүдийн хооронд зөөгдөв: A уртсаж C богиносов, B-ийн агуулга хэвээр."
+  };
+  D.trim = {
+    controls: [SEL("type", "Тайралтын төрөл", [["ripple", "Ripple — B-ийн ирмэг"], ["roll", "Roll — B|C огтлолт"], ["slip", "Slip — B-ийн дээд хагас"], ["slide", "Slide — B-ийн доод хагас"]], "ripple"),
+               R("amt", "Чирэх зай", -2, 2, 0.1, 1.5, " с")],
+    init: (stage, S) => tlInit(stage, S),
+    update(v, before, st) {
+      const base = endOf(BASE());
+      const c = before ? BASE() : trimModel(v.type, v.amt);
+      tlRender(st, { T: 20, ph: 8, tracks: both(c), msg: (before ? "Өмнө. " : TRIM_TXT[v.type] + " ") + lenMsg(c, base) });
+    }
+  };
+
+  /* ═════ 3. Blade ═════ */
+  D.blade = {
+    controls: [R("ph", "Заагч (хэрчих газар)", 1, 15, 0.1, 8, " с"), CHK("link", "Linked Selection асаалттай", true)],
+    init: (stage, S) => tlInit(stage, S),
+    update(v, before, st) {
+      const c = BASE();
+      let tv = c, ta = copy(c), msg = "Өмнө: B бүтэн нэг клип.";
+      if (!before) {
+        tv = split(c, v.ph, true);
+        ta = v.link ? split(copy(c), v.ph, true) : copy(c);
+        msg = "Заагч дээр хэрчигдэв — клип хоёр болсон ч <b>тоглуулахад ялгаагүй</b>. " + (v.link ? "Дуу ч хамт хэрчигдэв." : "Linked унтраалттай — <b>зөвхөн видео</b> хэрчигдэв.") + " " + lenMsg(tv, 16);
+      }
+      tlRender(st, { T: 20, ph: v.ph, tracks: both(tv, ta), msg });
+    }
+  };
+
+  /* ═════ 4. Dynamic Trim (Slip) ═════ */
+  D.dyntrim = {
+    controls: [SEL("mode", "Дэд горим", [["slip", "Slip (зурагт)"], ["slide", "Slide"]], "slip"),
+               R("amt", "J ◀ · K ■ · L ▶ тоглуулсан", -2, 2, 0.1, 1, " с", (n) => (n < 0 ? "J " : n > 0 ? "L " : "K ") + Math.abs(n).toFixed(1))],
+    init: (stage, S) => tlInit(stage, S),
+    update(v, before, st) {
+      const c = before ? BASE() : trimModel(v.mode, v.amt);
+      const key = v.amt < 0 ? "J — хойш" : v.amt > 0 ? "L — урагш" : "K — зогсоосон";
+      tlRender(st, { T: 20, ph: 8, tracks: both(c), msg: before ? "Өмнө." : "<b>" + key + "</b> " + sec(Math.abs(v.amt)) + " с тоглуулаад K-оор зогсоов → " + TRIM_TXT[v.mode] });
+    }
+  };
+
+  /* ═════ 5–7. Insert / Overwrite / Replace ═════ */
+  const SRC = { n: "S", d: 3, i: 4, hue: HUE.S, label: "S (Source)" };
+  const editCtl = [R("ph", "Timeline-ийн заагч", 1, 15, 0.1, 8, " с")];
+  D.insert = {
+    controls: editCtl,
+    init: (stage, S) => tlInit(stage, S),
+    update(v, before, st) {
+      let c = BASE(); const base = endOf(c);
+      let msg = "Source viewer-т <b>S</b> (3 с) бэлэн. Заагч " + sec(v.ph) + " с дээр.";
+      if (!before) {
+        c = split(c, v.ph).map((k) => (k.s >= v.ph - 1e-6 ? Object.assign({}, k, { s: k.s + SRC.d, chg: true }) : k));
+        c.push(Object.assign({}, SRC, { s: v.ph, chg: true }));
+        msg = "S шигтгэгдэж, заагчаас хойшхи бүх клип <b>3 с баруун тийш</b> түлхэгдэв. Юу ч устсангүй. " + lenMsg(c, base);
+      }
+      tlRender(st, { T: 22, ph: v.ph, tracks: both(c), msg });
+    }
+  };
+  D.overwrite = {
+    controls: editCtl,
+    init: (stage, S) => tlInit(stage, S),
+    update(v, before, st) {
+      let c = BASE(); const base = endOf(c);
+      let msg = "Source viewer-т <b>S</b> (3 с) бэлэн. Заагч " + sec(v.ph) + " с дээр.";
+      if (!before) {
+        c = carve(c, v.ph, v.ph + SRC.d);
+        c.push(Object.assign({}, SRC, { s: v.ph, chg: true }));
+        msg = "S доорх " + sec(SRC.d) + " с-ийг <b>дарж бичив</b> — бусад клип хөдөлсөнгүй. " + lenMsg(c, base);
+      }
+      tlRender(st, { T: 22, ph: v.ph, tracks: both(c), msg });
+    }
+  };
+  D.replace = {
+    controls: editCtl,
+    init: (stage, S) => tlInit(stage, S),
+    update(v, before, st) {
+      const c = BASE(); const base = endOf(c);
+      const k = c.findIndex((x) => v.ph >= x.s && v.ph < x.s + x.d);
+      let msg = "Source viewer-т <b>S</b> бэлэн. Заагч " + sec(v.ph) + " с — " + (k >= 0 ? c[k].n + " клип дээр." : "хоосон газар.");
+      if (!before && k >= 0) {
+        const t = c[k];
+        c[k] = Object.assign({}, SRC, { s: t.s, d: t.d, i: SRC.i - (v.ph - t.s), chg: true, label: "S" });
+        msg = t.n + " → <b>S</b>: байрлал, урт нь " + t.n + "-ийнх (" + sec(t.d) + " с). Source-ийн заагч дээрх кадр timeline-ийн заагчтай тэгшлэгдэв. " + lenMsg(c, base);
+      }
+      tlRender(st, { T: 22, ph: v.ph, tracks: both(c), msg });
+    }
+  };
+
+  /* ═════ 8. Snapping ═════ */
+  D.snapping = {
+    abLabels: ["Унтраалттай", "Асаалттай"], hint: "C-г гүйлгэгчээр чирж үзээрэй",
+    controls: [R("pos", "C-г чирэх байрлал", 10.2, 16, 0.05, 11.35, " с")],
+    init: (stage, S) => tlInit(stage, S),
+    update(v, off, st) {
+      const c = BASE(); c.splice(2, 1);
+      const C = { n: "C", s: v.pos, d: 4, i: 0.5, chg: true }, ph = 14, TH = 0.6;
+      let s = v.pos, snap = null;
+      if (!off) {
+        const cand = [[11, 11], [ph, ph], [ph - C.d, ph]];
+        for (const [start, line] of cand) if (Math.abs(v.pos - start) < TH) { s = start; snap = line; break; }
+      }
+      C.s = s;
+      const gap = s - 11;
+      let msg = snap != null ? "Наалдав: C " + (snap === 11 ? "B-ийн төгсгөлд" : "заагчид") + " (" + sec(s) + " с)." :
+        (gap > 0 && gap < 0.8 ? "B, C хооронд <b>" + Math.round(gap * FPS) + " кадр хар</b> завсар — тоглуулахад анивчина." :
+         gap < 0 && gap > -0.8 ? "C нь B-ийн сүүлийн <b>" + Math.round(-gap * FPS) + " кадрыг</b> дарав." : "C " + sec(s) + " с-т.");
+      tlRender(st, { T: 20, ph, tracks: both(carve(c, s, s + C.d).concat([C])), snap, msg });
+    }
+  };
+
+  /* ═════ 9. Linked Selection ═════ */
+  D.linked = {
+    abLabels: ["Унтраалттай", "Асаалттай"], hint: "B-ийн видеог чирж үзээрэй",
+    controls: [R("amt", "B-ийн видеог зөөх", -1.5, 1.5, 0.05, 0.5, " с")],
+    init: (stage, S) => tlInit(stage, S),
+    update(v, off, st) {
+      const c = [{ n: "A", s: 0, d: 5, i: 1 }, { n: "B", s: 7, d: 5, i: 2 }, { n: "C", s: 14, d: 4, i: 0.5 }];
+      const vv = copy(c), aa = copy(c);
+      vv[1].s += v.amt; vv[1].chg = true;
+      let msg;
+      if (!off) { aa[1].s += v.amt; aa[1].chg = true; msg = "Видео, дуу <b>хамт</b> зөөгдөв — синк хэвээр."; }
+      else {
+        const f = Math.round(v.amt * FPS);
+        if (f) { vv[1].off = f; aa[1].off = -f; }
+        msg = f ? "Зөвхөн видео зөөгдөв — дуу <b>" + Math.abs(f) + " кадраар зөрөв</b> (Resolve улаан " + (f > 0 ? "+" : "") + f + " гэж харуулна)." : "Зөрөөгүй.";
+      }
+      tlRender(st, { T: 20, ph: 9, tracks: both(vv, aa), msg });
+    }
+  };
+
+  /* ═════ 10. Position Lock ═════ */
+  D.poslock = {
+    abLabels: ["Түгжээгүй", "Position Lock"],
+    controls: [BTN("move", "B-г 2 с баруун тийш зөөх оролдох"), R("op", "B · Opacity", 0, 100, 1, 100)],
+    init(stage, S) { const st = tlInit(stage, S); st.moved = false; st.shake = 0; return st; },
+    update(v, off, st, ctl, act) {
+      const locked = !off;
+      if (act === "move") { if (locked) { st.shake++; st.moved = false; } else st.moved = !st.moved; }
+      if (locked && st.moved) st.moved = false;
+      ctl.label("move", st.moved ? "B-г буцааж тавих" : "B-г 2 с баруун тийш зөөх оролдох");
+      let c = BASE();
+      if (st.moved) c = carve([c[0], c[2]], 7, 13).concat([Object.assign({}, c[1], { s: 7, chg: true })]);
+      const B = c.find((x) => x.n === "B"); B.op = v.op / 100;
+      if (act === "move" && locked) B.shake = true;
+      const msg = locked ? (act === "move" ? "<b>Түгжээтэй</b> — B хөдөлсөнгүй. Харин Opacity (" + v.op + ") засагдав." : "Position Lock: клип хөдлөхгүй, шинж нь засагдана. Opacity " + v.op + ".")
+                         : (st.moved ? "Түгжээгүй — B зөөгдөж C-г дарав. Санамсаргүй ийм зүйл болохоос түгжээ хамгаална." : "Түгжээгүй. Opacity " + v.op + ".");
+      tlRender(st, { T: 20, ph: 8, tracks: both(c), msg });
+    }
+  };
+
+  /* ═════ 11–12. Flag, Marker ═════ */
+  const COLORS = [["#2f7ff5", "Blue"], ["#27cfd8", "Cyan"], ["#2fc24a", "Green"], ["#f0a232", "Yellow"], ["#e8392f", "Red"], ["#f040b8", "Pink"],
+    ["#9a3cf0", "Purple"], ["#e2346c", "Fuchsia"], ["#f39ab8", "Rose"], ["#a79cf0", "Lavender"], ["#8fd6f4", "Sky"], ["#72d46a", "Mint"],
+    ["#e6e45a", "Lemon"], ["#e8a66c", "Sand"], ["#9a6b52", "Cocoa"], ["#f4efe4", "Cream"]];
+  const colorSel = (id, def) => SEL(id, "Өнгө", COLORS, def);
+  D.flag = {
+    controls: [colorSel("c", "#2fc24a"), CHK("smart", "Media Pool-д зөвхөн энэ өнгийн тугтайг харуулах", false)],
+    init(stage, S) { const st = tlInit(stage, S); return st; },
+    update(v, before, st) {
+      /* A клипийг хэрчиж хоёр хэсэг болгосон — туг эх клипэд хамаардаг тул хоёуланд нь гарна */
+      const c = [{ n: "A", s: 0, d: 4, i: 1, label: "A (1-р хэсэг)" }, { n: "B", s: 4, d: 6, i: 2 }, { n: "A", s: 10, d: 5, i: 8, label: "A (2-р хэсэг)" }];
+      if (!before) c.forEach((k) => { if (k.n === "A") k.flag = v.c; });
+      if (!before && v.smart) c.splice(1, 1);
+      const name = (COLORS.find((x) => x[0] === v.c) || [0, ""])[1];
+      tlRender(st, { T: 18, ph: 6, tracks: both(c), opts: { noGaps: true, srcLabel: false },
+        msg: before ? "Туггүй." : "A клипэд <b>" + name + "</b> туг — timeline дахь <b>хоёр хэсэгт хоёуланд</b> нь гарав (туг эх клипэд хамаардаг)." + (v.smart ? " Smart Bin-ээр шүүвэл зөвхөн A." : "") });
+    }
+  };
+  D.marker = {
+    controls: [colorSel("c", "#2f7ff5"), SEL("where", "Хаана", [["timeline", "Timeline-ийн шугам дээр (клип сонгоогүй)"], ["clip", "B клип дээр (клип сонгосон)"]], "timeline"),
+               R("t", "Кадар", 5.2, 10.8, 0.1, 7.5, " с"), CHK("mv", "Дараа нь B-г 3 с зөөх", false)],
+    init: (stage, S) => tlInit(stage, S),
+    update(v, before, st) {
+      let c = BASE();
+      const marks = before ? [] : [{ t: v.t, color: v.c, where: v.where, clip: "B" }];
+      if (v.mv) {
+        const B = Object.assign({}, c[1], { s: c[1].s + 3, chg: true });
+        c = carve([c[0], c[2]], B.s, B.s + B.d).concat([B]);
+        if (marks[0] && v.where === "clip") marks[0].t += 3;
+      }
+      const msg = before ? "Тэмдэглэгээгүй." : (v.where === "timeline" ? "Timeline marker — шугам дээр, клип зөөсөн ч <b>байрандаа</b>." : "Clip marker — B дээр, B-тэй <b>хамт зөөгдөнө</b>.") + " Эцсийн бичлэгт харагдахгүй.";
+      tlRender(st, { T: 20, ph: v.t, tracks: both(c), marks, opts: { srcLabel: false }, msg });
+    }
+  };
+
+  /* ═════ 13–15. Томруулалт ═════ */
+  const LONG = (() => { const r = G.prng(7), out = []; let t = 0, k = 0; while (t < 58) { const d = 1.5 + r() * 5; out.push({ n: String.fromCharCode(65 + (k % 26)), s: t, d: Math.min(d, 60 - t), i: r() * 5, hue: (k * 47) % 360 }); t += d; k++; } return out; })();
+  function zoomDemo(mode) {
+    return {
+      noAB: true,
+      controls: [SEL("mode", "Горим", [["full", "Full Extent Zoom"], ["detail", "Detail Zoom"], ["custom", "Custom Zoom"]], mode),
+                 R("z", "Custom · гүйлгэгч (− ● +)", 1, 12, 0.1, 3, "×"), R("ph", "Заагч", 0, 60, 0.1, 31, " с")],
+      init: (stage, S) => tlInit(stage, S),
+      update(v, before, st, ctl) {
+        ctl.disable("z", v.mode !== "custom");
+        const w = v.mode === "full" ? 60 : v.mode === "detail" ? 3 : 60 / v.z;
+        let t0 = v.mode === "full" ? 0 : Math.max(0, Math.min(60 - w, v.ph - w / 2));
+        const T = t0 + w;
+        const vis = LONG.filter((c) => c.s + c.d > t0 && c.s < T).length;
+        tlRender(st, { T, t0, ph: v.ph, tracks: both(LONG), opts: { srcLabel: false, names: w < 30, durs: false }, msg:
+          "Цонхонд <b>" + sec(w) + " с</b> (" + Math.round(w * FPS) + " кадр), " + vis + " клип. " + (v.mode === "full" ? "Бүх 60 с." : v.mode === "detail" ? "Заагчийн орчим — кадраар засахад." : "Гүйлгэгчээр тохируулсан хэмжээ.") + " Бичлэг өөрчлөгдөхгүй." });
+      }
+    };
+  }
+  D["zoom-full"] = zoomDemo("full"); D["zoom-detail"] = zoomDemo("detail"); D["zoom-custom"] = zoomDemo("custom");
+
+  /* ═════ 16. Timeline View Options ═════ */
+  D.tvo = {
+    noAB: true,
+    controls: [CHK("wave", "Display Audio Waveforms", true), CHK("names", "Display Clip Names", true), CHK("durs", "Display Clip Durations", true),
+               CHK("nonrect", "Display Non-Rectified Waveforms", true),
+               SEL("thumb", "Thumbnail View ›", [["film", "Filmstrip"], ["ends", "Эхэн, төгсгөлийн зураг"], ["simple", "Зураггүй"]], "film"),
+               R("vh", "Track Height · Video", 26, 60, 1, 44, "%"), R("ah", "Track Height · Audio", 20, 56, 1, 38, "%")],
+    init: (stage, S) => tlInit(stage, S),
+    update(v, before, st) {
+      st.root.style.setProperty("--vh", v.vh + "%"); st.root.style.setProperty("--ah", v.ah + "%");
+      tlRender(st, { T: 18, ph: 8, tracks: both(BASE()), opts: { wave: v.wave, names: v.names, durs: v.durs, nonrect: v.nonrect, thumb: v.thumb, srcLabel: false },
+        msg: "Зөвхөн <b>харагдац</b> өөрчлөгдөв — бичлэг, дуу, урт хэвээр (16.0 с)." });
+    }
+  };
+
+  /* ═════ 17. Баталгаажаагүй (Show Keyframe Tray) ═════ */
+  D.unknown = {
+    noAB: true, controls: [],
+    init(stage) {
+      stage.classList.add("ez-unknown");
+      stage.appendChild(el("div", { class: "ez-q" }, [el("b", { text: "?" }), el("p", { text: "Энэ товчийг дарсны дараах дэлгэцийн зургийг илгээнэ үү — таамаглалгүйгээр жишээ хийнэ." })]));
+      return {};
+    },
+    update() {}
+  };
+
+  /* ═════ 18. Voiceover ═════ */
+  D.voiceover = {
+    noAB: true,
+    controls: [BTN("rec", "● Бичих"), R("ph", "Заагч (эхлэх газар)", 0, 10, 0.1, 3, " с")],
+    init(stage, S) { const st = tlInit(stage, S, ["V1", "A1", "A2"]); st.takes = []; st.rec = null; return st; },
+    update(v, before, st, ctl, act) {
+      const draw = () => {
+        const a2 = st.takes.map((t, k) => ({ n: "VO", s: t.s, d: t.d, i: 0, hue: 130, label: "Voiceover " + (k + 1) }));
+        if (st.rec) a2.push({ n: "VO", s: st.rec.s, d: st.rec.d, i: 0, hue: 0, rec: true, label: "● REC" });
+        tlRender(st, { T: 20, ph: st.rec ? st.rec.s + st.rec.d : v.ph, tracks: { V1: BASE(), A1: BASE(), A2: a2 }, opts: { srcLabel: false },
+          msg: st.rec ? "Бичиж байна… " + sec(st.rec.d) + " с — дахин дарж зогсооно." :
+            st.takes.length ? "A2 замд <b>" + st.takes.length + " бичлэг</b> нэмэгдэв — эцсийн бичлэгт орно. Видео хөндөгдсөнгүй." : "Бичих товч → ярих → дахин дарж зогсоо." });
+      };
+      if (act === "rec") {
+        if (st.rec) { clearInterval(st.timer); st.takes.push({ s: st.rec.s, d: Math.max(0.4, st.rec.d) }); st.rec = null; ctl.label("rec", "● Бичих"); }
+        else {
+          st.rec = { s: v.ph, d: 0 }; ctl.label("rec", "■ Зогсоох");
+          st.timer = setInterval(() => { if (!st.rec) return; st.rec.d = Math.min(20 - st.rec.s, st.rec.d + 0.25); draw(); if (st.rec.s + st.rec.d >= 20) { clearInterval(st.timer); st.takes.push(st.rec); st.rec = null; ctl.label("rec", "● Бичих"); draw(); } }, 125);
+        }
+      }
+      draw();
+    }
+  };
+
+  /* ══════════ Viewer-ийн жишээнүүд ══════════ */
+  const img = (src, cls) => el("img", { src, class: "ly " + (cls || ""), alt: "", draggable: "false" });
+  const pctX = (x) => (x / W * 100) + "%", pctY = (y) => (y / H * 100) + "%";
+
+  /* ═════ 19. Transform ═════ */
+  D.transform = {
+    controls: [R("z", "Zoom", 0.4, 2, 0.01, 1.35), R("x", "Position X", -320, 320, 1, -90), R("y", "Position Y", -180, 180, 1, 20),
+               R("r", "Rotation Angle", -45, 45, 0.5, 0, "°"), CHK("ovl", "Viewer ▭ ⌄ → Transform (бариул)", true)],
+    init(stage, S) {
+      stage.classList.add("ez-black");
+      const i = img(S.src); stage.appendChild(i);
+      const box = el("div", { class: "ez-box" }, ["tl", "tr", "bl", "br", "t", "b", "l", "r"].map((k) => el("i", { class: k })).concat([el("b")]));
+      stage.appendChild(box);
+      return { i, box };
+    },
+    update(v, before, st) {
+      const tf = before ? "none" : "translate(" + (v.x / W * 100) + "%," + (v.y / H * 100) + "%) rotate(" + v.r + "deg) scale(" + v.z + ")";
+      st.i.style.transform = tf; st.box.style.transform = tf;
+      st.box.hidden = before || !v.ovl;
+    }
+  };
+
+  /* ═════ 20. Crop ═════ */
+  D.crop = {
+    controls: [R("l", "Crop Left", 0, 300, 1, 40), R("r", "Crop Right", 0, 300, 1, 0), R("t", "Crop Top", 0, 170, 1, 46), R("b", "Crop Bottom", 0, 170, 1, 46),
+               R("soft", "Softness", 0, 30, 0.5, 0), CHK("ovl", "Viewer ▭ ⌄ → Crop (бариул)", true)],
+    checker: true,
+    init(stage, S) {
+      const i = img(S.src); stage.appendChild(i);
+      const box = el("div", { class: "ez-box crop" }, ["t", "b", "l", "r"].map((k) => el("i", { class: k })));
+      stage.appendChild(box);
+      return { i, box };
+    },
+    update(v, before, st) {
+      if (before) { st.i.style.webkitMaskImage = st.i.style.maskImage = "none"; st.box.hidden = true; return; }
+      const x0 = v.l, y0 = v.t, x1 = W - v.r, y1 = H - v.b;
+      G.setMask(st.i, G.maskURL((c) => c.rect(x0, y0, Math.max(1, x1 - x0), Math.max(1, y1 - y0)), v.soft));
+      Object.assign(st.box.style, { left: pctX(x0), top: pctY(y0), width: pctX(x1 - x0), height: pctY(y1 - y0) });
+      st.box.hidden = !v.ovl;
+    }
+  };
+
+  /* ═════ 21. Dynamic Zoom ═════ */
+  const EASE = { lin: (t) => t, in: (t) => t * t, out: (t) => 1 - (1 - t) * (1 - t), io: (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2) };
+  D.dynzoom = {
+    controls: [R("t", "Клипийн явц", 0, 1, 0.01, 0.6, "", (n) => Math.round(n * 100) + "%"),
+               SEL("ease", "Ease", [["lin", "Linear"], ["in", "Ease In"], ["out", "Ease Out"], ["io", "Ease In and Out"]], "io"),
+               CHK("swap", "Swap (эхлэл, төгсгөл солих)", false), BTN("play", "▶ Тоглуулах")],
+    init(stage, S) {
+      stage.classList.add("ez-black");
+      const i = img(S.src); stage.appendChild(i);
+      const mini = el("div", { class: "ez-mini" }, [img(S.src), el("i", { class: "g" }), el("i", { class: "r" }), el("i", { class: "c" })]);
+      stage.appendChild(mini);
+      return { i, mini };
+    },
+    update(v, before, st, ctl, act) {
+      if (act === "play" && !st.anim) {
+        const t0 = performance.now();
+        const step = (now) => { const t = Math.min(1, (now - t0) / 3000); ctl.set("t", t); this.update(Object.assign({}, v, { t }), before, st, ctl); if (t < 1) st.anim = requestAnimationFrame(step); else st.anim = null; };
+        if (G.reduced) ctl.set("t", 1); else st.anim = requestAnimationFrame(step);
+      }
+      const S0 = { x: 0, y: 0, w: W, h: H }, E1 = { w: W * 0.5, h: H * 0.5 };
+      E1.x = Math.min(W - E1.w, Math.max(0, P.x - E1.w / 2)); E1.y = Math.min(H - E1.h, Math.max(0, P.y - E1.h / 2));
+      const [a, b] = v.swap ? [E1, S0] : [S0, E1];
+      const k = EASE[v.ease](v.t);
+      const cur = { x: a.x + (b.x - a.x) * k, y: a.y + (b.y - a.y) * k, w: a.w + (b.w - a.w) * k, h: a.h + (b.h - a.h) * k };
+      const sc = W / cur.w;
+      st.i.style.transformOrigin = "0 0";
+      st.i.style.transform = before ? "none" : "scale(" + sc + ") translate(" + (-cur.x / W * 100) + "%," + (-cur.y / H * 100) + "%)";
+      const put = (n, r) => Object.assign(n.style, { left: pctX(r.x), top: pctY(r.y), width: pctX(r.w), height: pctY(r.h) });
+      const [g, r, c] = st.mini.querySelectorAll("i");
+      put(g, a); put(r, b); put(c, cur);
+      st.mini.hidden = before;
+    }
+  };
+
+  /* ═════ 22. Open FX Overlay — гэрлийн толбо ═════ */
+  D.ofx = {
+    controls: [R("x", "Center X", 0, W, 1, 470), R("y", "Center Y", 0, H, 1, 70), R("br", "Brightness", 0, 1.5, 0.01, 1), CHK("ovl", "Viewer ▭ ⌄ → Open FX Overlay", true)],
+    init(stage, S) {
+      stage.appendChild(img(S.src));
+      const fl = el("div", { class: "ly ez-flare" }); stage.appendChild(fl);
+      const h = el("div", { class: "ez-handle" }); stage.appendChild(h);
+      return { fl, h };
+    },
+    update(v, before, st) {
+      const x = v.x / W * 100, y = v.y / H * 100;
+      st.fl.style.background = "radial-gradient(circle at " + x + "% " + y + "%, rgba(255,240,210," + 0.95 * v.br + ") 0, rgba(255,190,110," + 0.45 * v.br + ") 5%, rgba(255,150,60," + 0.12 * v.br + ") 16%, transparent 34%)," +
+        "linear-gradient(" + (y - 50) * 0.3 + "deg, transparent " + (y - 1) + "%, rgba(255,210,160," + 0.28 * v.br + ") " + y + "%, transparent " + (y + 1) + "%)";
+      st.fl.hidden = before;
+      Object.assign(st.h.style, { left: x + "%", top: y + "%" });
+      st.h.hidden = before || !v.ovl;
+    }
+  };
+
+  /* ═════ 23. Fusion Overlay — Fusion гарчиг ═════ */
+  D.fusionovl = {
+    controls: [R("x", "Center X", 0.1, 0.9, 0.005, 0.32), R("y", "Center Y", 0.1, 0.9, 0.005, 0.78), R("s", "Size", 0.5, 2, 0.01, 1), CHK("ovl", "Viewer ▭ ⌄ → Fusion Overlay", true)],
+    init(stage, S) {
+      stage.appendChild(img(S.src));
+      const t = el("div", { class: "ez-title" }, [el("span", { text: "ЭЭЖИЙН ДУУ" })]); stage.appendChild(t);
+      const h = el("div", { class: "ez-fh" }); stage.appendChild(h);
+      return { t, h };
+    },
+    update(v, before, st) {
+      Object.assign(st.t.style, { left: v.x * 100 + "%", top: v.y * 100 + "%", fontSize: 6.2 * v.s + "cqw" });
+      Object.assign(st.h.style, { left: v.x * 100 + "%", top: v.y * 100 + "%" });
+      st.t.hidden = before; st.h.hidden = before || !v.ovl;
+    }
+  };
+
+  /* ═════ 24. Annotations — хулганаар зурах ═════ */
+  D.annotations = {
+    abLabels: ["Deliver (эцсийн файл)", "Viewer (засвар)"], hint: "Кадар дээр хулганаар зураарай",
+    controls: [SEL("tool", "Хэрэгсэл", [["pen", "Чөлөөт шугам"], ["arrow", "Сум"]], "arrow"),
+               SEL("col", "Өнгө", [["#ff4d3d", "Улаан"], ["#ffd23d", "Шар"], ["#3dd6ff", "Цэнхэр"], ["#ffffff", "Цагаан"]], "#ff4d3d"), BTN("clr", "Цэвэрлэх")],
+    init(stage, S) {
+      stage.appendChild(img(S.src));
+      const c = G.canvas(W * 2, H * 2); c.className = "ly ez-draw"; stage.appendChild(c);
+      const tag = el("span", { class: "ez-tag", text: "◆ Marker — Annotation" }); stage.appendChild(tag);
+      const st = { c, ctx: c.getContext("2d"), strokes: [], tag, v: null };
+      /* эхний жишээ сум */
+      st.strokes.push({ tool: "arrow", col: "#ff4d3d", pts: [[180, 80], [335, 170]] });
+      const pos = (e) => { const r = c.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * W, (e.clientY - r.top) / r.height * H]; };
+      let cur = null;
+      c.addEventListener("pointerdown", (e) => { if (c.hidden) return; c.setPointerCapture(e.pointerId); cur = { tool: st.v.tool, col: st.v.col, pts: [pos(e)] }; st.strokes.push(cur); e.preventDefault(); });
+      c.addEventListener("pointermove", (e) => { if (!cur) return; const p = pos(e); if (cur.tool === "arrow") cur.pts[1] = p; else cur.pts.push(p); paint(st); });
+      c.addEventListener("pointerup", () => { cur = null; });
+      c.addEventListener("pointercancel", () => { cur = null; });
+      return st;
+    },
+    update(v, before, st, ctl, act) {
+      st.v = v;
+      if (act === "clr") st.strokes = [];
+      st.c.hidden = before; st.tag.hidden = before;
+      paint(st);
+    }
+  };
+  function paint(st) {
+    const x = st.ctx; x.setTransform(2, 0, 0, 2, 0, 0); x.clearRect(0, 0, W, H);
+    x.lineCap = x.lineJoin = "round"; x.lineWidth = 3.5;
+    st.strokes.forEach((s) => {
+      x.strokeStyle = x.fillStyle = s.col; x.beginPath();
+      if (s.tool === "arrow") {
+        if (s.pts.length < 2) return;
+        const [[x0, y0], [x1, y1]] = s.pts, a = Math.atan2(y1 - y0, x1 - x0);
+        x.moveTo(x0, y0); x.lineTo(x1, y1); x.stroke();
+        x.beginPath(); x.moveTo(x1, y1); x.lineTo(x1 - 16 * Math.cos(a - 0.45), y1 - 16 * Math.sin(a - 0.45)); x.lineTo(x1 - 16 * Math.cos(a + 0.45), y1 - 16 * Math.sin(a + 0.45)); x.closePath(); x.fill();
+      } else { s.pts.forEach(([px, py], k) => (k ? x.lineTo(px, py) : x.moveTo(px, py))); x.stroke(); }
+    });
+  }
+
+  /* ═════ 25. Smart Reframe ═════ */
+  const ASPECT = { "9:16": 9 / 16, "1:1": 1, "4:5": 4 / 5 };
+  D.reframe = {
+    abLabels: ["Голоос тайрсан", "Smart Reframe"],
+    controls: [SEL("ar", "Шинэ харьцаа", [["9:16", "9:16 — босоо"], ["1:1", "1:1 — дөрвөлжин"], ["4:5", "4:5"]], "9:16"),
+               SEL("mode", "Object of Interest", [["auto", "Auto"], ["ref", "Reference Point"]], "auto"),
+               R("rx", "Reference Point · X", 0, W, 1, 150)],
+    init(stage, S) {
+      stage.appendChild(img(S.src, "ez-dim"));
+      const win = el("div", { class: "ez-win" }, [img(S.src)]); stage.appendChild(win);
+      const lab = el("span", { class: "ez-tag" }); stage.appendChild(lab);
+      const dot = el("div", { class: "ez-ref" }); stage.appendChild(dot);
+      return { win, lab, dot };
+    },
+    update(v, before, st, ctl) {
+      ctl.disable("rx", v.mode !== "ref");
+      const w = H * ASPECT[v.ar];
+      const cx = before ? W / 2 : v.mode === "auto" ? P.x : v.rx;
+      const x0 = Math.max(0, Math.min(W - w, cx - w / 2));
+      Object.assign(st.win.style, { left: pctX(x0), width: pctX(w) });
+      const inner = st.win.firstChild; Object.assign(inner.style, { width: (W / w * 100) + "%", left: (-x0 / w * 100) + "%" });
+      const cut = P.x + P.r * 0.6 > x0 + w || P.x - P.r * 0.6 < x0;
+      st.lab.textContent = (before ? "Голоос тайрсан " : "Smart Reframe ") + v.ar + (cut ? " — гариг таслагдав" : " — гариг хүрээнд");
+      Object.assign(st.dot.style, { left: pctX(v.rx), top: "50%" });
+      st.dot.hidden = before || v.mode !== "ref";
+    }
+  };
+
+  /* ═════ 26. Jog Wheel ═════ */
+  D.jog = {
+    noAB: true,
+    controls: [R("f", "● -г чирэх (кадар)", -24, 24, 1, 0, "", (n) => (n > 0 ? "+" : "") + n)],
+    init(stage, S) {
+      stage.classList.add("ez-black");
+      const i = img(S.src); stage.appendChild(i);
+      const tc = el("span", { class: "ez-tc" }); stage.appendChild(tc);
+      const jw = el("div", { class: "ez-jw" }, [el("span", { text: "‹" }), el("i"), el("span", { text: "›" })]); stage.appendChild(jw);
+      return { i, tc, jw };
+    },
+    update(v, before, st) {
+      const base = 1 * FPS + 16, f = base + v.f;
+      const tc = "01:00:" + String(Math.floor(f / FPS)).padStart(2, "0") + ":" + String(((f % FPS) + FPS) % FPS).padStart(2, "0");
+      st.tc.textContent = tc;
+      st.i.style.transform = "scale(1.08) translateX(" + (-v.f * 0.12) + "%)";
+      st.jw.querySelector("i").style.transform = "translateX(" + v.f * 0.9 + "px)";
+    }
+  };
+})(window.RM);
+
+</script>
+<script>
+/* ── js/76-ez-page.js ── */
+/* ═════════════════════════════════════════════════════════════
+   76 · Edit хуудасны заавар — хуудсыг угсрах
+   ═════════════════════════════════════════════════════════════ */
+(function (RM) {
+  "use strict";
+
+  const E = RM.ez, G = RM.fz, el = G.el, fmt = G.fmt;
+  const icon = (id) => (RM.sim && RM.sim.icon ? RM.sim.icon(id) : "");
+  const byId = (id) => E.tools.find((t) => t.id === id);
+  const CFG = { groups: E.groups, total: E.tools.length, demos: E.demos, simPage: "edit", tipLabel: "Tooltip", impacts: E.impacts };
+
+  /* Resolve-ийн timeline хэрэгслийн мөрийн хуулбар — зүүнээс баруун, зурагт байгаа дарааллаар */
+  const BAR = [
+    ["timeline-view-options", "show-keyframe-tray", "voiceover"],
+    ["selection-mode", "trim-edit-mode", "blade", "dynamic-trim-mode-slip"],
+    ["insert", "overwrite", "replace"],
+    ["snapping", "linked-selection", "position-lock"],
+    ["flag", "marker"],
+    ["full-extent-zoom", "detail-zoom", "custom-zoom"]
+  ];
+
+  function buildToolbar() {
+    const status = el("span", { class: "tb-hint", text: "Товч дээр хулганаа тавина уу — Resolve-ийн tooltip доор гарна. Товшвол тухайн заавар руу очно." });
+    const bar = el("div", { class: "tb ez-tb", role: "toolbar", "aria-label": "Edit timeline-ийн хэрэгслийн мөр" });
+    BAR.forEach((g, gi) => {
+      if (gi) bar.appendChild(el("span", { class: "tb-div", "aria-hidden": "true" }));
+      g.forEach((id) => {
+        const t = byId(id);
+        const a = el("a", { class: "tb-b" + (id === "selection-mode" ? " red" : "") + (id === "full-extent-zoom" ? " on" : ""), href: "#" + id, title: t.tip, "aria-label": t.en + " — " + t.mn, html: icon(id) });
+        const show = () => { status.textContent = t.tip; status.classList.add("on"); };
+        a.addEventListener("mouseenter", show); a.addEventListener("focus", show);
+        bar.appendChild(a);
+        if (id === "flag" || id === "marker") bar.appendChild(el("a", { class: "tb-dd", href: "#" + id, "aria-hidden": "true", tabindex: "-1", text: "⌄" }));
+      });
+    });
+    bar.appendChild(el("span", { class: "tb-zoom", "aria-hidden": "true" }, [el("span", { text: "−" }), el("i"), el("span", { text: "+" })]));
+    bar.addEventListener("mouseleave", () => status.classList.remove("on"));
+    return el("div", { class: "tb-wrap" }, [
+      el("div", { class: "tb-scroll" }, [bar]),
+      el("div", { class: "tb-status" }, [status, el("span", { class: "tb-mem", text: "Edit · Resolve Studio 21" })])
+    ]);
+  }
+
+  function buildBasics() {
+    const imp = (k, d) => el("li", {}, [el("span", { class: "impact " + k, text: E.impacts[k] }), el("span", { html: fmt(d) })]);
+    return el("section", { class: "basics", id: "suuri" }, [
+      el("div", { class: "basics-text" }, [
+        el("h2", { text: "Бичлэгт нөлөөлөх үү?" }),
+        el("p", { html: fmt("Edit хуудасны товч бүр **гурван өөр түвшинд** ажилладаг. Эхлээд үүнийг ялгах нь чухал: зарим нь **монтажийг** (аль клип хэзээ, хэр удаан) өөрчилнө, зарим нь **дүрсийг** (пиксел), харин нэлээд олон нь зөвхөн **таны нүдэнд** — харагдац, тэмдэглэл. Карт бүрийн баруун дээд талд энэ шошго бий.") }),
+        el("ul", { class: "imp-list" }, [
+          imp("edit", "Клипийн байрлал, урт, дараалал — Selection, Trim, Blade, Insert, Overwrite, Replace."),
+          imp("image", "Кадрын агуулга — Transform, Crop, Dynamic Zoom, Smart Reframe, OpenFX, Fusion."),
+          imp("audio", "Timeline-д шинэ дуу — Voiceover."),
+          imp("note", "Туг, тэмдэглэгээ, Annotations — Deliver-ээр гаргасан файлд орохгүй."),
+          imp("view", "Snapping, Linked Selection, томруулалт, Timeline View Options, Jog Wheel."),
+          imp("protect", "Position Lock — монтажийг санамсаргүй өөрчлөлтөөс.")
+        ])
+      ]),
+      el("div", { class: "basics-list" }, [
+        el("h3", { text: "Жишээн дээрх timeline-ийг унших" }),
+        el("ol", {}, [
+          "**V1** — видео зам, **A1** — дууны зам. Нэг файлын видео, дуу хамт (холбоотой).",
+          "**A · B · C** — гурван клип. Клип бүрт **эх 2.0–8.0** гэх мэт — эх бичлэгийн аль хэсэг харагдаж байгаа (slip-ийн ялгааг эндээс харна).",
+          "**Улаан босоо шугам** — заагч (playhead).",
+          "**Судалтай хэсэг** — хоосон зай (gap): тоглуулахад хар.",
+          "**Шар хүрээ** — үйлдлээр өөрчлөгдсөн клип; **тасархай хүрээ** — өмнөх байрлал.",
+          "Доод мөрөнд timeline-ийн **нийт урт** — Insert, Ripple уртыг өөрчилдөг, Overwrite, Roll өөрчилдөггүй.",
+          "**Өмнө / Дараа** товчоор үйлдлийн өмнөх, дараах байдлыг харьцуулна."
+        ].map((s) => el("li", { html: fmt(s) })))
+      ])
+    ]);
+  }
+
+  function buildRecipes() {
+    return el("section", { class: "recipes", id: "jishee" }, [
+      el("h2", { text: "Хамтдаа хэрэглэх 4 жишээ" }),
+      el("p", { class: "lead", text: "Товчнууд ганцаараа биш, дараалал болж ажилладаг. Шошгон дээр дарвал тухайн картанд очно." }),
+      el("div", { class: "rgrid" }, E.recipes.map((r) => el("article", { class: "recipe" }, [
+        el("h3", { text: r.title }),
+        el("div", { class: "chips-row" }, r.chain.map((id, i) => [i ? el("span", { class: "ar", "aria-hidden": "true", text: "→" }) : null,
+          el("a", { class: "tchip", href: "#" + id, html: icon(id) + "<span>" + byId(id).en + "</span>" })]).flat().filter(Boolean)),
+        el("p", { class: "why", html: fmt(r.why) }),
+        el("ol", {}, r.steps.map((s) => el("li", { html: fmt(s) })))
+      ])))
+    ]);
+  }
+
+  function build() {
+    const S = G.build();
+    const root = document.getElementById("fz");
+    root.appendChild(el("nav", { class: "fz-nav", "aria-label": "Бүлгүүд" }, [
+      el("a", { class: "brand", href: "#top" }, [el("b", { text: "Edit" }), el("span", { text: " хэрэгслийн мөр" })]),
+      el("div", { class: "chips" }, [el("a", { href: "#suuri", text: "Нөлөө" })].concat(
+        E.groups.map((g) => el("a", { href: "#g-" + g.id, text: g.title })), [el("a", { href: "#jishee", text: "Жишээ" })])),
+      el("div", { class: "out" }, [el("a", { href: "resolve-toli.html", text: "Толь" }), el("a", { href: "resolve-dotor.html#edit", text: "Загвар" }), el("a", { href: "resolve-fusion-zaavar.html", text: "Fusion" })])
+    ]));
+    root.appendChild(el("header", { class: "hero", id: "top" }, [
+      el("p", { class: "eyebrow", text: "DaVinci Resolve Studio 21 · Edit хуудас" }),
+      el("h1", { text: "Edit хэрэгслийн мөр" }),
+      el("p", { class: "lead", html: fmt("Timeline-ийн хэрэгслийн мөрийн **товч бүр**, viewer дээрх **удирдлагын горим** юу хийдэг, бичлэгт **ямар нөлөө** үзүүлдэг вэ. Карт бүрт хөтөч дээр шууд туршдаг жишээ бий — клип зөөж, тайрч, шигтгэж, **Өмнө / Дараа**-аар харьцуулна.") }),
+      buildToolbar()
+    ]));
+    root.appendChild(buildBasics());
+    E.groups.forEach((g, gi) => {
+      const sec = el("section", { class: "grp", id: "g-" + g.id }, [
+        el("div", { class: "grp-h" }, [
+          el("p", { class: "eyebrow", text: "Бүлэг " + (gi + 1) + " / " + E.groups.length + " · " + g.en }),
+          el("h2", { text: g.title }),
+          el("p", { class: "lead", html: fmt(g.intro) })
+        ])
+      ]);
+      E.tools.filter((t) => t.group === g.id).forEach((t) => sec.appendChild(G.ui.buildTool(t, S, CFG)));
+      root.appendChild(sec);
+    });
+    root.appendChild(buildRecipes());
+    root.appendChild(el("footer", { class: "fz-foot" }, [
+      el("p", { html: fmt("**Эх сурвалж.** Товчны дараалал, tooltip, цэсний мөр — таны Resolve Studio 21-ийн 2026-09-26-ны дэлгэцийн зургаас. Үйлдлийн тайлбар — Blackmagic-ийн гарын авлага, Resolve-ийн түгээмэл ажиллагаанаас; баталгаажаагүйг картанд тэмдэглэсэн.") }),
+      el("p", { html: fmt("**Жишээнүүд** хөтөч дээр ойролцоогоор дуурайлгасан — Resolve-ийн бодит тооцоолол биш. Кадрыг кодоор зурсан; A · B · C клип нь жишээний нэр.") })
+    ]));
+    G.ui.watchNav("#suuri, .grp, #jishee");
+    G.ui.jumpToHash();
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
+  else build();
+})(window.RM);
+
+</script>
+</body>
+</html>

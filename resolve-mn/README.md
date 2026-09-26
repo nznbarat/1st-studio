@@ -3,7 +3,7 @@
 DaVinci Resolve-ийн интерфейсийн монгол хэл дээрх лавлах.
 Программын цэс, самбар, товчлуур, тохиргоо бүрийн монгол нэр, тайлбар, хаана байдгийг цуглуулсан.
 
-**1052 нэр томьёо · 48 ангилал · 133 товчлуур · 656 гарын авлагын дэлгэрэнгүй тайлбар · 6 ажлын урсгал · 8 хуудасны загвар · 20 нээгддэг цэс**
+**1156 нэр томьёо · 51 ангилал · 134 товчлуур · 753 гарын авлагын дэлгэрэнгүй тайлбар · 6 ажлын урсгал · 8 хуудасны загвар · 31 нээгддэг цэс · 2 жишээтэй заавар (Fusion 28, Edit 26 хэрэгсэл)**
 
 ---
 
@@ -39,11 +39,12 @@ npm run serve            # → http://localhost:8080/resolve-mn/
 
 | Файл | Юу вэ |
 |---|---|
-| `resolve-mn/resolve-dotor.html` | Интерфейсийн загвар (220 KB) |
-| `resolve-mn/resolve-toli.html` | Толь (191 KB) |
+| `resolve-mn/resolve-dotor.html` | Интерфейсийн загвар (≈1.3 MB) |
+| `resolve-mn/resolve-toli.html` | Толь (≈1.2 MB) |
 | `resolve-mn/resolve-fusion-zaavar.html` | Fusion хэрэгслийн мөрийн жишээтэй заавар |
+| `resolve-mn/resolve-edit-zaavar.html` | Edit хуудасны хэрэгслийн мөр, viewer-ийн удирдлагын жишээтэй заавар |
 
-Гурвууланг нь нэг хавтсанд хийвэл хооронд нь шилжих холбоос ажиллана.
+Бүгдийг нь нэг хавтсанд хийвэл хооронд нь шилжих холбоос ажиллана.
 
 Дахин угсрах:
 
@@ -61,6 +62,7 @@ node tools/build-resolve-mn.mjs
 | `index.html` | **Толь** — хайлт, ангилал, товчлуур, ажлын урсгалын заавар |
 | `interface.html` | **Resolve дотор** — интерфейсийн хуулбар. Ямар ч хэсэг дээр товшвол монголоор тайлбарлана |
 | `fusion-zaavar.html` | **Fusion хэрэгслийн мөр** — 28 товч тус бүрийн заавар, хөтөч дээр туршдаг жишээтэй |
+| `edit-zaavar.html` | **Edit хэрэгслийн мөр** — timeline-ийн 18 товч, viewer-ийн 8 удирдлага, жижиг timeline дээр туршдаг жишээтэй |
 
 ### Fusion хэрэгслийн мөрийн заавар
 
@@ -93,10 +95,23 @@ node tools/build-resolve-mn.mjs
 - `←` `→` — Resolve-ийн хуудас хооронд шилжинэ
 - `Esc` — сонголтыг цуцална
 
+### Edit хэрэгслийн мөрийн заавар
+
+`edit-zaavar.html` — Edit хуудасны timeline-ийн хэрэгслийн мөр (Timeline View Options, Show Keyframe Tray,
+Voiceover · Selection, Trim, Blade, Dynamic Trim (Slip) · Insert, Overwrite, Replace · Snapping, Linked
+Selection, Position Lock · туг, тэмдэглэгээ · Full Extent/Detail/Custom Zoom) ба viewer-ийн ▭ ⌄ удирдлага
+(Transform, Crop, Dynamic Zoom, Open FX, Fusion Overlay, Annotations, Smart Reframe), Jog Wheel — 26 карт.
+Карт бүрт **бичлэгт үзүүлэх нөлөөний шошго** (Монтажийг өөрчилнө · Дүрсийг өөрчилнө · Дуу нэмнэ ·
+Тэмдэглэл · Зөвхөн харагдац · Хамгаалалт). Жишээ нь жижиг timeline: A · B · C клип, заагч, хоосон зай,
+клип бүрийн «эх 2.0–8.0» (slip, roll-ийн ялгаа харагдана), timeline-ийн нийт урт — ripple, insert
+уртыг өөрчилдөг, overwrite, roll өөрчилдөггүйг шууд харуулна. Viewer-ийн жишээнд бариулыг
+сансрын кадр дээр; Annotations-д хулганаар зурна. 4 хамтын жишээ (ярилцлага цэвэрлэх, хөгжмийн
+цохилтоор огтлох, B-roll, босоо хувилбар).
+
 ### Интерфейсийн загвар
 
 `interface.html` нь Resolve-ийн найман хуудсыг (Media, Photo, Cut, Edit, Fusion, Color,
-Fairlight, Deliver) хуулбарлан харуулна. Нийт **640 товших цэг** (278 өвөрмөц нэр томьёо) —
+Fairlight, Deliver) хуулбарлан харуулна. Нийт **727 товших цэг** (377 өвөрмөц нэр томьёо) —
 цэг бүр толины нэр томьёотой шууд холбогдсон тул тайлбар давхардаж бичигдээгүй.
 Өнгө нь Resolve Studio 21-ийн дэлгэцийн зургаас хэмжсэн бодит утга
 (`css/sim.css` доторх `--rs-*` хувьсагчид).
@@ -106,7 +121,7 @@ Fairlight, Deliver) хуулбарлан харуулна. Нийт **640 тов
 - **Цэг харуулах** товч бүх идэвхтэй хэсгийг тодруулна — юу товшиж болохыг олоход.
 - Баруун талын жагсаалт нь тухайн хуудасны бүх цэгийг ангиллаар нь харуулна.
 - Доод талын хуудасны мөр нь бодит Resolve шиг ажиллана.
-- **13 цэс дарахад үнэхээр нээгдэнэ** — 323 мөр, товчлууртайгаа.
+- **13 цэс дарахад үнэхээр нээгдэнэ** — 323 мөр, товчлууртайгаа. Бусад 18 унждаг жагсаалт (хэрэгслийн мөр, viewer, Media Pool) — нийт 31 цэс, 511 мөр.
 - **Edit цэсний командууд хуудаснаас хамаарч саарал болно** — бодит программ шиг,
   Fusion, Color, Fairlight хуудсан дээр цэсийг нээсэн зургаас мөр бүрээр:
   Fusion — 5 мөр идэвхтэй (Undo, Redo, History, Select All, Deselect All);
@@ -131,6 +146,16 @@ Fairlight, Deliver) хуулбарлан харуулна. Нийт **640 тов
   (Enlarge, Lock, Solo, Mute, Disable Track), Insert Video/Audio Only — tooltip-оор баталгаажсан.
   Keyframes товч доод Keyframes самбарыг нээнэ: Keyframe Curves / Lanes, Parameters … цэс
   (6 мөр), баруун … цэс (Enables Snapping, Loop Type, Legacy Speed Mode).
+- **Edit хуудас** (2026-09-26-ны зургууд) — timeline хэрэгслийн мөрийн товч бүр Resolve-ийн дарааллаар,
+  SVG дүрстэй, tooltip-тэй (`Selection Mode - A` … `Custom Zoom`). ⚌ Timeline View Options (13 мөр,
+  Track Height гүйлгэгч, Set as Default View товч), туг ⌄ / marker ⌄ (Clear All + 16 өнгө),
+  viewer-ийн ▭ ⌄ (Transform … Smart Reframe, 8 мөр), ‹ ● › Jog Wheel. Inspector-ийн Video / Audio таб
+  (Composite, Retime and Scaling, AI Super Scale; Semi Tones, Cents, 6 зурвастай Equalizer).
+  Effects → Dissolve, Iris, Motion, Shape, Wipe, Fusion Transitions жагсаалт. Дээд мөрийн **Quick Export**
+  (10 бэлдэц, H.264 Master-ийн тохиргоо) ба **Mixer** (A1, Bus1) нээгдэнэ. Media Pool-ийн AI шинжилгээ ⌄,
+  харагдац ▦ ⌄, ⌕ хайлтын мөр (Search In, Display), ⇅ эрэмбэ (25 мөр), … тохиргоо (13 мөр),
+  **Create Smart Bin**, ☁ **Blackmagic Cloud Folder** цонх. Viewer-ийн толгойн ⛶ Guides самбар
+  (Social Media, Broadcast and Film, Safe Area, Ruler), прокси ⌄, timeline-ийн нягтрал ⌄, … цэс.
 - **Photo хуудасны "Photo Album ⌄" товч** бодит шүүлтүүрийн жагсаалт нээнэ
   (Sort by, All/Selected/Graded/Ungraded Photos, People, Magic Mask … Create Smart Filter).
   Цэс нээлттэй байхад хажуугийн цэсэн дээр хулгана тултал шилжинэ.
@@ -170,24 +195,29 @@ resolve-mn/
 ├── index.html              толь — бүрхүүл, скриптийн дараалал
 ├── interface.html          интерфейсийн загвар
 ├── fusion-zaavar.html      Fusion хэрэгслийн мөрийн заавар
+├── edit-zaavar.html        Edit хэрэгслийн мөрийн заавар
 ├── css/
 │   ├── app.css             толины загвар (Ертөнц Бүтээгчийн өнгөний системтэй нэг)
 │   ├── sim.css             Resolve-ийн харагдацыг гаргах загвар
-│   └── guide.css           Fusion зааврын загвар
+│   └── guide.css           Fusion, Edit зааврын загвар
 └── js/
     ├── 00-core.js          нэрийн орон зай, DOM туслах, хуулах, хадгалах
     ├── 10-dict.js          толины хөдөлгүүр — бүртгэл, индекс, хайлт
-    ├── 15-guide-ids.js     жишээтэй заавартай 28 нэр томьёо (холбоос)
+    ├── 15-guide-ids.js     жишээтэй заавартай нэр томьёо (Fusion 28, Edit 26) — холбоос
     ├── 20-guide.js         ажлын урсгалын өгөгдөл
     ├── 30-ui.js            толины интерфейс — хайлт, жагсаалт, хөтөч
     ├── 50-sim-pages.js     Edit, Color хуудасны бүтэц
     ├── 51-sim-more.js      Media, Cut, Fusion, Fairlight, Deliver, Photo
     ├── 52-sim-menus.js     нээгддэг цэсний агуулга
-    ├── 53-sim-icons.js     дүрсүүд (SVG) — Fusion хэрэгслийн мөр, Inspector
+    ├── 53-sim-icons.js     дүрсүүд (SVG) — Fusion, Edit хэрэгслийн мөр, Inspector
+    ├── 69-guide-ui.js      заавар хоёрын нийтлэг карт, жишээний самбар, тохиргоо
     ├── 70-fz-data.js       Fusion заавар — 28 хэрэгслийн агуулга, 4 хамтын жишээ
     ├── 71-fz-scene.js      жишээний кадр (кодоор зурсан сансар), туслахууд
     ├── 72-fz-demos.js      28 жишээ — шүүлтүүр, маск, бөөмс, 3D
-    ├── 73-fz-page.js       заавар хуудсыг угсрах
+    ├── 73-fz-page.js       Fusion заавар хуудсыг угсрах
+    ├── 74-ez-data.js       Edit заавар — 26 хэрэгслийн агуулга, нөлөөний шошго, 4 хамтын жишээ
+    ├── 75-ez-demos.js      Edit жишээ — жижиг timeline (ripple, roll, slip, insert …), viewer-ийн бариул
+    ├── 76-ez-page.js       Edit заавар хуудсыг угсрах
     ├── 60-sim-ui.js        загварын харилцан үйлдэл
     ├── 90-main.js          толины эхлүүлэлт
     ├── 91-sim-main.js      загварын эхлүүлэлт
@@ -218,14 +248,18 @@ resolve-mn/
         ├── r24-photo.js        Photo — цомгийн шүүлтүүрийн цэс
         ├── r25-resolvefx-blur.js Resolve FX Blur (Color → Effects → Library)
         ├── r26-cut-tses.js     Cut — Timeline Options цэс, timeline-ийн товчнууд
-        └── r27-fusion-mediain.js Fusion — хэрэгслийн мөр, MediaIn Inspector
+        ├── r27-fusion-mediain.js Fusion — хэрэгслийн мөр, MediaIn Inspector
+        ├── r28-edit-tses.js    Edit — timeline-ийн мөр, viewer-ийн цэс, Inspector, шилжилт
+        ├── r29-edit-media-export.js Edit — AI шинжилгээ, Quick Export, Blackmagic Cloud Folder
+        └── r30-edit-mediapool-guides.js Edit — Media Pool хайлт, эрэмбэ, Smart Bin, Guides, viewer-ийн цэс
     └── long/                   гарын авлагын дэлгэрэнгүй тайлбар (RM.dict.long)
         ├── l01–l08             загварын товших цэгүүд, хуудас, самбарууд
         ├── l07-ai-sergeen.js   AI ба сэргээн засварын хэрэглүүр
         ├── l09–l12             13 цэсний командууд
         ├── l13–l14             Photo Album цэс, Resolve FX Blur
         ├── l15-cut-tses.js     Cut хуудасны цэс, товчнууд
-        └── l16-fusion-mediain.js Fusion хэрэгслийн мөр, MediaIn Inspector
+        ├── l16-fusion-mediain.js Fusion хэрэгслийн мөр, MediaIn Inspector
+        └── l17–l19             Edit хуудасны товч, цэс, цонх
 ```
 
 ---
@@ -335,11 +369,20 @@ Color хуудасны нодны хөдөлгүүр дээр засварлан
 - **Fusion хэрэгслийн мөр** — 28 товчны tooltip, доод мөрийн тайлбар; Background, FastNoise … Renderer 3D.
   Гарын авлагаас санаж байсан жагсаалтаас ялгаатай нь: MultiMerge, MultiPoly, pDirectionalForce
   (pMerge, Resize байхгүй). **MediaIn Inspector** — Image, Audio, Settings табын бүх мөр (2026-09-25).
+- **Edit хуудас** (2026-09-26, 40 орчим зураг) — timeline хэрэгслийн мөрийн 18 tooltip (Show Keyframe Tray,
+  Voiceover, Selection Mode - A, Trim Edit Mode - T, Blade Edit Mode - B, Dynamic Trim Mode (Slip) - W,
+  Insert Clip - F9, Overwrite Clip - F10, Replace Clip - F11, Snapping - N, Linked Selection - Ctrl+Shift+L,
+  Position Lock, Full Extent / Detail / Custom Zoom), Jog Wheel; Timeline View Options, viewer ▭ ⌄, туг, marker,
+  Media Pool-ийн 4 цэс, viewer-ийн толгойн 3 цэс ба Guides самбар; Quick Export, Blackmagic Cloud Folder,
+  Create Smart Bin цонх; Inspector-ийн Video, Audio таб; Effects-ийн шилжилтийн жагсаалт; Mixer самбар.
 
 Хараахан баталгаажуулаагүй: Fusion Inspector-ийн толгойн дүрсүүдийн (● ⌄, хувилбар, хадаас, түгжээ,
 буцаах) tooltip; Source Color/Gamma Space-ийн доторх мөрүүд; Cut хуудасны дээд timeline-ийн 3 дахь товчны tooltip нэр
 (цэсний агуулга нь баталгаажсан); транспорт мөрийн 6 засварын товч, тэдгээрийн баруун талын 3 + 5 товчны нэр;
-Resync Clip-ийн яг үйлдэл; цэсний дэд цэснүүдийн (AI Tools, Audio Operations,
+Resync Clip-ийн яг үйлдэл; **Edit:** Show Keyframe Tray-ийн үйлдэл, viewer ▭ ⌄, ⚌, туг, marker товчны tooltip,
+Immersive горим, Display Full / Borders / Scaled Waveforms-ийн ялгаа, Thumbnail View ›, IntelliSearch Mode ›,
+Markers › дэд цэс, timeline-ийн нягтралын цэс одоогийн timeline-ийг өөрчлөх үү, viewer-ийн толгойн улаан
+зураастай товч, Voiceover самбарын агуулга, Retime and Scaling, AI Super Scale-ийн доторх мөрүүд, Replay бэлдэц; цэсний дэд цэснүүдийн (AI Tools, Audio Operations,
 Edit Options, Go To, Sort by…) доторх мөрүүд; Resolve 20–21-д нэмэгдсэн AI хэрэглүүрийн
 яг байрлал; Edit цэсний төлөв Media хуудсанд, File цэсний төлөв Media-аас бусад
 хуудсанд. Зохиомол агуулга
@@ -359,6 +402,11 @@ Edit Options, Go To, Sort by…) доторх мөрүүд; Resolve 20–21-д �
 | Edit-ийн Inspector | 4 таб | 6 таб (Video, Audio, Effects, Transition, Image, File) |
 | Switch to Page | долоон хуудас | найман (Photo нэмэгдсэн) |
 | Edit-ийн дэлгэц | — | Зурагт ганц дэлгэц (Single Viewer); загварт Resolve-ийн анхны Source/Timeline хос дэлгэцийг сонгосон |
+| Edit timeline-ийн 🔒 товч | Sync Lock | **Position Lock** (tooltip) |
+| Edit timeline-ийн засварын горимын дараалал | Selection, Trim, Dynamic Trim, Blade | Selection, Trim, **Blade, Dynamic Trim (Slip)** |
+| Edit timeline-ийн 2, 3 дахь товч | Track, Record Voiceover | **Show Keyframe Tray**, **Voiceover** |
+| Томруулалтын 3 товч | Zoom to Fit, Zoom In, Zoom Out | **Full Extent Zoom, Detail Zoom, Custom Zoom** |
+| Effects-ийн Additive/Blur Dissolve | Add, Blur (Fusion) нэр томьёо руу | Тусдаа шилжилт — зөв нэр томьёо руу холбов |
 
 Монтажийн 17 товчлуур (F9–F12, Shift+F10–F12, Ctrl+Z, Shift+Backspace гэх мэт)
 шалгахад **бүгд зөв** байсан.

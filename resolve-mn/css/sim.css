@@ -174,6 +174,16 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
 .rs-menupop .mrow.dim:hover{background:rgba(58,110,165,.35)}
 .rs-menupop .mrow.dim:hover .ml{color:#c0c0c0}
 .rs-tools .tg.mi.open,.mi.open{color:#fff}
+/* Тусгай мөр — Timeline View Options-ийн гарчиг, гүйлгэгч, товч; туг/marker-ийн өнгө */
+.rs-menupop .mrow.mhead{color:var(--rs-dim2);padding-top:6px}
+.rs-menupop .mrow.mslide .ml{flex:0 0 46px;color:var(--rs-dim2)}
+.rs-menupop .mtrack{position:relative;flex:1;height:3px;background:#4a4a50;border-radius:2px;margin-right:4px}
+.rs-menupop .mtrack i{position:absolute;top:50%;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;background:#c9c9cd}
+.rs-menupop .mrow.mbtn{justify-content:center;margin:6px 14px 4px;width:calc(100% - 28px);border:1px solid #4a4a50;border-radius:3px;background:#323236}
+.rs-menupop .mrow.mbtn .ml{flex:0 1 auto}
+.rs-menupop .msw{width:9px;height:9px;flex-shrink:0}
+.rs-menupop .msw.dot{border-radius:50%}
+.rs-menupop .msw.sq{border-radius:1px}
 
 /* хэрэгслийн мөр 1 */
 .rs-tools{display:flex;align-items:center;gap:2px;background:var(--rs-tool);
@@ -626,6 +636,112 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
   border-radius:9px;padding:10px 18px;font-size:13px;opacity:0;pointer-events:none;
   transition:.2s;z-index:99;box-shadow:0 8px 26px rgba(0,0,0,.5)}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ═══ Edit хуудас (2026-09-26-ны зургууд) ═══ */
+/* timeline хэрэгслийн мөрийн SVG дүрс, идэвхтэй сонголтын улаан сум, ⌄ */
+.rs-tlbar .tl svg{width:19px;height:16px;display:block}
+.rs-tlbar .tl.red{color:var(--rs-red);background:none}
+.rs-tlbar .tl.dd{padding:5px 2px;margin-left:-4px;font-size:10px}
+.fx-list.scroll{overflow-y:auto}
+.ed-insp{overflow-y:auto}
+.ed-insp .insp-row .lb{width:84px}
+.eq-graph{position:relative;height:48px;margin:4px 0 6px 18px;border:1px solid #3a3a40;
+  background:repeating-linear-gradient(90deg,transparent 0 19%,#34343a 19% 19.4%)}
+.eq-graph span{position:absolute;left:-18px;font-size:8px;color:var(--rs-dim2)}
+.eq-graph span:nth-child(1){top:0}.eq-graph span:nth-child(2){top:40%}.eq-graph span:nth-child(3){bottom:0}
+.eq-graph i{position:absolute;left:0;right:0;top:50%;height:1px;background:#d4d4d6}
+.eq-bands{display:grid;grid-template-columns:repeat(6,1fr);gap:3px}
+.eq-b{display:grid;gap:2px;text-align:center;font-size:9px;color:var(--rs-dim)}
+.eq-b b{background:#1c1c20;border-radius:8px;font-weight:500;color:var(--rs-txt);font-size:9px}
+.eq-b span{background:#1c1c20;border-radius:2px;min-height:13px}
+.eq-b .eq-sh{background:none;color:var(--rs-txt)}
+/* timeline + Mixer самбар */
+.ed-tlwrap{flex:1;display:flex;min-height:0}
+.ed-tlwrap .rs-tl{flex:1;min-width:0}
+.mx-panel{display:none;width:170px;flex-shrink:0;border-left:1px solid var(--rs-line);background:var(--rs-pane);flex-direction:column}
+.mx-panel.open{display:flex}
+.mx-h{display:flex;justify-content:space-between;padding:6px 10px;background:var(--rs-head);font-size:11.5px}
+.mx-h b{font-weight:500}
+.mx-strips{flex:1;display:flex;gap:1px;background:var(--rs-line);min-height:0}
+.mx-s{flex:1;background:var(--rs-pane);display:flex;flex-direction:column;align-items:center;gap:5px;padding:4px 4px 6px;border-top:2px solid #2f8a57}
+.mx-n{font-size:10px;color:var(--rs-dim)}
+.mx-sm{display:flex;gap:3px;min-height:15px}
+.mx-sm span{width:15px;height:14px;border:1px solid #4a4a50;border-radius:2px;font-size:8px;display:grid;place-items:center;color:var(--rs-dim)}
+.mx-v{font:9.5px 'JetBrains Mono',monospace;color:var(--rs-txt)}
+.mx-f{position:relative;flex:1;width:52px;min-height:60px}
+.mx-f .fd{position:absolute;left:8px;top:0;bottom:0;width:3px;background:#141416}
+.mx-f .fd::after{content:"";position:absolute;left:-5px;top:24%;width:13px;height:9px;background:#9a9aa0;border-radius:1px}
+.mx-f .mt{position:absolute;right:6px;top:0;bottom:0;width:5px;background:#141416}
+.mx-f .sc{position:absolute;left:18px;top:0;font-size:7px;line-height:1.35;color:var(--rs-dim2)}
+/* Media Pool-ийн хайлтын мөр */
+.mp-search{display:none;flex-direction:column;gap:4px;padding:5px 8px;background:var(--rs-head);border-bottom:1px solid var(--rs-line);font-size:10.5px;color:var(--rs-dim)}
+.mp-search.open{display:flex}
+.mps-r{display:flex;align-items:center;gap:8px}
+.mps-in{flex:1;height:17px;border:1px solid var(--rs-red);border-radius:2px;background:#1c1c20}
+.mp-search b{font-weight:400;color:var(--rs-txt);background:#1c1c20;border-radius:2px;padding:1px 6px}
+/* цонх (Quick Export, Blackmagic Cloud Folder, Create Smart Bin) */
+.rs-dlg{display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:30;background:#28282c;
+  border:1px solid #0e0e10;border-radius:4px;box-shadow:0 18px 50px rgba(0,0,0,.7);font-size:11px}
+.rs-dlg.open{display:block}
+.dlg-t{text-align:center;padding:8px;font-weight:500;font-size:12px;border-bottom:1px solid var(--rs-line)}
+.dlg-t.l{text-align:left;padding-left:14px}
+.dlg-btns{display:flex;justify-content:flex-end;gap:10px;padding:10px 14px}
+.rs-dlg .btn{padding:4px 18px;border:1px solid #55555b;border-radius:12px;color:var(--rs-txt);white-space:nowrap}
+.rs-dlg .btn.red{border-color:var(--rs-red)}
+.rs-dlg .btn.off{color:var(--rs-dim2);border-color:#3a3a40}
+.rs-dlg .cb{display:inline-block;width:11px;height:11px;border:1px solid #6a6a70;border-radius:2px;vertical-align:-1px}
+.rs-dlg .cb.on{background:#d4d4d6}
+.rs-dlg .in{background:#1c1c20;border:1px solid #3a3a40;border-radius:2px;padding:2px 6px;color:var(--rs-dim)}
+.rs-dlg .in.red{border-color:var(--rs-red);color:var(--rs-txt)}
+.qe{width:640px}
+.qe-body{display:flex}
+.qe-l{flex:0 0 58%;border-right:1px solid var(--rs-line)}
+.qe-h{display:flex;justify-content:space-between;padding:6px 10px;border-bottom:1px solid var(--rs-line);color:var(--rs-dim)}
+.qe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px}
+.qe-p{background:#303035;border:1px solid transparent;border-radius:4px;padding:8px 4px;text-align:center;display:grid;gap:4px;font-size:10.5px}
+.qe-p.sel{border-color:var(--rs-red)}
+.qe-ic{font-size:13px;color:#fff}
+.qe-r{flex:1;display:flex;flex-direction:column}
+.qe-f{padding:8px 12px 4px}
+.qe-f small,.qe-kv small{display:block;font-size:8.5px;color:var(--rs-dim2)}
+.qe-f b{font-size:14px;font-weight:500}
+.qe-kv{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:4px 12px 10px;border-bottom:1px solid #3a3a40;font-weight:500}
+.qe-lim{padding:10px 12px;color:var(--rs-dim2);display:flex;align-items:center;gap:6px}
+.qe-r .dlg-btns{margin-top:auto}
+.bc{width:560px;overflow:hidden}
+.bc-top{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;font-size:15px;
+  background:radial-gradient(ellipse at 30% 0,#2a3a55,#1b2230 70%)}
+.bc-top b{font-weight:500}
+.bc-top span{font-size:10px;color:#c9ccd4}
+.bc-body{display:grid;gap:8px;padding:14px 20px}
+.bc-r{display:flex;align-items:center;gap:8px}
+.bc-r .lb{width:150px;text-align:right;color:var(--rs-dim)}
+.bc-r .in{flex:1}
+.bc-r .btn{padding:2px 12px}
+.bc-r .rd{width:10px;height:10px;border-radius:50%;border:1px solid #6a6a70}
+.bc-r .rd.on{background:#fff;box-shadow:inset 0 0 0 2px #28282c}
+.sb{width:620px}
+.sb-body{display:grid;gap:8px;padding:12px 14px}
+.sb-r{display:flex;align-items:center;gap:8px;color:var(--rs-dim)}
+.sb-r .in{flex:0 0 240px}
+.sb-r .dd{background:#1c1c20;border:1px solid #3a3a40;border-radius:2px;padding:2px 6px;color:var(--rs-txt);white-space:nowrap}
+.sb-r .dd.off{color:var(--rs-dim2)}
+.sb-r .dd.w{flex:1}
+.sb-r .pm{color:var(--rs-dim2);letter-spacing:.3em}
+/* viewer-ийн Guides самбар */
+.rs-pop{display:none;position:absolute;z-index:30;background:#28282c;border:1px solid #0e0e10;border-radius:3px;box-shadow:0 12px 36px rgba(0,0,0,.6)}
+.rs-pop.open{display:block}
+.rs-pop.guides{right:282px;top:92px;width:236px;padding:8px 12px 10px}
+.gd-h{font-size:11px;font-weight:500;margin:6px 0 4px}
+.gd-row{display:flex;flex-wrap:wrap;gap:6px 8px;padding-bottom:6px;border-bottom:1px solid #3a3a40}
+.gd-row:last-child{border-bottom:0}
+.gd{display:grid;justify-items:center;gap:2px;font-size:9px;color:var(--rs-dim);min-width:34px}
+.gd.on{color:#fff}
+.gd i{width:24px;height:15px;border:1px solid #7a7a80;display:block}
+.gd.on i{border-color:#fff;background:#3a3a40}
+.gd i.r0{width:15px}.gd i.r1{width:13px}.gd i.r2{width:9px}.gd i.r4{width:26px}
+.gd i.b1{width:20px}.gd i.b4,.gd i.b5,.gd i.b6{height:10px;margin-top:3px}
+.gd i.s1,.gd i.s2{border-style:dashed}.gd i.s3{border:0;background:radial-gradient(circle,#aaa 1.5px,transparent 2px) center/100% 100%}
 
 /* ── жижиг дэлгэц ── */
 @media (max-width:1100px){

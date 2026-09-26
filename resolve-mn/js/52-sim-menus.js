@@ -612,6 +612,192 @@
       "-",
       ["view-clip-info-display", "View Clip Info Display…"],
       ["show-clip-gain-line", "Show Clip Gain Line", "✓"]
+    ]},
+
+    /* ═══ Edit хуудас (2026-09-26-ны зургууд) ═══
+       Viewer-ийн доод зүүн ▭ ⌄ — дэлгэц дээрх удирдлагын горим (8 мөр, тусгаарлагчгүй). */
+    "viewer-overlay-menu-edit": { label: "Viewer Overlay Menu (Edit)", verified: true, items: [
+      ["transform", "Transform"],
+      ["crop", "Crop"],
+      ["dynamic-zoom", "Dynamic Zoom"],
+      ["open-fx-overlay", "Open FX Overlay"],
+      ["fusion-overlay", "Fusion Overlay"],
+      ["annotations", "Annotations"],
+      ["immersive-viewer", "Immersive"],
+      ["smart-reframe", "Smart Reframe"]
+    ]},
+
+    /* Timeline хэрэгслийн мөрийн хамгийн зүүн ⚌ — Timeline View Options.
+       ✓ — зурагт чагттай. "head", "slider:NN", "button" — цэсний тусгай мөр (60-sim-ui.js). */
+    "timeline-view-options": { label: "Timeline View Options", verified: true, items: [
+      ["display-stacked-timelines", "Display Stacked Timelines"],
+      ["display-subtitle-tracks", "Display Subtitle Tracks", "✓"],
+      ["display-audio-waveforms", "Display Audio Waveforms", "✓"],
+      ["display-clip-names", "Display Clip Names", "✓"],
+      ["display-clip-duration", "Display Clip Durations", "✓"],
+      "-",
+      ["thumbnail-view-timeline", "Thumbnail View", "", "›"],
+      ["viewer-background", "Viewer Background", "", "›"],
+      "-",
+      ["fixed-playhead", "Fixed Playhead"],
+      "-",
+      ["display-non-rectified-waveforms", "Display Non-Rectified Waveforms", "✓"],
+      ["display-full-waveforms", "Display Full Waveforms"],
+      ["display-waveform-borders", "Display Waveform Borders"],
+      ["display-scaled-waveforms", "Display Scaled Waveforms"],
+      "-",
+      ["track-height", "Track Height", "head"],
+      ["track-height", "Video", "slider:46"],
+      ["track-height", "Audio", "slider:38"],
+      ["set-as-default-view", "Set as Default View", "button"]
+    ]},
+
+    /* Туг ⌄ — Clear All + 16 өнгө (дөрвөлжин туг) */
+    "flag-color-menu": { label: "Flag Color Menu", verified: true, items: [
+      ["clear-all-flags", "Clear All", "×"],
+      ["flag-color", "Blue", "sw:sq:#2f7ff5"],
+      ["flag-color", "Cyan", "sw:sq:#27cfd8"],
+      ["flag-color", "Green", "sw:sq:#2fc24a"],
+      ["flag-color", "Yellow", "sw:sq:#f0a232"],
+      ["flag-color", "Red", "sw:sq:#e8392f"],
+      ["flag-color", "Pink", "sw:sq:#f040b8"],
+      ["flag-color", "Purple", "sw:sq:#9a3cf0"],
+      ["flag-color", "Fuchsia", "sw:sq:#e2346c"],
+      ["flag-color", "Rose", "sw:sq:#f39ab8"],
+      ["flag-color", "Lavender", "sw:sq:#a79cf0"],
+      ["flag-color", "Sky", "sw:sq:#8fd6f4"],
+      ["flag-color", "Mint", "sw:sq:#72d46a"],
+      ["flag-color", "Lemon", "sw:sq:#e6e45a"],
+      ["flag-color", "Sand", "sw:sq:#e8a66c"],
+      ["flag-color", "Cocoa", "sw:sq:#9a6b52"],
+      ["flag-color", "Cream", "sw:sq:#f4efe4"]
+    ]},
+
+    /* Marker ⌄ — Clear All + 16 өнгө (дугуй цэг) */
+    "marker-color-menu": { label: "Marker Color Menu", verified: true, items: [
+      ["clear-all-markers", "Clear All", "×"],
+      ["marker-color", "Blue", "sw:dot:#2f7ff5"],
+      ["marker-color", "Cyan", "sw:dot:#27cfd8"],
+      ["marker-color", "Green", "sw:dot:#2fc24a"],
+      ["marker-color", "Yellow", "sw:dot:#f0a232"],
+      ["marker-color", "Red", "sw:dot:#e8392f"],
+      ["marker-color", "Pink", "sw:dot:#f040b8"],
+      ["marker-color", "Purple", "sw:dot:#9a3cf0"],
+      ["marker-color", "Fuchsia", "sw:dot:#e2346c"],
+      ["marker-color", "Rose", "sw:dot:#f39ab8"],
+      ["marker-color", "Lavender", "sw:dot:#a79cf0"],
+      ["marker-color", "Sky", "sw:dot:#8fd6f4"],
+      ["marker-color", "Mint", "sw:dot:#72d46a"],
+      ["marker-color", "Lemon", "sw:dot:#e6e45a"],
+      ["marker-color", "Sand", "sw:dot:#e8a66c"],
+      ["marker-color", "Cocoa", "sw:dot:#9a6b52"],
+      ["marker-color", "Cream", "sw:dot:#f4efe4"]
+    ]},
+
+    /* Media Pool-ийн дээд мөр — AI шинжилгээний ⌄ (3 мөр) */
+    "ai-analysis-menu-media-pool": { label: "AI Analysis Menu (Media Pool)", verified: true, items: [
+      ["perform-ai-analysis-in-all-clips", "Perform AI Analysis in all Clips", "✓"],
+      ["perform-ai-analysis-in-selected-clips", "Perform AI Analysis in Selected Clips"],
+      "-",
+      ["audio-transcription", "Audio Transcription", "", "", "none"]
+    ]},
+
+    /* Media Pool-ийн харагдац ▦ ⌄ — 3 мөр + зургийн хэмжээний гүйлгэгч */
+    "media-pool-view-menu": { label: "Media Pool View Menu", verified: true, items: [
+      ["metadata-view", "Metadata View"],
+      ["thumbnail-view", "Thumbnail View", "✓"],
+      ["list-view", "List View"],
+      "-",
+      ["thumbnail-view", "Size", "slider:3"]
+    ]},
+
+    /* Media Pool-ийн эрэмбэлэх ⇅ — Custom, 19 талбар, чиглэл, Custom-ийн туслах (саарал) */
+    "media-pool-sort-menu": { label: "Media Pool Sort Menu", verified: true, items: [
+      ["media-pool-sort-menu", "Custom"],
+      "-",
+      ["media-pool-sort-menu", "File Name"],
+      ["reel-name", "Reel Name"],
+      ["media-pool-sort-menu", "Clip Name", "✓"],
+      ["media-pool-sort-menu", "Start TC"],
+      ["media-pool-sort-menu", "Duration"],
+      ["media-pool-sort-menu", "Type"],
+      ["media-pool-sort-menu", "FPS"],
+      ["media-pool-sort-menu", "Audio Ch"],
+      ["flag", "Flags"],
+      ["media-pool-sort-menu", "Date Modified"],
+      ["media-pool-sort-menu", "Date Created"],
+      ["media-pool-sort-menu", "Date Added"],
+      ["media-pool-sort-menu", "Shot"],
+      ["media-pool-sort-menu", "Scene"],
+      ["media-pool-sort-menu", "Take"],
+      ["camera", "Camera #"],
+      ["clip-color", "Clip Color"],
+      ["media-pool-sort-menu", "File Path"],
+      ["online-status", "Online Status"],
+      "-",
+      ["ascending-descending", "Ascending", "✓"],
+      ["ascending-descending", "Descending"],
+      "-",
+      ["snap-to-grid", "Snap To Grid", "✓", "", "none"],
+      "-",
+      ["clean-up", "Clean Up", "", "", "none"]
+    ]},
+
+    /* Media Pool-ийн … — 13 мөр, 7 бүлэг */
+    "media-pool-options-menu": { label: "Media Pool Options Menu", verified: true, items: [
+      ["intellisearch-mode", "IntelliSearch Mode", "", "›"],
+      ["reset-intellisearch-analysis", "Reset IntelliSearch Analysis…"],
+      "-",
+      ["show-filmstrip", "Show Filmstrip", "", "", "none"],
+      "-",
+      ["show-audio-waveforms-media-pool", "Show Audio Waveforms", "✓"],
+      ["show-non-rectified-audio-waveforms", "Show Non-Rectified Audio Waveforms", "✓"],
+      "-",
+      ["show-import-log", "Show Import Log"],
+      ["show-export-log", "Show Export Log"],
+      "-",
+      ["show-smart-bins", "Show Smart Bins", "✓"],
+      ["show-power-bins", "Show Power Bins"],
+      "-",
+      ["update-usage-for-entire-project", "Update Usage for Entire Project…"],
+      ["remove-unused-clips", "Remove Unused Clips…"],
+      "-",
+      ["export-as-pdf", "Export as PDF…"],
+      "-",
+      ["deleted-timeline-backups", "Deleted Timeline Backups…"]
+    ]},
+
+    /* Viewer-ийн толгой — прокси ⌄ (3 мөр) */
+    "proxy-menu-viewer": { label: "Proxy Menu (Viewer)", verified: true, items: [
+      ["proxy-handling", "Disable All Proxies"],
+      ["proxy-handling", "Prefer Proxies"],
+      ["proxy-handling", "Prefer Camera Originals", "✓"]
+    ]},
+
+    /* Viewer-ийн толгой — timeline-ийн нягтрал ⌄ */
+    "timeline-resolution-menu-viewer": { label: "Timeline Resolution Menu (Viewer)", verified: true, items: [
+      ["uhd", "Ultra HD 3840 x 2160", "✓"],
+      ["full-hd", "Full HD 1920 x 1080"],
+      ["portrait-1080-x-1920", "Portrait 1080 x 1920"],
+      ["square-1080-x-1080", "Square 1080 x 1080"],
+      "-",
+      ["custom-timeline-settings", "Custom Timeline Settings"]
+    ]},
+
+    /* Viewer-ийн толгой — … (9 мөр) */
+    "viewer-options-menu-edit": { label: "Viewer Options Menu (Edit)", verified: true, items: [
+      ["gang-viewers", "Gang Viewers"],
+      ["show-all-video-frames", "Show All Video Frames"],
+      ["show-timecode-toolbar", "Show Timecode Toolbar"],
+      "-",
+      ["previous-timeline-next-timeline", "Previous Timeline"],
+      ["previous-timeline-next-timeline", "Next Timeline"],
+      "-",
+      ["show-marker-overlays", "Show Marker Overlays", "✓"],
+      ["show-timecode-overlays", "Show Timecode Overlays"],
+      ["show-overlays-during-playback", "Show Overlays During Playback"],
+      "-",
+      ["marker", "Markers", "", "›"]
     ]}
   };
 

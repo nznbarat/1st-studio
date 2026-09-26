@@ -131,7 +131,28 @@
     "hdr-versions": svg(`<rect x="3" y="7" width="13" height="10" ${sw(1.2)}/><path d="M6.5 7V3.5h13v10H16" ${sw(1.2)}/>`, "0 0 24 20"),
     "hdr-pin": svg(`<path d="M13 2.5l7 7-2.2.6-3.4 3.4-.2 3.5-7.2-7.2 3.5-.2 3.4-3.4z" fill="currentColor"/><path d="M8.6 13.4 3.5 18.5" ${sw(1.6)} stroke-linecap="round"/>`, "0 0 24 20"),
     "hdr-lock": svg(`<rect x="5" y="9" width="13" height="9" rx="1.2" ${sw(1.4)}/><path d="M8 9V6a3.5 3.5 0 0 1 7 0" ${sw(1.4)}/>`, "0 0 24 20"),
-    "hdr-reset": svg(`<path d="M5.5 10a6.5 6.5 0 1 0 2-4.7" ${sw(1.4)}/><path d="M5 2.5v4h4" ${sw(1.4)}/><path d="M12 7v6M9 10h6" ${sw(1.3)}/>`, "0 0 24 20")
+    "hdr-reset": svg(`<path d="M5.5 10a6.5 6.5 0 1 0 2-4.7" ${sw(1.4)}/><path d="M5 2.5v4h4" ${sw(1.4)}/><path d="M12 7v6M9 10h6" ${sw(1.3)}/>`, "0 0 24 20"),
+
+    /* ═══ Edit хуудасны timeline хэрэгслийн мөр (2026-09-26-ны зургаас, зүүнээс баруун) ═══ */
+    "timeline-view-options": svg(`<path d="M4 6h15M4 10.5h15M4 15h8" ${sw(1.6)}/><path d="M14.5 16.5l3 3 6.5-7" ${sw(1.8)} stroke-linecap="round" stroke-linejoin="round"/>`),
+    "show-keyframe-tray": svg(`<path d="M10 5.5 16.5 12 10 18.5 3.5 12z" ${sw(1.4)}/><path d="M18 5.5 24.5 12 18 18.5 11.5 12z" fill="currentColor" opacity=".85"/>`),
+    "voiceover": svg(`<rect x="10.5" y="2.5" width="7" height="12" rx="3.5" fill="currentColor"/><path d="M7.5 11.5a6.5 6.5 0 0 0 13 0M14 18v3.5M10.5 21.5h7" ${sw(1.5)} stroke-linecap="round"/>`),
+    "selection-mode": svg(`<path d="M9 3v16.5l4.2-4.1 3.1 6.1 2.7-1.3-3.1-6h5.8z" fill="currentColor"/>`),
+    "trim-edit-mode": svg(`<rect x="3" y="6" width="8.5" height="12" ${sw(1.4)}/><rect x="16.5" y="6" width="8.5" height="12" ${sw(1.4)}/><path d="M14 3.5v17" ${sw(1.6)}/><path d="M11.5 10l2 2-2 2M16.5 10l-2 2 2 2" ${sw(1.2)}/>`),
+    "blade": svg(`<rect x="3" y="8" width="22" height="8.5" rx="1.5" ${sw(1.4)}/><path d="M7 12.2h3M12.5 12.2h3M18 12.2h3" stroke="currentColor" stroke-width="2.4"/><path d="M3 12.2h1.2M23.8 12.2H25" ${sw(1)}/>`),
+    "dynamic-trim-mode-slip": svg(`<path d="M14 3.5v17" ${sw(1.6)}/><path d="M9.5 8l-4 4 4 4M18.5 8l4 4-4 4" ${sw(1.6)} stroke-linecap="round" stroke-linejoin="round"/><path d="M3 5v14M25 5v14" ${sw(1)} stroke-dasharray="1.6 1.6"/>`),
+    "insert": svg(`<rect x="10" y="2" width="8" height="6.5" fill="currentColor"/><path d="M14 9v3.5M12 11l2 2 2-2" ${sw(1.3)}/><rect x="2" y="14" width="9.5" height="7.5" ${sw(1.4)}/><rect x="16.5" y="14" width="9.5" height="7.5" ${sw(1.4)}/><path d="M12.5 17.7h3" ${sw(1)} stroke-dasharray="1 1"/>`),
+    "overwrite": svg(`<rect x="3" y="12" width="22" height="9.5" ${sw(1.4)}/><rect x="9.5" y="2.5" width="9" height="7" ${sw(1.4)}/><rect x="9.5" y="12" width="9" height="9.5" fill="currentColor" opacity=".85"/><path d="M14 9.5v2.5" ${sw(1.4)}/>`),
+    "replace": svg(`<rect x="3" y="13" width="22" height="8.5" ${sw(1.4)}/><rect x="9.5" y="2.5" width="9" height="7" fill="currentColor" opacity=".85"/><path d="M6.5 11V6.5h2.5M21.5 11V6.5H19" ${sw(1.3)}/><path d="M5 9.5l1.5 1.8 1.5-1.8M20 9.5l1.5 1.8 1.5-1.8" ${sw(1.1)}/>`),
+    "snapping": svg(`<path d="M19.5 5.5a8 8 0 1 0 1.8 8.6" ${sw(2.2)} stroke-linecap="round"/><path d="M17.5 3.5l3.5 1.8-1.4 3.6" ${sw(1.6)} stroke-linecap="round" stroke-linejoin="round"/>`),
+    "linked-selection": svg(`<path d="M12.2 15.8l-2.6 2.6a3.4 3.4 0 0 1-4.8-4.8l3.6-3.6a3.4 3.4 0 0 1 4.8 0" ${sw(2)} stroke-linecap="round"/><path d="M15.8 8.2l2.6-2.6a3.4 3.4 0 0 1 4.8 4.8l-3.6 3.6a3.4 3.4 0 0 1-4.8 0" ${sw(2)} stroke-linecap="round"/>`),
+    "position-lock": svg(`<rect x="7" y="10.5" width="14" height="10.5" rx="1.4" ${sw(1.5)}/><path d="M10 10.5V7.5a4 4 0 0 1 8 0v3" ${sw(1.5)}/><path d="M10 14h8M10 17.5h8" ${sw(1.2)}/>`),
+    "flag": svg(`<path d="M9 3.5h11v16l-5.5-3.6L9 19.5z" fill="#3a8cf2"/>`),
+    "marker": svg(`<path d="M8.5 4.5h11v9.5L14 19.5l-5.5-5.5z" fill="#3a8cf2"/>`),
+    "full-extent-zoom": svg(`<rect x="2.5" y="4.5" width="19" height="12" ${sw(1.4)}/><path d="M5.5 8.5h13M5.5 12.5h8" ${sw(1.2)}/><circle cx="20" cy="15.5" r="3.6" fill="${DK}" ${sw(1.6)}/><path d="M22.6 18.1l3 3" ${sw(2)} stroke-linecap="round"/>`),
+    "detail-zoom": svg(`<path d="M3 6h14M3 10h10M3 14h8M3 18h8" ${sw(1.3)}/><circle cx="18.5" cy="14.5" r="4" ${sw(1.6)}/><path d="M21.4 17.4l3.2 3.2" ${sw(2)} stroke-linecap="round"/>`),
+    "custom-zoom": svg(`<path d="M3 7h22M5 7v4M9 7v2.5M13 7v4M17 7v2.5M21 7v4" ${sw(1.2)}/><circle cx="18.5" cy="15.5" r="3.6" fill="${DK}" ${sw(1.6)}/><path d="M21.1 18.1l3 3" ${sw(2)} stroke-linecap="round"/>`),
+    "jog-wheel": svg(`<path d="M7 8.5 3.5 12 7 15.5M21 8.5l3.5 3.5-3.5 3.5" ${sw(1.5)} stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="12" r="3.2" fill="currentColor"/>`)
   };
 
   /* Нэр → SVG; байхгүй бол тэмдэгт буцаана */

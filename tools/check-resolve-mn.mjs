@@ -46,8 +46,10 @@ const D = RM.dict;
 /* Жишээтэй заавар (fusion-zaavar.html) — id бүр толинд, гарын авлагатай байх ёстой */
 new Function("window", "RM", readFileSync(join(root, "resolve-mn/js/15-guide-ids.js"), "utf8"))(globalThis.window, RM);
 new Function("window", "RM", readFileSync(join(root, "resolve-mn/js/70-fz-data.js"), "utf8"))(globalThis.window, RM);
-const guideBad = RM.guideFusion.filter((id) => !D.byId[id] || !D.byId[id].long)
-  .concat(RM.fz.tools.map((t) => t.id).filter((id) => RM.guideFusion.indexOf(id) === -1));
+new Function("window", "RM", readFileSync(join(root, "resolve-mn/js/74-ez-data.js"), "utf8"))(globalThis.window, RM);
+const guideBad = RM.guideFusion.concat(RM.guideEdit).filter((id) => !D.byId[id] || !D.byId[id].long)
+  .concat(RM.fz.tools.map((t) => t.id).filter((id) => RM.guideFusion.indexOf(id) === -1))
+  .concat(RM.ez.tools.map((t) => t.id).filter((id) => RM.guideEdit.indexOf(id) === -1));
 /* Монгол нэр нь зориудаар латинаар үлддэг нэрс (товчлолын задаргаа) */
 const LATIN_OK = new Set([
   "BRAW", "OTIO", "H.265 (HEVC)", "23.976 fps"
@@ -192,7 +194,8 @@ for (const r of D.rows) {
   console.log("  Загварын цэгүүдийн гарын авлага: " + withLong + " / " + spotIds.size);
 }
 for (const id of guideBad) warn("Жишээтэй зааврын id толинд эсвэл жагсаалтад алга: " + id);
-console.log("  Жишээтэй заавар: " + RM.fz.tools.length + " хэрэгсэл, " + RM.fz.recipes.length + " хамтын жишээ");
+console.log("  Жишээтэй заавар: Fusion " + RM.fz.tools.length + " хэрэгсэл, " + RM.fz.recipes.length + " хамтын жишээ · Edit " +
+  RM.ez.tools.length + " хэрэгсэл, " + RM.ez.recipes.length + " хамтын жишээ");
 
 /* 11 · Хайлтын эрүүл мэнд */
 const probes = ["ripple", "долгиолон", "node", "нод", "green screen", "ногоон дэлгэц",
