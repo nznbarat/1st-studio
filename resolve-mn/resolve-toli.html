@@ -239,10 +239,13 @@ mark{background:rgba(245,168,60,.28);color:#ffd79a;border-radius:3px;padding:0 2
   display:none;margin-top:10px;border-top:1px dashed var(--ask-line);padding-top:8px
 }
 html.ask-on .ask{display:block}
-.ask summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px;user-select:none;
-  font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ask-sky)}
+.ask summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:7px;user-select:none;width:fit-content;max-width:100%;
+  font-size:12.5px;color:var(--ask-text);background:rgba(217,119,87,.10);border:1px solid rgba(217,119,87,.45);border-radius:16px;padding:4px 12px 4px 10px}
+.ask summary:hover{background:rgba(217,119,87,.18);border-color:#d97757}
+.ask summary b{font-weight:600}
+.ask summary small{font-size:11px;color:var(--ask-dim)}
 .ask summary::-webkit-details-marker{display:none}
-.ask summary::before{content:"▸";display:inline-block;transition:transform .15s}
+.ask summary::before{content:"▸";display:inline-block;transition:transform .15s;color:var(--ask-dim)}
 .ask[open] summary::before{transform:rotate(90deg)}
 .ask .ask-star{color:#d97757}
 .ask-body{margin-top:8px;display:flex;flex-direction:column;gap:8px}
@@ -272,6 +275,16 @@ html.ask-on .ask{display:block}
 .ask-hint b{color:var(--ask-text)}
 .ask-link{font-size:11.5px;color:var(--ask-sky);background:none;border:0;padding:0;text-decoration:underline;cursor:pointer}
 .ask-key{display:flex;flex-direction:column;gap:6px;background:var(--ask-panel);border:1px solid var(--ask-line);border-radius:10px;padding:10px}
+
+/* толгойн тэмдэг */
+.ask-chipbar{display:inline-flex;align-items:center;gap:6px;font-size:12px;white-space:nowrap;border-radius:14px;padding:5px 11px;
+  border:1px solid rgba(217,119,87,.5);background:rgba(217,119,87,.10);color:#f1e6df;cursor:pointer;flex-shrink:0}
+.ask-chipbar .s{color:#d97757}
+.ask-chipbar.off{border-color:#3a4c5e;background:none;color:#93a5b5} .ask-chipbar.off .s{color:#93a5b5}
+.ask-chipbar.wait{opacity:.7}
+.ask-pop{position:fixed;z-index:9999;max-width:min(340px,calc(100vw - 16px));background:#18242f;border:1px solid #3a4c5e;border-radius:10px;
+  padding:10px 12px;font-size:12.5px;line-height:1.6;color:#e9eff5;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+@media (max-width:760px){.ask-chipbar .t{display:none}.ask-chipbar{padding:5px 9px}}
 
 </style>
 </head>
@@ -16801,9 +16814,56 @@ Sizing самбарын баруун бүлэг **Blanking** (Input Sizing-д с
   };
 
   /* ── идэвхтэй эсэх: <html class="ask-on"> ── */
-  const on = (v) => document.documentElement.classList.toggle("ask-on", !!v);
+  let state = inClaude ? "wait" : "api";      /* wait | ok | off | api */
+  const on = (v) => {
+    document.documentElement.classList.toggle("ask-on", !!v);
+    if (inClaude) state = v ? "ok" : "off";
+    chipUpdate();
+  };
   let samplePromise = null;
   const getSample = () => samplePromise || (samplePromise = window.claude.use("sample").catch(() => null));
+
+  /* ── Толгойн тэмдэг: Claude холбогдсон эсэх, хаанаас асуух ── */
+  let chip = null, pop = null;
+  const WHERE = "Нэр томьёоны карт бүрийн доор (загварт — баруун талын тайлбарын самбарт) «✦ Claude-аас асуух» мөрийг нээнэ.";
+  function chipText() {
+    if (state === "ok") return ["Claude холбогдсон", "claude.ai-ийн Claude таны эрхээр хариулна; анх асуухад зөвшөөрөл асууна. " + WHERE];
+    if (state === "wait") return ["Claude…", "Claude-той холбогдож байна."];
+    if (state === "off") return ["Claude холбогдоогүй", "Энэ харагдацад Claude-ын чадвар ажиллахгүй байна — хуудсыг шинэ цонхонд, эсвэл дэмждэггүй аппаар нээсэн байж магадгүй. claude.ai дээрх artifact-аар нь нээх, эсвэл татаж авсан файлд өөрийн API түлхүүрээр ашиглана уу."];
+    return store.get(LS.key)
+      ? ["Claude · API түлхүүр", "Таны Anthropic API түлхүүрээр холбогдоно. " + WHERE]
+      : ["Claude · түлхүүр алга", "Энэ файлд Claude-ыг өөрийн Anthropic API түлхүүрээр холбоно. " + WHERE + " Эхний удаа ⚙ Тохиргоо нээгдэж түлхүүр асууна."];
+  }
+  function chipUpdate() {
+    if (!chip) return;
+    const [t, tip] = chipText();
+    chip.className = "ask-chipbar " + state;
+    chip.querySelector(".t").textContent = t;
+    chip.title = tip;
+    if (pop) pop.textContent = tip;
+  }
+  function chipMount() {
+    const top = document.getElementById("top");
+    if (!top || chip) return;
+    chip = el("button", { type: "button", class: "ask-chipbar", "aria-expanded": "false" },
+      [el("span", { class: "s", text: "✦" }), el("span", { class: "t" })]);
+    chip.addEventListener("click", () => {
+      if (pop) { pop.remove(); pop = null; chip.setAttribute("aria-expanded", "false"); return; }
+      pop = el("div", { class: "ask-pop", role: "note" });
+      document.body.appendChild(pop);
+      const r = chip.getBoundingClientRect();
+      pop.style.top = Math.round(r.bottom + 8) + "px";
+      pop.style.right = Math.max(8, Math.round(window.innerWidth - r.right)) + "px";
+      chip.setAttribute("aria-expanded", "true");
+      chipUpdate();
+    });
+    document.addEventListener("click", (e) => { if (pop && !chip.contains(e.target)) { pop.remove(); pop = null; chip.setAttribute("aria-expanded", "false"); } });
+    const sp = top.querySelector(".spacer");
+    if (sp && sp.nextSibling) top.insertBefore(chip, sp.nextSibling); else top.appendChild(chip);
+    chipUpdate();
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", chipMount); else chipMount();
+
   if (inClaude) getSample().then((s) => on(!!s));
   else on(true);
 
@@ -16968,9 +17028,10 @@ Sizing самбарын баруун бүлэг **Blanking** (Input Sizing-д с
       store.set(LS.key, k);
       if (!sel.hidden && sel.value) store.set(LS.model, sel.value);
       msg.textContent = "Хадгаллаа.";
+      chipUpdate();
       onDone && onDone();
     };
-    del.onclick = () => { store.set(LS.key, ""); store.set(LS.model, ""); inp.value = ""; fill([]); msg.textContent = "Түлхүүрийг энэ хөтчөөс устгалаа."; onDone && onDone(); };
+    del.onclick = () => { store.set(LS.key, ""); store.set(LS.model, ""); inp.value = ""; fill([]); msg.textContent = "Түлхүүрийг энэ хөтчөөс устгалаа."; chipUpdate(); onDone && onDone(); };
 
     box.append(
       el("p", { class: "ask-hint", html: "Энэ файлд Claude-ыг <b>өөрийн Anthropic API түлхүүрээр</b> холбоно — " +
@@ -16992,7 +17053,7 @@ Sizing самбарын баруун бүлэг **Blanking** (Input Sizing-д с
 
   A.box = function (row) {
     const det = el("details", { class: "ask" });
-    det.appendChild(el("summary", { html: "<span class=\"ask-star\">✦</span> Claude-аас асуух" }));
+    det.appendChild(el("summary", { html: "<span class=\"ask-star\">✦</span><b>Claude-аас асуух</b><small>гүнзгий асуулт</small>" }));
     det.addEventListener("toggle", () => { if (det.open && !det.dataset.built) build(det, row); });
     return det;
   };

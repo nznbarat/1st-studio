@@ -25,9 +25,56 @@
   };
 
   /* ── идэвхтэй эсэх: <html class="ask-on"> ── */
-  const on = (v) => document.documentElement.classList.toggle("ask-on", !!v);
+  let state = inClaude ? "wait" : "api";      /* wait | ok | off | api */
+  const on = (v) => {
+    document.documentElement.classList.toggle("ask-on", !!v);
+    if (inClaude) state = v ? "ok" : "off";
+    chipUpdate();
+  };
   let samplePromise = null;
   const getSample = () => samplePromise || (samplePromise = window.claude.use("sample").catch(() => null));
+
+  /* ── Толгойн тэмдэг: Claude холбогдсон эсэх, хаанаас асуух ── */
+  let chip = null, pop = null;
+  const WHERE = "Нэр томьёоны карт бүрийн доор (загварт — баруун талын тайлбарын самбарт) «✦ Claude-аас асуух» мөрийг нээнэ.";
+  function chipText() {
+    if (state === "ok") return ["Claude холбогдсон", "claude.ai-ийн Claude таны эрхээр хариулна; анх асуухад зөвшөөрөл асууна. " + WHERE];
+    if (state === "wait") return ["Claude…", "Claude-той холбогдож байна."];
+    if (state === "off") return ["Claude холбогдоогүй", "Энэ харагдацад Claude-ын чадвар ажиллахгүй байна — хуудсыг шинэ цонхонд, эсвэл дэмждэггүй аппаар нээсэн байж магадгүй. claude.ai дээрх artifact-аар нь нээх, эсвэл татаж авсан файлд өөрийн API түлхүүрээр ашиглана уу."];
+    return store.get(LS.key)
+      ? ["Claude · API түлхүүр", "Таны Anthropic API түлхүүрээр холбогдоно. " + WHERE]
+      : ["Claude · түлхүүр алга", "Энэ файлд Claude-ыг өөрийн Anthropic API түлхүүрээр холбоно. " + WHERE + " Эхний удаа ⚙ Тохиргоо нээгдэж түлхүүр асууна."];
+  }
+  function chipUpdate() {
+    if (!chip) return;
+    const [t, tip] = chipText();
+    chip.className = "ask-chipbar " + state;
+    chip.querySelector(".t").textContent = t;
+    chip.title = tip;
+    if (pop) pop.textContent = tip;
+  }
+  function chipMount() {
+    const top = document.getElementById("top");
+    if (!top || chip) return;
+    chip = el("button", { type: "button", class: "ask-chipbar", "aria-expanded": "false" },
+      [el("span", { class: "s", text: "✦" }), el("span", { class: "t" })]);
+    chip.addEventListener("click", () => {
+      if (pop) { pop.remove(); pop = null; chip.setAttribute("aria-expanded", "false"); return; }
+      pop = el("div", { class: "ask-pop", role: "note" });
+      document.body.appendChild(pop);
+      const r = chip.getBoundingClientRect();
+      pop.style.top = Math.round(r.bottom + 8) + "px";
+      pop.style.right = Math.max(8, Math.round(window.innerWidth - r.right)) + "px";
+      chip.setAttribute("aria-expanded", "true");
+      chipUpdate();
+    });
+    document.addEventListener("click", (e) => { if (pop && !chip.contains(e.target)) { pop.remove(); pop = null; chip.setAttribute("aria-expanded", "false"); } });
+    const sp = top.querySelector(".spacer");
+    if (sp && sp.nextSibling) top.insertBefore(chip, sp.nextSibling); else top.appendChild(chip);
+    chipUpdate();
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", chipMount); else chipMount();
+
   if (inClaude) getSample().then((s) => on(!!s));
   else on(true);
 
@@ -192,9 +239,10 @@
       store.set(LS.key, k);
       if (!sel.hidden && sel.value) store.set(LS.model, sel.value);
       msg.textContent = "Хадгаллаа.";
+      chipUpdate();
       onDone && onDone();
     };
-    del.onclick = () => { store.set(LS.key, ""); store.set(LS.model, ""); inp.value = ""; fill([]); msg.textContent = "Түлхүүрийг энэ хөтчөөс устгалаа."; onDone && onDone(); };
+    del.onclick = () => { store.set(LS.key, ""); store.set(LS.model, ""); inp.value = ""; fill([]); msg.textContent = "Түлхүүрийг энэ хөтчөөс устгалаа."; chipUpdate(); onDone && onDone(); };
 
     box.append(
       el("p", { class: "ask-hint", html: "Энэ файлд Claude-ыг <b>өөрийн Anthropic API түлхүүрээр</b> холбоно — " +
@@ -216,7 +264,7 @@
 
   A.box = function (row) {
     const det = el("details", { class: "ask" });
-    det.appendChild(el("summary", { html: "<span class=\"ask-star\">✦</span> Claude-аас асуух" }));
+    det.appendChild(el("summary", { html: "<span class=\"ask-star\">✦</span><b>Claude-аас асуух</b><small>гүнзгий асуулт</small>" }));
     det.addEventListener("toggle", () => { if (det.open && !det.dataset.built) build(det, row); });
     return det;
   };
