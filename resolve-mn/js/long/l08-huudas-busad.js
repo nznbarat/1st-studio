@@ -302,7 +302,7 @@ Gallery (Color хуудасны дээд зүүн) нь **хадгалсан к�
 ## Хэрэглэх алхам
 1. **Grab Still** — Viewer дээр баруун товч → Grab Still ([k:Ctrl+Alt+G]), эсвэл Gallery-ийн товч. Still үүснэ.
 2. **Apply Grade** — Still дээр баруун товч → Apply Grade, эсвэл Still дээр **дунд товч** — одоогийн клипт grade орно.
-3. **Wipe** — Still дээр товшиход Viewer дээр эх ба Still хагасаар харагдана (харьцуулах); дэлгэцийн Image Wipe товч; Wipe чиглэл, хувь. Дахин товшиж хаана.
+3. **Wipe** — Still дээр товшиход Viewer дээр эх ба Still хагасаар харагдана (харьцуулах); дэлгэцийн ◧ товч, viewer-ийн … → Show Reference Wipe [k:Ctrl+W] (Resolve 21-ийн нэр; өмнө Image Wipe); хэлбэр — Wipe Style ›. [[show-reference-wipe]]. Дахин товшиж хаана.
 4. Still дээр давхар товшиж нэр, тэмдэглэл.
 5. Баруун товч → **Export** (.drx + зураг) — өөр төсөл, компьютер руу; Import.
 6. Still-ийг **PowerGrade** цомог руу чирвэл бүх төсөлд бэлэн (Look-ийн сан).

@@ -241,16 +241,16 @@
        ${H.TG("openfx", "✦", "Effects")}
        ${H.TG("lightbox", "▦", "Lightbox")}`, false)}
     <div class="rs-row2">
-      <span class="hs" data-t="zoom-slider">12.5% ⌄</span><span class="hs act" data-t="image-wipe" data-tab="vr:wipe">◧</span><span class="hs" data-t="split-screen" data-tab="vr:split">▦</span><span class="hs" data-t="highlight" data-tab="vr:hl">◐</span>
+      <span class="hs" data-t="zoom-slider">12.5% ⌄</span><span class="hs act" data-t="show-reference-wipe" data-tab="vr:wipe">◧</span><span class="hs" data-t="split-screen" data-tab="vr:split">▦</span><span class="hs" data-t="highlight" data-tab="vr:hl">◐</span>
       <span class="sp"></span>
       <b class="hs" data-t="timeline">SE…0s ⌄</b><span class="tc hs" data-t="timecode">00:00:00:00 ⌄</span>
-      <span class="hs" data-t="viewer-mode">▭ ⌄ ▦ ⌄ ⚙ ⌄</span><span class="hs" data-t="reset">⟲</span><span class="hs" data-t="full-screen-window">⛶</span><span>…</span>
+      <span class="hs" data-t="viewer-mode">▭ ⌄ ▦ ⌄ ⚙ ⌄</span><span class="hs" data-t="reset">⟲</span><span class="hs" data-t="full-screen-window">⛶</span><span class="hs mi" data-t="viewer-options-menu-color">…</span>
       <span class="hs mi" data-t="node-editor-pointer-menu">↖ ⌄</span><span class="hs mi" data-t="add-node-menu">⚌ ⌄</span>
       <b class="hs" data-t="corrector-node">Clip ⌄</b>
-      <span class="hs" data-t="node-editor">⬡ ⌄</span><span>…</span>
+      <span class="hs mi" data-t="node-view-menu">⬡ ⌄</span><span class="hs mi" data-t="node-editor-options-menu">…</span>
       <span class="sp"></span>
       <span class="hs mi" data-t="resolve-fx-blur">Library</span><b class="hs" data-t="openfx" style="border-bottom:2px solid var(--rs-red);padding-bottom:2px">Settings</b>
-      <span class="hs" data-t="help-search">⌕</span><span>…</span>
+      <span class="hs" data-t="help-search">⌕</span><span class="hs mi" data-t="effects-options-menu-color">…</span>
     </div>
     <div class="rs-body">
       <div class="cl-top">
@@ -275,7 +275,7 @@
             <div class="cnode hs" data-t="serial-node" style="left:216px;top:66px"><div class="th"></div><span>03 ⊘</span></div>
             <div class="cnode sel hs" data-t="serial-node" style="left:320px;top:170px"><div class="th"></div><span>04 ⊘ ✎</span></div>
             <span class="ndot out"></span>
-            <div class="npager hs" data-t="node-graph-order">● ○</div>
+            <div class="npager hs" data-t="display-node-stack-navigation">● ○</div>
           </div></div>
         </div>
         <div class="pane insp hs" data-t="openfx" style="flex:1">
@@ -311,9 +311,9 @@
       </div>
 
       <div class="pal-rail hs" data-t="primaries">
-        <span class="pi hs" data-t="camera-raw" title="Camera Raw">◉</span><span class="pi hs" data-t="shot-match" title="Color Match">▦</span>
-        <span class="pi act hs" data-t="color-wheels" data-tab="cp:wheels" title="Color Wheels">◑</span><span class="pi hs" data-t="hdr-palette" title="HDR">✸</span>
-        <span class="pi hs" data-t="splitter-combiner" title="RGB Mixer">⁂</span><span class="pi hs" data-t="motion-effects" title="Motion Effects">⧗</span>
+        <span class="pi hs" data-t="camera-raw" title="Camera Raw">◉</span><span class="pi hs" data-t="color-match-palette" title="Color Match">▦</span>
+        <span class="pi act hs" data-t="color-wheels" data-tab="cp:wheels" title="Color Wheels">◑</span><span class="pi hs" data-t="hdr-palette" title="HDR Grade">✸</span>
+        <span class="pi hs" data-t="rgb-mixer" title="RGB Mixer">⁂</span><span class="pi hs" data-t="motion-effects" title="Motion Effects">⧗</span>
         <span class="pi hs" data-t="curves" title="Curves">∿</span><span class="pi hs" data-t="color-warper" title="Color Warper">⬚</span>
         <span class="pi hs" data-t="qualifier" title="Qualifier">◌</span><span class="pi hs" data-t="power-window" title="Windows">▭</span>
         <span class="pi hs" data-t="window-tracker" data-tab="cp:tracker" title="Tracker">⊹</span><span class="pi hs" data-t="magic-mask" title="Magic Mask">✦</span>

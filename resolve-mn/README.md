@@ -3,7 +3,7 @@
 DaVinci Resolve-ийн интерфейсийн монгол хэл дээрх лавлах.
 Программын цэс, самбар, товчлуур, тохиргоо бүрийн монгол нэр, тайлбар, хаана байдгийг цуглуулсан.
 
-**1198 нэр томьёо · 52 ангилал · 135 товчлуур · 799 гарын авлагын дэлгэрэнгүй тайлбар · 6 ажлын урсгал · 8 хуудасны загвар · 37 нээгддэг цэс · 2 жишээтэй заавар (Fusion 28, Edit 26 хэрэгсэл)**
+**1225 нэр томьёо · 52 ангилал · 137 товчлуур · 818 гарын авлагын дэлгэрэнгүй тайлбар · 6 ажлын урсгал · 8 хуудасны загвар · 41 нээгддэг цэс · 2 жишээтэй заавар (Fusion 28, Edit 26 хэрэгсэл)**
 
 ---
 
@@ -118,7 +118,7 @@ Selection, Position Lock · туг, тэмдэглэгээ · Full Extent/Detail
 ### Интерфейсийн загвар
 
 `interface.html` нь Resolve-ийн найман хуудсыг (Media, Photo, Cut, Edit, Fusion, Color,
-Fairlight, Deliver) хуулбарлан харуулна. Нийт **763 товших цэг** (414 өвөрмөц нэр томьёо) —
+Fairlight, Deliver) хуулбарлан харуулна. Нийт **767 товших цэг** (418 өвөрмөц нэр томьёо) —
 цэг бүр толины нэр томьёотой шууд холбогдсон тул тайлбар давхардаж бичигдээгүй.
 Өнгө нь Resolve Studio 21-ийн дэлгэцийн зургаас хэмжсэн бодит утга
 (`css/sim.css` доторх `--rs-*` хувьсагчид).
@@ -128,7 +128,7 @@ Fairlight, Deliver) хуулбарлан харуулна. Нийт **763 тов
 - **Цэг харуулах** товч бүх идэвхтэй хэсгийг тодруулна — юу товшиж болохыг олоход.
 - Баруун талын жагсаалт нь тухайн хуудасны бүх цэгийг ангиллаар нь харуулна.
 - Доод талын хуудасны мөр нь бодит Resolve шиг ажиллана.
-- **13 цэс дарахад үнэхээр нээгдэнэ** — 323 мөр, товчлууртайгаа. Бусад 24 унждаг жагсаалт (хэрэгслийн мөр, viewer, Media Pool, Tracker, Nodes) — нийт 37 цэс, 542 мөр.
+- **13 цэс дарахад үнэхээр нээгдэнэ** — 323 мөр, товчлууртайгаа. Бусад 28 унждаг жагсаалт (хэрэгслийн мөр, viewer, Media Pool, Tracker, Nodes) — нийт 41 цэс, 574 мөр.
 - **Edit цэсний командууд хуудаснаас хамаарч саарал болно** — бодит программ шиг,
   Fusion, Color, Fairlight хуудсан дээр цэсийг нээсэн зургаас мөр бүрээр:
   Fusion — 5 мөр идэвхтэй (Undo, Redo, History, Select All, Deselect All);
@@ -163,7 +163,7 @@ Fairlight, Deliver) хуулбарлан харуулна. Нийт **763 тов
   харагдац ▦ ⌄, ⌕ хайлтын мөр (Search In, Display), ⇅ эрэмбэ (25 мөр), … тохиргоо (13 мөр),
   **Create Smart Bin**, ☁ **Blackmagic Cloud Folder** цонх. Viewer-ийн толгойн ⛶ Guides самбар
   (Social Media, Broadcast and Film, Safe Area, Ruler), прокси ⌄, timeline-ийн нягтрал ⌄, … цэс.
-- **Color хуудас** (2026-09-26) — viewer-ийн дээд мөрийн ◧ Image Wipe / ▦ Split Screen / ◐ Highlight
+- **Color хуудас** (2026-09-26) — viewer-ийн дээд мөрийн ◧ Show Reference Wipe / ▦ Split Screen / ◐ Highlight
   (нэг нь идэвхтэй, доор нь өөрийн мөр): wipe-ийн 9 хэлбэр (Horizontal, Vertical, Diagonal, Mix, Alpha, A/B,
   Box, Venetian Blind, Checker Board), Split Screen-ийн «Version ⌄» (11 мөр), Highlight-ийн 3 товч.
   Палитрын Tracker дүрс → **Tracker - Window** самбар (6 мөрдөлтийн товч, Pan/Tilt/Zoom/Rotate/3D,
@@ -395,7 +395,9 @@ Color хуудасны нодны хөдөлгүүр дээр засварлан
 - **Color хуудас** (2026-09-26) — wipe-ийн 8 tooltip (Horizontal … Checker Board), Split Screen-ийн 11 мөр,
   Tracker-ийн Window / Stabilizer / FX, Clear All Tracking Points, Insert / Set Point / Delete tooltip,
   Cloud Tracker ⌄ (Cloud Tracker, Point Tracker, AI IntelliTrack), Tracker-ийн … цэс (9 мөр), Keyframes самбарын
-  мөрүүд ба All ⌄ (All, Color, Sizing), палитрын Keyframes / Scopes / Info tooltip.
+  мөрүүд ба All ⌄ (All, Color, Sizing), палитрын Keyframes / Scopes / Info tooltip; viewer-ийн … (20 мөр),
+  Nodes-ийн харагдац ⌄ (Graph / List View) ба … (8 мөр), Effects-ийн … (3 мөр); палитрын эхний 5 дүрсний
+  tooltip (Camera Raw, Color Match, Color Wheels, HDR Grade, RGB Mixer).
 
 Хараахан баталгаажуулаагүй: Fusion Inspector-ийн толгойн дүрсүүдийн (● ⌄, хувилбар, хадаас, түгжээ,
 буцаах) tooltip; Source Color/Gamma Space-ийн доторх мөрүүд; Cut хуудасны дээд timeline-ийн 3 дахь товчны tooltip нэр
@@ -427,6 +429,8 @@ Edit Options, Go To, Sort by…) доторх мөрүүд; Resolve 20–21-д �
 | Edit-ийн дэлгэц | — | Зурагт ганц дэлгэц (Single Viewer); загварт Resolve-ийн анхны Source/Timeline хос дэлгэцийг сонгосон |
 | Edit timeline-ийн 🔒 товч | Sync Lock | **Position Lock** (tooltip) |
 | Color Tracker-ийн горим | Унждаг цэс, «Perspective 3D» | Толгойн 3 дүрс (Window, Stabilizer, FX), чагт нь «3D» |
+| Color viewer-ийн ◧ товч | Image Wipe | **Show Reference Wipe** (Ctrl+W) — viewer-ийн … цэснээс |
+| Палитрын Color Match, RGB Mixer дүрс | Shot Match, Splitter/Combiner нэр томьёо руу | Тусдаа нэр томьёо (tooltip-оор); HDR дүрсний tooltip — HDR Grade |
 | Edit timeline-ийн засварын горимын дараалал | Selection, Trim, Dynamic Trim, Blade | Selection, Trim, **Blade, Dynamic Trim (Slip)** |
 | Edit timeline-ийн 2, 3 дахь товч | Track, Record Voiceover | **Show Keyframe Tray**, **Voiceover** |
 | Томруулалтын 3 товч | Zoom to Fit, Zoom In, Zoom Out | **Full Extent Zoom, Detail Zoom, Custom Zoom** |

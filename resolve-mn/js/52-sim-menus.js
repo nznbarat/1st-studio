@@ -854,6 +854,63 @@
       ["serial-node", "Add Serial"],
       ["parallel-node", "Add Parallel"],
       ["layer-node", "Add Layer"]
+    ]},
+
+    /* Color viewer-ийн … (20 мөр, 2026-09-26) */
+    "viewer-options-menu-color": { label: "Viewer Options Menu (Color)", verified: true, items: [
+      ["highlight", "Highlight", "", "›"],
+      ["show-rgb-picker-values-in", "Show RGB Picker Values In", "", "›"],
+      ["show-viewer-channels", "Show Viewer Channels", "", "›"],
+      "-",
+      ["split-screen", "Split Screen", "", "›"],
+      "-",
+      ["timeline-sort-order", "Timeline Sort Order", "", "›"],
+      ["previous-timeline-next-timeline", "Previous Timeline"],
+      ["previous-timeline-next-timeline", "Next Timeline"],
+      "-",
+      ["show-viewer-options", "Show Viewer Options", "✓"],
+      ["show-marker-overlays", "Show Marker Overlays", "✓"],
+      ["window-outline", "Window Outline", "", "›"],
+      ["video-output-options", "Video Output Options", "", "›"],
+      "-",
+      ["marker", "Markers", "", "›"],
+      "-",
+      ["show-reference-wipe", "Show Reference Wipe", "Ctrl+W"],
+      ["reference-wipe-mode", "Reference Wipe mode", "", "›"],
+      ["wipe-style-toolbar-color-viewer", "Wipe Style", "", "›"],
+      ["invert-wipe", "Invert Wipe", "Alt+W"],
+      ["reference-reposition", "Reference Reposition", "Alt+Shift+R"],
+      "-",
+      ["gang-timeline-wipe-with-current-clip", "Gang Timeline Wipe With Current Clip"]
+    ]},
+
+    /* Color → Nodes: харагдац ⌄ ба … (2026-09-26) */
+    "node-view-menu": { label: "Node View Menu", verified: true, items: [
+      ["graph-view-list-view-nodes", "Graph View", "✓"],
+      ["graph-view-list-view-nodes", "List View"],
+      "-",
+      ["node-view-menu", "Size", "slider:6"]
+    ]},
+    "node-editor-options-menu": { label: "Node Editor Options Menu", verified: true, items: [
+      ["switching-clips-selects", "Switching Clips Selects", "", "›"],
+      ["show-thumbnails-nodes", "Show Thumbnails", "✓"],
+      ["disable-thumbnail-refresh-during-playback", "Disable Thumbnail Refresh during Playback"],
+      "-",
+      ["track-node-changes-using-color", "Track Node Changes Using Color", "", "›"],
+      ["reset-all-node-colors", "Reset all node colors"],
+      "-",
+      ["display-node-stack-navigation", "Display Node Stack Navigation", "✓"],
+      "-",
+      ["reset-all-grades-and-nodes", "Reset All Grades and Nodes"],
+      ["reset-all-node-stack-layers", "Reset All Node Stack Layers"]
+    ]},
+
+    /* Color → Effects (Library / Settings) … */
+    "effects-options-menu-color": { label: "Effects Options Menu (Color)", verified: true, items: [
+      ["show-all-favorites-effects", "Show All", "✓"],
+      ["show-all-favorites-effects", "Favorites"],
+      "-",
+      ["show-legacy-resolve-fx", "Show Legacy Resolve FX"]
     ]}
   };
 
