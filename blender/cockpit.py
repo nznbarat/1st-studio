@@ -1950,7 +1950,11 @@ def pick_device():
         except Exception:
             continue
     if want == "GPU":
-        print("[1st Studio] GPU олдсонгүй, CPU-гаар ажиллана.")
+        # Тулгасан бол GPU гэж ТЭМДЭГЛЭНЭ. Энд (cloud) GPU байхгүй ч
+        # .blend-ийг таны компьютер дээр нээхэд GPU-гаар рендерлэх ёстой.
+        # GPU-гүй машин дээр Cycles өөрөө CPU руу шилждэг (5.2.2-т шалгасан).
+        print("[1st Studio] GPU энд олдсонгүй — файлд GPU гэж тэмдэглэв.")
+        return "GPU"
     return "CPU"
 
 

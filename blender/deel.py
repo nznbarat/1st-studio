@@ -1268,6 +1268,12 @@ def pick_device():
                 dev.use = True
                 print("[1st Studio] GPU: %s (%s)" % (kind, dev.name))
                 return "GPU"
+    if want == "GPU":
+        # Тулгасан бол GPU гэж ТЭМДЭГЛЭНЭ — cloud-д GPU байхгүй ч .blend-ийг
+        # таны компьютер дээр нээхэд GPU-гаар рендерлэх ёстой. GPU-гүй машин
+        # дээр Cycles өөрөө CPU руу шилждэг (5.2.2-т шалгасан).
+        print("[1st Studio] GPU энд олдсонгүй — файлд GPU гэж тэмдэглэв.")
+        return "GPU"
     return "CPU"
 
 

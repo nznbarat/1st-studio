@@ -25,8 +25,14 @@ blender -b -P blender/cockpit.py -- --render shot.png --res 1920x1080 --samples 
 blender -b -P blender/cockpit.py -- --render shot.png --angle seat
 ```
 
-`blender` команд байхгүй бол `pip install bpy` хийгээд:
-`python3 blender/cockpit.py -- --render shot.png`
+**Blender 5.2.2 LTS** дээр ажиллана (5.0.1 дээр ч шалгагдсан).
+
+`blender` команд байхгүй бол (жишээ нь cloud орчинд) `blender/run.sh`
+ашиглана — bpy 5.2.2-ийг Python 3.13-тай хамт өөрөө суулгаад ажиллуулна:
+
+```
+blender/run.sh blender/cockpit.py -- --render shot.png
+```
 
 ### Юу үүсэх вэ
 
@@ -549,7 +555,7 @@ blender -b -P blender/deel.py -- --move reveal --frames 720 --anim \
 тогтмол хурдаар ойртож их биений хажуу тал руу мөргөнө.
 
 ```
-python3 blender/impact.py -- --angle pov --frames 720 \
+blender -b -P blender/impact.py -- --angle pov --frames 720 \
     --res 1920x1080 --samples 96 --device GPU --anim --render out/impact
 ```
 
@@ -649,14 +655,20 @@ python3 blender/impact.py -- --angle pov --frames 720 \
 | `--no-glare` | компоновкгүй |
 | `--mp4` / `--range A-B` | видео бичих / зөвхөн хэсэг рендерлэх |
 
-## Blender-ийн хувилбар: 5.0.1 ба 5.2.2 LTS
+## Blender-ийн хувилбар: 5.2.2 LTS (үндсэн)
 
-Cloud орчинд хоёр хувилбар зэрэгцэн суусан, бие биенээ хөндөхгүй:
+2026-09-26-нд 5.0.1-ээс **5.2.2 LTS** руу шилжив. LTS нь 2 жил засвар
+авдаг тул урт төсөлд тохиромжтой.
 
-| хавтас | bpy | Python | ажиллуулах |
+Cloud орчинд `blender/run.sh` нь 5.2.2-ийг ажиллуулна. Container session
+бүрт шинээр үүсдэг тул `bpylib52/` алга байвал өөрөө суулгана (хоосон
+хавтсанд туршихад 17 сек). Өөр хувилбар хэрэгтэй бол:
+`BPY_VERSION=5.0.1 BPY_LIB=./bpylib BPY_PYTHON=python3.11 blender/run.sh …`
+
+| хавтас | bpy | Python | төлөв |
 |---|---|---|---|
-| `bpylib/` | 5.0.1 | 3.11 | `PYTHONPATH=./bpylib python3 blender/…` |
-| `bpylib52/` | **5.2.2 LTS** | 3.13 | `PYTHONPATH=./bpylib52 python3.13 blender/…` |
+| `bpylib52/` | **5.2.2 LTS** | 3.13 | үндсэн — `blender/run.sh` |
+| `bpylib/` | 5.0.1 | 3.11 | нөөц, харьцуулалтад |
 
 5.1-ээс хойшхи бүх `bpy` wheel **Python 3.13** шаарддаг
 (`requires_python: ==3.13.*`). Тиймээс `pip index versions bpy` нь
@@ -675,9 +687,9 @@ python3.13 -m pip install --target ./bpylib52 bpy==5.2.2
 5.0-д тааралдсан бүх API өөрчлөлт (compositor бүлэг + RLayers, Glare-ийн
 "Type" сокет, `media_type='VIDEO'`) 5.2-т хэвээр.
 
-**Анхааруулга:** `.blend` файлыг ТАНЫ компьютер дээрх Blender-ийн
-хувилбараар хадгалах нь зөв. 5.2-оор хадгалсан файлыг 5.0 дээр нээвэл
-"шинэ хувилбараар хадгалсан" гэсэн анхааруулга гарна.
+**`.blend` файлууд** 5.2.2-оор дахин гаргагдсан. Blender 5.2 дээр
+нээнэ; 5.0 дээр нээвэл "шинэ хувилбараар хадгалсан" гэсэн анхааруулга
+гарна.
 
 **Blender 6.0-д** `Material.use_nodes`, `World.use_nodes` устана
 (5.2 дээр DeprecationWarning гардаг). 6.0 гарахад эдгээр мөрийг засна.
