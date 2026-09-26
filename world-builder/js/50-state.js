@@ -290,6 +290,7 @@
       out.frameSubject = /[а-яөүё]/i.test(fs) ? F(fs) : { mn: "", en: fs, auto: false, unk: [], src: "manual" };
     } else out.frameSubject = fixField(fs);
     out.ref = b.ref || "";
+    out.refSrc = b.refSrc === "prompt" ? "prompt" : "";
     out.locked = !!b.locked;
     out.lockedAt = b.lockedAt || 0;
     /* Хуучин хадгалалтад агшин зураг байхгүй — одоогийн харагдацад итгэнэ */

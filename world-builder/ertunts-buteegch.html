@@ -6281,6 +6281,7 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
       out.frameSubject = /[а-яөүё]/i.test(fs) ? F(fs) : { mn: "", en: fs, auto: false, unk: [], src: "manual" };
     } else out.frameSubject = fixField(fs);
     out.ref = b.ref || "";
+    out.refSrc = b.refSrc === "prompt" ? "prompt" : "";
     out.locked = !!b.locked;
     out.lockedAt = b.lockedAt || 0;
     /* Хуучин хадгалалтад агшин зураг байхгүй — одоогийн харагдацад итгэнэ */
@@ -6743,7 +6744,7 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
         .forEach((t) => L.push("  - " + t));
     }
 
-    L.push("", "=== LAYER 2 · LOOK (locked on one frame) ===");
+    L.push("", "=== LAYER 2 · LOOK" + (B.isLocked() ? " (locked on one frame)" : "") + " ===");
     if (txt(b.f.look)) L.push("Visual signature: " + txt(b.f.look) + ".");
     if (txt(b.f.light)) L.push("Lighting: " + txt(b.f.light) + ".");
     if (txt(b.f.palette)) L.push("Palette: " + txt(b.f.palette) + ".");
@@ -7078,10 +7079,18 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
   const RX = {
     audio: /\b(narration|narrator|voice-?over|voices?|dialogue|music|soundtrack|score|sound(s| effects?)?|sfx|ambien(t|ce)|audio|drone|rumble|hum|silence|silent|whoosh|foley)\b/i,
     lookStrong: /\b(photo-?realistic|film grain|grain|anamorphic|aesthetic|style|mood|documentary|realistic scale|look|render(ed)?|texture|hyper-?real|stylized|painterly|animated|anime)\b/i,
-    camera: /\b(takes?|cuts?|shots?|tracking|tracks?|dolly|pans?|tilts?|crane|handheld|steadicam|gimbal|lens|\d+\s?mm|close-?ups?|wide|framing|camera|angles?|zoom|push-?in|pull-?out|orbit(ing)?|aerial|pov|depth of field|bokeh|slow motion|timelapse)\b/i,
+    camera: /\b(takes?|cuts?|shots?|tracking|tracks?|dolly|pans?|tilts?|crane|handheld|steadicam|gimbal|lens|\d+\s?mm|close-?ups?|wide|framing|camera|angles?|zoom|push-?in|pull-?out|orbit(ing)?|aerial|pov|depth of field|bokeh|slow motion|slow-?mo|timelapse|motion blur|shake|shaky|whip pan|rack focus)\b/i,
+    flare: /\b(lens flares?|flares?|glare)\b/i,
     light: /\b(light(s|ing)?|lit|backlit|backlights?|rim|glow(s|ing)?|shadows?|sun(light|set|rise)?|moonlight|volumetric|rays|illuminat\w*|exposure|contrast|golden hour|blue hour|chiaroscuro|flare)\b/i,
     palette: /\b(black|white|gr[ae]y|blue|red|green|yellow|orange|purple|violet|magenta|pink|teal|cyan|amber|gold(en)?|silver|copper|bronze|beige|brown|sand|ochre|crimson|indigo|navy|palette|colou?rs?|tones?|hues?|(de)?saturated|monochrome|warm|cold|cool|pastel|neon|muted)\b/i,
-    lookWeak: /\b(cinematic|realistic|epic|moody|gritty|dreamy|surreal)\b/i
+    lookWeak: /\b(cinematic|realistic|epic|moody|gritty|dreamy|surreal)\b/i,
+    /* Уур амьсгалын тэмдэг нэр — богино хэллэг бол хэв маяг */
+    mood: /^(?:(?:very|slow|fast|quiet|violent|sudden|overwhelming|calm|tense|serene|chaotic|intense|melancholic|dramatic|eerie|peaceful|ominous|heavy|somber|sombre|hopeful|nostalgic|lonely|warm|cold|dark|bleak|tender|gentle|brutal|epic|mysterious|haunting)(?:,\s*|\s+(?:and\s+)?)?)+$/i,
+    /* Өнгөний мөр: өнгөний үг + орчин/өнгөний нэр үг («Deep black space»),
+       харин «white-grey EVA spacesuit» мэт объект биш */
+    paletteNoun: /\b(palette|tones?|colou?rs?|hues?|haze|mist|fog|smoke|space|sky|light|glow|grade|grading|shadows?|bands|tint|wash|backdrop|background|atmosphere|night|dusk|dawn|water|sea|desert|steppe|horizon)\b/i,
+    /* Үйл явдал: «the pod is hurled», «then …», «suddenly …» */
+    action: /\b(is|are|was|were|gets?|being)\b|^(then|suddenly|while|as|and then)\b/i
   };
   const LIGHT_STRONG = /\b(backlight(s|ing)?|backlit|rim light|volumetric|light rays|lighting|key light|golden hour|blue hour|chiaroscuro|hard light|soft light)\b/i;
   const MAXW = { look: 10, camera: 10, light: 18, palette: 6, avoid: 8, audio: 10 };
@@ -7099,64 +7108,81 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     const rows = { look: [], light: [], palette: [], camera: [], avoid: [], audio: [] };
     const pacing = [];
     const ref = [];
+    const skipped = [];
     let frame = "";
     const push = (k, t) => {
       if (!rows[k].some((x) => x.toLowerCase() === t.toLowerCase())) rows[k].push(t);
     };
+    /* Мөр дундуураа таслагдсан (hard-wrap) промтыг буцааж нийлүүлнэ:
+       хоосон мөр = шинэ догол; цагийн хуваарь, [@лавлагаа], жагсаалтын
+       тэмдэгээр эхэлсэн мөр = шинэ хэсэг; бусад мөр өмнөхдөө залгагдана. */
+    const segs = [];
     String(text || "")
       .split(/\r?\n/)
-      .map(normTxt)
-      .filter(Boolean)
-      .forEach((line) => {
-        if (TIMELINE.test(line)) return pacing.push(line);
-        if (REFERENCE.test(line)) return ref.push(line);
-        line.split(/(?<=[.!?])\s+/).forEach((sen) => {
-          sen = sen.replace(/[.!?]+$/, "").trim();
-          if (!sen) return;
-          const long = nw(sen) >= 18;
-          /* Таслал, цэг таслалаар хэллэгүүд; ганц үгтэйг («Slow, heavy,
-             ominous mood») дараагийнхтайгаа нийлүүлнэ. */
-          const raw = sen.split(/\s*[,;]\s*/).filter(Boolean);
-          const parts = [];
-          let carry = "";
-          raw.forEach((c, i) => {
-            if (nw(c) === 1 && i < raw.length - 1 && !/^(no|without)$/i.test(c)) carry += (carry ? ", " : "") + c;
-            else {
-              parts.push(carry ? carry + ", " + c : c);
-              carry = "";
-            }
-          });
-          if (carry) parts.push(carry);
-          let firstUsed = false;
-          parts.forEach((c, idx) => {
-            const t = c.replace(/^(and|with|plus)\s+/i, "").trim();
-            if (!t || /^\d+(?:[.,]\d+)?\s*(s|sec|secs|seconds?)$/i.test(t)) return;
-            let k = "";
-            const neg = /^(no|without|never|avoid)\s+/i.test(t);
-            if (neg && /^(no|without|never)\s+cuts?\b/i.test(t)) k = "camera";
-            else if (RX.audio.test(t) && (neg || !RX.light.test(t))) k = "audio";
-            else if (neg) k = "avoid";
-            else if (RX.lookStrong.test(t)) k = "look";
-            else if (RX.camera.test(t)) k = "camera";
-            else if (RX.light.test(t)) k = "light";
-            else if (RX.palette.test(t)) k = "palette";
-            else if (RX.lookWeak.test(t)) k = "look";
-            if (!k || nw(t) > MAXW[k]) return;
-            /* «A long grey … spaceship» — объектын тайлбар, брэнд биш */
-            if (!["light", "avoid", "audio"].includes(k) && ARTICLE.test(t)) return;
-            /* Урт үйл явдлын өгүүлбэрээс зөвхөн тодорхой гэрэл ба богино өнгө */
-            if (long && !((k === "light" && LIGHT_STRONG.test(t)) || k === "palette" || k === "avoid" || k === "audio")) return;
-            if (idx === 0) firstUsed = true;
-            if (k === "avoid") {
-              const v = t.replace(/^(no|without|never|avoid)\s+/i, "").replace(/\s+yet$/i, "");
-              if (v) push(k, v);
-            } else push(k, t);
-          });
-          /* Эхний үйл явдлын өгүүлбэр — туршилтын кадр (бүтнээр, үгчлэн) */
-          if (!frame && !firstUsed && nw(sen) >= 10 && ARTICLE.test(sen)) frame = sen;
-        });
+      .forEach((raw) => {
+        const line = normTxt(raw);
+        if (!line) return segs.push(null);
+        const fresh = TIMELINE.test(line) || /^[\[@]/.test(line) || /^([-*•]|\d+[.)])\s/.test(line);
+        const last = segs.length ? segs[segs.length - 1] : null;
+        if (last === null || fresh) segs.push(line);
+        else segs[segs.length - 1] = last + " " + line;
       });
-    return { rows: rows, pacing: pacing, frame: frame, ref: ref };
+    segs.filter(Boolean).forEach((seg) => {
+      if (TIMELINE.test(seg)) return pacing.push(seg);
+      seg.split(/(?<=[.!?])\s+/).forEach((sen) => {
+        sen = sen.replace(/[.!?]+$/, "").trim();
+        if (!sen) return;
+        if (REFERENCE.test(sen)) return ref.push(sen + ".");
+        const long = nw(sen) >= 18;
+        /* Таслал, цэг таслалаар хэллэгүүд; ганц үгтэйг («Slow, heavy,
+           ominous mood») дараагийнхтайгаа нийлүүлнэ. */
+        const raw = sen.split(/\s*[,;:]\s*/).filter(Boolean);
+        const parts = [];
+        let carry = "";
+        raw.forEach((c, i) => {
+          if (nw(c) === 1 && i < raw.length - 1 && !/^(no|without)$/i.test(c)) carry += (carry ? ", " : "") + c;
+          else {
+            parts.push(carry ? carry + ", " + c : c);
+            carry = "";
+          }
+        });
+        if (carry) parts.push(carry);
+        let firstUsed = false;
+        let anyUsed = false;
+        parts.forEach((c, idx) => {
+          const t = c.replace(/^(and|with|plus)\s+/i, "").trim();
+          if (!t || /^\d+(?:[.,]\d+)?\s*(s|sec|secs|seconds?)$/i.test(t)) return;
+          let k = "";
+          const neg = /^(no|without|never|avoid)\s+/i.test(t);
+          if (neg && /^(no|without|never)\s+cuts?\b/i.test(t)) k = "camera";
+          else if (RX.audio.test(t) && (neg || !RX.light.test(t))) k = "audio";
+          else if (neg) k = "avoid";
+          else if (RX.lookStrong.test(t)) k = "look";
+          else if (RX.flare.test(t)) k = "light";
+          else if (RX.camera.test(t)) k = "camera";
+          else if (RX.light.test(t)) k = "light";
+          else if (RX.palette.test(t) && RX.paletteNoun.test(t)) k = "palette";
+          else if (RX.lookWeak.test(t) || (nw(t) <= 5 && RX.mood.test(t))) k = "look";
+          if (!k || nw(t) > MAXW[k]) return;
+          /* «A long grey … spaceship» — объектын тайлбар, брэнд биш */
+          if (!["light", "avoid", "audio"].includes(k) && ARTICLE.test(t)) return;
+          /* «then the pod is hurled past the lens» — үйл явдал, брэнд биш */
+          if (!neg && RX.action.test(t) && !(k === "light" && LIGHT_STRONG.test(t))) return;
+          /* Урт үйл явдлын өгүүлбэрээс зөвхөн тодорхой гэрэл ба богино өнгө */
+          if (long && !((k === "light" && LIGHT_STRONG.test(t)) || k === "palette" || k === "avoid" || k === "audio")) return;
+          if (idx === 0) firstUsed = true;
+          anyUsed = true;
+          if (k === "avoid") {
+            const v = t.replace(/^(no|without|never|avoid)\s+/i, "").replace(/\s+yet$/i, "");
+            if (v) push(k, v);
+          } else push(k, t);
+        });
+        /* Эхний дүрслэлийн өгүүлбэр — туршилтын кадр (бүтнээр, үгчлэн) */
+        if (!frame && !firstUsed && nw(sen) >= 6) frame = sen;
+        else if (!anyUsed) skipped.push(sen);
+      });
+    });
+    return { rows: rows, pacing: pacing, frame: frame, ref: ref, skipped: skipped };
   };
 
   /** Хэллэгүүдийг задлаад брэндийн аль мөрд орохыг тодорхойлно. */
@@ -7183,6 +7209,24 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     const mnOf = new Map(all.map((t, i) => [t, tr.mn[i] || ""]));
 
     S.pushHistory();
+    /* Өмнөх промтоос орсон мөрүүдийг цэвэрлэнэ — шинэ промтод байхгүй
+       бол хуучин промтын үлдэгдэл холилдохгүй. Таны өөрөө бичсэнд хүрэхгүй. */
+    const clear = (f) => {
+      if (f && f.src === "prompt") {
+        f.en = "";
+        f.mn = "";
+        f.unk = [];
+        f.auto = true;
+        f.src = "";
+      }
+    };
+    Object.keys(b.f).forEach((k) => clear(b.f[k]));
+    clear(b.frameSubject);
+    if (b.direction) S.DIRECTION_FIELDS.forEach((x) => clear(b.direction[x.k]));
+    if (b.refSrc === "prompt") {
+      b.ref = "";
+      b.refSrc = "";
+    }
     const out = [];
     const put = (field, en, mn) => {
       field.en = en;
@@ -7220,6 +7264,7 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     }
     if (sp.ref.length) {
       b.ref = sp.ref.join(" ");
+      b.refSrc = "prompt";
       out.push({ layer: 2, lb: "Баталсан кадр (лавлагаа)", en: b.ref, mn: "" });
     }
     const hit = new Set(Object.keys(sp.rows).filter((k) => sp.rows[k].length));
@@ -7227,7 +7272,7 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
       S.BRAND_FIELDS.filter((d) => !hit.has(d.k)).map((d) => d.lb)
     );
     S.touch();
-    return { rows: out.sort((a, c) => a.layer - c.layer), untouched: untouched, ai: tr.ai };
+    return { rows: out.sort((a, c) => a.layer - c.layer), untouched: untouched, skipped: sp.skipped, ai: tr.ai };
   };
 
   /** Англи промтын монгол утгыг гаргана (догол мөр бүрээр). Англи хөндөгдөхгүй. */
@@ -7308,6 +7353,11 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
           )
           .join("") +
         "</table>" +
+        (lastReport.skipped && lastReport.skipped.length
+          ? '<p class="note">Брэндэд <b>ороогүй</b> — нэг ангийн үйл явдал, дүрийн заавар (англи промтод хэвээр):<br>' +
+            lastReport.skipped.map((t) => "• " + U.esc(t.length > 110 ? t.slice(0, 110) + "…" : t)).join("<br>") +
+            "</p>"
+          : "") +
         (lastReport.untouched.length
           ? '<p class="note">Промтод байхгүй тул хөндөөгүй: ' + U.esc(lastReport.untouched.join(", ")) + "</p>"
           : "");
