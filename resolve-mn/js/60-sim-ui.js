@@ -90,6 +90,9 @@
       d.appendChild(L);
     }
 
+    /* гүнзгий асуулт — Claude шууд хариулна (80-ask-claude.js) */
+    if (RM.ask) d.appendChild(RM.ask.box(row));
+
     const gl = RM.guideLink && RM.guideLink(id);
     if (gl) d.appendChild(el("a", { class: "guide-link", href: gl, target: "_blank", rel: "noopener",
       text: "▶ Жишээтэй заавар — бичлэгт хэрхэн нөлөөлдөг" }));

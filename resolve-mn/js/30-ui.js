@@ -167,6 +167,9 @@
       c.appendChild(det);
     }
 
+    /* гүнзгий асуулт — Claude шууд хариулна (80-ask-claude.js) */
+    if (RM.ask) c.appendChild(RM.ask.box(row));
+
     const gl = RM.guideLink && RM.guideLink(row.id);
     if (gl) c.appendChild(el("a", { class: "guide-link", href: gl, target: "_blank", rel: "noopener",
       text: "▶ Жишээтэй заавар — бичлэгт хэрхэн нөлөөлдөг" }));
@@ -346,7 +349,7 @@
     document.addEventListener("keydown", (e) => {
       const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName);
       if (e.key === "/" && !typing) { e.preventDefault(); UI.go("hailt"); input.focus(); input.select(); }
-      else if (e.key === "Escape" && typing) { input.value = ""; UI.state.q = ""; $("#qclear").classList.remove("on"); UI.renderResults(); }
+      else if (e.key === "Escape" && document.activeElement === input) { input.value = ""; UI.state.q = ""; $("#qclear").classList.remove("on"); UI.renderResults(); }
     });
   };
 

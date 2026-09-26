@@ -201,6 +201,26 @@ Blackmagic-ийн албан ёсны гарын авлагын хэв маяг�
 - Resolve 20–21-д нэмэгдсэн, дэлгэцийн зургаар баталгаажуулаагүй хэрэглүүрт
   "албан ёсны гарын авлагаас баталгаажуулна уу" гэж тэмдэглэсэн.
 
+### Claude-аас асуух
+
+Хөнгөн сэдэв — бичсэн гарын авлага; гүнзгий асуулт — **Claude шууд хариулна**.
+Толины карт бүр ба загварын тайлбарын самбарын доор **✦ Claude-аас асуух** хэсэг бий:
+«Илүү гүнзгий», «Алхам алхмаар жишээ», «Түгээмэл алдаа» гэсэн бэлэн асуулт, эсвэл
+өөрийн асуултаа монголоор бичнэ. Claude тухайн нэр томьёо, байрлал, бичсэн гарын
+авлагыг хамт авч (давтахгүй, гүнзгийрүүлнэ), Blackmagic-ийн гарын авлагын хэв маягаар
+монголоор хариулна; Resolve 21-д эргэлзээтэйг «баталгаажаагүй» гэж тэмдэглэнэ.
+Нэг картанд дараалсан асуулт асууж болно (яриа зөвхөн хуудсанд, хаагдвал алга болно).
+
+- **claude.ai дээр нийтэлсэн хуудас** — хуудасны `sample` чадвар: API түлхүүр хэрэггүй,
+  үзэгчийн өөрийн Claude эрхээр; анх асуухад зөвшөөрөл асууна. Зөвшөөрөөгүй бол хэсэг нуугдана.
+- **Татаж авсан файл** (`resolve-toli.html`, `resolve-dotor.html`) — өөрийн Anthropic API
+  түлхүүр (console.anthropic.com → API Keys). ⚙ Тохиргооноос түлхүүрээ оруулж «Шалгах» —
+  таны түлхүүрээр ашиглах боломжтой загваруудыг жагсаана (хамгийн сүүлийнх нь анхдагч).
+  Түлхүүр **зөвхөн энэ хөтчийн localStorage-д** хадгалагдаж, зөвхөн `api.anthropic.com` руу
+  илгээгдэнэ; «Устгах» товчоор арилгана. Асуулт бүрт API-ийн төлбөр гарна.
+- Код: `js/80-ask-claude.js`, `css/ask.css`. Хариултыг хуудасны мини-markdown-аар (HTML-ийг
+  escape хийж) харуулна.
+
 ---
 
 ## Бүтэц
@@ -214,6 +234,7 @@ resolve-mn/
 ├── css/
 │   ├── app.css             толины загвар (Ертөнц Бүтээгчийн өнгөний системтэй нэг)
 │   ├── sim.css             Resolve-ийн харагдацыг гаргах загвар
+│   ├── ask.css             «Claude-аас асуух» хэсэг (толь, загвар хоёуланд)
 │   └── guide.css           Fusion, Edit зааврын загвар
 └── js/
     ├── 00-core.js          нэрийн орон зай, DOM туслах, хуулах, хадгалах
@@ -225,6 +246,7 @@ resolve-mn/
     ├── 51-sim-more.js      Media, Cut, Fusion, Fairlight, Deliver, Photo
     ├── 52-sim-menus.js     нээгддэг цэсний агуулга
     ├── 53-sim-icons.js     дүрсүүд (SVG) — Fusion, Edit хэрэгслийн мөр, Inspector
+    ├── 54-sim-color-palettes.js  Color палитрын 14 самбар (Camera Raw … Sizing)
     ├── 69-guide-ui.js      заавар хоёрын нийтлэг карт, жишээний самбар, тохиргоо
     ├── 70-fz-data.js       Fusion заавар — 28 хэрэгслийн агуулга, 4 хамтын жишээ
     ├── 71-fz-scene.js      жишээний кадр (кодоор зурсан сансар), туслахууд
@@ -234,6 +256,7 @@ resolve-mn/
     ├── 75-ez-demos.js      Edit жишээ — жижиг timeline (ripple, roll, slip, insert …), viewer-ийн бариул
     ├── 76-ez-page.js       Edit заавар хуудсыг угсрах
     ├── 60-sim-ui.js        загварын харилцан үйлдэл
+    ├── 80-ask-claude.js    «Claude-аас асуух» — claude.ai-ийн sample эсвэл өөрийн API түлхүүр
     ├── 90-main.js          толины эхлүүлэлт
     ├── 91-sim-main.js      загварын эхлүүлэлт
     ├── dict/
@@ -267,7 +290,8 @@ resolve-mn/
         ├── r28-edit-tses.js    Edit — timeline-ийн мөр, viewer-ийн цэс, Inspector, шилжилт
         ├── r29-edit-media-export.js Edit — AI шинжилгээ, Quick Export, Blackmagic Cloud Folder
         ├── r30-edit-mediapool-guides.js Edit — Media Pool хайлт, эрэмбэ, Smart Bin, Guides, viewer-ийн цэс
-        └── r31-color-viewer-tracker.js Color — viewer-ийн wipe, Split Screen, Highlight, Tracker, Keyframes
+        ├── r31-color-viewer-tracker.js Color — viewer-ийн wipe, Split Screen, Highlight, Tracker, Keyframes
+        └── r32-color-palettes.js Color — палитрын 17 дүрс ба 15 самбарын талбарууд
     └── long/                   гарын авлагын дэлгэрэнгүй тайлбар (RM.dict.long)
         ├── l01–l08             загварын товших цэгүүд, хуудас, самбарууд
         ├── l07-ai-sergeen.js   AI ба сэргээн засварын хэрэглүүр
