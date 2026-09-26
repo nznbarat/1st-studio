@@ -2848,7 +2848,8 @@ note:"Color хуудасны viewer-ийн дээд хоёр мөр (харьц�
 ["Show All / Favorites (Effects)","Бүгд / дуртай эффект","Library-д бүх эффектийг (Show All) эсвэл зөвхөн дуртай гэж тэмдэглэсэн эффектийг (Favorites) харуулна.","","Effects-ийн … цэс"],
 ["Show Legacy Resolve FX","Хуучин Resolve FX-ийг харуулах","Шинэ хувилбараар солигдсон хуучин Resolve FX эффектүүдийг Library-д харуулна — хуучин төсөлтэй ижил үр дүн гаргахад.","","Effects-ийн … цэс"],
 ["Color Match (Palette)","Өнгийн хүснэгтээр тааруулах","Color хуудасны палитрын 2 дахь дүрс (tooltip: Color Match). Зураг авалтад бичсэн өнгийн хүснэгтийг (color chart) viewer дээр тааруулж, Match товчоор клипийн өнгийг автоматаар зөв болгоно.","","Color → палитрын мөр, 2 дахь дүрс"],
-["RGB Mixer","RGB холигч","Color хуудасны палитрын 5 дахь дүрс (tooltip: RGB Mixer). Гаралтын улаан, ногоон, хөх суваг бүрт оролтын гурван сувгаас хэдэн хувь орохыг тохируулна — сувгийг солих, хар цагаан болгох (Monochrome), өнгийг огцом өөрчлөх.","","Color → палитрын мөр, 5 дахь дүрс"]
+["RGB Mixer","RGB холигч","Color хуудасны палитрын 5 дахь дүрс (tooltip: RGB Mixer). Гаралтын улаан, ногоон, хөх суваг бүрт оролтын гурван сувгаас хэдэн хувь орохыг тохируулна — сувгийг солих, хар цагаан болгох (Monochrome), өнгийг огцом өөрчлөх.","","Color → палитрын мөр, 5 дахь дүрс"],
+["ColorSlice","Өнгөөр зүсэх самбар","Color хуудасны палитрын 8 дахь дүрс (tooltip: ColorSlice; Curves, Color Warper хоёрын хооронд). Өнгийг зургаан чиглэлээр (улаан, шар, ногоон, цэнхэр, хөх, ягаан) ба арьсны өнгөөр тус тусад нь ханалт, гэрэлтэлт, өнгийн аясаар засна — хальсны мэдрэмжтэй «хасах» ханалтаар.","","Color → палитрын мөр, 8 дахь дүрс"]
 ]});
 
 </script>
@@ -15435,6 +15436,24 @@ Color хуудасны Effects (Library / Settings) самбарын толго�
 Шууд **дүрсэд** нөлөөлнө. Бага хэмжээгээр (5–10%) хольж арьсны өнгийг цэвэрлэх нь мэргэжлийн арга.
 
 > Талбаруудын нэрс Resolve-ийн гарын авлагаар; Resolve 21-д баталгаажаагүй.
+`,
+
+"colorslice": `
+## Зориулалт
+Палитрын **ColorSlice** (8 дахь дүрс, tooltip: ColorSlice) — зургийн өнгийг **зургаан чиглэл** (Red, Yellow, Green, Cyan, Blue, Magenta) ба **арьсны өнгө** гэж «зүсэж», тус бүрийн **ханалт, гэрэлтэлт (density), өнгийн аяс (hue)**-ыг тусад нь засна. Resolve 19-өөс нэмэгдсэн.
+
+## Бусдаас ялгаа
+- **Qualifier** — өнгөөр сонгож маск хийнэ; ColorSlice маскгүйгээр шууд зөөлөн засна (ирмэг гарахгүй).
+- **Hue vs Sat** муруй — ижил зорилготой ч ColorSlice нь **хасах (subtractive)** аргаар — хальс шиг ханасан өнгө бараан болдог, «дижитал» тод өнгө гарахгүй.
+
+## Хэрэглэх жишээ
+- Тэнгэрийн **цэнхэр**-ийг бараан, баялаг болгох (Blue density).
+- **Арьсны** өнгийг бусдаас тусад нь тааруулах.
+- Хэт тод ногоон ургамлыг бууруулах.
+
+> Палитрын доторх талбаруудын яг нэрс Resolve 21-д баталгаажаагүй — нээсэн зургийг илгээнэ үү.
+
+Холбоотой: [[qualifier]], [[color-warper]].
 `
 
 });
@@ -16421,7 +16440,7 @@ Color хуудасны Effects (Library / Settings) самбарын толго�
         <span class="pi hs" data-t="camera-raw" title="Camera Raw">◉</span><span class="pi hs" data-t="color-match-palette" title="Color Match">▦</span>
         <span class="pi act hs" data-t="color-wheels" data-tab="cp:wheels" title="Color Wheels">◑</span><span class="pi hs" data-t="hdr-palette" title="HDR Grade">✸</span>
         <span class="pi hs" data-t="rgb-mixer" title="RGB Mixer">⁂</span><span class="pi hs" data-t="motion-effects" title="Motion Effects">⧗</span>
-        <span class="pi hs" data-t="curves" title="Curves">∿</span><span class="pi hs" data-t="color-warper" title="Color Warper">⬚</span>
+        <span class="pi hs" data-t="curves" title="Curves">∿</span><span class="pi hs" data-t="colorslice" title="ColorSlice">◔</span><span class="pi hs" data-t="color-warper" title="Color Warper">⬚</span>
         <span class="pi hs" data-t="qualifier" title="Qualifier">◌</span><span class="pi hs" data-t="power-window" title="Windows">▭</span>
         <span class="pi hs" data-t="window-tracker" data-tab="cp:tracker" title="Tracker">⊹</span><span class="pi hs" data-t="magic-mask" title="Magic Mask">✦</span>
         <span class="pi hs" data-t="blur-sharpen-mist" title="Blur">◍</span><span class="pi hs" data-t="matte" title="Key">◪</span>

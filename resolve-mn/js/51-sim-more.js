@@ -314,7 +314,7 @@
         <span class="pi hs" data-t="camera-raw" title="Camera Raw">◉</span><span class="pi hs" data-t="color-match-palette" title="Color Match">▦</span>
         <span class="pi act hs" data-t="color-wheels" data-tab="cp:wheels" title="Color Wheels">◑</span><span class="pi hs" data-t="hdr-palette" title="HDR Grade">✸</span>
         <span class="pi hs" data-t="rgb-mixer" title="RGB Mixer">⁂</span><span class="pi hs" data-t="motion-effects" title="Motion Effects">⧗</span>
-        <span class="pi hs" data-t="curves" title="Curves">∿</span><span class="pi hs" data-t="color-warper" title="Color Warper">⬚</span>
+        <span class="pi hs" data-t="curves" title="Curves">∿</span><span class="pi hs" data-t="colorslice" title="ColorSlice">◔</span><span class="pi hs" data-t="color-warper" title="Color Warper">⬚</span>
         <span class="pi hs" data-t="qualifier" title="Qualifier">◌</span><span class="pi hs" data-t="power-window" title="Windows">▭</span>
         <span class="pi hs" data-t="window-tracker" data-tab="cp:tracker" title="Tracker">⊹</span><span class="pi hs" data-t="magic-mask" title="Magic Mask">✦</span>
         <span class="pi hs" data-t="blur-sharpen-mist" title="Blur">◍</span><span class="pi hs" data-t="matte" title="Key">◪</span>

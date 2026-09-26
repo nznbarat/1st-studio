@@ -3,7 +3,7 @@
 DaVinci Resolve-ийн интерфейсийн монгол хэл дээрх лавлах.
 Программын цэс, самбар, товчлуур, тохиргоо бүрийн монгол нэр, тайлбар, хаана байдгийг цуглуулсан.
 
-**1225 нэр томьёо · 52 ангилал · 137 товчлуур · 818 гарын авлагын дэлгэрэнгүй тайлбар · 6 ажлын урсгал · 8 хуудасны загвар · 41 нээгддэг цэс · 2 жишээтэй заавар (Fusion 28, Edit 26 хэрэгсэл)**
+**1226 нэр томьёо · 52 ангилал · 137 товчлуур · 819 гарын авлагын дэлгэрэнгүй тайлбар · 6 ажлын урсгал · 8 хуудасны загвар · 41 нээгддэг цэс · 2 жишээтэй заавар (Fusion 28, Edit 26 хэрэгсэл)**
 
 ---
 
@@ -118,7 +118,7 @@ Selection, Position Lock · туг, тэмдэглэгээ · Full Extent/Detail
 ### Интерфейсийн загвар
 
 `interface.html` нь Resolve-ийн найман хуудсыг (Media, Photo, Cut, Edit, Fusion, Color,
-Fairlight, Deliver) хуулбарлан харуулна. Нийт **767 товших цэг** (418 өвөрмөц нэр томьёо) —
+Fairlight, Deliver) хуулбарлан харуулна. Нийт **768 товших цэг** (419 өвөрмөц нэр томьёо) —
 цэг бүр толины нэр томьёотой шууд холбогдсон тул тайлбар давхардаж бичигдээгүй.
 Өнгө нь Resolve Studio 21-ийн дэлгэцийн зургаас хэмжсэн бодит утга
 (`css/sim.css` доторх `--rs-*` хувьсагчид).
@@ -397,7 +397,8 @@ Color хуудасны нодны хөдөлгүүр дээр засварлан
   Cloud Tracker ⌄ (Cloud Tracker, Point Tracker, AI IntelliTrack), Tracker-ийн … цэс (9 мөр), Keyframes самбарын
   мөрүүд ба All ⌄ (All, Color, Sizing), палитрын Keyframes / Scopes / Info tooltip; viewer-ийн … (20 мөр),
   Nodes-ийн харагдац ⌄ (Graph / List View) ба … (8 мөр), Effects-ийн … (3 мөр); палитрын эхний 5 дүрсний
-  tooltip (Camera Raw, Color Match, Color Wheels, HDR Grade, RGB Mixer).
+  tooltip (Camera Raw, Color Match, Color Wheels, HDR Grade, RGB Mixer) ба дараагийн 5 (Motion Effects, Curves,
+  **ColorSlice** — загварт дутуу байсныг нэмэв, Color Warper, Qualifier).
 
 Хараахан баталгаажуулаагүй: Fusion Inspector-ийн толгойн дүрсүүдийн (● ⌄, хувилбар, хадаас, түгжээ,
 буцаах) tooltip; Source Color/Gamma Space-ийн доторх мөрүүд; Cut хуудасны дээд timeline-ийн 3 дахь товчны tooltip нэр
