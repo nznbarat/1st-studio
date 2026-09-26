@@ -1,15 +1,19 @@
 """1st Studio — "0110" ачааны хөлөг рүү солир мөргөх нь.
 
-Камер нь СОЛИР дээр суусан (POV). Алсаас хөлгийг олж хараад, тогтмол
-хурдаар ойртож, их биений хажуу тал руу мөргөнө.
+Камер нь СОЛИР дээр суусан (POV). Хийн аварга гаригийн солирын
+бүслүүр дотор алсаас хөлгийг олж хараад, тогтмол хурдаар АЖУУХАН
+ойртоно. Мөргөлтийг ХАРУУЛАХГҮЙ — 5.3 секундын өмнө тасална.
+Хичкокийн "ширээн доорх бөмбөг": үзэгч юу болохыг мэдэж байгаа тул
+айдас дэлбэрэлтээс биш, хүлээлтээс үүснэ.
 
     python3 blender/impact.py -- --angle pov --frames 720 --res 1920x1080 \
         --samples 96 --device GPU --anim --render out/impact
 
 Үндсэн зарчим: солир бол хөдөлгүүргүй чулуу. Хурд нь ТОГТМОЛ. Иймд
-дэлгэц дээрх хэмжээ нь 1/R буюу гиперболоор өснө — эхэндээ удаан,
-сүүлийн 3 секундэд дэлбэрч томроно. Энэ нь физикийн хувьд ч, кино
-хэмнэлийн хувьд ч зөв хэлбэр. Хурдыг "мэдрүүлдэг" зүйл нь хөлөг биш,
+дэлгэц дээрх хэмжээ нь 1/R буюу гиперболоор өснө. Хэмнэлийг зөвхөн
+эхлэх ба тасалах зайн харьцаа тодорхойлно: 1400->23 м (60.9x) бол
+сүүлийн 3 секундэд 7 дахин дэлбэрч томордог; 1600->260 м (6.2x) бол
+1.52 дахин буюу тайван, зогсолтгүй ойртолт. Хурдыг "мэдрүүлдэг" зүйл нь хөлөг биш,
 хажуугаар өнгөрөх ойрын чулуунуудын ПАРАЛЛАКС — тиймээс замын дагуу
 6 чулууг тодорхой мөчид өнгөрөхөөр нь зориуд байрлуулсан.
 """
@@ -50,9 +54,12 @@ CFG = {
     #   72° дээр (өмнөх утга) ам нь нарийн зураас болж гялбаа алга болдог;
     #   44° дээр гялбаа сайхан ч хөлөг богиноссон мэт болно.
     "from": (-0.55, 0.76, -0.34),
-    "dist0": 1400.0,      # эхлэх зай, метр
-    # Хэдэн метрт зогсох. Солирын толгой камерын өмнө 15 м хүртэл сунах тул
-    # үүнээс их байх ёстой — эс бөгөөс чулуу их бие рүү нэвт орно.
+    "dist0": 1600.0,      # эхлэх зай, метр — хөлөг кадрын 14.6%
+    # ТАСЛАХ зай. Мөргөлтийг харуулахгүй: 260 м дээр хөлөг кадрын 89.7%,
+    # тэр хурдаараа үргэлжилбэл 5.3 секундын дараа мөргөнө.
+    "end": 260.0,
+    # Жинхэнэ мөргөлтийн зай — зөвхөн "мөргөлт хүртэл хэдэн сек" тооцоонд.
+    # Солирын толгой камерын өмнө 15 м хүртэл сунадаг тул 23 м.
     "stop": 23.0,
     "roll": 11.0,         # бүх хугацаанд эргэх өнцөг (градус) — чулуу эргэлддэг
     # Бидний дагаж яваа чулуу: камерын өмнө зүүн доор. Байрлалыг өнцгөөр
@@ -70,6 +77,18 @@ CFG = {
     "ndc0": (0.60, 0.43),
     "ndc1": (0.50, 0.47),
 
+    # ХИЙН АВАРГА ГАРИГ. Хязгааргүй алсад (камерын байрлалыг дагана, эс
+    # бөгөөс 1340 м явах явцад параллакс үүсэж гариг хөдлөх мэт болно).
+    #   screen   — камерын тэнхлэгээс (баруун, дээш) tan өнцөг: 24° баруун,
+    #              14° доош. Од зүүн дээд буланд тул гариг эсрэг буланд.
+    #   Од кадрын дотор байгаа тул кадар доторх ЯМАР Ч гариг хавирган
+    #   сар хэлбэртэй харагдана (фазын өнцөг >120°) — физик. Одоос хамгийн
+    #   хол булан нь хамгийн том хавирга (≈20%) өгнө.
+    #   band_to  — бүслүүрийн зурвас гаригийн төвөөр дайрч энэ цэг рүү
+    #              кадрыг налуу огтолно. Бүслүүр экваторын хавтгайд тул
+    #              гаригийн зурвасууд түүнтэй ЗЭРЭГЦЭЭ.
+    "planet": {"screen": (0.445, -0.249), "radius_deg": 20.0,
+               "dist": 150000.0, "band_to": (-0.404, 0.047)},
     "lens": 35.0,
     "fstop": 2.0,
     "sun": 14.0,
@@ -134,12 +153,17 @@ def box(name, c, s, material):
     return mesh(name, v, f, material)
 
 
-def plume_mat(name, colour, strength, x_hot, x_cold):
+def plume_mat(name, colour, strength, x_hot, x_cold, r0=1.0):
     """Тийрэлтийн чийдэн — ГАДАРГУУ биш, ЭЗЭЛХҮҮН гэрэлтэлт.
 
     Гадаргуугийн гэрэлтэлт нь конусын ирмэгийг хурц зураас болгон үлдээж,
     цул гурвалжин мэт харагдуулдаг. Эзэлхүүний гэрэлтэлт нь ирмэггүй,
     бодит чийдэн шиг зөөлөн уусна. Хүч нь объектын X координатаар буурна.
+
+    АНХААР: `strength` нь МЕТР ТУТМЫН гэрэлтэлт — харааны шугам дагуу
+    хуримтлагдана. Ар талаас налуу харахад шугам ~18 м явна: 0.9/м бол
+    ~16 болж бүрэн цайдаг байв. Тэнхлэгээс радиусаар бүдгэрүүлснээр
+    конусын хана хурц ирмэг болж харагдахгүй.
     """
     m = bpy.data.materials.new(name)
     m.use_nodes = True
@@ -166,7 +190,28 @@ def plume_mat(name, colour, strength, x_hot, x_cold):
     nt.links.new(tc.outputs["Object"], sep.inputs["Vector"])
     nt.links.new(sep.outputs["X"], mr.inputs[0])
     nt.links.new(mr.outputs[0], pw.inputs[0])
-    nt.links.new(pw.outputs[0], mul.inputs[0])
+    # радиус: sqrt(y² + z²) / r0 -> (1 - ·)^1.5
+    yy = nt.nodes.new("ShaderNodeMath"); yy.operation = "MULTIPLY"
+    zz = nt.nodes.new("ShaderNodeMath"); zz.operation = "MULTIPLY"
+    nt.links.new(sep.outputs["Y"], yy.inputs[0]); nt.links.new(sep.outputs["Y"], yy.inputs[1])
+    nt.links.new(sep.outputs["Z"], zz.inputs[0]); nt.links.new(sep.outputs["Z"], zz.inputs[1])
+    rr = nt.nodes.new("ShaderNodeMath"); rr.operation = "ADD"
+    nt.links.new(yy.outputs[0], rr.inputs[0]); nt.links.new(zz.outputs[0], rr.inputs[1])
+    sq = nt.nodes.new("ShaderNodeMath"); sq.operation = "SQRT"
+    nt.links.new(rr.outputs[0], sq.inputs[0])
+    rad = nt.nodes.new("ShaderNodeMapRange")
+    rad.inputs[1].default_value = 0.0
+    rad.inputs[2].default_value = r0
+    rad.inputs[3].default_value = 1.0          # тэнхлэг дээр 1
+    rad.inputs[4].default_value = 0.0          # ханан дээр 0
+    nt.links.new(sq.outputs[0], rad.inputs[0])
+    rp = nt.nodes.new("ShaderNodeMath"); rp.operation = "POWER"
+    rp.inputs[1].default_value = 1.5
+    nt.links.new(rad.outputs[0], rp.inputs[0])
+    both = nt.nodes.new("ShaderNodeMath"); both.operation = "MULTIPLY"
+    nt.links.new(pw.outputs[0], both.inputs[0])
+    nt.links.new(rp.outputs[0], both.inputs[1])
+    nt.links.new(both.outputs[0], mul.inputs[0])
     nt.links.new(mul.outputs[0], emi.inputs["Strength"])
     nt.links.new(emi.outputs[0], out.inputs["Volume"])
     return m
@@ -266,7 +311,10 @@ def build_ship():
         "plate": mat("PLATE", (0.160, 0.162, 0.172), 0.42, 0.70),
         "dark": mat("DARK", (0.038, 0.038, 0.044), 0.64, 0.55),
         "win": mat("WIN", (0.0, 0.0, 0.0), 0.3, 0.0, (1.0, 0.58, 0.24), 3.5),
-        "core": mat("CORE", (0.0, 0.0, 0.0), 0.3, 0.0, (0.34, 0.62, 1.0), 48.0),
+        # 18: цацрагийн босго (60)-оос доош, Fog Glow (2.5)-оос дээш — зөөлөн
+        # цэнхэр туяарал үлдэнэ. 48 дээр AgX цэнхэрийг цагаан болгож, 2
+        # салаат цацраг нь хөлгөөс 70 м урт шаантаг гаргадаг байв.
+        "core": mat("CORE", (0.0, 0.0, 0.0), 0.3, 0.0, (0.34, 0.62, 1.0), 18.0),
     }
     root = bpy.data.objects.new("SHIP", None)
     bpy.context.collection.objects.link(root)
@@ -314,17 +362,22 @@ def build_ship():
                           M["dark"], 40))
         parts.append(tube("EngLip_%d" % k, x0 - 0.5, x0 + 1.4, ri, ro,
                           M["plate"], 40))
-        parts.append(disc("EngCore_%d" % k, x0 + ln * 0.16, ri * 0.95,
+        # 56.6° налуугаас ln·0.16 гүнд байхад хоолойн хана бүрэн хаадаг байв
+        parts.append(disc("EngCore_%d" % k, x0 + ln * 0.06, ri * 0.95,
                           M["core"], 44))
         # тийрэлтийн чийдэн — хойш сунасан, сүүлдээ уусдаг конус
-        plen = 56.0 * ln / 44.0
+        # Эзэлхүүний гэрэлтэлт харааны шугамын УРТААР хуримтлагдана. Ар
+        # талаас налуу харахад шугам конусын дагуу ~50 м явж (хажуугаас ~10 м)
+        # 5 дахин тод болж, AgX түүнийг цагаан шаантаг болгодог байв. Лавлагаа
+        # зураг дээр ч урт тийрэлт биш — зөвхөн амсрын цэнхэр гэрэл.
+        plen = 34.0 * ln / 44.0
         pl = []
         for i in range(10):
             t = i / 9.0
             rr = ri * (0.94 - 0.78 * t ** 0.7)
             pl.append((x0 - 0.4 - plen * t, rr, rr))
-        pm = plume_mat("PLUME_%d" % k, (0.26, 0.52, 1.0), 4.5,
-                       x0 - 0.4, x0 - 0.4 - plen)
+        pm = plume_mat("PLUME_%d" % k, (0.22, 0.48, 1.0), 1.2,
+                       x0 - 0.4, x0 - 0.4 - plen, ri * 0.94)
         p = loft("Plume_%d" % k, pl, pm, 26)
         p.visible_shadow = False
         p.visible_diffuse = False
@@ -438,7 +491,7 @@ def path():
     """(эхлэх цэг, төгсгөх цэг, ирэх нэгж вектор, явах нэгж вектор)."""
     u = Vector(CFG["from"]).normalized()
     hit = Vector(CFG["hit"])
-    return hit + u * CFG["dist0"], hit + u * CFG["stop"], u, -u
+    return hit + u * CFG["dist0"], hit + u * CFG["end"], u, -u
 
 
 def basis(fwd):
@@ -449,6 +502,17 @@ def basis(fwd):
         r = Vector((1.0, 0.0, 0.0))
     r.normalize()
     return f, r, r.cross(f)
+
+
+def sky_dirs(fwd):
+    """Од, гариг, бүслүүрийн хавтгайн нормаль — гэрэл, гариг, тэнгэр
+    гурвуулаа ЭНЭ функцээс авна, тэгэхгүй бол бие биенээсээ зөрнө."""
+    f, r, u = basis(fwd)
+    star = (f - r * SUN_SCREEN[0] + u * SUN_SCREEN[1]).normalized()
+    P = CFG["planet"]
+    planet = (f + r * P["screen"][0] + u * P["screen"][1]).normalized()
+    q = (f + r * P["band_to"][0] + u * P["band_to"][1]).normalized()
+    return star, planet, planet.cross(q).normalized()
 
 
 def project(C, A, P, lens):
@@ -495,7 +559,7 @@ def quat_for(fwd, roll_deg):
 # ══════════════════════════════════════════════════════════════════════
 #  Чулууны талбай
 # ══════════════════════════════════════════════════════════════════════
-def build_field(P0, Pe, fwd, secs=30.0):
+def build_field(P0, Pe, fwd, secs=30.0, belt_n=None):
     """Дэвсгэрийн чулуунууд + замын дагуу ЗОРИУД байрлуулсан өнгөрөгчид.
 
     Сансарт хурдыг мэдрүүлдэг зүйл нь алсын объект биш, ойрын объектын
@@ -529,8 +593,23 @@ def build_field(P0, Pe, fwd, secs=30.0):
         out.append(build_rock("Pass_%d" % i, pos, r, CFG["seed"] + 40 + i, rock,
                               3 if r < 12 else 4))
 
-    # Дэвсгэр: хөлгийн эргэн тойронд бөөгнөрөл + замын дагуу тархалт
-    for i in range(52):
+    ship = Vector((0.0, 0.0, 0.0))
+
+    def hides_ship(pos, r):
+        """Замын аль нэг цэгээс харахад чулуу хөлгийн ӨМНӨ, хөлгийн өнцгийн
+        хүрээнд байна уу. Хөлөг 240 м — 56.6° налуугаас ~200 м өргөн."""
+        for t in (0.0, 0.35, 0.7, 1.0):
+            C = P0 + (Pe - P0) * t
+            to_s, to_r = ship - C, pos - C
+            if to_r.length >= to_s.length - r:
+                continue                      # хөлгийн ард — зүгээр
+            ang = to_s.angle(to_r)
+            if ang < math.atan(130.0 / to_s.length) + math.asin(min(1.0, r / to_r.length)):
+                return True
+        return False
+
+    def place(i):
+        """Дэвсгэрийн нэг чулууны байрлал ба радиус."""
         if i < 22:                       # хөлгийн ойролцоо — гүн мэдрүүлнэ
             pos = Vector((rng.uniform(-420, 420), rng.uniform(-360, 360),
                           rng.uniform(-240, 240)))
@@ -542,8 +621,26 @@ def build_field(P0, Pe, fwd, secs=30.0):
             m = rng.uniform(230.0, 900.0)
             pos = c + (e1 * math.cos(a) + e2 * math.sin(a)) * m
             r = rng.uniform(10.0, 60.0)
+        if belt_n is not None:
+            # Бүслүүр бол хавтгай давхарга. Хавтгайгаас хэлбийлтийг 65%
+            # багасгана — чулуунууд тэнгэрийн зурвастай нэг чиглэлд эгнэнэ.
+            mid = P0 + (Pe - P0) * 0.5
+            pos = pos - belt_n * ((pos - mid).dot(belt_n) * 0.65)
+        return pos, r
+
+    # Дэвсгэр: хөлгийн эргэн тойронд бөөгнөрөл + замын дагуу тархалт
+    moved = 0
+    for i in range(52):
+        pos, r = place(i)
+        for _ in range(40):
+            if not hides_ship(pos, r * 1.3):
+                break
+            moved += 1
+            pos, r = place(i)
         out.append(build_rock("Rock_%02d" % i, pos, r, CFG["seed"] + 200 + i,
                               rock, 3 if r < 26 else 4, 3))
+    if moved:
+        print("[1st Studio] Хөлгийг халхалж байсан %d байрлалыг дахин сонгов" % moved)
     return rock, out
 
 
@@ -553,7 +650,7 @@ def build_field(P0, Pe, fwd, secs=30.0):
 def build_light(P0, fwd):
     """Нар ба харагдах од. Од нь кадрын зүүн дээд буланд (лавлагаа зурагтай ижил)."""
     f, r, u = basis(fwd)
-    star = (f - r * SUN_SCREEN[0] + u * SUN_SCREEN[1]).normalized()
+    star = sky_dirs(fwd)[0]
 
     d = bpy.data.lights.new("SUN", "SUN")
     d.energy = CFG["sun"]
@@ -570,6 +667,16 @@ def build_light(P0, fwd):
     o.name = "STAR"
     o.data.materials.append(m)
     o.visible_shadow = False
+    # Од бол зөвхөн ХАРАГДАХ дүрс — гэрлийг SUN өгнө. Бөмбөрцөг камераас
+    # 62 км-т, гариг 150 км-т тул гаригаас харахад "од" КАМЕРЫН талд
+    # байрлаж, шөнийн талыг урдаас нь гэрэлтүүлж хавирган сарыг устгадаг
+    # байв (хэмжсэн: шөнийн талын гэрлийн тал хувь нь үүнээс). Бусад
+    # объектын туяа түүнийг "харахгүй" болгосноор гэрлийн эх үүсвэр биш
+    # болно; камерт харагдсаар байна.
+    o.visible_diffuse = False
+    o.visible_glossy = False
+    o.visible_transmission = False
+    o.visible_volume_scatter = False
     for p in o.data.polygons:
         p.use_smooth = True
 
@@ -593,8 +700,13 @@ def build_light(P0, fwd):
     return s, star
 
 
-def build_world():
-    """Хар тэнгэр + процедурын од. Voronoi-гийн зай нь цэг бүрт 0 болдог."""
+def build_world(star=None, belt_n=None):
+    """Хар тэнгэр + процедурын од + бүслүүрийн тоосон зурвас.
+
+    Voronoi-гийн зай нь цэг бүрт 0 болдог тул нарийн ramp од болгоно.
+    World shader-т TexCoord "Generated" нь туяаны ЧИГЛЭЛ (камерын
+    байрлалаас үл хамаарна) — 5.2.2 дээр +X/-X/+Y тийш харж шалгасан.
+    """
     w = bpy.data.worlds.new("SPACE")
     bpy.context.scene.world = w
     w.use_nodes = True
@@ -627,10 +739,220 @@ def build_world():
         nt.links.new(v.outputs["Distance"], ramp.inputs["Fac"])
         nt.links.new(ramp.outputs["Color"], g.inputs[6])
         nt.links.new(g.outputs[2], add.inputs[6 if i == 0 else 7])
-    nt.links.new(add.outputs[2], bg.inputs["Color"])
+    sky = add.outputs[2]
+    if belt_n is not None:
+        sky = belt_band(nt, tex, sky, belt_n, star)
+    nt.links.new(sky, bg.inputs["Color"])
     bg.inputs["Strength"].default_value = 1.0
     nt.links.new(bg.outputs["Background"], out.inputs["Surface"])
     return w
+
+
+def belt_band(nt, tex, sky, n, star):
+    """Бүслүүрийн дотроос харахад цагираг нь тэнгэрийг бүтэн тойрсон
+    ИХ ТОЙРОГ болж харагдана (Сүүн зам шиг). Туяа хавтгайтай хэр ойр вэ
+    гэдгийг |чиглэл·n|-ээр хэмжиж Гауссын зурвас болгоно. Одны зүг рүү
+    тоос урагшаа сарнидаг тул тэр хэсэг нь илүү гэрэлтэнэ."""
+    def vm(op, a=None, b=None):
+        nd = nt.nodes.new("ShaderNodeVectorMath")
+        nd.operation = op
+        if a is not None:
+            nt.links.new(a, nd.inputs[0])
+        if isinstance(b, (tuple, Vector)):
+            nd.inputs[1].default_value = tuple(b)
+        return nd
+
+    def m(op, *args):
+        """Math зангилаа. MULTIPLY_ADD нь гурван оролттой (a·b + c)."""
+        nd = nt.nodes.new("ShaderNodeMath")
+        nd.operation = op
+        for i, a in enumerate(args):
+            if isinstance(a, (int, float)):
+                nd.inputs[i].default_value = a
+            else:
+                nt.links.new(a, nd.inputs[i])
+        return nd.outputs[0]
+
+    d = vm("NORMALIZE", tex.outputs["Generated"]).outputs[0]
+    h = m("ABSOLUTE", vm("DOT_PRODUCT", d, n).outputs["Value"])
+    core = m("EXPONENT", m("MULTIPLY", m("POWER", m("DIVIDE", h, 0.034), 2.0), -1.0))
+    halo = m("EXPONENT", m("MULTIPLY", m("POWER", m("DIVIDE", h, 0.13), 2.0), -1.0))
+    band = m("ADD", core, m("MULTIPLY", halo, 0.22))
+    # бөөгнөрөл — тоос жигд биш
+    nz = nt.nodes.new("ShaderNodeTexNoise")
+    nz.inputs["Scale"].default_value = 9.0
+    nz.inputs["Detail"].default_value = 7.0
+    nt.links.new(d, nz.inputs["Vector"])
+    clump = m("MULTIPLY_ADD", nz.outputs["Fac"], 1.6, -0.35)
+    band = m("MULTIPLY", band, m("MAXIMUM", clump, 0.0))
+    # урагш сарнилт: одны зүгт 1 + 5·cos^8
+    if star is not None:
+        c = m("MAXIMUM", vm("DOT_PRODUCT", d, star).outputs["Value"], 0.0)
+        band = m("MULTIPLY", band, m("MULTIPLY_ADD", m("POWER", c, 8.0), 5.0, 1.0))
+    col = nt.nodes.new("ShaderNodeMix")
+    col.data_type = "RGBA"
+    col.blend_type = "MULTIPLY"
+    col.inputs["Factor"].default_value = 1.0
+    col.inputs[7].default_value = (0.034, 0.031, 0.027, 1.0)   # дулаан саарал тоос
+    nt.links.new(band, col.inputs[6])
+    add = nt.nodes.new("ShaderNodeMix")
+    add.data_type = "RGBA"
+    add.blend_type = "ADD"
+    add.inputs["Factor"].default_value = 1.0
+    nt.links.new(sky, add.inputs[6])
+    nt.links.new(col.outputs[2], add.inputs[7])
+    return add.outputs[2]
+
+
+# ══════════════════════════════════════════════════════════════════════
+#  Хийн аварга гариг
+# ══════════════════════════════════════════════════════════════════════
+def gas_giant_mat(star):
+    """Өргөрөгийн зурвастай гариг. Шөнийн тал бүрэн хар биш — цагираг
+    болон сарнуудын ойсон гэрэл бага зэрэг гэрэлтүүлдэг (≈1%)."""
+    m = bpy.data.materials.new("GAS_GIANT")
+    m.use_nodes = True
+    nt = m.node_tree
+    b = nt.nodes["Principled BSDF"]
+    b.inputs["Roughness"].default_value = 1.0
+    b.inputs["Specular IOR Level"].default_value = 0.0
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    mp = nt.nodes.new("ShaderNodeMapping")
+    R = CFG["planet"]["dist"] * math.sin(math.radians(CFG["planet"]["radius_deg"]))
+    mp.inputs["Scale"].default_value = (1.0 / R, 1.0 / R, 1.0 / R)
+    wv = nt.nodes.new("ShaderNodeTexWave")
+    wv.wave_type = "BANDS"
+    wv.bands_direction = "Z"
+    # Хийн аварга гаригийн зурвас өргөн, өргөргийн дагуу тэгш — зөвхөн
+    # ирмэгээрээ эргүүлэгтэй. Distortion 5.5 дээр модны хээ мэт болдог байв.
+    wv.inputs["Scale"].default_value = 3.2
+    wv.inputs["Distortion"].default_value = 1.6
+    wv.inputs["Detail"].default_value = 2.5
+    wv.inputs["Detail Scale"].default_value = 1.0
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    cr = ramp.color_ramp
+    stops = [(0.00, (0.62, 0.52, 0.40)), (0.20, (0.82, 0.74, 0.58)),
+             (0.42, (0.50, 0.40, 0.31)), (0.60, (0.76, 0.71, 0.62)),
+             (0.80, (0.44, 0.49, 0.55)), (1.00, (0.70, 0.63, 0.50))]
+    cr.elements[0].position, cr.elements[0].color = stops[0][0], (*stops[0][1], 1)
+    cr.elements[1].position, cr.elements[1].color = stops[-1][0], (*stops[-1][1], 1)
+    for pos, c in stops[1:-1]:
+        e = cr.elements.new(pos)
+        e.color = (*c, 1)
+    nt.links.new(tc.outputs["Object"], mp.inputs["Vector"])
+    nt.links.new(mp.outputs["Vector"], wv.inputs["Vector"])
+    nt.links.new(wv.outputs["Fac"], ramp.inputs["Fac"])
+    nt.links.new(ramp.outputs["Color"], b.inputs["Base Color"])
+    nt.links.new(ramp.outputs["Color"], b.inputs["Emission Color"])
+    b.inputs["Emission Strength"].default_value = 0.012        # шөнийн тал
+    return m
+
+
+def atmo_mat(star):
+    """Агаар мандлын гэрэлт хүрээ — зөвхөн ГЭРЭЛТСЭН ирмэг дээр."""
+    m = bpy.data.materials.new("GAS_GIANT_ATMO")
+    m.use_nodes = True
+    nt = m.node_tree
+    out = next(x for x in nt.nodes if x.bl_idname == "ShaderNodeOutputMaterial")
+    for nm in [x.name for x in nt.nodes if x is not out and
+               x.bl_idname != "ShaderNodeOutputMaterial"]:
+        nt.nodes.remove(nt.nodes[nm])
+    out = next(x for x in nt.nodes if x.bl_idname == "ShaderNodeOutputMaterial")
+    geo = nt.nodes.new("ShaderNodeNewGeometry")
+    lw = nt.nodes.new("ShaderNodeLayerWeight")
+    lw.inputs["Blend"].default_value = 0.35
+    rim = nt.nodes.new("ShaderNodeMath")
+    rim.operation = "POWER"
+    rim.inputs[1].default_value = 3.0
+    dot = nt.nodes.new("ShaderNodeVectorMath")
+    dot.operation = "DOT_PRODUCT"
+    dot.inputs[1].default_value = tuple(star)
+    lit = nt.nodes.new("ShaderNodeMapRange")
+    lit.inputs[1].default_value = -0.25       # терминатораас цааш бага зэрэг
+    lit.inputs[2].default_value = 0.55
+    mul = nt.nodes.new("ShaderNodeMath")
+    mul.operation = "MULTIPLY"
+    k = nt.nodes.new("ShaderNodeMath")
+    k.operation = "MULTIPLY"
+    k.inputs[1].default_value = 2.2
+    emi = nt.nodes.new("ShaderNodeEmission")
+    emi.inputs["Color"].default_value = (0.74, 0.83, 1.0, 1.0)
+    tr = nt.nodes.new("ShaderNodeBsdfTransparent")
+    add = nt.nodes.new("ShaderNodeAddShader")
+    nt.links.new(lw.outputs["Facing"], rim.inputs[0])
+    nt.links.new(geo.outputs["Normal"], dot.inputs[0])
+    nt.links.new(dot.outputs["Value"], lit.inputs[0])
+    nt.links.new(rim.outputs[0], mul.inputs[0])
+    nt.links.new(lit.outputs[0], mul.inputs[1])
+    nt.links.new(mul.outputs[0], k.inputs[0])
+    nt.links.new(k.outputs[0], emi.inputs["Strength"])
+    nt.links.new(tr.outputs[0], add.inputs[0])
+    nt.links.new(emi.outputs[0], add.inputs[1])
+    nt.links.new(add.outputs[0], out.inputs["Surface"])
+    return m
+
+
+def build_sky_objects(anchor, star_dir, planet_dir, belt_n, with_planet=True):
+    """Од ба гаригийг камерын БАЙРЛАЛЫГ дагадаг SKY хоосон объектод
+    холбоно — эргэлтийг биш. Ингэснээр тэд хязгааргүй алсад байгаа мэт:
+    камер эргэхэд кадар дотор шилжинэ, харин явахад параллакс үүсэхгүй.
+    150 км-т байрлуулсан ч 1340 м явахад 0.5° шилжих байсан."""
+    sky = bpy.data.objects.new("SKY", None)
+    bpy.context.collection.objects.link(sky)
+    if anchor.type == "EMPTY" or anchor.animation_data:
+        c = sky.constraints.new("COPY_LOCATION")
+        c.target = anchor
+    else:
+        sky.location = anchor.location
+    star = bpy.data.objects.get("STAR")
+    if star is not None:
+        star.parent = sky
+        star.location = star_dir * 62000.0
+    if not with_planet:
+        return sky, None
+    P = CFG["planet"]
+    R = P["dist"] * math.sin(math.radians(P["radius_deg"]))
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=160, ring_count=80,
+                                         radius=R, location=(0, 0, 0))
+    g = bpy.context.object
+    g.name = "GAS_GIANT"
+    g.data.materials.append(gas_giant_mat(star_dir))
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=160, ring_count=80,
+                                         radius=R * 1.014, location=(0, 0, 0))
+    a = bpy.context.object
+    a.name = "GAS_GIANT_ATMO"
+    a.data.materials.append(atmo_mat(star_dir))
+    a.visible_shadow = False
+    # Зөвхөн КАМЕРТ харагдана. Эс бөгөөс гэрэлтсэн ирмэг нь гэрлийн эх
+    # үүсвэр болж гаригийг ДОТРООС нь гэрэлтүүлдэг: гадаргуугаас гарсан туяа
+    # бүрхүүлийн дотор талыг цохиход Cycles нормалийг туяа руу эргүүлдэг тул
+    # "гэрэлтсэн тал" маск урвуу болж шөнийн тал дээр асдаг байв
+    # (хэмжсэн: шөнийн талын гэрлийн 84% үүнээс).
+    a.visible_diffuse = False
+    a.visible_glossy = False
+    a.visible_transmission = False
+    a.visible_volume_scatter = False
+    for o in (g, a):
+        for poly in o.data.polygons:
+            poly.use_smooth = True
+        o.parent = sky
+        o.location = planet_dir * P["dist"]
+        # Тэнхлэг = бүслүүрийн нормаль: цагираг экваторын хавтгайд оршдог
+        o.rotation_euler = Vector((0.0, 0.0, 1.0)).rotation_difference(belt_n).to_euler()
+    # Дүүргэгч гэрлүүд нь хөлгийн сүүдэр талд зориулсан кино заль. 5%
+    # альбедотой хөлөг дээр бараг мэдэгдэхгүй ч 60% альбедотой гариг дээр
+    # 12–16 дахин тод тусаж, ШӨНИЙН ТАЛЫГ бүтэн гэрэлтүүлээд хавирган
+    # сарыг устгадаг байв. Light linking-ээр гаригийг зөвхөн НАР гэрэлтүүлнэ.
+    nofill = bpy.data.collections.new("NO_FILL")
+    for o in (g, a):
+        nofill.objects.link(o)
+    for co in nofill.collection_objects:
+        co.light_linking.link_state = "EXCLUDE"
+    for nm in ("FILL", "FILL_LOW"):
+        lo = bpy.data.objects.get(nm)
+        if lo is not None:
+            lo.light_linking.receiver_collection = nofill
+    return sky, g
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -719,18 +1041,24 @@ def setup_glare():
         fog.location = (-220, 40)
         fog.inputs["Type"].default_value = "Fog Glow"
         fog.inputs["Quality"].default_value = "High"
-        fog.inputs["Threshold"].default_value = 1.10
-        fog.inputs["Strength"].default_value = 0.45
+        fog.inputs["Threshold"].default_value = 2.5     # гариг дээр цэнхэр манан тараахгүй
+        fog.inputs["Strength"].default_value = 0.35
         fog.inputs["Size"].default_value = 0.70
 
         st = ng.nodes.new("CompositorNodeGlare")
         st.location = (110, -30)
         st.inputs["Type"].default_value = "Streaks"
         st.inputs["Quality"].default_value = "High"
-        st.inputs["Threshold"].default_value = 6.0      # зөвхөн од цацарна
-        st.inputs["Strength"].default_value = 0.50
-        st.inputs["Streaks"].default_value = 4
-        st.inputs["Fade"].default_value = 0.94
+        # Зөвхөн ОД цацарна. 6.0 дээр хөдөлгүүрийн цөм (гэрэлтэлт 48) ч
+        # давж, 20–28 сек-д лазер мэт урт цэнхэр туяа үүсгэн хүлээлтийн
+        # хамгийн чухал хэсэгт хөлгөөс анхаарал сарниулдаг байв.
+        st.inputs["Threshold"].default_value = 60.0     # од ~9000 — ганцаараа давна
+        st.inputs["Strength"].default_value = 0.40
+        # 2 салаа, 0° = хэвтээ анаморф цацраг — лавлагаа зураг дээрх одтой
+        # ижил. 4 салаа нь загалмай үүсгэж CG мэт харагддаг байв.
+        st.inputs["Streaks"].default_value = 2
+        st.inputs["Streaks Angle"].default_value = 0.0
+        st.inputs["Fade"].default_value = 0.95
         st.inputs["Color Modulation"].default_value = 0.30
 
         ng.links.new(rl.outputs["Image"], fog.inputs["Image"])
@@ -869,7 +1197,12 @@ def animate(cam, met, frames):
     print("[1st Studio] Мөргөлт: %d фрейм (%.1f сек), %.0f мм"
           % (frames, frames / 24.0, lens))
     print("   зай %.0f -> %.0f м, хурд %.1f м/с (%.0f км/ц) — ТОГТМОЛ"
-          % (CFG["dist0"], CFG["stop"], v, v * 3.6))
+          % (CFG["dist0"], CFG["end"], v, v * 3.6))
+    if CFG["end"] > CFG["stop"]:
+        R_end = CFG["end"]
+        print("   ТАСАЛНА: тэр хурдаараа мөргөлт хүртэл %.1f сек үлдэнэ (кадрын гадна)"
+              % ((R_end - CFG["stop"]) / v))
+        print("   сүүлийн 3 сек-д хөлөг %.2f дахин томорно" % ((R_end + 3 * v) / R_end))
     print("   сек    зай м   хөлөг кадрын өргөний")
     for frac in (0.0, 0.25, 0.5, 0.7, 0.85, 0.93, 0.97, 1.0):
         f = 1 + int((frames - 1) * frac)
@@ -900,6 +1233,7 @@ def main():
 
     CFG["device"] = opt("--device", CFG["device"])
     CFG["dist0"] = float(opt("--dist", CFG["dist0"]))
+    CFG["end"] = float(opt("--end", CFG["end"]))
     CFG["roll"] = float(opt("--roll", CFG["roll"]))
     CFG["exposure"] = float(opt("--exposure", CFG["exposure"]))
     angle = opt("--angle", "pov")
@@ -909,11 +1243,12 @@ def main():
 
     clear()
     P0, Pe, u, fwd = path()
+    star_dir, planet_dir, belt_n = sky_dirs(fwd)
     build_ship()
     if "--no-field" not in argv:
-        build_field(P0, Pe, fwd, frames / 24.0)
+        build_field(P0, Pe, fwd, frames / 24.0, belt_n)
     build_light(P0, fwd)
-    build_world()
+    build_world(star_dir, belt_n)
 
     res = opt("--res", "960x540")
     setup_render(tuple(int(v) for v in res.split("x")),
@@ -921,6 +1256,8 @@ def main():
     if "--no-glare" not in argv:
         setup_glare()
     cam, met = build_camera(angle, lens)
+    build_sky_objects(met if met is not None else cam, star_dir, planet_dir,
+                      belt_n, "--no-planet" not in argv)
 
     if met is not None:
         animate(cam, met, frames)
