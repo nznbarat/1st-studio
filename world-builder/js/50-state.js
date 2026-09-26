@@ -127,12 +127,6 @@
       meta: meta,
       f: f,
       frameSubject: F(""),
-      /* Тусдаа англи промт — орчуулга, AI‑аар дамжихгүй, үгчлэн хадгалагдана.
-         enPromptMN нь зөвхөн унших зориулалттай монгол утга. */
-      enPrompt: "",
-      enPromptMN: "",
-      enPromptMNFor: "",
-      enPromptMNai: false,
       ref: "",
       locked: false,
       lockedAt: 0,
@@ -142,6 +136,10 @@
     };
   };
 
+  S.blankEn = function () {
+    return { text: "", mn: "", mnFor: "", mnAI: false };
+  };
+
   S.blank = function () {
     return {
       v: 3,
@@ -149,6 +147,9 @@
       title: "Нэргүй төсөл",
       logline: F(),
       brand: S.blankBrand(),
+      /* Тусдаа англи промт — брэндээс гадна. Орчуулга, AI‑аар дамжихгүй,
+         үгчлэн. mn нь зөвхөн унших монгол утга. */
+      en: S.blankEn(),
       scenes: [],
       cast: [],
       locs: [],
@@ -179,6 +180,15 @@
     p.title = d.title || p.title;
     p.logline = fixField(d.logline);
     p.brand = fixBrand(d.brand);
+    /* Англи промт: өмнөх хувилбарт брэнд дотор (enPrompt) байсан */
+    const e = d.en && typeof d.en === "object" ? d.en : null;
+    const ob = d.brand && typeof d.brand === "object" ? d.brand : {};
+    p.en = {
+      text: e ? String(e.text || "") : String(ob.enPrompt || ""),
+      mn: e ? String(e.mn || "") : String(ob.enPromptMN || ""),
+      mnFor: e ? String(e.mnFor || "") : String(ob.enPromptMNFor || ""),
+      mnAI: e ? !!e.mnAI : !!ob.enPromptMNai
+    };
     p.custom = d.custom && typeof d.custom === "object" ? d.custom : {};
     p.scenes = (Array.isArray(d.scenes) ? d.scenes : []).map((s) => ({
       id: s.id || U.uid(),
@@ -280,10 +290,6 @@
       out.frameSubject = /[а-яөүё]/i.test(fs) ? F(fs) : { mn: "", en: fs, auto: false, unk: [], src: "manual" };
     } else out.frameSubject = fixField(fs);
     out.ref = b.ref || "";
-    out.enPrompt = typeof b.enPrompt === "string" ? b.enPrompt : "";
-    out.enPromptMN = typeof b.enPromptMN === "string" ? b.enPromptMN : "";
-    out.enPromptMNFor = typeof b.enPromptMNFor === "string" ? b.enPromptMNFor : "";
-    out.enPromptMNai = !!b.enPromptMNai;
     out.locked = !!b.locked;
     out.lockedAt = b.lockedAt || 0;
     /* Хуучин хадгалалтад агшин зураг байхгүй — одоогийн харагдацад итгэнэ */

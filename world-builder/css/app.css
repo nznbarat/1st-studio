@@ -249,6 +249,14 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
 .enprompt .note.warn{color:var(--warn)}
 .enprompt .enmn{margin-top:12px}
 .enprompt .enmn .out{white-space:pre-wrap}
+.enreport{display:none;margin-top:14px;padding:12px 14px;border-radius:10px;border:1px solid rgba(87,217,138,.4);background:rgba(87,217,138,.06);font-size:12.5px;line-height:1.55}
+.enreport.on{display:block}
+.enreport table{width:100%;border-collapse:collapse;margin-top:8px}
+.enreport td{padding:6px 8px;border-top:1px solid var(--line);vertical-align:top}
+.enreport td.ly{white-space:nowrap;color:var(--dim);font-size:11px}
+.enreport td.lb{white-space:nowrap;font-weight:600}
+.enreport .en{color:#d6e4ef;white-space:pre-line}
+.enreport .mn{color:var(--dim);margin-top:2px;white-space:pre-line}
 .lockbar span b{font-family:inherit;font-size:inherit;color:var(--warn)}
 .lockbar .lockact{display:flex;flex-wrap:wrap;gap:6px;width:100%}
 .lockbar .lockact button{font-size:12px}

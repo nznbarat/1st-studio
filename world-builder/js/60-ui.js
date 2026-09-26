@@ -39,6 +39,7 @@
     if (!field.auto && (field.en || "").trim()) {
       if (field.src === "camera-director") return { t: "🎥 CAMERA DIRECTOR · 🔒", c: "st done" };
       if (field.src === "manual") return { t: "ГАРААР ЗАССАН · 🔒", c: "st done" };
+      if (field.src === "prompt") return { t: "ПРОМТООС ҮГЧЛЭН · 🔒", c: "st done" };
     }
     if (!field.src) return { t: "", c: "st" };
     if (field.src === "ai") return { t: "AI ОРЧУУЛСАН ✓", c: "st done" };

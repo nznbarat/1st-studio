@@ -164,6 +164,16 @@
     "realistic": "бодит", "realistic scale": "бодит хэмжээ", "scale": "хэмжээ", "slow": "удаан", "heavy": "хүнд",
     "ominous": "түгшүүртэй", "text": "бичвэр", "people": "хүн", "explosion": "дэлбэрэлт", "overkill": "хэтрүүлэл",
     "neon": "неон", "cartoon": "хүүхэлдэйн", "video-game": "видео тоглоомын", "narration": "өгүүлэмж", "dialogue": "яриа",
+    "music": "хөгжим", "sound": "дуу авиа", "sounds": "дуу авиа", "drone": "гүн нам дуу", "rumble": "нүргээн", "silence": "нам гүм",
+    "palette": "өнгөний палетт", "colors": "өнгө", "colours": "өнгө", "desaturated": "бүдгэрүүлсэн", "bands": "судал",
+    "plating": "хавтан", "foreground": "урд талд", "blurred": "бүдэг", "edges": "ирмэг", "hard": "хатуу",
+    "blue-white": "цэнхэр цагаан", "grey-beige": "саарал шаргал", "upper left": "зүүн дээд буланд", "upper right": "баруун дээд талаас",
+    "gives": "өгнө", "worn": "элэгдсэн", "huge": "асар том", "ringed": "цагирагтай", "drifts": "хөвнө", "drift": "хөвөх",
+    "slowly": "удаанаар", "quietly": "чимээгүй", "glides": "гулсан хөдөлнө", "fragment": "хэлтэрхий", "fragments": "хэлтэрхий",
+    "tumble": "эргэлдэнэ", "tumbling": "эргэлдэх", "past": "хажуугаар", "jagged": "ирмэгтэй", "enters": "орж ирнэ",
+    "heading": "чиглэн", "straight": "шууд", "rear": "арын", "section": "хэсэг", "growing": "томорч", "fast": "хурдан",
+    "moment": "агшин", "before": "өмнө", "impact": "мөргөлдөөн", "along": "дагуу", "front": "урд", "ends": "дуусна",
+    "nacelles": "хөдөлгүүрийн бүрхүүл", "rocky": "хадархаг", "field": "талбар", "lights": "гэрэл", "few": "цөөн",
     "distant": "алсын", "thin": "нимгэн", "sharp": "хурц", "dense": "шигүү", "weathered": "элэгдсэн", "metal": "металл",
     "panels": "хавтан", "armored": "хуягт", "small": "жижиг", "large": "том", "round": "бөөрөнхий", "long": "урт"
   };

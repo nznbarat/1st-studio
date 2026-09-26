@@ -530,8 +530,43 @@
 
   el("masterCopy").onclick = (e) => UI.copy(B.masterPrompt(), e.target);
 
-  /* ── Тусдаа англи промт ── */
+  /* ── Тусдаа англи промт → брэнд ── */
   const enText = () => B.enPromptRaw();
+  const enTa = el("enPrompt");
+  enTa.addEventListener("input", () => {
+    S.P.en.text = enTa.value;
+    S.touch();
+    B.renderEn();
+  });
+  async function enDecompose() {
+    if (!enText()) {
+      U.toast("Эхлээд англи промтоо наана уу", "info");
+      enTa.focus();
+      return;
+    }
+    await UI.withBtn(el("enDecompose"), "Задалж байна…", async () => {
+      const r = await B.decompose();
+      B.setReport(r);
+      UI.renderAll();
+      U.toast(
+        "Брэнд рүү задарлаа: " + r.rows.length + " мөр 🔒 (англи нь үгчлэн)" +
+          (r.ai ? "" : " · монгол утга толиор ойролцоо") + ". Буцаах бол Ctrl+Z",
+        "good",
+        7000
+      );
+    });
+  }
+  /* Наах даруйд задална — бүтэн талбарын текстээр */
+  enTa.addEventListener("paste", () =>
+    setTimeout(() => {
+      S.P.en.text = enTa.value;
+      S.touch();
+      B.renderEn();
+      enDecompose();
+    }, 0)
+  );
+  el("enDecompose").onclick = enDecompose;
+  el("enGoBrand").onclick = () => UI.goto("brand");
   el("enCopy").onclick = (e) => (enText() ? UI.copy(enText(), e.target) : U.toast("Англи промт хоосон байна", "info"));
   el("enDl").onclick = () =>
     enText()

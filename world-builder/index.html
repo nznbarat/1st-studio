@@ -32,6 +32,7 @@
 <div id="app">
   <nav id="rail">
     <button class="step on" data-p="auto"><span class="n">0</span><span><b>Авто</b><small>Санаанаас бүтэн ертөнц</small></span></button>
+    <button class="step" data-p="en"><span class="n">EN</span><span><b>Англи промт</b><small>Наахад брэнд рүү задарна</small></span></button>
     <button class="step" data-p="brand"><span class="n">1</span><span><b>Брэнд</b><small>Сувгийн гарын үсэг, нэг фрэйм</small></span></button>
     <button class="step" data-p="story"><span class="n">2</span><span><b>Түүх</b><small>Логлайн, үзэгдэл, кадр</small></span></button>
     <button class="step" data-p="cast"><span class="n">3</span><span><b>Дүрүүд</b><small>Царай, хувцас, зан</small></span></button>
@@ -111,6 +112,34 @@
         <div class="hint"><b>Юу автоматжсан бэ?</b>Түүх зохиох, дүр дэлгэрүүлэх, орчуулга (олон талбарыг нэг дуудлагаар), дүр–байршлын холбоо, кадрын задаргаа, промт өнгөлөлт, тольны автомат бөглөлт, автомат хадгалалт.</div>
         <div class="hint"><b>Интернэтгүй бол?</b>Апп <span id="dictBrag">…</span> үгтэй ангилсан офлайн толиор орчуулсаар байна. AI холбогдонгуут чанар нь өөрөө өснө.</div>
         <div class="hint"><b>Товчлол</b>Ctrl+Enter — бүгдийг орчуулах · Ctrl+S — хадгалах · Ctrl+Z — буцаах</div>
+      </div>
+    </section>
+
+    <!-- ══════════ EN · АНГЛИ ПРОМТ ══════════ -->
+    <section class="panel" id="p-en">
+      <div class="pane-head">
+        <span class="eyebrow">Англи промт · тусдаа</span>
+        <h2>Англи промт → брэнд</h2>
+        <p>Seedance / Veo‑д бичсэн англи промтоо энд <b>наана</b>. Промт өөрөө <b>үгчлэн</b> хадгалагдана — орчуулга, AI‑аар дамжихгүй. Наасан даруйд апп түүнийг хэллэг хэллэгээр нь <b>эвдрэлгүй</b> тасалж брэндийн давхаргуудад тавина: хэв маяг, гэрэл, өнгө, камер, хориг → <b>Харагдац</b>, дуу → <b>Хоолой</b>, цагийн хуваарь ба гол кадр → <b>Хяналт</b>. Бичигдсэн мөр бүр 🔒 түгжигдэнэ, монгол утга нь хажууд гарна.</p>
+      </div>
+
+      <div class="card enprompt">
+        <span class="tag">EN · промт</span>
+        <textarea id="enPrompt" class="lineIn ta enpromptta" rows="12" spellcheck="false" placeholder="Photorealistic cinematic sci-fi shot, 8 seconds, one continuous take, no cuts, no text.&#10;&#10;A long grey armored cargo spaceship…&#10;&#10;0–3s: wide shot…"></textarea>
+        <p class="note" id="enStat"></p>
+        <div class="toolrow" style="margin-top:8px">
+          <button class="aibtn" id="enDecompose">🧩 Брэнд рүү задлах</button>
+          <button class="tbtn2 acc" id="enCopy">📋 Хуулах</button>
+          <button class="tbtn2" id="enDl">⬇ prompt-en.txt</button>
+          <button class="tbtn2" id="enMNBtn">⇄ Монгол утгыг гаргах</button>
+          <button class="tbtn2" id="enGoBrand">→ Брэнд рүү очих</button>
+        </div>
+        <div id="enReport" class="enreport"></div>
+        <div class="enmn">
+          <span class="tag">МН · утга</span>
+          <div class="out" id="enPromptMN"></div>
+          <p class="note" id="enMNNote"></p>
+        </div>
       </div>
     </section>
 
@@ -201,25 +230,6 @@
           <button class="tbtn2" id="brandDl">⬇ brand.json</button>
         </div>
         <p class="note">Хөтчийн санд автоматаар хадгалагдана. <b>Camera Director</b> (<code>camera.html</code>) үүнийг шууд уншиж, камерын дүрмийг хоёр талдаа нийцүүлнэ — ижил домэйн дээр бол товч дарахад л ачаална, эс бөгөөс <code>brand.json</code> файлаар дамжуулна.</p>
-      </div>
-
-      <!-- ── Англи промт — тусдаа, үгчлэн ── -->
-      <div class="aisec enprompt">
-        <h3>🇬🇧 Англи промт</h3>
-        <p class="note nb">Таны өөрийн англи промт — <b>орчуулга, AI‑аар дамжихгүй, үгчлэн</b> хадгалагдана. Seedance / Veo‑д шууд хуулна. Дээрх 4 давхаргат промтын төгсгөлд <b>хатуу, эвдрэлгүй</b> (хуваагдахгүй, мөр таслалт хэвээр) орно. Брэндийн мөрүүд хөндөгдөхгүй — <b>хоёулаа тусдаа</b>.</p>
-        <span class="tag">EN · промт</span>
-        <textarea id="enPrompt" class="lineIn ta enpromptta" rows="9" spellcheck="false" placeholder="Photorealistic cinematic sci-fi shot, 8 seconds, one continuous take, no cuts, no text.&#10;&#10;A long grey armored cargo spaceship…"></textarea>
-        <p class="note" id="enStat"></p>
-        <div class="toolrow" style="margin-top:8px">
-          <button class="tbtn2 acc" id="enCopy">📋 Хуулах</button>
-          <button class="tbtn2" id="enDl">⬇ prompt-en.txt</button>
-          <button class="tbtn2" id="enMNBtn">⇄ Монгол утгыг гаргах</button>
-        </div>
-        <div class="enmn">
-          <span class="tag">МН · утга</span>
-          <div class="out" id="enPromptMN"></div>
-          <p class="note" id="enMNNote"></p>
-        </div>
       </div>
 
       <div class="hintgrid">

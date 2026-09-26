@@ -315,27 +315,7 @@
     } else {
       L.push("(Checkpoint disabled — generate directly without waiting for approval.)");
     }
-
-    /* Тусдаа англи промт — хатуу, үгчлэн: хуваахгүй, орчуулахгүй, мөр
-       таслалтыг хэвээр нь. Зөвхөн эхний ба төгсгөлийн хоосон мөрийг авна. */
-    const ep = B.enPromptRaw();
-    if (ep) {
-      L.push(
-        "",
-        "=== ENGLISH PROMPT · VERBATIM ===",
-        "Use the prompt below exactly as written — do not rewrite, split, translate, shorten or add to it.",
-        "",
-        ep
-      );
-    }
     return L.join("\n");
-  };
-
-  /** Англи промт яг бичсэнээр нь (зөвхөн эхэн, төгсгөлийн хоосон зай хасна). */
-  B.enPromptRaw = function () {
-    return String(S.P.brand.enPrompt || "")
-      .replace(/^\s*\n/, "")
-      .replace(/\s+$/, "");
   };
 
   /**
@@ -594,15 +574,214 @@
     });
   }
 
-  /* ── Тусдаа англи промт ─────────────────────────────────── */
-  /** Үгийн тоо, монгол үсэг орсон эсэх, монгол утга хуучирсан эсэх. */
-  function paintEnPrompt() {
+  /* ══ ТУСДАА АНГЛИ ПРОМТ → БРЭНД (задлах) ══════════════════════
+     Промт өөрөө брэндээс гадна, үгчлэн хадгалагдана. Наахад апп түүнийг
+     хэллэг хэллэгээр нь ҮГЧЛЭН тасалж брэндийн 4 давхаргад тавина —
+     дахин бичихгүй, орчуулахгүй. Монгол тал нь зөвхөн утга. Бичигдсэн
+     мөр бүр 🔒 түгжигдэнэ. */
+
+  /** Англи промт яг бичсэнээр нь (зөвхөн эхэн, төгсгөлийн хоосон зай хасна). */
+  B.enPromptRaw = function () {
+    return String((S.P.en && S.P.en.text) || "")
+      .replace(/^\s*\n/, "")
+      .replace(/\s+$/, "");
+  };
+
+  function normTxt(t) {
+    return String(t || "")
+      .replace(/[‘’ʼ]/g, "'")
+      .replace(/[“”]/g, '"')
+      .replace(/[ \t]+/g, " ")
+      .trim();
+  }
+  /* Хэллэгийн ангилал — дараалал чухал:
+     хориг/дуу → хэв маяг → камер → гэрэл → өнгө → (сул) хэв маяг */
+  const RX = {
+    audio: /\b(narration|narrator|voice-?over|voices?|dialogue|music|soundtrack|score|sound(s| effects?)?|sfx|ambien(t|ce)|audio|drone|rumble|hum|silence|silent|whoosh|foley)\b/i,
+    lookStrong: /\b(photo-?realistic|film grain|grain|anamorphic|aesthetic|style|mood|documentary|realistic scale|look|render(ed)?|texture|hyper-?real|stylized|painterly|animated|anime)\b/i,
+    camera: /\b(takes?|cuts?|shots?|tracking|tracks?|dolly|pans?|tilts?|crane|handheld|steadicam|gimbal|lens|\d+\s?mm|close-?ups?|wide|framing|camera|angles?|zoom|push-?in|pull-?out|orbit(ing)?|aerial|pov|depth of field|bokeh|slow motion|timelapse)\b/i,
+    light: /\b(light(s|ing)?|lit|backlit|backlights?|rim|glow(s|ing)?|shadows?|sun(light|set|rise)?|moonlight|volumetric|rays|illuminat\w*|exposure|contrast|golden hour|blue hour|chiaroscuro|flare)\b/i,
+    palette: /\b(black|white|gr[ae]y|blue|red|green|yellow|orange|purple|violet|magenta|pink|teal|cyan|amber|gold(en)?|silver|copper|bronze|beige|brown|sand|ochre|crimson|indigo|navy|palette|colou?rs?|tones?|hues?|(de)?saturated|monochrome|warm|cold|cool|pastel|neon|muted)\b/i,
+    lookWeak: /\b(cinematic|realistic|epic|moody|gritty|dreamy|surreal)\b/i
+  };
+  const LIGHT_STRONG = /\b(backlight(s|ing)?|backlit|rim light|volumetric|light rays|lighting|key light|golden hour|blue hour|chiaroscuro|hard light|soft light)\b/i;
+  const MAXW = { look: 10, camera: 10, light: 18, palette: 6, avoid: 8, audio: 10 };
+  const ARTICLE = /^(a|an|the|this|that|its|his|her|their)\s/i;
+  const nw = (t) => t.split(/\s+/).filter(Boolean).length;
+  const TIMELINE = /^\d+(?:[.,]\d+)?\s*[-‐-―]\s*\d+(?:[.,]\d+)?\s*s(?:ec(?:onds?)?)?\b/i;
+  const REFERENCE = /\[[^\]]*\]|@(image|video|audio)\d*/i;
+
+  /**
+   * Англи промтыг брэндийн хэсгүүдэд задлах (Claude‑гүй, дүрмээр). Хэсэг
+   * бүр нь промтоос тасалсан ҮГЧЛЭН текст.
+   * @returns {{rows:Object<string,string[]>, pacing:string[], frame:string, ref:string[]}}
+   */
+  B.splitPrompt = function (text) {
+    const rows = { look: [], light: [], palette: [], camera: [], avoid: [], audio: [] };
+    const pacing = [];
+    const ref = [];
+    let frame = "";
+    const push = (k, t) => {
+      if (!rows[k].some((x) => x.toLowerCase() === t.toLowerCase())) rows[k].push(t);
+    };
+    String(text || "")
+      .split(/\r?\n/)
+      .map(normTxt)
+      .filter(Boolean)
+      .forEach((line) => {
+        if (TIMELINE.test(line)) return pacing.push(line);
+        if (REFERENCE.test(line)) return ref.push(line);
+        line.split(/(?<=[.!?])\s+/).forEach((sen) => {
+          sen = sen.replace(/[.!?]+$/, "").trim();
+          if (!sen) return;
+          const long = nw(sen) >= 18;
+          /* Таслал, цэг таслалаар хэллэгүүд; ганц үгтэйг («Slow, heavy,
+             ominous mood») дараагийнхтайгаа нийлүүлнэ. */
+          const raw = sen.split(/\s*[,;]\s*/).filter(Boolean);
+          const parts = [];
+          let carry = "";
+          raw.forEach((c, i) => {
+            if (nw(c) === 1 && i < raw.length - 1 && !/^(no|without)$/i.test(c)) carry += (carry ? ", " : "") + c;
+            else {
+              parts.push(carry ? carry + ", " + c : c);
+              carry = "";
+            }
+          });
+          if (carry) parts.push(carry);
+          let firstUsed = false;
+          parts.forEach((c, idx) => {
+            const t = c.replace(/^(and|with|plus)\s+/i, "").trim();
+            if (!t || /^\d+(?:[.,]\d+)?\s*(s|sec|secs|seconds?)$/i.test(t)) return;
+            let k = "";
+            const neg = /^(no|without|never|avoid)\s+/i.test(t);
+            if (neg && /^(no|without|never)\s+cuts?\b/i.test(t)) k = "camera";
+            else if (RX.audio.test(t) && (neg || !RX.light.test(t))) k = "audio";
+            else if (neg) k = "avoid";
+            else if (RX.lookStrong.test(t)) k = "look";
+            else if (RX.camera.test(t)) k = "camera";
+            else if (RX.light.test(t)) k = "light";
+            else if (RX.palette.test(t)) k = "palette";
+            else if (RX.lookWeak.test(t)) k = "look";
+            if (!k || nw(t) > MAXW[k]) return;
+            /* «A long grey … spaceship» — объектын тайлбар, брэнд биш */
+            if (!["light", "avoid", "audio"].includes(k) && ARTICLE.test(t)) return;
+            /* Урт үйл явдлын өгүүлбэрээс зөвхөн тодорхой гэрэл ба богино өнгө */
+            if (long && !((k === "light" && LIGHT_STRONG.test(t)) || k === "palette" || k === "avoid" || k === "audio")) return;
+            if (idx === 0) firstUsed = true;
+            if (k === "avoid") {
+              const v = t.replace(/^(no|without|never|avoid)\s+/i, "").replace(/\s+yet$/i, "");
+              if (v) push(k, v);
+            } else push(k, t);
+          });
+          /* Эхний үйл явдлын өгүүлбэр — туршилтын кадр (бүтнээр, үгчлэн) */
+          if (!frame && !firstUsed && nw(sen) >= 10 && ARTICLE.test(sen)) frame = sen;
+        });
+      });
+    return { rows: rows, pacing: pacing, frame: frame, ref: ref };
+  };
+
+  /** Хэллэгүүдийг задлаад брэндийн аль мөрд орохыг тодорхойлно. */
+  const LAYER_OF = { look: 2, light: 2, palette: 2, camera: 2, avoid: 2, audio: 3 };
+
+  /**
+   * Англи промтыг брэнд рүү задалж бичнэ. Англи нь үгчлэн, мөр бүр 🔒.
+   * Промтод байхгүй мөрд хүрэхгүй. Ctrl+Z нэг алхмаар буцаана.
+   * @returns {Promise<{rows:Array<{layer:number,lb:string,en:string,mn:string}>, untouched:string[], ai:boolean}>}
+   */
+  B.decompose = async function (text) {
+    const src = String(text != null ? text : B.enPromptRaw()).trim();
+    if (!src) throw new Error("Англи промт хоосон байна.");
     const b = S.P.brand;
-    const en = String(b.enPrompt || "").trim();
+    const sp = B.splitPrompt(src);
+    const pacing = sp.pacing.join("\n");
+
+    /* Монгол утга — бүгдийг нэг дор (Claude эсвэл толь) */
+    const all = [];
+    Object.keys(sp.rows).forEach((k) => sp.rows[k].forEach((t) => all.push(t)));
+    if (pacing) all.push(pacing);
+    if (sp.frame) all.push(sp.frame);
+    const tr = await WB.tr.toMN(all);
+    const mnOf = new Map(all.map((t, i) => [t, tr.mn[i] || ""]));
+
+    S.pushHistory();
+    const out = [];
+    const put = (field, en, mn) => {
+      field.en = en;
+      field.mn = mn;
+      field.unk = [];
+      field.auto = false; /* таны үг — гар засвар шиг түгжинэ */
+      field.src = "prompt";
+    };
+    Object.keys(sp.rows).forEach((k) => {
+      const list = sp.rows[k];
+      if (!list.length) return;
+      const en = list.join(", ");
+      const mn = list.map((t) => mnOf.get(t)).filter(Boolean).join(", ");
+      put(b.f[k], en, mn);
+      out.push({ layer: LAYER_OF[k], lb: (S.BRAND_FIELDS.find((d) => d.k === k) || { lb: k }).lb, en: en, mn: mn });
+    });
+    if (pacing || sp.frame) {
+      const d = b.direction || {};
+      S.DIRECTION_FIELDS.forEach((x) => {
+        if (!d[x.k]) d[x.k] = S.F("");
+      });
+      if (pacing) {
+        put(d.pacing, pacing, mnOf.get(pacing) || "");
+        out.push({ layer: 4, lb: "Чиглэл · Хэмнэл", en: pacing, mn: mnOf.get(pacing) || "" });
+      }
+      if (sp.frame) {
+        put(d.frame, sp.frame, mnOf.get(sp.frame) || "");
+        out.push({ layer: 4, lb: "Чиглэл · Эхлээд баталгаажуулах кадр", en: sp.frame, mn: mnOf.get(sp.frame) || "" });
+      }
+      b.direction = d;
+    }
+    if (sp.frame) {
+      put(b.frameSubject, sp.frame, mnOf.get(sp.frame) || "");
+      out.push({ layer: 2, lb: "Туршилтын кадрын агуулга", en: sp.frame, mn: mnOf.get(sp.frame) || "" });
+    }
+    if (sp.ref.length) {
+      b.ref = sp.ref.join(" ");
+      out.push({ layer: 2, lb: "Баталсан кадр (лавлагаа)", en: b.ref, mn: "" });
+    }
+    const hit = new Set(Object.keys(sp.rows).filter((k) => sp.rows[k].length));
+    const untouched = S.BRAND_META_FIELDS.map((d) => d.lb).concat(
+      S.BRAND_FIELDS.filter((d) => !hit.has(d.k)).map((d) => d.lb)
+    );
+    S.touch();
+    return { rows: out.sort((a, c) => a.layer - c.layer), untouched: untouched, ai: tr.ai };
+  };
+
+  /** Англи промтын монгол утгыг гаргана (догол мөр бүрээр). Англи хөндөгдөхгүй. */
+  B.enPromptMeaning = async function () {
+    const e = S.P.en;
+    const en = B.enPromptRaw();
+    if (!en) throw new Error("Англи промт хоосон байна.");
+    const tr = await WB.tr.toMN(en.split(/\n\s*\n/));
+    e.mn = tr.mn.join("\n\n");
+    e.mnFor = en;
+    e.mnAI = tr.ai;
+    S.touch();
+    B.renderEn();
+    return tr.ai;
+  };
+
+  /** Сүүлийн задаргааны тайлан (дэлгэцэд л, хадгалахгүй) */
+  let lastReport = null;
+  B.setReport = function (r) {
+    lastReport = r;
+    B.renderEn();
+  };
+
+  /** «Англи промт» хуудас — статистик, монгол утга, задаргааны тайлан. */
+  B.renderEn = function () {
+    const e = S.P.en;
+    const ta = el("enPrompt");
+    if (ta && ta.value !== e.text && document.activeElement !== ta) ta.value = e.text;
+    const en = B.enPromptRaw();
     const stat = el("enStat");
     if (stat) {
       if (!en) {
-        stat.textContent = "Хоосон — англи промтоо энд наа эсвэл бич. Брэндийн мөрүүдэд нөлөөлөхгүй.";
+        stat.textContent = "Хоосон — англи промтоо энд наана уу. Наасан даруйд брэнд рүү задарна.";
         stat.className = "note";
       } else {
         const cyr = (en.match(/[а-яөүё]+/gi) || []).length;
@@ -614,36 +793,46 @@
     }
     const box = el("enPromptMN");
     const note = el("enMNNote");
-    const mn = String(b.enPromptMN || "").trim();
+    const mn = String(e.mn || "").trim();
     if (box) {
       box.textContent = mn || "—";
       box.classList.toggle("dimmed", !mn);
     }
     if (note) {
-      const stale = !!mn && en !== String(b.enPromptMNFor || "").trim();
+      const stale = !!mn && en !== String(e.mnFor || "").trim();
       note.textContent = !mn
         ? "«⇄ Монгол утгыг гаргах» дарахад англи промтын утгыг монголоор харуулна. Англи промт өөрчлөгдөхгүй."
         : stale
           ? "⚠ Англи промт өөрчлөгдсөн — монгол утгыг дахин гаргана уу."
-          : (b.enPromptMNai ? "Claude орчуулсан" : "Толиор ойролцоо — Claude холбовол илүү зөв") +
+          : (e.mnAI ? "Claude орчуулсан" : "Толиор ойролцоо — Claude холбовол илүү зөв") +
             " · зөвхөн унших зориулалттай, англи промт хэвээрээ.";
       note.className = "note" + (stale ? " warn" : "");
     }
-  }
-
-  /** Англи промтын монгол утгыг гаргана (догол мөр бүрээр). Англи хөндөгдөхгүй. */
-  B.enPromptMeaning = async function () {
-    const b = S.P.brand;
-    const en = String(b.enPrompt || "").trim();
-    if (!en) throw new Error("Англи промт хоосон байна.");
-    const paras = en.split(/\n\s*\n/);
-    const tr = await WB.tr.toMN(paras);
-    b.enPromptMN = tr.mn.join("\n\n");
-    b.enPromptMNFor = en;
-    b.enPromptMNai = tr.ai;
-    S.touch();
-    paintEnPrompt();
-    return tr.ai;
+    const rep = el("enReport");
+    if (rep) {
+      if (!lastReport) {
+        rep.innerHTML = "";
+        rep.classList.remove("on");
+        return;
+      }
+      rep.classList.add("on");
+      const L = { 2: "2 · Харагдац", 3: "3 · Хоолой", 4: "4 · Хяналт" };
+      rep.innerHTML =
+        "<b>🧩 Брэнд рүү задарлаа</b> — англи нь промтоос үгчлэн, мөр бүр 🔒. " +
+        (lastReport.ai ? "Монгол утгыг Claude орчуулсан." : "Монгол утга толиор ойролцоо.") +
+        "<table>" +
+        lastReport.rows
+          .map(
+            (r) =>
+              "<tr><td class=\"ly\">" + U.esc(L[r.layer] || "") + "</td><td class=\"lb\">" + U.esc(r.lb) +
+              '</td><td><div class="en">' + U.esc(r.en) + '</div><div class="mn">' + U.esc(r.mn || "") + "</div></td></tr>"
+          )
+          .join("") +
+        "</table>" +
+        (lastReport.untouched.length
+          ? '<p class="note">Промтод байхгүй тул хөндөөгүй: ' + U.esc(lastReport.untouched.join(", ")) + "</p>"
+          : "");
+    }
   };
 
   /** Түгжээний мөр — нэг фрэйм дүрмийн одоогийн байдал. */
@@ -697,12 +886,7 @@
 
     bindPlain(el("brandTopics"), () => b.meta.topics, (v) => (b.meta.topics = v));
     bindPlain(el("brandRef"), () => b.ref, (v) => (b.ref = v));
-    bindPlain(el("enPrompt"), () => b.enPrompt || "", (v) => {
-      b.enPrompt = v;
-      paintEnPrompt();
-      B.paintOutputs();
-    });
-    paintEnPrompt();
+    B.renderEn();
     const frameBox = el("frameSubjectField");
     if (frameBox) {
       frameBox.innerHTML = "";
