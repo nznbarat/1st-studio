@@ -37,7 +37,8 @@ new Function("window", "RM", guideSrc)(globalThis.window, RM);
 
 /* Интерфейсийн загварын хуудсууд */
 for (const f of ["resolve-mn/js/50-sim-pages.js", "resolve-mn/js/51-sim-more.js",
-                 "resolve-mn/js/52-sim-menus.js", "resolve-mn/js/53-sim-icons.js"]) {
+                 "resolve-mn/js/52-sim-menus.js", "resolve-mn/js/53-sim-icons.js",
+                 "resolve-mn/js/54-sim-color-palettes.js"]) {
   new Function("window", "RM", readFileSync(join(root, f), "utf8"))(globalThis.window, RM);
 }
 
@@ -163,7 +164,7 @@ const iface = readFileSync(join(root, "resolve-mn/interface.html"), "utf8");
 for (const f of files) {
   if (!iface.includes("js/dict/" + f)) warn("interface.html-д холбогдоогүй толь: " + f);
 }
-for (const f of ["50-sim-pages.js", "51-sim-more.js", "52-sim-menus.js",
+for (const f of ["50-sim-pages.js", "51-sim-more.js", "52-sim-menus.js", "54-sim-color-palettes.js",
                  "60-sim-ui.js", "91-sim-main.js"]) {
   if (!iface.includes("js/" + f)) warn("interface.html-д холбогдоогүй загвар: " + f);
 }

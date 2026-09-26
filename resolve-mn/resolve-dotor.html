@@ -830,6 +830,108 @@ code{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace;font-size:.9em
 .guide-link{display:inline-block;margin:10px 0 2px;padding:6px 12px;border:1px solid var(--ui-tungsten);border-radius:8px;color:var(--ui-tungsten);font-size:13px;font-weight:500}
 .guide-link:hover{background:var(--ui-tungsten);color:#1a1206;text-decoration:none}
 
+/* ── Color палитрын самбарууд (54-sim-color-palettes.js, 2026-09-26) ── */
+#rsHost [data-tabpane][hidden]{display:none!important}
+.pal-rail .pi.dim{opacity:.35}
+.pane-h .on{color:#fff} .pane-h .dim{opacity:.4} .pane-h .hl{color:var(--rs-txt);font-weight:500}
+.pane-h .hdd{font-weight:500;color:var(--rs-txt)}
+.cxw{display:flex;flex-direction:column}
+.cx{flex:1;min-height:0;display:flex;gap:1px;background:var(--rs-line)}
+.cx>.col{flex:1;min-width:0;background:var(--rs-pane);padding:8px 10px;display:flex;flex-direction:column;gap:5px;overflow:hidden}
+.cx>.col.wide{flex:1.5} .cx>.col.full{flex:1}
+.cx-foot{display:flex;align-items:center;gap:6px;padding:6px 12px;border-top:1px solid var(--rs-line);font-size:11px;color:var(--rs-dim);white-space:nowrap;overflow:hidden;flex-shrink:0}
+.cx .dim,.cx-foot .dim,.cx .col.dim{opacity:.45}
+.cx .gh{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:11.5px;color:var(--rs-txt);white-space:nowrap}
+.cx .gh b{font-weight:500} .cx .gh .r{color:var(--rs-dim);display:flex;align-items:center;gap:4px}
+.cx .f,.cx-foot .f{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--rs-dim);white-space:nowrap;margin:1px 6px 1px 0}
+.cx .f-row .f .l,.cx .tight .f .l{min-width:0}
+.cx .f .l{min-width:58px;text-align:right}
+.cx .v,.cx-foot .v{font:10.5px 'JetBrains Mono',ui-monospace,monospace;color:var(--rs-txt);background:#1c1c20;border:1px solid #3a3a40;
+  border-radius:2px;padding:1px 6px;min-width:38px;text-align:center;font-weight:400}
+.cx .v.dd{font-family:'Inter',system-ui,sans-serif;min-width:92px;text-align:left} .cx .v.dd::after{content:" ⌄";float:right;color:var(--rs-dim)}
+.cx .cb,.cx-foot .cb{display:inline-block;width:11px;height:11px;border:1px solid #6a6a70;border-radius:2px;background:#1c1c20;vertical-align:-1px}
+.cx .cb.on::after,.cx-foot .cb.on::after{content:"✓";display:block;font-size:9px;line-height:10px;text-align:center;color:#fff}
+.cx .f2{display:flex;align-items:flex-start;gap:6px;flex-wrap:wrap}
+.cx .f2>div:not(.sl-row){display:flex;flex-direction:column;gap:5px;flex:1}
+.cx .tight .v.dd{min-width:62px}
+.cx .fs{display:flex;flex-direction:column;gap:3px;font-size:11px;color:var(--rs-dim)}
+.cx .f-row{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--rs-dim);white-space:nowrap;flex-wrap:wrap}
+.cx .f-row .sp,.cx-foot .sp{flex:1}
+.cx .btn,.cx-foot .btn{display:inline-block;border:1px solid #3a3a40;border-radius:10px;padding:2px 16px;font-size:11px;color:var(--rs-txt);text-align:center;align-self:center}
+.cx .seg{display:inline-flex;border:1px solid #3a3a40;border-radius:3px;overflow:hidden;font-size:11px}
+.cx .seg b{font-weight:400;padding:1px 10px;color:var(--rs-dim)} .cx .seg b.on{background:#1c1c20;color:#fff}
+.cx .sl-row{display:grid;grid-template-columns:1fr auto;gap:1px 6px;font-size:10.5px;color:var(--rs-dim);min-width:0}
+.cx .f2>.sl-row{flex:1}
+.cx .sl-row b{font:10.5px 'JetBrains Mono',monospace;color:var(--rs-txt);font-weight:400}
+.cx .sl-row i{grid-column:1/3;height:3px;border-radius:2px;background:linear-gradient(90deg,#8a8a90 var(--p),#1a1a1d var(--p))}
+.cx .sl-row.r i{background:linear-gradient(90deg,#e0484f var(--p),#1a1a1d var(--p))}
+.cx .sl-row.g i{background:linear-gradient(90deg,#3fbf5a var(--p),#1a1a1d var(--p))}
+.cx .sl-row.b i{background:linear-gradient(90deg,#4d5fe0 var(--p),#1a1a1d var(--p))}
+.cx .chip{display:inline-grid;place-items:center;width:15px;height:15px;border-radius:2px;background:var(--c);color:#111;font-size:9px;font-weight:600}
+.cx .tools{display:flex;gap:2px} .cx .tools span{flex:1;text-align:center;padding:2px 0;background:#1c1c20;border:1px solid #3a3a40;border-radius:2px;color:var(--rs-icon)}
+.cx .tools span.on{color:#fff;background:#3d3d42}
+/* босоо баганууд */
+.vbs{display:flex;gap:12px;justify-content:center;padding:6px 0}
+.vb{width:9px;height:96px;border-radius:5px;background:#16161a;position:relative;overflow:hidden}
+.vb i{position:absolute;left:0;right:0;bottom:0;height:var(--h);background:linear-gradient(to top,transparent,var(--c));border-top:2px solid var(--c)}
+.vvals{display:flex;gap:4px;justify-content:center}
+.vvals b{font:10px 'JetBrains Mono',monospace;color:var(--rs-txt);background:#1c1c20;border:1px solid #3a3a40;border-bottom:2px solid var(--c);border-radius:2px;padding:1px 4px;font-weight:400}
+.bgrp{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+.wheels.bars-v .vb{height:104px}
+/* Color Match */
+.swg{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;padding:6px 10px}
+.swg i{aspect-ratio:1;border-radius:3px;border:1px solid #111;max-height:40px}
+/* HDR */
+.hz-nav{display:flex;justify-content:center;align-items:center;gap:8px;color:var(--rs-dim);font-size:12px}
+.hz-nav i{width:9px;height:9px;border-radius:50%;border:1px solid #6a6a70}
+.hz-nav i.on{border:2px solid var(--c)}
+.wheel .rng.sm{width:88px;height:88px}
+.wheel .zn{font:9px 'JetBrains Mono',monospace;color:var(--rs-dim)}
+.hz-v{display:flex;gap:4px;align-items:center;font-size:10px;color:var(--rs-dim)}
+.hz-v b{font:10px 'JetBrains Mono',monospace;color:var(--rs-txt);font-weight:400} .hz-v b.q{color:var(--rs-dim)}
+/* RGB Mixer */
+.swaps{display:inline-flex;gap:8px} .swaps i{width:28px;height:12px;border-radius:6px;border:1px solid #3a3a40;
+  background:radial-gradient(circle at 30% 50%,var(--a) 3px,transparent 4px),radial-gradient(circle at 70% 50%,var(--b) 3px,transparent 4px),#1c1c20}
+/* Curves */
+.curve{flex:1;min-height:0;background:#1f1f24;border:1px solid var(--rs-line);
+  background-image:linear-gradient(#2c2c32 1px,transparent 1px),linear-gradient(90deg,#2c2c32 1px,transparent 1px);background-size:25% 25%}
+.curve svg{width:100%;height:100%;display:block} .curve line{stroke:#e8e8e8;stroke-width:.6}
+/* ColorSlice */
+.slices{flex:1;display:flex;gap:1px;background:var(--rs-line);min-height:0}
+.slc{flex:1;min-width:0;background:var(--rs-pane);display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:var(--rs-dim);padding:2px}
+.slc b{font:10px 'JetBrains Mono',monospace;color:var(--rs-txt);font-weight:400}
+.slc .wh-top{font-size:10.5px} .slc .vb{height:50px} .slc .vbs{padding:2px 0;gap:14px}
+.mw{width:40px;height:40px;border-radius:50%;background:conic-gradient(#e0484f,#e3d25a,#3fbf5a,#45c6d8,#5a5ff0,#e04fc7,#e0484f);opacity:.8}
+/* Color Warper */
+.chrom{flex:1;min-height:0;position:relative;background:#1a1a1d}
+.chrom::before{content:"";position:absolute;inset:4% 20%;clip-path:polygon(18% 2%,98% 58%,6% 100%);
+  background:radial-gradient(circle at 98% 58%,#2432e0 0,transparent 55%),radial-gradient(circle at 18% 2%,#d02a2a 0,transparent 55%),
+  radial-gradient(circle at 6% 100%,#1fa84a 0,transparent 60%),#b9a98c}
+.chrom i{position:absolute;left:36%;top:40%;width:12px;height:12px;border:1.5px solid #fff;border-radius:50%}
+/* Qualifier */
+.qg{display:flex;flex-direction:column;gap:3px}
+.qbar{height:14px;border-radius:2px;border:1px solid #111}
+.cx .gh .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--rs-red);margin-right:7px}
+/* Window */
+.wlist{flex:1;min-height:0;display:flex;flex-direction:column}
+.wrow{display:flex;align-items:center;gap:8px;padding:4px 8px;color:#55555b;border-bottom:1px solid var(--rs-line)}
+.wrow .shp{width:32px;height:26px;display:grid;place-items:center;background:#1c1c20;border-radius:2px;color:#fff;font-size:15px}
+.wrow i{font-style:normal;margin-left:10px}
+.cx .f-row span{margin-right:6px}
+/* AI Magic Mask 2 */
+.mm-bar{display:flex;justify-content:flex-end;font-size:11px;color:var(--rs-icon);white-space:nowrap;padding-bottom:3px;border-bottom:1px solid var(--rs-line)}
+.mm-l .trk-ru{padding-left:24%}
+.mm-r{gap:3px!important} .mm-r .sl-row i{height:2px}
+.wheels.bars-v .vvals b{font-size:9px;padding:1px 2px}
+.cx .f-row.nw{flex-wrap:nowrap;overflow:hidden}
+.mm-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#55555b}
+.mm-empty b{font-size:22px;font-weight:400} .mm-empty span{font-size:11px}
+/* Key */
+.keyprev{flex:1;min-height:0;background:#000;position:relative}
+.keyprev i{position:absolute;left:0;right:0;top:13%;bottom:13%;background:#fff}
+.kg{display:flex;flex-direction:column;gap:4px;padding-bottom:6px;border-bottom:1px solid var(--rs-line)}
+.wheels:not(.bars-v) .bgrp .vb{height:130px}
+
 </style>
 </head>
 <body>
@@ -1599,7 +1701,7 @@ RM.dict.add({ id:"color-primary", label:"Color — үндсэн засвар", i
 note:"Гэрэл, ялгарал, өнгөний температурыг бүхэлд нь өөрчилдөг үндсэн хэрэглүүрүүд.", terms:[
 ["Primaries","Үндсэн засвар","Дүрсэнд бүхэлд нь үйлчлэх гэрэл, өнгөний засвар."],
 ["Secondaries","Хоёрдогч засвар","Зөвхөн тодорхой өнгө эсвэл хэсэгт (арьс, тэнгэр) чиглэсэн засвар."],
-["Color Wheels","Өнгөний дугуй","Lift, Gamma, Gain, Offset дөрвөн дугуй. Өнгө засварын хамгийн үндсэн хэрэглүүр."],
+["Color Wheels","Өнгөний дугуй","Lift, Gamma, Gain, Offset дөрвөн дугуй. Өнгө засварын хамгийн үндсэн хэрэглүүр.","","Color → палитрын мөр, 3 дахь дүрс (tooltip: Color Wheels)"],
 ["Lift","Сүүдэр (Lift)","Хамгийн харанхуй хэсгийг өргөх, буулгах. Хар түвшинг тохируулна."],
 ["Gamma","Дунд өнгө (Gamma)","Дунд зэргийн гэрэлтэй хэсгийг тохируулна. Нүүрний өнгө ихэвчлэн энд байна."],
 ["Gain","Гэгээ (Gain)","Хамгийн гэгээн хэсгийг тохируулна. Тэнгэр, гэрлийн эх үүсвэр."],
@@ -1637,7 +1739,7 @@ note:"Гэрэл, ялгарал, өнгөний температурыг бүх
 
 RM.dict.add({ id:"color-curve", label:"Color — муруй, сонголт", icon:"∿", page:"color",
 note:"Тодорхой өнгө, гэрлийн бүсэд чиглэсэн нарийн засвар.", terms:[
-["Curves","Муруйнууд","Гэрэл, өнгийг муруйгаар нарийвчлан хянах хэрэглүүр."],
+["Curves","Муруйнууд","Гэрэл, өнгийг муруйгаар нарийвчлан хянах хэрэглүүр.","","Color → палитрын мөр, 7 дахь дүрс (tooltip: Curves)"],
 ["Custom Curve","Захиалгат муруй","Гэрлийн шилжилтийг цэг нэмж чирч өөрчлөх үндсэн муруй. S хэлбэр өгвөл ялгарал нэмэгдэнэ."],
 ["S-Curve","S муруй","Сүүдрийг доош, гэгээг дээш татсан муруй. Кино мэдрэмж өгдөг сонгодог арга."],
 ["Soft Clip","Зөөлөн таслалт","Гэгээн эсвэл харанхуй хэсэг огцом тасрахаас сэргийлж зөөлрүүлнэ."],
@@ -1647,14 +1749,14 @@ note:"Тодорхой өнгө, гэрлийн бүсэд чиглэсэн на
 ["Lum vs Sat","Гэрэл → ханалт","Гэрлийн түвшнээс хамааруулж ханалтыг өөрчлөх. Сүүдрийн өнгийг тайвшруулахад."],
 ["Sat vs Sat","Ханалт → ханалт","Аль хэдийн тод өнгийг илүү тод, эсвэл дарж тайвшруулах."],
 ["Sat vs Lum","Ханалт → гэрэл","Ханалтаас хамааруулж гэрлийг өөрчлөх."],
-["Qualifier","Сонгогч","Тодорхой өнгийг сонгож зөвхөн түүнд засвар хийх хэрэглүүр. Арьсны өнгө засахад гол."],
+["Qualifier","Сонгогч","Тодорхой өнгийг сонгож зөвхөн түүнд засвар хийх хэрэглүүр. Арьсны өнгө засахад гол.","","Color → палитрын мөр, 10 дахь дүрс (tooltip: Qualifier)"],
 ["HSL Qualifier","HSL сонгогч","Аяс, ханалт, гэрэл гурваар өнгө сонгох хамгийн түгээмэл сонгогч."],
 ["Picker","Дуслуур","Кадар дээр товшиж эсвэл чирч өнгө сонгох хэрэглүүр."],
 ["Highlight","Тодруулга","Сонгосон хэсгийг хар цагаанаар эсвэл өнгөт дэвсгэр дээр тодруулж харуулах.","Shift+H"],
 ["Denoise (Qualifier)","Сонголт цэвэрлэх","Сонголтын ирмэгийн шуугиан, толбыг арилгах."],
 ["Clean Black / White","Хар цагаан цэвэрлэх","Маскны бүрэн хар, бүрэн цагаан хэсгийг цэвэрлэж, дунд зэргийн бүдэг хэсгийг арилгах."],
 ["Blur Radius (Qualifier)","Сонголтын зөөлрөлт","Маскны ирмэгийг зөөлрүүлж, засварын хил мэдэгдэхгүй болгох."],
-["Power Window","Хүчит цонх","Кадрын тодорхой хэсгийг геометр хэлбэрээр тусгаарлах маск."],
+["Power Window","Хүчит цонх","Кадрын тодорхой хэсгийг геометр хэлбэрээр тусгаарлах маск.","","Color → палитрын мөр, 11 дэх дүрс (tooltip: Window)"],
 ["Linear Window","Шулуун цонх","Дөрвөлжин хэлбэрийн хүчит цонх."],
 ["Circular Window","Дугуй цонх","Дугуй эсвэл зууван цонх. Нүүрийг тусгаарлахад түгээмэл."],
 ["Polygon Window","Олон өнцөгт цонх","Цэг нэмж дурын хэлбэр үүсгэх цонх."],
@@ -1662,23 +1764,23 @@ note:"Тодорхой өнгө, гэрлийн бүсэд чиглэсэн на
 ["Gradient Window","Шатлалт цонх","Шугамаар хуваагдсан, аажим шилжих цонх. Тэнгэрийг тусад нь харанхуйлуулахад."],
 ["Window Softness","Цонхны зөөлрөлт","Цонхны ирмэг хэр аажим шилжихийг заана. Их байх тусмаа мэдэгдэхгүй."],
 ["Invert Window","Цонх урвуулах","Цонхны дотор, гадна талыг сольж, эсрэг хэсэгт нь засвар хийх."],
-["Window Tracker","Цонхны мөрдөгч","Хүчит цонхыг хөдөлж буй объектын араас дагуулах."],
+["Window Tracker","Цонхны мөрдөгч","Хүчит цонхыг хөдөлж буй объектын араас дагуулах.","","Color → палитрын мөр, 12 дахь дүрс (tooltip: Tracker)"],
 ["Track Forward / Reverse","Урагш / хойш мөрдөх","Мөрдөлтийг заагчаас урагш эсвэл хойш тооцоолох."],
 ["Interactive Mode","Гар горим","Мөрдөлт алдагдсан хэсгийг гараар засах горим."],
 ["Cloud Tracker","Үүлэн мөрдөгч","Кадар доторх олон цэгийг зэрэг мөрдөх сонгодог арга."],
 ["Point Tracker","Цэгэн мөрдөгч","Тодорхой цэгүүдийг гараар сонгож мөрдөх нарийн арга."],
-["Magic Mask","Шидэт маск","Хүн, объектыг товшиход л AI нь өөрөө таньж кадар бүрд дагаж маскдана. Studio боломж."],
+["Magic Mask","Шидэт маск","Хүн, объектыг товшиход л AI нь өөрөө таньж кадар бүрд дагаж маскдана. Studio боломж.","","Color → палитрын мөр, 13 дахь дүрс (tooltip: AI Magic Mask)"],
 ["Depth Map","Гүний зураглал","Кадрын аль хэсэг ойр, аль нь хол болохыг AI-аар тооцоолж маск болгож гаргана. Studio боломж."],
 ["Object Mask","Объектын маск","Кадар доторх тодорхой объектыг AI-аар таньж тусгаарлах Studio боломж."],
 ["Face Refinement","Нүүр өнгөлөлт","Нүүрийг таньж, арьс, нүд, уруулыг тусад нь засварлах Studio хэрэглүүр."],
 ["Skin Tone Indicator","Арьсны шугам","Векторскоп дээрх ташуу шугам. Арьсны өнгө энэ шугам дээр буувал байгалийн харагдана."],
-["Blur / Sharpen / Mist","Бүдгэрүүлэх / хурцлах / манан","Өнгө засварын хуудасны зөөлрүүлэх, хурцлах, манантуулах самбар."],
+["Blur / Sharpen / Mist","Бүдгэрүүлэх / хурцлах / манан","Өнгө засварын хуудасны зөөлрүүлэх, хурцлах, манантуулах самбар.","","Color → палитрын мөр, 14 дэх дүрс (tooltip: Blur)"],
 ["Sharpen","Хурцлах","Ирмэгийг тодруулж дүрсийг хурц болгох. Хэтрүүлбэл хиймэл харагдана."],
 ["Mist","Манан","Гэгээн хэсгээс зөөлөн туяа тарааж, кинонд ойр зөөлөн мэдрэмж өгөх."],
 ["Noise Reduction","Шуугиан бууруулалт","Дүрслэлийн бүдэг толбыг арилгах. Temporal (цаг хугацааны) ба Spatial (орон зайн) гэж хоёр төрөлтэй. Studio боломж."],
 ["Temporal NR","Цагийн шуугиан бууруулалт","Хөрш кадруудыг харьцуулж шуугианыг арилгана. Хөдөлгөөн багатай кадарт маш үр дүнтэй."],
 ["Spatial NR","Орон зайн шуугиан бууруулалт","Нэг кадар доторх хөрш пиксэлүүдийг харьцуулж зөөлрүүлнэ."],
-["Motion Effects","Хөдөлгөөний эффект","Шуугиан бууруулалт болон хөдөлгөөнт бүдгэрэл агуулсан самбар."],
+["Motion Effects","Хөдөлгөөний эффект","Шуугиан бууруулалт болон хөдөлгөөнт бүдгэрэл агуулсан самбар.","","Color → палитрын мөр, 6 дахь дүрс (tooltip: Motion Effects)"],
 ["Grain","Мөхлөг","Кино хальсны мөхлөг нэмж, дижитал цэвэр байдлыг зөөлрүүлэх."],
 ["Film Look Creator","Кино төрх бүтээгч","Хальсны төрхийг (мөхлөг, halation, өнгөний шилжилт) нэг самбараас бүрдүүлэх Studio хэрэглүүр."]
 ]});
@@ -1727,7 +1829,7 @@ note:"Камерын түүхий дохиог хэрхэн уншиж, эцси
 ["CDL","CDL","Зураг авалтын талбай дээр хийсэн энгийн өнгөний засварыг (Slope, Offset, Power, Saturation) дамжуулах стандарт."],
 ["Log","Лог дүрслэл","Камер өргөн гэрлийн хүрээг хадгалахын тулд ашигладаг тэгш, бүдэг дүрслэл. Заавал засвар шаардана."],
 ["Raw","Түүхий дохио","Мэдрэгчээс шууд гарсан, боловсруулаагүй өгөгдөл. Цагаан тэнцвэр, ISO-г дараа нь чөлөөтэй өөрчилнө."],
-["Camera Raw","Камерын түүхий тохиргоо","BRAW, R3D зэрэг түүхий файлын тохиргоог Resolve дотор өөрчлөх самбар."],
+["Camera Raw","Камерын түүхий тохиргоо","BRAW, R3D зэрэг түүхий файлын тохиргоог Resolve дотор өөрчлөх самбар.","","Color → палитрын мөр, 1 дэх дүрс (tooltip: Camera Raw)"],
 ["BRAW","Blackmagic RAW","Blackmagic камерын түүхий формат. Хөнгөн, уян хатан, Resolve-д маш сайн ажиллана."],
 ["Rec.709","Rec.709","HD телевиз, вэбийн стандарт өнгөний орон зай. Хамгийн түгээмэл гаралт."],
 ["Rec.2020","Rec.2020","UHD, HDR-т зориулсан илүү өргөн орон зай."],
@@ -1739,7 +1841,7 @@ note:"Камерын түүхий дохиог хэрхэн уншиж, эцси
 ["HLG","HLG","Нэвтрүүлэгт зориулсан HDR муруй. SDR дэлгэцтэй нийцтэй байхаар зохиогдсон."],
 ["Dolby Vision","Dolby Vision","Кадар бүрд тохирсон мэдээлэл дамжуулдаг HDR систем. Resolve Studio дотор шинжилж, засварлаж болно."],
 ["HDR Palette","HDR самбар","Гэрлийн бүсийг (хар, харанхуй, сүүдэр, дунд, гэгээ, тод) тусад нь засварлах орчин үеийн хэрэглүүр. Studio боломж. Resolve 21-ийн палитрын дүрсний tooltip: HDR Grade.","","Color → палитрын мөр, 4 дэх дүрс (tooltip: HDR Grade)"],
-["Color Warper","Өнгө мушгигч","Өнгийг тор дээр чирж, аяс болон ханалтыг гараар мушгих Studio хэрэглүүр."],
+["Color Warper","Өнгө мушгигч","Өнгийг тор дээр чирж, аяс болон ханалтыг гараар мушгих Studio хэрэглүүр.","","Color → палитрын мөр, 9 дэх дүрс (tooltip: Color Warper)"],
 ["Chroma Subsampling","Өнгөний сийрэгжүүлэлт","Өнгөний мэдээллийг гэрлийнхээс бага нягтралаар хадгалах шахалтын арга. 4:4:4 бүрэн, 4:2:2 дунд, 4:2:0 хамгийн шахсан."],
 ["Bit Depth","Битийн гүн","Өнгөний шатлалын нарийвчлал. 8 бит — 256 шат, 10 бит — 1024 шат. Их байх тусмаа өнгө засварт уян хатан."],
 ["Banding","Зурвасжилт","Тэнгэр зэрэг жигд шилжилтэд өнгө шатлан зурвасжих алдаа. Бага битийн гүнд түгээмэл."],
@@ -2850,6 +2952,133 @@ note:"Color хуудасны viewer-ийн дээд хоёр мөр (харьц�
 ["Color Match (Palette)","Өнгийн хүснэгтээр тааруулах","Color хуудасны палитрын 2 дахь дүрс (tooltip: Color Match). Зураг авалтад бичсэн өнгийн хүснэгтийг (color chart) viewer дээр тааруулж, Match товчоор клипийн өнгийг автоматаар зөв болгоно.","","Color → палитрын мөр, 2 дахь дүрс"],
 ["RGB Mixer","RGB холигч","Color хуудасны палитрын 5 дахь дүрс (tooltip: RGB Mixer). Гаралтын улаан, ногоон, хөх суваг бүрт оролтын гурван сувгаас хэдэн хувь орохыг тохируулна — сувгийг солих, хар цагаан болгох (Monochrome), өнгийг огцом өөрчлөх.","","Color → палитрын мөр, 5 дахь дүрс"],
 ["ColorSlice","Өнгөөр зүсэх самбар","Color хуудасны палитрын 8 дахь дүрс (tooltip: ColorSlice; Curves, Color Warper хоёрын хооронд). Өнгийг зургаан чиглэлээр (улаан, шар, ногоон, цэнхэр, хөх, ягаан) ба арьсны өнгөөр тус тусад нь ханалт, гэрэлтэлт, өнгийн аясаар засна — хальсны мэдрэмжтэй «хасах» ханалтаар.","","Color → палитрын мөр, 8 дахь дүрс"]
+]});
+
+</script>
+<script>
+/* ── js/dict/r32-color-palettes.js ── */
+/* ── Ангилал 32 · Color хуудас — палитрын самбаруудын доторх удирдлага ──
+   Resolve Studio 21-ийн Color хуудас, 2026-09-26-ны дэлгэцийн зургууд:
+   палитрын 17 дүрсний tooltip (Camera Raw … Key, Sizing, 3D) ба самбар бүрийн агуулга —
+   Camera Raw, Color Match, Primaries - Color Bars, High Dynamic Range - Color Wheels, RGB Mixer,
+   Motion Effects, Curves - Custom, ColorSlice, Color Warper - Chroma Warp, Qualifier - HSL,
+   Window, Tracker - FX, AI Magic Mask 2, Blur - Blur, Key.
+   Зурагт нэр нь бичигдсэн талбарыг яг тэр нэрээр нь; нэр нь гараагүй дүрсийг «баталгаажаагүй» гэж тэмдэглэв. */
+
+RM.dict.add({ id:"color-palettes", label:"Color — палитрын самбарууд", icon:"▦", page:"color",
+note:"Color хуудасны палитрын мөрийн 17 дүрс ба тэдгээрийн самбарын талбар бүр — дэлгэцийн зурагт гарсан нэр, анхдагч утгаар. Талбарын үйлдлийг Blackmagic-ийн гарын авлагын дагуу тайлбарлав.",
+terms:[
+/* ── Палитрын мөр: дүрс ── */
+["Sizing (Palette)","Хэмжээ, байрлалын самбар","Палитрын 16 дахь дүрс (tooltip: Sizing). Дүрсийн хэмжээ, байрлал, эргэлт, тайралтыг Color хуудсанд тохируулна. Гарын авлагаар горимууд: Edit Sizing (Edit хуудасны Transform-той ижил), Input Sizing (клипийн оролтод), Output Sizing (бүх timeline-д), Node Sizing (тухайн нодод), Reference Sizing. Keyframes самбарын Sizing мөр энэ самбарын түлхүүр кадрыг харуулна.","","Color → палитрын мөр, 16 дахь дүрс (tooltip: Sizing)"],
+["Sizing Mode Buttons","Sizing-ийн горим","Sizing самбарын гарчгийн баруун талын 5 дүрс — гарын авлагаар Edit Sizing, Input Sizing, Output Sizing, Node Sizing, Reference Sizing. Гарчиг сонгосон горимоор өөрчлөгдөнө (зурагт «Sizing - Input Sizing»). Tooltip баталгаажаагүй.","","Color → палитр → Sizing, гарчиг"],
+["Input Sizing","Клипийн оролтын хэмжээ","Sizing-ийн горим: клипийн дүрсийг бүх нодоос өмнө, клипийн түвшинд хэмжээ, байрлал өөрчилнө (зурагт идэвхтэй горим). Кадрын хүрээг засах, тэнхлэг тэгшлэх, stabilizer-ийн дараах томруулалтад.","","Color → палитр → Sizing"],
+["Pan / Tilt / Zoom / Rotate (Sizing)","Шилжүүлэх, томруулах, эргүүлэх","Sizing бүлгийн зүүн багана: Pan (хэвтээ, 0.000), Tilt (босоо, 0.000), Zoom (1.000 — жинхэнэ хэмжээ), Rotate (эргэлт, 0.000).","","Color → палитр → Sizing → Sizing"],
+["Width / Height / Pitch / Yaw (Sizing)","Өргөн, өндөр, хазайлт","Sizing бүлгийн баруун багана: Width, Height (1.000 — зөвхөн нэг тэнхлэгээр сунгах, агшаах), Pitch, Yaw (0.000 — дүрсийг хэвтээ, босоо тэнхлэгээр гурван хэмжээст мэт хазайлгах, перспектив засах).","","Color → палитр → Sizing → Sizing"],
+["Flip (Sizing)","Толин эргүүлэлт","Sizing бүлгийн Flip — хоёр товч: хэвтээ (зүүн, баруунг солих) ба босоо (дээр, доорыг солих).","","Color → палитр → Sizing → Sizing"],
+["Blanking","Кадрын захыг хар болгох","Sizing самбарын баруун бүлэг (Input Sizing-д саарал): Top, Right, Bottom, Left — кадрын дөрвөн захаас хар зурвас тавих; Smooth — ирмэгийг зөөлрүүлэх. Кадрын харьцаанд зурвас тавих, захын гэмтлийг нуухад.","","Color → палитр → Sizing → Blanking"],
+["3D (Palette)","Стерео 3D самбар","Палитрын 17 дахь, хамгийн сүүлийн дүрс (tooltip: 3D). Зүүн, баруун нүдний хоёр бичлэгтэй стерео 3D материалыг засна: хоёр нүдийг тааруулах, гүнийг (convergence) тохируулах. Таны зурагт дүрс бүдэг — энэ timeline-д стерео 3D клип байхгүй тул идэвхгүй бололтой.","","Color → палитрын мөр, 17 дахь дүрс (tooltip: 3D)"],
+["Key (Palette)","Маскийн түвшний самбар (Key)","Палитрын 15 дахь дүрс (tooltip: Key). Тухайн нодын маскийг (key — Qualifier, Window, Magic Mask-аас гарсан хар цагаан зураг) хүчжүүлэх, сулруулах, эргүүлэх, бүдгэрүүлэх самбар. Гарчгийн баруун талд «Node Key».","","Color → палитрын мөр, 15 дахь дүрс (tooltip: Key)"],
+
+/* ── Camera Raw ── */
+["Raw Format (Camera Raw)","Түүхий форматын нэр","Camera Raw самбарын гарчгийн баруун талд (зурагт саарал «ARRI») — тохиргоо нь аль түүхий (raw) форматынх болохыг заана. Гарын авлагаар ARRI, RED, Blackmagic RAW, Canon RAW, Sony RAW зэрэг формат тус бүр өөрийн талбартай. Зурагт H.264 клип сонгогдсон тул бүх талбар идэвхгүй (саарал).","","Color → палитр → Camera Raw, гарчгийн баруун тал"],
+["Decode Quality","Задлах нягтрал","Түүхий файлыг ямар нягтралаар задлахыг сонгоно (зурагт: Full res.). Бага нягтрал (Half, Quarter) — тоглуулалт хурдан, эцсийн рендерт Full res. хэрэглэнэ.","","Color → палитр → Camera Raw"],
+["Decode Using","Юугаар задлах","Түүхий файлын тохиргоог хаанаас авахыг сонгоно (зурагт: Camera metadata — камерын бичлэгт хадгалсан тохиргоо). Гарын авлагаар Project (төслийн тохиргоо) эсвэл Clip (клип бүрд тусад нь) сонговол доорх талбарууд засагдах боломжтой болно.","","Color → палитр → Camera Raw"],
+["Decode as Monochrome","Хар цагаанаар задлах","Түүхий файлыг өнгөгүй (monochrome) задална. Хар цагаан мэдрэгчтэй камерын бичлэгт.","","Color → палитр → Camera Raw"],
+["Decode as LogC4","LogC4 муруйгаар задлах","ARRI-ийн түүхий файлыг ARRI-ийн LogC4 лог муруйгаар задлах чагт (ALEXA 35-аас эхэлсэн лог стандарт). Өнгөний менежментийн тохиргоотойгоо тааруулна. Яг нөлөө нь камерын загвараас хамаарна — баталгаажаагүй.","","Color → палитр → Camera Raw (ARRI)"],
+["Color Temp (Camera Raw)","Өнгөний температур (raw)","Түүхий файлын цагаан тэнцвэрийн температур, Кельвинээр. Raw-ийн давуу тал: энэ утгыг зураг авалтын дараа ч чанар алдалгүй өөрчилнө.","","Color → палитр → Camera Raw"],
+["Tint (Camera Raw)","Ногоон, ягаан тэнцвэр (raw)","Түүхий файлын цагаан тэнцвэрийн ногоон ↔ ягаан тэнхлэг. Color Temp-тэй хамт хэрэглэнэ.","","Color → палитр → Camera Raw"],
+["Exposure (Camera Raw)","Гэрэлтүүлэг (raw)","Түүхий файлыг задлах үеийн гэрэлтүүлэг (stop-оор). Primaries-ийн Gain-ээс ялгаатай нь мэдрэгчийн өгөгдөл дээр ажилладаг.","","Color → палитр → Camera Raw"],
+["Sharpness (Camera Raw)","Хурцлал (raw)","Түүхий файлыг задлахад хэрэглэх хурцлалын хэмжээ (зурагт 10.00).","","Color → палитр → Camera Raw"],
+["Use Changes / Use Settings","Өөрчлөлтийг хэрэглэх / тохиргоог хэрэглэх","Camera Raw самбарын доод талын хоёр товч (зурагт идэвхгүй). Нэрээр нь: Use Changes — самбарт хийсэн өөрчлөлтийг клипэд хэрэглэх; Use Settings — хадгалсан тохиргоог хэрэглэх. Яг үйлдэл нь баталгаажаагүй.","","Color → палитр → Camera Raw, доод тал"],
+
+/* ── Color Match ── */
+["Color Chart Type","Өнгийн хүснэгтийн төрөл","Color Match самбарын гарчгийн унадаг цэс (зурагт: Calibrite ColorChecker Classic - Legacy). Зураг авалтад камерын өмнө барьсан хүснэгтийн загварыг сонгоно. Calibrite нь хуучнаар X-Rite гэж нэрлэгдэж байсан; «Legacy» — хуучин үйлдвэрлэлийн хүснэгтийн өнгөний утга.","","Color → палитр → Color Match, гарчиг"],
+["Color Chart Swatches","Хүснэгтийн нүднүүд","Color Match самбарын зүүн талын 24 өнгийн нүд (4 мөр × 6) — сонгосон хүснэгтийн стандарт өнгө. Viewer дээрх торыг бичлэг дэх хүснэгтэд тааруулахад Resolve эдгээртэй харьцуулна.","","Color → палитр → Color Match, зүүн тал"],
+["Source Gamma","Эх бичлэгийн гамма","Color Match: клипийн бичигдсэн гамма (лог муруй). Зурагт Auto — Resolve клипийн мэдээллээс таньна.","","Color → палитр → Color Match"],
+["Target Gamma","Зорилтот гамма","Color Match: тааруулсны дараах гаралтын гамма (зурагт Auto — timeline-ийн тохиргоогоор).","","Color → палитр → Color Match"],
+["Target Color Space","Зорилтот өнгөний орон зай","Color Match: тааруулсны дараах өнгөний орон зай (Rec.709 гэх мэт; зурагт Auto).","","Color → палитр → Color Match"],
+["Color Temp (Color Match)","Зорилтот цагааны температур","Color Match: хүснэгтийн цагааныг ямар температурын цагаан болгохыг заана (зурагт 6500 K — D65, видеоны стандарт цагаан).","","Color → палитр → Color Match"],
+["White Level (Color Match)","Цагааны түвшин","Color Match: хүснэгтийн цагаан нүдийг ямар түвшинд буулгахыг заана (зурагт 0.9, саарал). Хажуугийн чагтаар гараар тохируулахыг асаана.","","Color → палитр → Color Match"],
+["Match (Color Match)","Тааруулах","Color Match самбарын доод талын товч. Viewer дээрх хүснэгтийг шинжилж, засварыг одоогийн нодод тавина.","","Color → палитр → Color Match, доод тал"],
+
+/* ── HDR Grade ── */
+["HDR Zones","HDR-ийн гэрлийн бүсүүд","High Dynamic Range самбарын дугуйнууд — гэрлийн бүс тус бүрд нэг дугуй: зурагт Dark (−1.50), Shadow (+1.00), Light (−1.00) ба Global (бүх бүс). Дугуйн дээрх тоо — тухайн бүсийн хил, дунд саарлаас хэдэн stop зайтай.","","Color → палитр → HDR Grade"],
+["Zone Navigation (HDR)","Бүсийн жагсаалт гүйлгэх","HDR самбарын дээд мөр «‹ ○ ● ● ● ○ ○ ›» — зургаан цэг нь зургаан бүс; тод гурав нь одоо харагдаж буй дугуйнууд. Сумаар бусад бүс рүү шилжинэ.","","Color → палитр → HDR Grade, дээд мөр"],
+["Exp / Sat (HDR)","Бүсийн гэрэлтүүлэг, ханалт","HDR дугуй бүрийн доорх Exp (гэрэлтүүлэг, stop-оор; 0.00) ба Sat (ханалт; 1.00) — зөвхөн тухайн гэрлийн бүсэд.","","Color → палитр → HDR Grade, дугуй бүрийн доор"],
+["X / Y (HDR)","Бүсийн өнгөний байрлал","HDR дугуй бүрийн доорх X, Y — дугуйн төвийн цэгийн байрлал (өнгөний шилжилт) тоогоор. Гурав дахь утга (зурагт 0.20, 0.22) — нэр нь гараагүй, баталгаажаагүй.","","Color → палитр → HDR Grade, дугуй бүрийн доор"],
+["B/Ofs (Black Offset)","Хар түвшний шилжилт","HDR самбарын доод мөрийн сүүлийн талбар (0.000) — хамгийн харанхуй түвшинг бүхэлд нь дээш доош шилжүүлнэ. Доод мөрийн бусад: Temp, Tint, Hue, Cont (Contrast), Pivot, MD (Midtone Detail).","","Color → палитр → HDR Grade, доод мөр"],
+
+/* ── RGB Mixer ── */
+["Red / Green / Blue Output","Гаралтын суваг","RGB Mixer-ийн гурван бүлэг: Red Output, Green Output, Blue Output. Бүлэг бүрт оролтын улаан, ногоон, хөх сувгаас хэдэн хувь авахыг заах гурван баганa. Анхдагч: өөрийн суваг 1.00, бусад 0.00.","","Color → палитр → RGB Mixer"],
+["Swap Channels (RGB Mixer)","Суваг солих товч","RGB Mixer-ийн зүүн доод гурван товч (улаан›ногоон, ногоон›хөх, хөх›улаан дүрс) — хоёр сувгийг хооронд нь нэг товшилтоор солино. Нэрийг дүрсээр нь; tooltip баталгаажаагүй.","","Color → палитр → RGB Mixer, доод мөр"],
+["Monochrome (RGB Mixer)","Хар цагаан","RGB Mixer-ийн чагт: гурван гаралтыг нэг болгож хар цагаан зураг гаргана; сувгийн хувиар тодролыг тохируулна.","","Color → палитр → RGB Mixer, доод мөр"],
+["Preserve Luminance","Гэрэлтэлтийг хадгалах","RGB Mixer-ийн чагт (зурагт анхдагчаар асаалттай): сувгийг холиход зургийн гэрэлтэлт өөрчлөгдөхгүй, зөвхөн өнгө өөрчлөгдөнө.","","Color → палитр → RGB Mixer, доод мөр"],
+
+/* ── Motion Effects ── */
+["Frames (Temporal NR)","Харьцуулах кадрын тоо","Temporal NR-ийн эхний талбар (зурагт 0). Хэдэн хөрш кадртай харьцуулж шуугиан арилгахыг заана; 0 бол Temporal NR унтраалттай — доорх талбарууд саарал.","","Color → палитр → Motion Effects → Temporal NR"],
+["Motion Estimation Type","Хөдөлгөөн тооцох арга","«Mo. Est. Type» — хөдөлгөөнийг хэрхэн тооцохыг сонгоно (зурагт Faster). Гарын авлагаар: None, Faster, Better, Enhanced — сайжрах тусам удаан. Temporal NR ба Motion Blur хоёуланд.","","Color → палитр → Motion Effects"],
+["Motion Range","Хөдөлгөөний хүрээ","«Motion Ra…» — кадрын хооронд объект хэр их хөдлөхийг тааварлах хүрээ (зурагт Medium; Small, Medium, Large). Хурдан хөдөлгөөнд Large.","","Color → палитр → Motion Effects"],
+["Temporal Threshold","Цаг хугацааны босго","Temporal NR-ийн босго: Luma, Chroma (хооронд нь гинжээр холбоотой), Motion (50.0), Blend. Утга их байх тусам хүчтэй арилгана, гэхдээ хөдөлгөөнт хэсэгт «сүүдэр» үлдэж болно.","","Color → палитр → Motion Effects → Temporal NR"],
+["Mode / Radius (Spatial NR)","Орон зайн шуугианы арга, радиус","Spatial NR-ийн Mode (зурагт Faster; Better, Enhanced) ба Radius (Small, Medium, Large) — нэг кадрын доторх хөрш пикселийн хэр өргөн хүрээг харьцуулах.","","Color → палитр → Motion Effects → Spatial NR"],
+["Spatial Threshold","Орон зайн босго","Spatial NR-ийн босго: Luma, Chroma (холбоотой) ба Blend. Хэтрүүлбэл арьс, гадаргуу «хуванцар» мэт гөлгөр болно.","","Color → палитр → Motion Effects → Spatial NR"],
+["Blend (Noise Reduction)","Эхтэй холих","Шуугиан арилгасан зургийг эх зурагтай холих хэмжээ (0.0 — бүрэн арилгасан). Байгалийн ширхэг бага зэрэг үлдээхэд.","","Color → палитр → Motion Effects"],
+["Motion Blur (Motion Effects)","Хөдөлгөөний бүдгэрэл нэмэх","Motion Effects-ийн гурав дахь бүлэг: Mo. Est. Type, Motion Range ба Motion Blur (хэмжээ, 0.0). Хурдан хаалттай бичлэгийн хөдөлгөөнийг зөөлрүүлнэ.","","Color → палитр → Motion Effects → Motion Blur"],
+
+/* ── Curves ── */
+["Curves Mode Buttons","Муруйн төрлийн товч","Curves самбарын гарчгийн баруун талын 7 дүрс: Custom, Hue vs Hue, Hue vs Sat, Hue vs Lum, Lum vs Sat, Sat vs Sat, Sat vs Lum. Гарчиг сонгосноороо өөрчлөгдөнө (зурагт «Curves - Custom»). Tooltip баталгаажаагүй.","","Color → палитр → Curves, гарчиг"],
+["Edit (Curves)","Муруйг засах суваг","Custom муруйн баруун талын Edit бүлэг: гинж (Y, R, G, B-г хамт засах), Y R G B товч (аль муруйг засахыг сонгох) ба суваг бүрийн эрчмийн гулсуулагч (анхдагч 100).","","Color → палитр → Curves - Custom"],
+["Low / High / L.S. / H.S. (Soft Clip)","Зөөлөн таслалтын утгууд","Soft Clip бүлгийн талбарууд: Low, High — хар, цагааны таслах түвшин (50.0); L.S., H.S. — Low Soft, High Soft, таслалтыг зөөлрүүлэх (0.0). R G B товчоор суваг сонгоно.","","Color → палитр → Curves - Custom → Soft Clip"],
+
+/* ── ColorSlice ── */
+["Den / Den.Depth (ColorSlice)","Нягт, нягтын гүн","ColorSlice-ийн дээд мөрийн эхний хоёр: Den (Density — өнгийг хальсан шиг бараан, баялаг болгох «хасах» нягт; 0.00) ба Den.Depth (нягтын нөлөөний гүн). Бүх өнгөнд нэг дор.","","Color → палитр → ColorSlice, дээд мөр"],
+["Sat / Sat.Balance / Sat.Depth (ColorSlice)","Ханалт, түүний тэнцвэр, гүн","ColorSlice-ийн дээд мөр: Sat (нийт ханалт, 1.00), Sat.Balance, Sat.Depth (0.00) ба Hue (0.00). Balance, Depth-ийн яг утга нь нэрээр тайлбарлав — баталгаажаагүй.","","Color → палитр → ColorSlice, дээд мөр"],
+["ColorSlice Vectors","Өнгөний долоон зүсэм","ColorSlice-ийн долоон багана: Red, Skin, Yellow, Green, Cyan, Blue, Magenta. Багана бүрт асаах/унтраах ◑, ⟲, жижиг дугуй, Center, Hue ба доод хоёр гулсуулагч (зүүн — нягт 0.00, баруун — ханалт 1.00). «Skin» — арьсны өнгөнд зориулсан тусгай зүсэм.","","Color → палитр → ColorSlice"],
+["Center / Hue (ColorSlice)","Зүсмийн төв, аяс","ColorSlice багана бүрийн Center — тухайн зүсэм аль аясыг төв болгон авахыг шилжүүлнэ; Hue — сонгосон өнгийг өөр аяс руу эргүүлнэ (0.000).","","Color → палитр → ColorSlice, багана бүр"],
+
+/* ── Color Warper ── */
+["Chroma Warp","Өнгөний диаграмм дээр мушгих","Color Warper-ийн горим (зурагт «Color Warper - Chroma Warp»): өнгөний гурвалжин диаграмм дээр зүү (pin) тавьж өнгийг чирч шилжүүлнэ. Hue-Saturation, Chroma-Luma тор горимоос гадна.","","Color → палитр → Color Warper"],
+["Color Warper Tools","Color Warper-ийн хэрэгслүүд","Tools мөрийн таван товч: зүү нэмэх хоёр төрөл (+), зүү, сонгох (сум), устгах (хогийн сав). Tooltip-ууд баталгаажаагүй.","","Color → палитр → Color Warper → Tools"],
+["Pin (Color Warper)","Зүүний тохиргоо","Сонгосон зүүний талбарууд (зүү сонгоогүй тул зурагт саарал): Chroma Range (0.040), Tonal Range Low (1.000), Tonal Range High (1.000), Tonal Range Pivot (0.500), Exposure (0.000) — зүү хэр өргөн өнгө, гэрлийн хүрээнд нөлөөлөхийг заана.","","Color → палитр → Color Warper → Pin"],
+
+/* ── Qualifier ── */
+["Qualifier Mode Buttons","Сонгогчийн горим","Qualifier-ийн гарчгийн баруун талын 4 дүрс — гарын авлагаар HSL, RGB, LUM, 3D. Зурагт «Qualifier - HSL» (эхнийх идэвхтэй). Tooltip баталгаажаагүй.","","Color → палитр → Qualifier, гарчиг"],
+["Qualifier Tools","Сонгогчийн хэрэгслүүд","Qualifier-ийн хоёр дахь мөрийн 6 дүрс — гарын авлагаар Picker, Picker Minus, Picker Plus, Feather Minus, Feather Plus, Invert. Tooltip баталгаажаагүй.","","Color → палитр → Qualifier, дээд мөр"],
+["Center / Width / Soft / Sym","Аясын сонголтын утга","Qualifier-ийн Hue бүлэг: Center (сонгох аясын төв, 50.0), Width (хүрээний өргөн, 100.0), Soft (ирмэгийн зөөлөн, 0.0), Sym (Symmetry — хоёр талын тэнцвэр, 50.0). Улаан цэг — Hue сувгийг асаах.","","Color → палитр → Qualifier - HSL → Hue"],
+["Low / High / L. Soft / H. Soft","Доод, дээд хязгаар","Qualifier-ийн Saturation ба Luminance бүлэг: Low (0.0), High (100.0) — сонгох хүрээний хязгаар; L. Soft, H. Soft — хязгаарын зөөлрүүлэлт.","","Color → палитр → Qualifier - HSL → Saturation, Luminance"],
+["Matte Finesse","Маскийн нарийн засвар","Qualifier (ба AI Magic Mask)-ийн маскийг цэвэрлэх бүлэг, «1 | 2» хоёр хуудастай. 1-р хуудас: Pre-Filter, Clean Black, Clean White, Black Clip, White Clip, Blur Radius, In/Out Ratio.","","Color → палитр → Qualifier, баруун тал"],
+["Pre-Filter","Урьдчилан шүүх","Matte Finesse: сонголт хийхээс өмнө зургийг зөөлрүүлж, шуугиантай бичлэгийн маскийг цэвэр болгоно (0.0).","","Color → палитр → Qualifier → Matte Finesse"],
+["Black Clip / White Clip","Хар, цагааныг таслах","Matte Finesse: маскийн хар (0.0), цагаан (100.0) түвшинг таслах — бүрэн биш сонгогдсон хэсгийг бүрэн хар, бүрэн цагаан болгох.","","Color → палитр → Qualifier, AI Magic Mask"],
+["In/Out Ratio","Дотор, гадна ирмэгийн харьцаа","Matte Finesse: Blur Radius-аар зөөлрүүлсэн ирмэг маскийн дотогш уу, гадагш уу тархахыг заана (0.0 — тэнцүү).","","Color → палитр → Qualifier, AI Magic Mask"],
+["Post Filter","Дараа нь шүүх","AI Magic Mask 2-ийн талбар (0.0): маск үүссэний дараа ирмэгийг гөлгөр болгоно.","","Color → палитр → AI Magic Mask 2"],
+
+/* ── Window ── */
+["Add Window Buttons","Цонх нэмэх товч","Window самбарын дээд мөр: Linear, Circle, Polygon, Curve, Gradient — тус бүр шинэ цонх нэмнэ; баруун талд Delete — сонгосон цонхыг устгана.","","Color → палитр → Window, дээд мөр"],
+["Window List","Цонхны жагсаалт","Window самбарын зүүн талын жагсаалт — нэмсэн цонх бүр нэг мөр (□ ○ полигон, муруй, градиент дүрстэй). Мөрийн баруун талын хоёр бүдэг дүрсний tooltip баталгаажаагүй (гарын авлагаар урвуулах, хасах маск).","","Color → палитр → Window"],
+["Transform (Window)","Цонхны хэмжээ, байрлал","Сонгосон цонхны Size, Aspect, Pan, Tilt, Rotate, Opacity (50.00, 0.00 гэх мэт). Цонх сонгоогүй үед саарал.","","Color → палитр → Window → Transform"],
+["Softness (Window)","Цонхны ирмэгийн зөөлөн","Soft 1–4 (ирмэг бүрийн, эсвэл бүх ирмэгийн), Inside, Outside (дотор, гадна тийш зөөлрүүлэх) — бүгд 50.00 анхдагч.","","Color → палитр → Window → Softness"],
+
+/* ── AI Magic Mask 2 ── */
+["AI Magic Mask 2","AI шидэт маск 2","Палитрын 13 дахь дүрсний самбар (гарчиг «AI Magic Mask 2»). Viewer дээр цэг тавьж (зурагт: «Draw a point in the viewer to create a mask») хүн, объектыг AI-аар таньж, кадар бүрд дагуулна. Маск байхгүй үед «No Mask».","","Color → палитр → AI Magic Mask"],
+["Magic Mask Transport","Маск дагуулах товчнууд","AI Magic Mask 2-ийн дээд мөрийн зүүн тал: хойш, урагш нэг кадар, хойш, урагш дагуулах, зогсоох, хоёр чиглэлд гэх мэт (Tracker-ийнхтэй төстэй) ба хоёр захын нэмэлт дүрс. Tooltip баталгаажаагүй.","","Color → палитр → AI Magic Mask 2, дээд мөр"],
+["Magic Mask Point Tools","Маскийн цэгийн хэрэгсэл","AI Magic Mask 2-ийн дээд мөрийн баруун тал: цэг нэмэх (идэвхтэй), хасах ба бусад саарал хэрэгсэл ⌄, маскийг харуулах, тохиргоо. Tooltip баталгаажаагүй.","","Color → палитр → AI Magic Mask 2, дээд мөр"],
+["Quality (Magic Mask)","Маскийн чанар","AI Magic Mask 2: Faster (хурдан) | Better (илүү нарийн, удаан). Хажууд Smart Refine.","","Color → палитр → AI Magic Mask 2"],
+["Smart Refine","Ухаалаг нарийвчлал","AI Magic Mask 2-ийн гулсуулагч (зурагт 30, саарал): маскийн ирмэгийг — үс, нарийн хэсгийг — AI-аар нарийвчилна. Идэвхжих нөхцөл баталгаажаагүй.","","Color → палитр → AI Magic Mask 2"],
+["Mode / Shape / Radius / Iterations","Маскийг агшаах, тэлэх","AI Magic Mask 2-ийн Mode (зурагт Shrink — агшаах; тэлэх ч байна), Shape (Circle), Radius (0), Iterations (1) — маскийн ирмэгийг хэдэн пикселээр, хэдэн удаа агшаах, тэлэхийг заана.","","Color → палитр → AI Magic Mask 2"],
+["Smoothing (Magic Mask)","Гөлгөржүүлэх","AI Magic Mask 2: маскийн ирмэгийн жижиг хэлбэлзлийг гөлгөр болгоно (0).","","Color → палитр → AI Magic Mask 2"],
+
+/* ── Blur ── */
+["Blur Mode Buttons","Blur-ийн горим","Blur самбарын гарчгийн баруун талын гурван дүрс: Blur (дусал, зурагт идэвхтэй — «Blur - Blur»), Sharpen (гурвалжин), Mist (бараан дусал). Tooltip баталгаажаагүй, дүрсээр нь.","","Color → палитр → Blur, гарчиг"],
+["Radius (Blur)","Бүдгэрүүлэх радиус","Blur самбарын Radius — R, G, B гурван багана (гинжээр холбоотой), анхдагч 0.50 = өөрчлөлтгүй. Дээш — бүдгэрүүлнэ, доош — хурцлана.","","Color → палитр → Blur"],
+["H/V Ratio","Хэвтээ, босоо харьцаа","Blur самбар: бүдгэрүүлэлтийг хэвтээ, босоо чиглэлд ямар харьцаагаар (0.50 — тэнцүү) хийхийг заана.","","Color → палитр → Blur"],
+["Scaling (Blur)","Хурцлалын хэмжээ","Blur самбарын Scaling (0.25, Blur горимд гинж нь саарал) — гарын авлагаар Sharpen горимд хурцлалын хүчийг үржүүлнэ.","","Color → палитр → Blur"],
+["Coring Softness / Level / Mix","Хурцлалын босго, холих","Blur самбарын доод мөр (Blur горимд саарал): Coring Softness, Level — Sharpen горимд жижиг нарийн ширийн (шуугиан) хурцлахгүй байх босго; Mix — Mist горимд эхтэй холих хувь (100.00).","","Color → палитр → Blur, доод мөр"],
+
+/* ── Key ── */
+["Node Key","Нодын маск","Key самбарын гарчгийн баруун талын бичиг — одоо тухайн нодын key-г харуулж байгааг заана.","","Color → палитр → Key, гарчиг"],
+["Key Preview","Маскийн урьдчилан харах","Key самбарын зүүн талын хар цагаан зураг — нодын маск (цагаан — засвар үйлчилнэ, хар — үйлчлэхгүй).","","Color → палитр → Key, зүүн тал"],
+["Key Input (Key Palette)","Маскийн оролт","Key самбарын эхний бүлэг: өмнөх нодоос key оролтоор ирсэн маскийн Gain (1.000), Offset (0.000), Blur R. (радиус), Blur H/V (хэвтээ, босоо харьцаа). Баруун дээд хоёр дүрс — tooltip баталгаажаагүй (гарын авлагаар урвуулах, маск горим).","","Color → палитр → Key → Key Input"],
+["Key Output (Key Palette)","Маскийн гаралт","Key самбар: нодоос гарах маскийн Gain (1.000), Offset (0.000) ба нэг дүрс (баталгаажаагүй).","","Color → палитр → Key → Key Output"],
+["Qualifier (Key Palette)","Сонгогчийн маскийн түвшин","Key самбар: Qualifier-аас гарсан маскийн Gain (1.000), Offset (0.000) ба хоёр дүрс (баталгаажаагүй).","","Color → палитр → Key → Qualifier"]
 ]});
 
 </script>
@@ -7167,34 +7396,41 @@ Primaries самбарын **Log** горим нь дугуйнуудыг **Shad
 
 "magic-mask": `
 ## Зориулалт
-Magic Mask (Studio) нь DaVinci Neural Engine ашиглан **хүн, объектыг таньж, кадар бүрд дагаж** маск үүсгэнэ. Гараар Polygon зурах, rotoscope хийх ажлыг хэдэн товшилтоор орлоно. Color хуудасны палитрын мөрөнд; Fusion-д Magic Mask нод.
+Палитрын 13 дахь дүрс (tooltip: **AI Magic Mask**) — Resolve 21-д самбарын гарчиг **AI Magic Mask 2**. DaVinci Neural Engine ашиглан viewer дээр **цэг тавьсан** хүн, объектыг таньж маск үүсгэнэ, дараа нь **кадар бүрд дагуулна**. Гараар Polygon зурах, rotoscope хийх ажлыг хэдэн товшилтоор орлоно. Fusion-д Magic Mask нод бий.
 
-## Горим
-- **Person** — хүн бүхэлд нь, эсвэл хэсэг: Face, Hair, Skin, Torso, Arms, Legs, Clothing… (Feature унадаг цэс).
-- **Object** — дурын объект (машин, хаалга, нохой).
-- Resolve 20-оос **Magic Mask v2** — зурааснаас гадна будалтын (paint) сонголт, илүү нарийн ирмэг.
+## Хоёр дахь хувилбарын ялгаа
+Хуучин (v1) Magic Mask-д **Person / Object** горим сонгож, объектын дундуур **зураас** татдаг байв. **AI Magic Mask 2**-т горим сонгохгүй — viewer дээр **цэг** тавина. Хоосон самбарт: «**No Mask** — Draw a point in the viewer to create a mask» (маск алга — маск үүсгэхийн тулд viewer дээр цэг тавина уу).
+
+## Самбарын бүтэц (таны зургаар)
+- **Зүүн дээд мөр** — дагуулах товчнууд: хойш, урагш нэг кадар, хойш, урагш дагуулах, зогсоох, хоёр чиглэлд (Tracker-ийнхтэй төстэй) ба хоёр захын нэмэлт дүрс. [[magic-mask-transport]].
+- **Зүүн тал** — маскийн timeline (00:00:00:00, 00:00:08:19, 00:00:17:14…): дагуулсан кадрууд энд харагдана.
+- **Баруун дээд мөр** — цэг нэмэх (идэвхтэй), хасах ба бусад хэрэгсэл ⌄, маскийг харуулах, тохиргоо. [[magic-mask-point-tools]].
+- **Quality** — **Faster** | **Better**, хажууд **Smart Refine** (30). [[quality-magic-mask]], [[smart-refine]].
+- **Mode** (Shrink) · **Shape** (Circle) · **Radius** (0) · **Iterations** (1) — маскийг агшаах, тэлэх. [[mode-shape-radius-iterations]].
+- **Smoothing** (0) · **Denoise** (0.0) · **Blur Radius** (0.0) · **In/Out Ratio** (0.0) · **Clean Black** (0.0) · **Black Clip** (0.0) · **Clean White** (0.0) · **White Clip** (100.0) · **Post Filter** (0.0) — ирмэг цэвэрлэх. Qualifier-ийн [[matte-finesse]]-тэй ижил санаа.
 
 ## Хэрэглэх алхам
-1. Шинэ нод [k:Alt+S] → Magic Mask самбар.
-2. Person эсвэл Object сонгоно. Feature (Person) сонгоно.
-3. Дэлгэц дээр объектын дундуур **зураас** татна (Add stroke, ногоон). Илүү сонгогдсон хэсгийг Remove stroke (улаан) -аар хасна.
-4. Дэлгэцийн дээд баруун талын **Highlight** (маскыг харах) асааж шалгана.
-5. **Track Forward** (▶) — кадар бүрд дагана. Алдсан кадарт нэмэлт зураас татаж дахин мөрдөнө.
-6. Quality — Faster / Better. Mask Refinement — Feather, Shrink/Grow, Blur.
-7. Маск идэвхтэй болмогц тэр нодын Color Wheels, Curves зөвхөн маск дотор үйлчилнэ. Invert — гадна тал.
+1. Шинэ нод [k:Alt+S] → палитраас **AI Magic Mask**.
+2. Viewer дээр хүн, объект дээр **цэг** тавина — маск үүснэ. Илүү сонгогдсон хэсгийг **хасах** цэгээр засна.
+3. Маскийг харахын тулд viewer-ийн **Highlight** асаана. [[highlight]].
+4. **Дагуулах** товч (▶) — кадар бүрд дагуулна. Алдсан кадарт нэмэлт цэг тавиад дахин дагуулна.
+5. **Quality**-г эхлээд Faster, эцэст нь Better. Ирмэгийг Smart Refine, Blur Radius, Clean Black/White-аар цэвэрлэнэ.
+6. Маск идэвхтэй болмогц тэр нодын Color Wheels, Curves зөвхөн маск дотор үйлчилнэ. Гадна талыг засах бол маскийг урвуулна (Key самбар). [[key-palette]].
 
 ## Хэрэглээ
 - Нүүрийг л гэрэлтүүлэх, арьсыг зөөлрүүлэх.
-- Дэвсгэрийг харанхуйлж, хүнийг тодруулах (Invert).
+- Дэвсгэрийг харанхуйлж хүнийг тодруулах (урвуу маск).
 - Хувцасны өнгө солих.
-- Маскыг Fusion руу дамжуулж (Alpha) дэвсгэр солих.
+- Маскийг Fusion руу дамжуулж (Alpha) дэвсгэр солих.
 
 ## Анхаарах
 > Studio-гүй хувилбарт Magic Mask байхгүй.
 
-> Хүн хагас далдлагдах, хэт хурдан хөдлөх, гэрэл огцом өөрчлөгдөхөд маск алдана. Тэр кадарт зураас нэмнэ. Ирмэг нь Delta Keyer шиг нарийн биш — үсний нарийн ширхэг хүлээхгүй.
+> Хүн хагас далдлагдах, хэт хурдан хөдлөх, гэрэл огцом өөрчлөгдөхөд маск алдана — тэр кадарт цэг нэмнэ.
 
-> Magic Mask-ийн тооцоолол GPU-д хүнд. Тохируулж дуусаад Render Cache → Smart.
+> Тооцоолол GPU-д хүнд. Тохируулж дуусаад Render Cache → Smart.
+
+> Дээд мөрийн дүрсүүдийн tooltip Resolve 21-д баталгаажаагүй — хулганаа тавьсан зургийг илгээнэ үү.
 `,
 
 "midtone-detail": `
@@ -15409,49 +15645,65 @@ Color хуудасны Effects (Library / Settings) самбарын толго�
 
 "color-match-palette": `
 ## Зориулалт
-Палитрын **Color Match** (2 дахь дүрс) — зураг авалтын үед камерын өмнө барьсан **өнгийн хүснэгтийг** (X-Rite ColorChecker, DSC гэх мэт) ашиглаж клипийн өнгийг **автоматаар** зөв болгоно. Өөр өөр камерын бичлэгийг нэг эхлэлийн цэгт авчрахад.
+Палитрын **Color Match** (2 дахь дүрс) — зураг авалтын үед камерын өмнө барьсан **өнгийн хүснэгтийг** (color chart) ашиглаж клипийн өнгийг **автоматаар** зөв болгоно. Өөр өөр камерын бичлэгийг нэг эхлэлийн цэгт авчрахад.
+
+## Самбарын бүтэц (таны зургаар)
+- **Гарчгийн унадаг цэс** — хүснэгтийн төрөл: **Calibrite ColorChecker Classic - Legacy**. [[color-chart-type]].
+- **Зүүн тал** — 24 өнгийн нүд (4 мөр × 6): арьс, тэнгэр, навч… дээд гурван мөр, доод мөр — цагаанаас хар хүртэл зургаан саарал. [[color-chart-swatches]].
+- **Source Gamma** (Auto), **Target Gamma** (Auto), **Target Color Space** (Auto). [[source-gamma]], [[target-gamma]], [[target-color-space]].
+- **Color Temp** 6500 K ба **White Level** 0.9 (саарал, хажуугийн чагтаар асна). [[color-temp-color-match]], [[white-level-color-match]].
+- **Match** товч. [[match-color-match]].
 
 ## Хэрэглэх алхам
 1. Хүснэгт харагдаж буй кадар дээр заагчийг тавина.
-2. Палитраас **Color Match** — хүснэгтийн төрөл, эх бичлэгийн гамма, орон зайг сонгоно.
-3. Viewer дээр гарах торыг хүснэгтийн нүднүүд дээр тааруулна.
-4. **Match** товч — засвар одоогийн нодод тавигдана.
+2. Палитраас **Color Match** — гарчгаас хүснэгтийн төрлийг сонгоно.
+3. Source Gamma-г клипийн бичлэгтэй тааруулна (лог бичлэг бол түүний гамма); Auto-г эхлээд туршина.
+4. Viewer дээр гарах торыг хүснэгтийн нүднүүд дээр булангаар нь чирж тааруулна.
+5. **Match** — засвар одоогийн нодод тавигдана.
 
 ## Анхаарах
-> Хүснэгтгүй бичлэгт хэрэглэхгүй. Хоёр клипийг бие биетэй тааруулах бол **Shot Match** (клипийн баруун товч). [[shot-match]].
+> Хүснэгтгүй бичлэгт хэрэглэхгүй. Хоёр клипийг хооронд нь тааруулах бол **Shot Match** (клипийн баруун товч). [[shot-match]].
 
-> Palette-ийн доторх талбаруудын нэрс Resolve 21-д баталгаажаагүй — нээсэн зургийг илгээнэ үү.
+> Хүснэгт жигд гэрэлтэй, тусгалгүй байх ёстой; тор буруу байрлавал өнгө алдагдана.
 `,
 
 "rgb-mixer": `
 ## Зориулалт
-Палитрын **RGB Mixer** (5 дахь дүрс) — гаралтын **Red, Green, Blue** суваг бүрт оролтын гурван сувгаас хэдэн хувь орохыг гулсуулагчаар тохируулна. Анхдагч: улаан гаралт = 100% улаан оролт, бусад 0.
+Палитрын **RGB Mixer** (5 дахь дүрс) — гаралтын **Red, Green, Blue** суваг бүрт оролтын гурван сувгаас хэдэн хувь орохыг баганаар тохируулна.
+
+## Самбарын бүтэц (таны зургаар)
+- **Red Output · Green Output · Blue Output** — гурван бүлэг, тус бүрт R, G, B гурван багана ба ⟲. Анхдагч: өөрийн суваг **1.00**, бусад **0.00**. [[red-green-blue-output]].
+- **Зүүн доод гурван товч** — сувгийг хооронд нь солих (улаан↔ногоон, ногоон↔хөх, хөх↔улаан). [[swap-channels-rgb-mixer]].
+- **Monochrome** чагт — хар цагаан. [[monochrome-rgb-mixer]].
+- **Preserve Luminance** чагт — анхдагчаар асаалттай. [[preserve-luminance]].
 
 ## Хэрэглэх жишээ
-- **Хар цагаан** — Monochrome чагт: суваг бүрийн хувийг өөрчилж хар цагаан зургийн тодрол, гэрлийг тааруулна (хальсан шүүлтүүр шиг).
-- **Сувгийг солих** — улаан ба хөхийг сольж сонирхолтой өнгө.
+- **Хар цагаан** — Monochrome асааж, суваг бүрийн хувийг өөрчилж тодролыг тааруулна (хальсны өнгөт шүүлтүүр шиг: улааныг өсгөвөл тэнгэр бараан, арьс гэгээн).
+- **Сувгийг солих** — солих товчоор сонирхолтой өнгө.
 - **Preserve Luminance** — гэрэлтэлтийг хадгалж зөвхөн өнгийг өөрчлөх.
 
 ## Бичлэгт үзүүлэх нөлөө
-Шууд **дүрсэд** нөлөөлнө. Бага хэмжээгээр (5–10%) хольж арьсны өнгийг цэвэрлэх нь мэргэжлийн арга.
-
-> Талбаруудын нэрс Resolve-ийн гарын авлагаар; Resolve 21-д баталгаажаагүй.
+Шууд **дүрсэд** нөлөөлнө. Бага хэмжээгээр (0.05–0.10) хольж арьсны өнгийг цэвэрлэх нь мэргэжлийн арга.
 `,
 
 "colorslice": `
 ## Зориулалт
-Палитрын **ColorSlice** (8 дахь дүрс, tooltip: ColorSlice) — зургийн өнгийг **зургаан чиглэл** (Red, Yellow, Green, Cyan, Blue, Magenta) ба **арьсны өнгө** гэж «зүсэж», тус бүрийн **ханалт, гэрэлтэлт (density), өнгийн аяс (hue)**-ыг тусад нь засна. Resolve 19-өөс нэмэгдсэн.
+Палитрын **ColorSlice** (8 дахь дүрс, tooltip: ColorSlice) — зургийн өнгийг **зургаан чиглэл** (Red, Yellow, Green, Cyan, Blue, Magenta) ба **арьсны өнгө** (Skin) гэж «зүсэж», тус бүрийн **ханалт, нягт (density), аяс (hue)**-ыг тусад нь засна. Resolve 19-өөс нэмэгдсэн.
+
+## Самбарын бүтэц (таны зургаар)
+- **Дээд мөр** — бүх өнгөнд нэг дор: **Den** (0.00), **Den.Depth** (0.00), **Sat** (1.00), **Sat.Balance** (0.00), **Sat.Depth** (0.00), **Hue** (0.00). [[den-den-depth-colorslice]], [[sat-sat-balance-sat-depth-colorslice]].
+- **Долоон багана** — Red, Skin, Yellow, Green, Cyan, Blue, Magenta. Багана бүрт: ◑ (асаах/унтраах), ⟲ (буцаах), жижиг өнгөний дугуй, **Center** (0.000), **Hue** (0.000), доод талд хоёр гулсуулагч — зүүн нь **нягт** (0.00), баруун нь **ханалт** (1.00). [[colorslice-vectors]], [[center-hue-colorslice]].
 
 ## Бусдаас ялгаа
-- **Qualifier** — өнгөөр сонгож маск хийнэ; ColorSlice маскгүйгээр шууд зөөлөн засна (ирмэг гарахгүй).
-- **Hue vs Sat** муруй — ижил зорилготой ч ColorSlice нь **хасах (subtractive)** аргаар — хальс шиг ханасан өнгө бараан болдог, «дижитал» тод өнгө гарахгүй.
+- **Qualifier** — өнгөөр сонгож маск хийнэ; ColorSlice маскгүйгээр шууд, зөөлөн засна (ирмэг гарахгүй).
+- **Hue vs Sat** муруй — ижил зорилготой ч ColorSlice нь **хасах (subtractive)** аргаар ажилладаг: хальс шиг ханасан өнгө бараан болдог, «дижитал» тод өнгө гарахгүй.
 
 ## Хэрэглэх жишээ
-- Тэнгэрийн **цэнхэр**-ийг бараан, баялаг болгох (Blue density).
-- **Арьсны** өнгийг бусдаас тусад нь тааруулах.
-- Хэт тод ногоон ургамлыг бууруулах.
+- Тэнгэрийн **цэнхэр**-ийг бараан, баялаг болгох: Blue баганын нягтыг өсгөнө.
+- **Арьсны** өнгийг бусдаас тусад нь тааруулах: Skin баганын Hue, ханалт.
+- Хэт тод ногоон ургамлыг бууруулах: Green баганын ханалтыг бууруулна.
 
-> Палитрын доторх талбаруудын яг нэрс Resolve 21-д баталгаажаагүй — нээсэн зургийг илгээнэ үү.
+> Den.Depth, Sat.Balance, Sat.Depth-ийн яг утгыг нэрээр нь тайлбарлав — баталгаажаагүй.
 
 Холбоотой: [[qualifier]], [[color-warper]].
 `
@@ -16437,14 +16689,14 @@ Color хуудасны Effects (Library / Settings) самбарын толго�
       </div>
 
       <div class="pal-rail hs" data-t="primaries">
-        <span class="pi hs" data-t="camera-raw" title="Camera Raw">◉</span><span class="pi hs" data-t="color-match-palette" title="Color Match">▦</span>
-        <span class="pi act hs" data-t="color-wheels" data-tab="cp:wheels" title="Color Wheels">◑</span><span class="pi hs" data-t="hdr-palette" title="HDR Grade">✸</span>
-        <span class="pi hs" data-t="rgb-mixer" title="RGB Mixer">⁂</span><span class="pi hs" data-t="motion-effects" title="Motion Effects">⧗</span>
-        <span class="pi hs" data-t="curves" title="Curves">∿</span><span class="pi hs" data-t="colorslice" title="ColorSlice">◔</span><span class="pi hs" data-t="color-warper" title="Color Warper">⬚</span>
-        <span class="pi hs" data-t="qualifier" title="Qualifier">◌</span><span class="pi hs" data-t="power-window" title="Windows">▭</span>
-        <span class="pi hs" data-t="window-tracker" data-tab="cp:tracker" title="Tracker">⊹</span><span class="pi hs" data-t="magic-mask" title="Magic Mask">✦</span>
-        <span class="pi hs" data-t="blur-sharpen-mist" title="Blur">◍</span><span class="pi hs" data-t="matte" title="Key">◪</span>
-        <span class="pi hs" data-t="node-sizing" title="Sizing">⤢</span><span class="pi hs" data-t="switch-eye-to" title="Stereo 3D">3D</span>
+        <span class="pi hs" data-t="camera-raw" data-tab="cp:raw" title="Camera Raw">◉</span><span class="pi hs" data-t="color-match-palette" data-tab="cp:match" title="Color Match">▦</span>
+        <span class="pi act hs" data-t="color-wheels" data-tab="cp:wheels" title="Color Wheels">◑</span><span class="pi hs" data-t="hdr-palette" data-tab="cp:hdr" title="HDR Grade">✸</span>
+        <span class="pi hs" data-t="rgb-mixer" data-tab="cp:rgb" title="RGB Mixer">⁂</span><span class="pi hs" data-t="motion-effects" data-tab="cp:motion" title="Motion Effects">⧗</span>
+        <span class="pi hs" data-t="curves" data-tab="cp:curves" title="Curves">∿</span><span class="pi hs" data-t="colorslice" data-tab="cp:slice" title="ColorSlice">◔</span><span class="pi hs" data-t="color-warper" data-tab="cp:warper" title="Color Warper">⬚</span>
+        <span class="pi hs" data-t="qualifier" data-tab="cp:qual" title="Qualifier">◌</span><span class="pi hs" data-t="power-window" data-tab="cp:window" title="Window">▭</span>
+        <span class="pi hs" data-t="window-tracker" data-tab="cp:tracker" title="Tracker">⊹</span><span class="pi hs" data-t="magic-mask" data-tab="cp:mask" title="AI Magic Mask">✦</span>
+        <span class="pi hs" data-t="blur-sharpen-mist" data-tab="cp:blur" title="Blur">◍</span><span class="pi hs" data-t="key-palette" data-tab="cp:key" title="Key">◪</span>
+        <span class="pi hs" data-t="sizing-palette" data-tab="cp:sizing" title="Sizing">⤢</span><span class="pi dim hs" data-t="3d-palette" title="3D">3D</span>
         <span class="sp"></span>
         <span class="pi hs" data-t="keyframes-panel-color" data-tab="cr:keyframes" title="Keyframes">◆</span><span class="pi act hs" data-t="scopes" data-tab="cr:scopes" title="Scopes">∿</span><span class="pi hs" data-t="metadata" title="Info">ⓘ</span>
       </div>
@@ -16452,8 +16704,8 @@ Color хуудасны Effects (Library / Settings) самбарын толго�
       <div class="cl-bottom">
         <div class="pane" style="flex:0 0 49%">
           <div class="cp-pane" data-tabpane="cp:wheels">
-          <div class="pane-h"><b>Primaries - Color Wheels</b><span class="sp"></span>
-            <span class="hs" data-t="color-wheels">◉</span><span class="hs" data-t="bars">▮▮</span><span class="hs" data-t="log-wheels">◐</span><span class="hs" data-t="reset">⟲</span></div>
+          <div class="pane-h"><b data-tabpane="pm:wheels">Primaries - Color Wheels</b><b data-tabpane="pm:bars" hidden>Primaries - Color Bars</b><span class="sp"></span>
+            <span class="hs act" data-t="color-wheels" data-tab="pm:wheels">◉</span><span class="hs" data-t="bars" data-tab="pm:bars">▮▮</span><span class="hs" data-t="log-wheels">◐</span><span class="hs" data-t="reset">⟲</span></div>
           <div class="pane-b" style="display:flex;flex-direction:column">
             <div class="cw-row">
               <span class="hs" data-t="auto-balance">Ⓐ</span><span class="hs" data-t="white-balance-picker">✎</span>
@@ -16462,12 +16714,13 @@ Color хуудасны Effects (Library / Settings) самбарын толго�
               <span class="hs" data-t="contrast">Contrast <b>1.000</b></span><span class="hs" data-t="pivot">Pivot <b>0.435</b></span>
               <span class="hs" data-t="midtone-detail">Mid/Detail <b>0.00</b></span>
             </div>
-            <div class="wheels">
+            <div class="wheels" data-tabpane="pm:wheels">
               ${WHEEL("lift", "Lift", ["0.00", "0.00", "0.00", "0.00"])}
               ${WHEEL("gamma", "Gamma", ["0.00", "0.00", "0.00", "0.00"])}
               ${WHEEL("gain", "Gain", ["1.00", "1.00", "1.00", "1.00"])}
               ${WHEEL("offset", "Offset", ["25.00", "25.00", "25.00"])}
             </div>
+            ${S.clBars ? S.clBars() : ""}
             <div class="cw-row bottom">
               <span class="hs" data-t="color-boost">Color Boost <b>0.00</b></span>
               <span class="hs" data-t="shadows-highlights">Shadows <b>0.00</b></span>
@@ -16479,6 +16732,7 @@ Color хуудасны Effects (Library / Settings) самбарын толго�
           </div>
           </div>
           ${CL_TRACKER()}
+          ${S.clPal ? S.clPal() : ""}
         </div>
         <div class="pane scopes" style="flex:1">
           <div class="cp-pane hs" data-t="scopes" data-tabpane="cr:scopes">
@@ -17802,6 +18056,307 @@ Color хуудасны Effects (Library / Settings) самбарын толго�
 
   /* Нэр → SVG; байхгүй бол тэмдэгт буцаана */
   S.icon = (key, fallback) => S.ICON[key] || fallback || "";
+})(window.RM);
+
+</script>
+<script>
+/* ── js/54-sim-color-palettes.js ── */
+/* ═════════════════════════════════════════════════════════════
+   54 · Color хуудасны палитрын самбарууд
+   Палитрын мөрийн дүрс бүрийг товшиход доорх самбар солигдоно (data-tab="cp:…").
+   Талбар, анхдагч утга бүрийг хэрэглэгчийн Resolve Studio 21-ийн
+   2026-09-26-ны дэлгэцийн зургаас уншив. Primaries (Color Wheels) ба
+   Tracker самбар 51-sim-more.js-д.
+   ═════════════════════════════════════════════════════════════ */
+(function (RM) {
+  "use strict";
+  const S = RM.sim;
+
+  /* ── жижиг туслахууд ── */
+  const cls = (c) => (c ? " " + c : "");
+  const I = (id, g, c) => `<span class="hs${cls(c)}" data-t="${id}">${g}</span>`;
+  const V = (id, lb, v, c) => `<span class="f hs${cls(c)}" data-t="${id}"><span class="l">${lb}</span><b class="v">${v}</b></span>`;
+  const DD = (id, lb, v, c) => `<span class="f hs${cls(c)}" data-t="${id}">${lb ? `<span class="l">${lb}</span>` : ""}<b class="v dd">${v}</b></span>`;
+  const CB = (id, lb, on, c) => `<span class="f hs${cls(c)}" data-t="${id}"><span class="cb${on ? " on" : ""}"></span>${lb}</span>`;
+  const SL = (id, lb, v, p, c) => `<div class="sl-row hs${cls(c)}" data-t="${id}"><span>${lb}</span><b>${v}</b><i style="--p:${p}%"></i></div>`;
+  const GH = (id, name, right, c) => `<div class="gh hs${cls(c)}" data-t="${id}"><b>${name}</b><span class="r">${right || "⟲"}</span></div>`;
+  const PANE = (key, title, right, body, foot) => `
+          <div class="cp-pane" data-tabpane="cp:${key}" hidden>
+          <div class="pane-h"><b>${title}</b><span class="sp"></span>${right}</div>
+          <div class="pane-b cxw"><div class="cx">${body}</div>${foot ? `<div class="cx-foot">${foot}</div>` : ""}</div>
+          </div>`;
+  /* босоо багана: [өнгө, дүүргэлт %, утга] */
+  const VB = (list) => `<div class="vbs">${list.map(([c, h]) => `<span class="vb" style="--c:${c};--h:${h}%"><i></i></span>`).join("")}</div>
+              <div class="vvals">${list.map(([c, , v]) => `<b style="--c:${c}">${v}</b>`).join("")}</div>`;
+  const R = "#e0484f", G = "#3fbf5a", B = "#4d5fe0", Y = "#d8d8d8";
+
+  /* ── 1 · Camera Raw (H.264 клип сонгосон тул бүгд саарал) ── */
+  const RAW = PANE("raw", "Camera Raw", I("raw-format-camera-raw", "ARRI", "dim") + I("camera-raw", "…"), `
+            <div class="col dim">
+              ${DD("decode-quality", "Decode Quality", "Full res.")}
+              ${DD("decode-using", "Decode Using", "Camera metadata")}
+              ${CB("decode-as-monochrome", "Decode as monochrome")}
+              ${CB("decode-as-logc4", "Decode as LogC4")}
+            </div>
+            <div class="col dim">
+              ${V("color-temp-camera-raw", "Color Temp", "2000")}
+              ${V("tint-camera-raw", "Tint", "0.00")}
+              ${V("exposure-camera-raw", "Exposure", "0")}
+              ${V("sharpness-camera-raw", "Sharpness", "10.00")}
+            </div>
+            <div class="col"></div>`,
+    `<span class="sp"></span>${I("use-changes-use-settings", "Use Changes", "btn dim")}${I("use-changes-use-settings", "Use Settings", "btn dim")}`);
+
+  /* ── 2 · Color Match — Calibrite ColorChecker Classic-ийн 24 нүд ── */
+  const CHART = ["#7a4a3a", "#c99080", "#4f6f96", "#4c5e2e", "#7f7cb0", "#5ecbb0",
+    "#e0781e", "#3f55ae", "#cf4a55", "#5a2c6a", "#9fc03a", "#eea12a",
+    "#25379a", "#3f9a3e", "#b8262d", "#f2cb10", "#c04a9a", "#0a86a8",
+    "#f4f4f2", "#cacaca", "#a0a0a0", "#767676", "#4c4c4c", "#262626"];
+  const MATCH = PANE("match", "Color Match",
+    `<b class="hs hdd" data-t="color-chart-type">Calibrite ColorChecker Classic - Legacy ⌄</b>${I("reset", "⟲")}${I("color-match-palette", "…")}`, `
+            <div class="col wide hs" data-t="color-chart-swatches"><div class="swg">${CHART.map((c) => `<i style="background:${c}"></i>`).join("")}</div></div>
+            <div class="col">
+              <div class="fs hs" data-t="source-gamma"><span>Source Gamma</span><b class="v dd">Auto</b></div>
+              <div class="fs hs" data-t="target-gamma"><span>Target Gamma</span><b class="v dd">Auto</b></div>
+              <div class="fs hs" data-t="target-color-space"><span>Target Color Space</span><b class="v dd">Auto</b></div>
+              <div class="f2"><span class="f hs" data-t="color-temp-color-match"><span class="l">Color Temp</span><b class="v">6500</b> K</span>
+                <span class="f hs dim" data-t="white-level-color-match"><span class="l">White Level</span><b class="v">0.9</b><span class="cb"></span></span></div>
+              ${I("match-color-match", "Match", "btn")}
+            </div>`);
+
+  /* ── 3 · Primaries - Color Bars (Color Wheels-ийн өөр харагдац, 51-д шигтгэнэ) ── */
+  const BARGRP = (id, name, vals, pick) => `
+              <div class="bgrp hs" data-t="${id}">
+                <div class="wh-top"><span class="hs" data-t="${pick ? "white-balance-picker" : "reset"}">${pick ? "⊹" : ""}</span><b>${name}</b><span class="hs" data-t="reset">⟲</span></div>
+                ${VB(vals)}
+                <div class="wsl hs" data-t="bars"></div>
+              </div>`;
+  S.clBars = () => `
+            <div class="wheels bars-v" data-tabpane="pm:bars" hidden>
+              ${BARGRP("lift", "Lift", [[Y, 50, "0.00"], [R, 50, "0.00"], [G, 50, "0.00"], [B, 50, "0.00"]], true)}
+              ${BARGRP("gamma", "Gamma", [[Y, 50, "0.00"], [R, 50, "0.00"], [G, 50, "0.00"], [B, 50, "0.00"]])}
+              ${BARGRP("gain", "Gain", [[Y, 72, "1.00"], [R, 72, "1.00"], [G, 72, "1.00"], [B, 72, "1.00"]], true)}
+              ${BARGRP("offset", "Offset", [[R, 50, "25.00"], [G, 50, "25.00"], [B, 50, "25.00"]])}
+            </div>`;
+
+  /* ── 4 · High Dynamic Range - Color Wheels ── */
+  const HZ = (name, zone) => `
+              <div class="wheel hs" data-t="hdr-zones">
+                <div class="wh-top"><span class="zn">${zone || ""}</span><b>${name}</b><span class="hs" data-t="reset">⟲</span></div>
+                <div class="rng sm"></div>
+                <div class="hz-v hs" data-t="exp-sat-hdr"><span>Exp</span><b>0.00</b><span>Sat</span><b>1.00</b></div>
+                <div class="hz-v hs" data-t="x-y-hdr"><span>X</span><b>0.00</b><span>Y</span><b>0.00</b>${zone ? `<b class="q">${zone === "-1.50" ? "0.20" : "0.22"}</b>` : ""}</div>
+              </div>`;
+  const HDR = PANE("hdr", "High Dynamic Range - Color Wheels",
+    I("hdr-palette", "⇥", "dim") + I("hdr-zones", "◉", "on") + I("hdr-palette", "∧∨") + I("reset", "⟲") + I("hdr-palette", "…"), `
+            <div class="col full">
+              <div class="hz-nav hs" data-t="zone-navigation-hdr">‹ <i></i><i class="on" style="--c:#b18cff"></i><i class="on" style="--c:#6f8ff0"></i><i class="on" style="--c:#e04fc7"></i><i></i><i></i> ›</div>
+              <div class="wheels">${HZ("Dark", "-1.50")}${HZ("Shadow", "+1.00")}${HZ("Light", "-1.00")}${HZ("Global")}</div>
+            </div>`,
+    `${V("temperature", "Temp", "0.00")}${V("tint", "Tint", "0.00")}${V("hue", "Hue", "0.00")}${V("contrast", "Cont", "1.000")}
+            ${V("pivot", "Pivot", "0.000")}${V("midtone-detail", "MD", "0.00")}${V("b-ofs-black-offset", "B/Ofs", "0.000")}`);
+
+  /* ── 5 · RGB Mixer ── */
+  const OUT = (name, vals) => `
+              <div class="bgrp hs" data-t="red-green-blue-output">
+                <div class="wh-top"><span>⫼</span><b>${name}</b><span class="hs" data-t="reset">⟲</span></div>
+                ${VB(vals)}
+              </div>`;
+  const RGB = PANE("rgb", "RGB Mixer", I("reset", "⟲"), `
+            <div class="col full"><div class="wheels">
+              ${OUT("Red Output", [[R, 80, "1.00"], [G, 50, "0.00"], [B, 50, "0.00"]])}
+              ${OUT("Green Output", [[R, 50, "0.00"], [G, 80, "1.00"], [B, 50, "0.00"]])}
+              ${OUT("Blue Output", [[R, 50, "0.00"], [G, 50, "0.00"], [B, 80, "1.00"]])}
+            </div></div>`,
+    `${I("swap-channels-rgb-mixer", `<i style="--a:${R};--b:${G}"></i><i style="--a:${G};--b:${B}"></i><i style="--a:${B};--b:${R}"></i>`, "swaps")}
+            <span class="sp"></span>${CB("monochrome-rgb-mixer", "Monochrome")}${CB("preserve-luminance", "Preserve Luminance", true)}`);
+
+  /* ── 6 · Motion Effects ── */
+  const MOTION = PANE("motion", "Motion Effects", I("reset", "⟲"), `
+            <div class="col">
+              ${GH("temporal-nr", "Temporal NR")}
+              ${DD("frames-temporal-nr", "Frames", "0")}
+              ${DD("motion-estimation-type", "Mo. Est. Ty…", "Faster", "dim")}
+              ${DD("motion-range", "Motion Ra…", "Medium", "dim")}
+              ${GH("temporal-threshold", "Temporal Threshold")}
+              <div class="dim">${V("temporal-threshold", "Luma", "0.0")}${V("temporal-threshold", "Chroma", "0.0")}
+              ${V("temporal-threshold", "Motion", "50.0")}${V("blend-noise-reduction", "Blend", "0.0")}</div>
+            </div>
+            <div class="col">
+              ${GH("spatial-nr", "Spatial NR")}
+              ${DD("mode-radius-spatial-nr", "Mode", "Faster")}
+              ${DD("mode-radius-spatial-nr", "Radius", "Small")}
+              ${GH("spatial-threshold", "Spatial Threshold")}
+              ${V("spatial-threshold", "Luma", "0.0")}${V("spatial-threshold", "Chroma", "0.0")}
+              ${V("blend-noise-reduction", "Blend", "0.0")}
+            </div>
+            <div class="col">
+              ${GH("motion-blur-motion-effects", "Motion Blur")}
+              ${DD("motion-estimation-type", "Mo. Est. Ty…", "Faster")}
+              ${DD("motion-range", "Motion Ra…", "Medium")}
+              ${V("motion-blur-motion-effects", "Motion Blur", "0.0")}
+            </div>`);
+
+  /* ── 7 · Curves - Custom ── */
+  const CH = (c, l) => `<span class="chip" style="--c:${c}">${l}</span>`;
+  const CURVES = PANE("curves", "Curves - Custom",
+    I("custom-curve", "◿", "on") + I("hue-vs-hue", "◌") + I("hue-vs-sat", "◍") + I("hue-vs-lum", "◎") + I("lum-vs-sat", "☼") +
+    I("sat-vs-sat", "◇") + I("sat-vs-lum", "◈") + I("curves-mode-buttons", "⤢") + I("reset", "⟲") + I("curves", "…"), `
+            <div class="col wide hs" data-t="custom-curve">
+              <div class="curve"><svg viewBox="0 0 100 60" preserveAspectRatio="none"><line x1="2" y1="58" x2="98" y2="2"/></svg></div>
+            </div>
+            <div class="col">
+              <div class="gh hs" data-t="edit-curves"><b>Edit</b><span class="r">⛓ ${CH("#ddd", "Y")}${CH(R, "R")}${CH(G, "G")}${CH(B, "B")} ⟲</span></div>
+              ${SL("edit-curves", "", "100", 92)}${SL("edit-curves", "", "100", 92, "r")}${SL("edit-curves", "", "100", 92, "g")}${SL("edit-curves", "", "100", 92, "b")}
+              <div class="gh hs" data-t="soft-clip"><b>Soft Clip</b><span class="r">⛓ ${CH(R, "R")}${CH(G, "G")}${CH(B, "B")} ⟲</span></div>
+              <div class="f2">${V("low-high-l-s-h-s-soft-clip", "Low", "50.0")}${V("low-high-l-s-h-s-soft-clip", "High", "50.0")}</div>
+              <div class="f2">${V("low-high-l-s-h-s-soft-clip", "L.S.", "0.0")}${V("low-high-l-s-h-s-soft-clip", "H.S.", "0.0")}</div>
+            </div>`);
+
+  /* ── 8 · ColorSlice — долоон зүсэм ── */
+  const SLC = [["Red", "#e0484f"], ["Skin", "#d9a38a"], ["Yellow", "#e3d25a"], ["Green", "#3fbf5a"], ["Cyan", "#45c6d8"], ["Blue", "#5a5ff0"], ["Magenta", "#e04fc7"]];
+  const SLICE = PANE("slice", "ColorSlice", I("reset", "⟲"), `
+            <div class="col full">
+              <div class="f-row">${V("den-den-depth-colorslice", "Den", "0.00")}${V("den-den-depth-colorslice", "Den.Depth", "0.00")}
+                <span class="sp"></span>${V("sat-sat-balance-sat-depth-colorslice", "Sat", "1.00")}${V("sat-sat-balance-sat-depth-colorslice", "Sat.Balance", "0.00")}
+                ${V("sat-sat-balance-sat-depth-colorslice", "Sat.Depth", "0.00")}<span class="sp"></span>${V("hue", "Hue", "0.00")}</div>
+              <div class="slices">${SLC.map(([n, c]) => `
+                <div class="slc hs" data-t="colorslice-vectors">
+                  <div class="wh-top"><span>◑</span><b>${n}</b><span class="hs" data-t="reset">⟲</span></div>
+                  <div class="mw"></div>
+                  <div class="hs" data-t="center-hue-colorslice"><span>Center</span> <b>0.000</b></div>
+                  <div class="hs" data-t="center-hue-colorslice"><span>Hue</span> <b>0.000</b></div>
+                  ${VB([[c, 30, "0.00"], [c, 55, "1.00"]])}
+                </div>`).join("")}</div>
+            </div>`);
+
+  /* ── 9 · Color Warper - Chroma Warp ── */
+  const WARPER = PANE("warper", "Color Warper - Chroma Warp",
+    I("color-warper", "◇") + I("chroma-warp", "◬", "on") + I("color-warper", "▦") + I("color-warper", "⤢") + I("reset", "⟲") + I("color-warper", "…"), `
+            <div class="col wide hs" data-t="chroma-warp"><div class="chrom"><i></i></div></div>
+            <div class="col">
+              <div class="gh"><b>Tools</b></div>
+              <div class="tools hs" data-t="color-warper-tools"><span>⊕</span><span class="dim">⊕</span><span>⚲</span><span>➚</span><span class="dim">🗑</span></div>
+              ${GH("pin-color-warper", "Pin", "⟲", "dim")}
+              <div class="dim">${SL("pin-color-warper", "Chroma Range", "0.040", 20)}${SL("pin-color-warper", "Tonal Range Low", "1.000", 100)}
+              ${SL("pin-color-warper", "Tonal Range High", "1.000", 100)}${SL("pin-color-warper", "Tonal Range Pivot", "0.500", 50)}
+              ${SL("pin-color-warper", "Exposure", "0.000", 50)}</div>
+            </div>`);
+
+  /* ── 10 · Qualifier - HSL ── */
+  const QG = (id, name, grad, fields, fid) => `
+              <div class="qg">
+                <div class="gh hs" data-t="${id}"><b><i class="dot"></i>${name}</b><span class="r">⟲</span></div>
+                <div class="qbar hs" data-t="${id}" style="background:${grad}"></div>
+                <div class="f-row">${fields.map(([l, v]) => V(fid, l, v)).join("")}</div>
+              </div>`;
+  const QUAL = PANE("qual", "Qualifier - HSL",
+    I("hsl-qualifier", "◍", "on") + I("qualifier-mode-buttons", "⁂") + I("qualifier-mode-buttons", "◑") + I("qualifier-mode-buttons", "◭") + I("reset", "⟲") + I("qualifier", "…"), `
+            <div class="col wide">
+              <div class="tools hs" data-t="qualifier-tools"><span class="on">✎</span><span>✎−</span><span>✎+</span><span>⌁−</span><span>⌁+</span><span>↻</span></div>
+              ${QG("hsl-qualifier", "Hue", "linear-gradient(90deg,#c000ff,#ff2a2a,#ffd21e,#2ad24a,#1ec8e6,#2a3cff,#c000ff)",
+                [["Center", "50.0"], ["Width", "100.0"], ["Soft", "0.0"], ["Sym", "50.0"]], "center-width-soft-sym")}
+              ${QG("saturation", "Saturation", "linear-gradient(90deg,#9a9a88,#8fd02a)",
+                [["Low", "0.0"], ["High", "100.0"], ["L. Soft", "0.0"], ["H. Soft", "0.0"]], "low-high-l-soft-h-soft")}
+              ${QG("luma", "Luminance", "linear-gradient(90deg,#000,#a8b09a)",
+                [["Low", "0.0"], ["High", "100.0"], ["L. Soft", "0.0"], ["H. Soft", "0.0"]], "low-high-l-soft-h-soft")}
+            </div>
+            <div class="col">
+              <div class="gh hs" data-t="matte-finesse"><b>Matte Finesse</b><span class="seg"><b class="on">1</b><b>2</b></span></div>
+              ${SL("pre-filter", "Pre-Filter", "0.0", 0)}${SL("clean-black-white", "Clean Black", "0.0", 0)}
+              ${SL("clean-black-white", "Clean White", "0.0", 0)}${SL("black-clip-white-clip", "Black Clip", "0.0", 0)}
+              ${SL("black-clip-white-clip", "White Clip", "100.0", 100)}${SL("blur-radius-qualifier", "Blur Radius", "0.0", 0)}
+              ${SL("in-out-ratio", "In/Out Ratio", "0.0", 50)}
+            </div>`);
+
+  /* ── 11 · Window ── */
+  const WROW = (id, g) => `<div class="wrow hs" data-t="${id}"><span class="shp">${g}</span><span class="sp"></span><i>●</i><i>▢</i></div>`;
+  const WINDOW = PANE("window", "Window", I("reset", "⟲") + I("power-window", "…"), `
+            <div class="col wide">
+              <div class="f-row nw hs" data-t="add-window-buttons"><span>⊞ Linear</span><span>⊕ Circle</span><span>⟋ Polygon</span><span>✒ Curve</span><span>▬ Gradient</span><span class="sp"></span><span class="btn">Delete</span></div>
+              <div class="wlist hs" data-t="window-list">
+                ${WROW("linear-window", "□")}${WROW("window-list", "○")}${WROW("polygon-window", "╱")}${WROW("curve-window", "✒")}${WROW("gradient-window", "▬")}
+              </div>
+            </div>
+            <div class="col tight">
+              ${GH("transform-window", "Transform", " ")}
+              <div class="dim"><div class="f2">${V("transform-window", "Size", "50.00")}${V("transform-window", "Aspect", "50.00")}</div>
+              <div class="f2">${V("transform-window", "Pan", "50.00")}${V("transform-window", "Tilt", "50.00")}</div>
+              <div class="f2">${V("transform-window", "Rotate", "0.00")}${V("transform-window", "Opacity", "50.00")}</div></div>
+              ${GH("softness-window", "Softness", " ")}
+              <div class="dim"><div class="f2">${V("softness-window", "Soft 1", "50.00")}${V("softness-window", "Soft 2", "50.00")}</div>
+              <div class="f2">${V("softness-window", "Soft 3", "50.00")}${V("softness-window", "Soft 4", "50.00")}</div>
+              <div class="f2">${V("softness-window", "Inside", "50.00")}${V("softness-window", "Outside", "50.00")}</div></div>
+            </div>`);
+
+  /* ── 13 · AI Magic Mask 2 ── */
+  const MASK = PANE("mask", "AI Magic Mask 2", I("reset", "⟲") + I("ai-magic-mask-2", "…"), `
+            <div class="col wide mm-l">
+              <div class="mm-bar"><span class="hs" data-t="magic-mask-transport">⤓ ⊢ |◀ ◀ ‖ ⇄ ▶ ▶| ⊣</span></div>
+              <div class="trk-ru"><span>00:00:00:00</span><span>00:00:08:19</span><span>00:00:17:14</span></div>
+              <div class="mm-empty hs" data-t="ai-magic-mask-2"><b>No Mask</b><span>Draw a point in the viewer to create a mask.</span></div>
+            </div>
+            <div class="col mm-r tight">
+              <div class="mm-bar"><span class="hs" data-t="magic-mask-point-tools">✎+ <span class="dim">✎− ✎ ✎ ⌄</span> ◉ ⧉ ≡</span></div>
+              ${GH("quality-magic-mask", "Quality")}
+              <div class="f2"><span class="seg hs" data-t="quality-magic-mask"><b class="on">Faster</b><b>Better</b></span>${SL("smart-refine", "Smart Refine", "30", 30, "dim")}</div>
+              <div class="f2">${DD("mode-shape-radius-iterations", "Mode", "Shrink")}${DD("mode-shape-radius-iterations", "Shape", "Circle")}</div>
+              <div class="f2">${SL("mode-shape-radius-iterations", "Radius", "0", 0)}${SL("mode-shape-radius-iterations", "Iterations", "1", 10)}</div>
+              <div class="f2">${SL("smoothing-magic-mask", "Smoothing", "0", 0)}${SL("denoise-qualifier", "Denoise", "0.0", 0)}</div>
+              <div class="f2">${SL("blur-radius-qualifier", "Blur Radius", "0.0", 0)}${SL("in-out-ratio", "In/Out Ratio", "0.0", 50)}</div>
+              <div class="f2">${SL("clean-black-white", "Clean Black", "0.0", 0)}${SL("black-clip-white-clip", "Black Clip", "0.0", 0)}</div>
+              <div class="f2">${SL("clean-black-white", "Clean White", "0.0", 0)}${SL("black-clip-white-clip", "White Clip", "100.0", 100)}</div>
+              ${SL("post-filter", "Post Filter", "0.0", 0)}
+            </div>`);
+
+  /* ── 14 · Blur - Blur ── */
+  const BG = (id, name, v, h, dimLink) => `
+              <div class="bgrp hs" data-t="${id}">
+                <div class="wh-top"><span class="${dimLink ? "dim" : ""}">⛓</span><b>${name}</b><span class="hs" data-t="reset">⟲</span></div>
+                ${VB([[R, h, v], [G, h, v], [B, h, v]])}
+              </div>`;
+  const BLUR = PANE("blur", "Blur - Blur",
+    I("blur-mode-buttons", "●", "on") + I("sharpen", "▲") + I("mist", "◭") + I("reset", "⟲"), `
+            <div class="col full"><div class="wheels">
+              ${BG("radius-blur", "Radius", "0.50", 50)}${BG("h-v-ratio", "H/V Ratio", "0.50", 50)}${BG("scaling-blur", "Scaling", "0.25", 25, true)}
+            </div></div>`,
+    `<span class="sp"></span><span class="dim">${V("coring-softness-level-mix", "Coring Softness", "0.00")}${V("coring-softness-level-mix", "Level", "0.00")}
+            ${V("coring-softness-level-mix", "Mix", "100.00")}</span><span class="sp"></span>`);
+
+  /* ── 15 · Key ── */
+  const KG = (id, name, icons, rows) => `
+              <div class="kg hs" data-t="${id}">
+                <div class="gh"><b>${name}</b><span class="r">${icons}</span></div>
+                ${rows.map((r) => `<div class="f2">${r.map(([l, v]) => V(id, l, v)).join("")}</div>`).join("")}
+              </div>`;
+  const KEY = PANE("key", "Key", I("node-key", "Node Key", "hl") + I("reset", "⟲"), `
+            <div class="col wide"><div class="keyprev hs" data-t="key-preview"><i></i></div></div>
+            <div class="col tight">
+              ${KG("key-input-key-palette", "Key Input", "◙ ▣", [[["Gain", "1.000"], ["Offset", "0.000"]], [["Blur R.", "0.000"], ["Blur H/V", "0.000"]]])}
+              ${KG("key-output-key-palette", "Key Output", "◙", [[["Gain", "1.000"], ["Offset", "0.000"]]])}
+              ${KG("qualifier-key-palette", "Qualifier", "◙ ▣", [[["Gain", "1.000"], ["Offset", "0.000"]]])}
+            </div>`);
+
+  /* ── 16 · Sizing - Input Sizing ── */
+  const SIZING = PANE("sizing", "Sizing - Input Sizing",
+    I("sizing-mode-buttons", "▭") + I("input-sizing", "⧈", "on") + I("sizing-mode-buttons", "▤") + I("sizing-mode-buttons", "⧉") + I("sizing-mode-buttons", "▣") +
+    I("reset", "⟲") + I("sizing-palette", "…"), `
+            <div class="col wide">
+              ${GH("sizing-palette", "Sizing")}
+              <div class="f2"><div>${V("pan-tilt-zoom-rotate-sizing", "Pan", "0.000")}${V("pan-tilt-zoom-rotate-sizing", "Tilt", "0.000")}
+                ${V("pan-tilt-zoom-rotate-sizing", "Zoom", "1.000")}${V("pan-tilt-zoom-rotate-sizing", "Rotate", "0.000")}</div>
+              <div>${V("width-height-pitch-yaw-sizing", "Width", "1.000")}${V("width-height-pitch-yaw-sizing", "Height", "1.000")}
+                ${V("width-height-pitch-yaw-sizing", "Pitch", "0.000")}${V("width-height-pitch-yaw-sizing", "Yaw", "0.000")}
+                <span class="f hs" data-t="flip-sizing"><span class="l">Flip</span><b class="v">⇹</b><b class="v">⇳</b></span></div></div>
+            </div>
+            <div class="col dim hs" data-t="blanking">
+              ${GH("blanking", "Blanking")}
+              ${V("blanking", "Top", "&nbsp;")}${V("blanking", "Right", "&nbsp;")}${V("blanking", "Bottom", "&nbsp;")}${V("blanking", "Left", "&nbsp;")}
+              ${CB("blanking", "Smooth")}
+            </div>`);
+
+  /* 51-ийн Color хуудас дуудна — Primaries, Tracker-ээс бусад самбар */
+  S.clPal = () => RAW + MATCH + HDR + RGB + MOTION + CURVES + SLICE + WARPER + QUAL + WINDOW + MASK + BLUR + KEY + SIZING;
 })(window.RM);
 
 </script>

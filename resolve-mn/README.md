@@ -398,7 +398,11 @@ Color хуудасны нодны хөдөлгүүр дээр засварлан
   мөрүүд ба All ⌄ (All, Color, Sizing), палитрын Keyframes / Scopes / Info tooltip; viewer-ийн … (20 мөр),
   Nodes-ийн харагдац ⌄ (Graph / List View) ба … (8 мөр), Effects-ийн … (3 мөр); палитрын эхний 5 дүрсний
   tooltip (Camera Raw, Color Match, Color Wheels, HDR Grade, RGB Mixer) ба дараагийн 5 (Motion Effects, Curves,
-  **ColorSlice** — загварт дутуу байсныг нэмэв, Color Warper, Qualifier).
+  **ColorSlice** — загварт дутуу байсныг нэмэв, Color Warper, Qualifier), сүүлийн 7 (Window, Tracker,
+  **AI Magic Mask**, Blur, Key, Sizing, 3D — идэвхгүй); палитрын **15 самбарын агуулга**: Camera Raw, Color Match,
+  Primaries - Color Bars, High Dynamic Range - Color Wheels, RGB Mixer, Motion Effects, Curves - Custom,
+  ColorSlice, Color Warper - Chroma Warp, Qualifier - HSL, Window, Tracker - FX, **AI Magic Mask 2**,
+  Blur - Blur, Key, Sizing - Input Sizing (`js/54-sim-color-palettes.js`, `js/dict/r32-color-palettes.js`).
 
 Хараахан баталгаажуулаагүй: Fusion Inspector-ийн толгойн дүрсүүдийн (● ⌄, хувилбар, хадаас, түгжээ,
 буцаах) tooltip; Source Color/Gamma Space-ийн доторх мөрүүд; Cut хуудасны дээд timeline-ийн 3 дахь товчны tooltip нэр
@@ -408,7 +412,10 @@ Immersive горим, Display Full / Borders / Scaled Waveforms-ийн ялга�
 Markers › дэд цэс, timeline-ийн нягтралын цэс одоогийн timeline-ийг өөрчлөх үү, viewer-ийн толгойн улаан
 зураастай товч, Voiceover самбарын агуулга, Retime and Scaling, AI Super Scale-ийн доторх мөрүүд, Replay бэлдэц;
 **Color:** ◧ ▦ ◐ товчны tooltip (үйлдлээр нь баталгаажсан), wipe-ийн A/B, Highlight-ийн 3 товч, Tracker-ийн 6
-мөрдөлтийн товч, Keyframes-ийн мөрийн дүрс ба All ⌄, палитрын дүрс бүрийн tooltip; цэсний дэд цэснүүдийн (AI Tools, Audio Operations,
+мөрдөлтийн товч, Keyframes-ийн мөрийн дүрс ба All ⌄; палитрын самбаруудын гарчгийн дүрсний tooltip (Curves-ийн 7,
+Qualifier-ийн 4 горим, 6 хэрэгсэл, Blur-ийн 3 горим, Sizing-ийн 5 горим, AI Magic Mask 2-ийн дээд мөр, Key-ийн дүрсүүд),
+HDR дугуйн гурав дахь утга, Camera Raw-ийн Use Changes / Use Settings, ColorSlice-ийн Den.Depth / Sat.Balance /
+Sat.Depth-ийн яг утга, Matte Finesse-ийн 2-р хуудас; цэсний дэд цэснүүдийн (AI Tools, Audio Operations,
 Edit Options, Go To, Sort by…) доторх мөрүүд; Resolve 20–21-д нэмэгдсэн AI хэрэглүүрийн
 яг байрлал; Edit цэсний төлөв Media хуудсанд, File цэсний төлөв Media-аас бусад
 хуудсанд. Зохиомол агуулга
@@ -436,6 +443,8 @@ Edit Options, Go To, Sort by…) доторх мөрүүд; Resolve 20–21-д �
 | Edit timeline-ийн 2, 3 дахь товч | Track, Record Voiceover | **Show Keyframe Tray**, **Voiceover** |
 | Томруулалтын 3 товч | Zoom to Fit, Zoom In, Zoom Out | **Full Extent Zoom, Detail Zoom, Custom Zoom** |
 | Effects-ийн Additive/Blur Dissolve | Add, Blur (Fusion) нэр томьёо руу | Тусдаа шилжилт — зөв нэр томьёо руу холбов |
+| Magic Mask-ийн ажиллагаа | Person / Object горим, зураас татах (v1) | **AI Magic Mask 2** — viewer дээр цэг тавина, Quality Faster / Better |
+| Палитрын Sizing, Key, 3D дүрс | Node Sizing, Matte (Fusion), Switch Eye To | **Sizing**, **Key**, **3D** — палитрын тусдаа самбар |
 
 Монтажийн 17 товчлуур (F9–F12, Shift+F10–F12, Ctrl+Z, Shift+Backspace гэх мэт)
 шалгахад **бүгд зөв** байсан.

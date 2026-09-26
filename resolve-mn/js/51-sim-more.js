@@ -311,14 +311,14 @@
       </div>
 
       <div class="pal-rail hs" data-t="primaries">
-        <span class="pi hs" data-t="camera-raw" title="Camera Raw">◉</span><span class="pi hs" data-t="color-match-palette" title="Color Match">▦</span>
-        <span class="pi act hs" data-t="color-wheels" data-tab="cp:wheels" title="Color Wheels">◑</span><span class="pi hs" data-t="hdr-palette" title="HDR Grade">✸</span>
-        <span class="pi hs" data-t="rgb-mixer" title="RGB Mixer">⁂</span><span class="pi hs" data-t="motion-effects" title="Motion Effects">⧗</span>
-        <span class="pi hs" data-t="curves" title="Curves">∿</span><span class="pi hs" data-t="colorslice" title="ColorSlice">◔</span><span class="pi hs" data-t="color-warper" title="Color Warper">⬚</span>
-        <span class="pi hs" data-t="qualifier" title="Qualifier">◌</span><span class="pi hs" data-t="power-window" title="Windows">▭</span>
-        <span class="pi hs" data-t="window-tracker" data-tab="cp:tracker" title="Tracker">⊹</span><span class="pi hs" data-t="magic-mask" title="Magic Mask">✦</span>
-        <span class="pi hs" data-t="blur-sharpen-mist" title="Blur">◍</span><span class="pi hs" data-t="matte" title="Key">◪</span>
-        <span class="pi hs" data-t="node-sizing" title="Sizing">⤢</span><span class="pi hs" data-t="switch-eye-to" title="Stereo 3D">3D</span>
+        <span class="pi hs" data-t="camera-raw" data-tab="cp:raw" title="Camera Raw">◉</span><span class="pi hs" data-t="color-match-palette" data-tab="cp:match" title="Color Match">▦</span>
+        <span class="pi act hs" data-t="color-wheels" data-tab="cp:wheels" title="Color Wheels">◑</span><span class="pi hs" data-t="hdr-palette" data-tab="cp:hdr" title="HDR Grade">✸</span>
+        <span class="pi hs" data-t="rgb-mixer" data-tab="cp:rgb" title="RGB Mixer">⁂</span><span class="pi hs" data-t="motion-effects" data-tab="cp:motion" title="Motion Effects">⧗</span>
+        <span class="pi hs" data-t="curves" data-tab="cp:curves" title="Curves">∿</span><span class="pi hs" data-t="colorslice" data-tab="cp:slice" title="ColorSlice">◔</span><span class="pi hs" data-t="color-warper" data-tab="cp:warper" title="Color Warper">⬚</span>
+        <span class="pi hs" data-t="qualifier" data-tab="cp:qual" title="Qualifier">◌</span><span class="pi hs" data-t="power-window" data-tab="cp:window" title="Window">▭</span>
+        <span class="pi hs" data-t="window-tracker" data-tab="cp:tracker" title="Tracker">⊹</span><span class="pi hs" data-t="magic-mask" data-tab="cp:mask" title="AI Magic Mask">✦</span>
+        <span class="pi hs" data-t="blur-sharpen-mist" data-tab="cp:blur" title="Blur">◍</span><span class="pi hs" data-t="key-palette" data-tab="cp:key" title="Key">◪</span>
+        <span class="pi hs" data-t="sizing-palette" data-tab="cp:sizing" title="Sizing">⤢</span><span class="pi dim hs" data-t="3d-palette" title="3D">3D</span>
         <span class="sp"></span>
         <span class="pi hs" data-t="keyframes-panel-color" data-tab="cr:keyframes" title="Keyframes">◆</span><span class="pi act hs" data-t="scopes" data-tab="cr:scopes" title="Scopes">∿</span><span class="pi hs" data-t="metadata" title="Info">ⓘ</span>
       </div>
@@ -326,8 +326,8 @@
       <div class="cl-bottom">
         <div class="pane" style="flex:0 0 49%">
           <div class="cp-pane" data-tabpane="cp:wheels">
-          <div class="pane-h"><b>Primaries - Color Wheels</b><span class="sp"></span>
-            <span class="hs" data-t="color-wheels">◉</span><span class="hs" data-t="bars">▮▮</span><span class="hs" data-t="log-wheels">◐</span><span class="hs" data-t="reset">⟲</span></div>
+          <div class="pane-h"><b data-tabpane="pm:wheels">Primaries - Color Wheels</b><b data-tabpane="pm:bars" hidden>Primaries - Color Bars</b><span class="sp"></span>
+            <span class="hs act" data-t="color-wheels" data-tab="pm:wheels">◉</span><span class="hs" data-t="bars" data-tab="pm:bars">▮▮</span><span class="hs" data-t="log-wheels">◐</span><span class="hs" data-t="reset">⟲</span></div>
           <div class="pane-b" style="display:flex;flex-direction:column">
             <div class="cw-row">
               <span class="hs" data-t="auto-balance">Ⓐ</span><span class="hs" data-t="white-balance-picker">✎</span>
@@ -336,12 +336,13 @@
               <span class="hs" data-t="contrast">Contrast <b>1.000</b></span><span class="hs" data-t="pivot">Pivot <b>0.435</b></span>
               <span class="hs" data-t="midtone-detail">Mid/Detail <b>0.00</b></span>
             </div>
-            <div class="wheels">
+            <div class="wheels" data-tabpane="pm:wheels">
               ${WHEEL("lift", "Lift", ["0.00", "0.00", "0.00", "0.00"])}
               ${WHEEL("gamma", "Gamma", ["0.00", "0.00", "0.00", "0.00"])}
               ${WHEEL("gain", "Gain", ["1.00", "1.00", "1.00", "1.00"])}
               ${WHEEL("offset", "Offset", ["25.00", "25.00", "25.00"])}
             </div>
+            ${S.clBars ? S.clBars() : ""}
             <div class="cw-row bottom">
               <span class="hs" data-t="color-boost">Color Boost <b>0.00</b></span>
               <span class="hs" data-t="shadows-highlights">Shadows <b>0.00</b></span>
@@ -353,6 +354,7 @@
           </div>
           </div>
           ${CL_TRACKER()}
+          ${S.clPal ? S.clPal() : ""}
         </div>
         <div class="pane scopes" style="flex:1">
           <div class="cp-pane hs" data-t="scopes" data-tabpane="cr:scopes">
