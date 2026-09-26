@@ -245,7 +245,7 @@
       <span class="sp"></span>
       <b class="hs" data-t="timeline">SE…0s ⌄</b><span class="tc hs" data-t="timecode">00:00:00:00 ⌄</span>
       <span class="hs" data-t="viewer-mode">▭ ⌄ ▦ ⌄ ⚙ ⌄</span><span class="hs" data-t="reset">⟲</span><span class="hs" data-t="full-screen-window">⛶</span><span>…</span>
-      <span class="hs" data-t="selection-mode">↖ ⌄</span><span class="hs" data-t="node-editor">⚌ ⌄</span>
+      <span class="hs mi" data-t="node-editor-pointer-menu">↖ ⌄</span><span class="hs mi" data-t="add-node-menu">⚌ ⌄</span>
       <b class="hs" data-t="corrector-node">Clip ⌄</b>
       <span class="hs" data-t="node-editor">⬡ ⌄</span><span>…</span>
       <span class="sp"></span>
@@ -279,7 +279,7 @@
           </div></div>
         </div>
         <div class="pane insp hs" data-t="openfx" style="flex:1">
-          <div class="pane-b">
+          <div class="pane-b" style="overflow-y:auto">
             <div class="insp-sec hs" data-t="vignette">
               <div class="t"><span class="tog on"></span> Vignette <span class="sp"></span><span class="mini">🗑 ⟲</span></div>
               <div class="insp-row hs" data-t="operating-mode"><span class="lb">Operating Mode</span><b class="val dd">Basic ⌄</b><span class="kf">⟲</span></div>
@@ -289,6 +289,17 @@
               <div class="t sub">⌄ Appearance</div>
               <div class="insp-row hs" data-t="softness"><span class="lb">Softness</span><span class="sl" style="--p:70%"></span><b>0.705</b><span class="kf">◆ ⟲</span></div>
               <div class="insp-row hs" data-t="vignette"><span class="lb">Color</span><span class="swatch"></span><span class="hs" data-t="picker">✎</span><span class="kf">◆ ⟲</span></div>
+            </div>
+            <div class="insp-sec hs" data-t="film-grain">
+              <div class="t"><span class="tog on"></span> Film Grain <span class="sp"></span><span class="mini">🗑 ⟲</span></div>
+              <div class="insp-row hs" data-t="film-grain-presets"><span class="lb">Film Grain Presets</span><b class="val dd">35mm 200T ⌄</b><span class="kf">⟲</span></div>
+              <div class="insp-row hs" data-t="composite-type-film-grain"><span class="lb">Composite Type</span><b class="val dd">Overlay ⌄</b><span class="kf">⟲</span></div>
+              <div class="insp-row hs" data-t="opacity"><span class="lb">Opacity</span><span class="sl" style="--p:60%"></span><b>0.605</b><span class="kf">◆ ⟲</span></div>
+              <div class="insp-row hs" data-t="grain-only"><span class="lb"></span><span class="val">☐ Grain Only</span><span class="kf">⟲</span></div>
+              <div class="insp-row hs" data-t="freeze-film-grain"><span class="lb"></span><span class="val">☐ Freeze</span><span class="kf">◆ ⟲</span></div>
+              <div class="t sub hs" data-t="grain-params">⌄ Grain Params</div>
+              <div class="insp-row hs" data-t="grain-params"><span class="lb">Texture</span><span class="sl" style="--p:73%"></span><b>0.726</b><span class="kf">◆ ⟲</span></div>
+              <div class="insp-row hs" data-t="grain-params"><span class="lb">Grain Size</span><span class="sl" style="--p:14%"></span><b>0.136</b><span class="kf">◆ ⟲</span></div>
             </div>
           </div>
         </div>

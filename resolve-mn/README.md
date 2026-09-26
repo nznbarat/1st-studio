@@ -3,7 +3,7 @@
 DaVinci Resolve-ийн интерфейсийн монгол хэл дээрх лавлах.
 Программын цэс, самбар, товчлуур, тохиргоо бүрийн монгол нэр, тайлбар, хаана байдгийг цуглуулсан.
 
-**1188 нэр томьёо · 52 ангилал · 135 товчлуур · 789 гарын авлагын дэлгэрэнгүй тайлбар · 6 ажлын урсгал · 8 хуудасны загвар · 35 нээгддэг цэс · 2 жишээтэй заавар (Fusion 28, Edit 26 хэрэгсэл)**
+**1198 нэр томьёо · 52 ангилал · 135 товчлуур · 799 гарын авлагын дэлгэрэнгүй тайлбар · 6 ажлын урсгал · 8 хуудасны загвар · 37 нээгддэг цэс · 2 жишээтэй заавар (Fusion 28, Edit 26 хэрэгсэл)**
 
 ---
 
@@ -118,7 +118,7 @@ Selection, Position Lock · туг, тэмдэглэгээ · Full Extent/Detail
 ### Интерфейсийн загвар
 
 `interface.html` нь Resolve-ийн найман хуудсыг (Media, Photo, Cut, Edit, Fusion, Color,
-Fairlight, Deliver) хуулбарлан харуулна. Нийт **755 товших цэг** (406 өвөрмөц нэр томьёо) —
+Fairlight, Deliver) хуулбарлан харуулна. Нийт **763 товших цэг** (414 өвөрмөц нэр томьёо) —
 цэг бүр толины нэр томьёотой шууд холбогдсон тул тайлбар давхардаж бичигдээгүй.
 Өнгө нь Resolve Studio 21-ийн дэлгэцийн зургаас хэмжсэн бодит утга
 (`css/sim.css` доторх `--rs-*` хувьсагчид).
@@ -128,7 +128,7 @@ Fairlight, Deliver) хуулбарлан харуулна. Нийт **755 тов
 - **Цэг харуулах** товч бүх идэвхтэй хэсгийг тодруулна — юу товшиж болохыг олоход.
 - Баруун талын жагсаалт нь тухайн хуудасны бүх цэгийг ангиллаар нь харуулна.
 - Доод талын хуудасны мөр нь бодит Resolve шиг ажиллана.
-- **13 цэс дарахад үнэхээр нээгдэнэ** — 323 мөр, товчлууртайгаа. Бусад 18 унждаг жагсаалт (хэрэгслийн мөр, viewer, Media Pool) — нийт 35 цэс, 537 мөр.
+- **13 цэс дарахад үнэхээр нээгдэнэ** — 323 мөр, товчлууртайгаа. Бусад 24 унждаг жагсаалт (хэрэгслийн мөр, viewer, Media Pool, Tracker, Nodes) — нийт 37 цэс, 542 мөр.
 - **Edit цэсний командууд хуудаснаас хамаарч саарал болно** — бодит программ шиг,
   Fusion, Color, Fairlight хуудсан дээр цэсийг нээсэн зургаас мөр бүрээр:
   Fusion — 5 мөр идэвхтэй (Undo, Redo, History, Select All, Deselect All);
@@ -169,7 +169,8 @@ Fairlight, Deliver) хуулбарлан харуулна. Нийт **755 тов
   Палитрын Tracker дүрс → **Tracker - Window** самбар (6 мөрдөлтийн товч, Pan/Tilt/Zoom/Rotate/3D,
   Clip/Frame, график, Interactive Mode + Insert/Set Point/Delete, Cloud Tracker ⌄ — Cloud, Point,
   AI IntelliTrack), Window/Stabilizer/FX, Clear All Tracking Points. Keyframes дүрс → **Keyframes** самбар
-  (Master, Corrector 1–4, Sizing).
+  (Master, Corrector 1–4, Sizing). Nodes-ийн ↖ ⌄ (Selection, Hand Mode), нод нэмэх ⌄
+  (Add Serial, Parallel, Layer); Settings-т Film Grain (Presets, Composite Type, Opacity, Grain Params).
 - **Photo хуудасны "Photo Album ⌄" товч** бодит шүүлтүүрийн жагсаалт нээнэ
   (Sort by, All/Selected/Graded/Ungraded Photos, People, Magic Mask … Create Smart Filter).
   Цэс нээлттэй байхад хажуугийн цэсэн дээр хулгана тултал шилжинэ.

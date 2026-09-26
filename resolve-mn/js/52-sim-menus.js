@@ -843,6 +843,17 @@
       ["keyframes-filter-color", "All", "✓"],
       ["keyframes-filter-color", "Color"],
       ["sizing-keyframes", "Sizing"]
+    ]},
+
+    /* Color → Nodes самбарын толгой: ↖ ⌄ ба нод нэмэх ⌄ (2026-09-26) */
+    "node-editor-pointer-menu": { label: "Node Editor Pointer Menu", verified: true, items: [
+      ["selection-mode-node-editor", "Selection Mode"],
+      ["hand-mode-node-editor", "Hand Mode"]
+    ]},
+    "add-node-menu": { label: "Add Node Menu", verified: true, items: [
+      ["serial-node", "Add Serial"],
+      ["parallel-node", "Add Parallel"],
+      ["layer-node", "Add Layer"]
     ]}
   };
 
