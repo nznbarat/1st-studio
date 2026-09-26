@@ -636,10 +636,48 @@ def build_world():
 # ══════════════════════════════════════════════════════════════════════
 #  Рендер, компоновк
 # ══════════════════════════════════════════════════════════════════════
+def pick_device():
+    """GPU-г Blender-ийн тохиргоонд АСААНА (OptiX / CUDA / HIP / Metal / oneAPI).
+
+    Файлд cycles.device = "GPU" гэж бичих нь хангалтгүй: Preferences ->
+    System -> Cycles Render Devices нь "None" байвал Blender чимээгүй CPU
+    руу шилждэг. Шинэ суулгасан Blender дээр анхдагч нь "None".
+    deel.py, cockpit.py-тэй ижил логик.
+    """
+    want = CFG["device"].upper()
+    if want == "CPU":
+        return "CPU"
+    addon = bpy.context.preferences.addons.get("cycles")
+    if addon:
+        prefs = addon.preferences
+        for kind in ("OPTIX", "CUDA", "HIP", "METAL", "ONEAPI"):
+            try:
+                prefs.compute_device_type = kind
+                for fn in ("refresh_devices", "get_devices"):
+                    if hasattr(prefs, fn):
+                        getattr(prefs, fn)()
+                        break
+                found = [d for d in prefs.devices if d.type == kind]
+                if found:
+                    for d in prefs.devices:
+                        d.use = d.type in (kind, "CPU")
+                    print("[1st Studio] GPU:", kind, "—",
+                          ", ".join(d.name for d in found))
+                    return "GPU"
+            except Exception:                                    # noqa: BLE001
+                continue
+    if want == "GPU":
+        # Тулгасан бол GPU гэж ТЭМДЭГЛЭНЭ — cloud-д GPU байхгүй ч .blend-ийг
+        # таны компьютер дээр нээхэд GPU-гаар рендерлэх ёстой.
+        print("[1st Studio] GPU энд олдсонгүй — файлд GPU гэж тэмдэглэв.")
+        return "GPU"
+    return "CPU"
+
+
 def setup_render(res=(1920, 1080), samples=96):
     sc = bpy.context.scene
     sc.render.engine = "CYCLES"
-    sc.cycles.device = "GPU" if CFG["device"] == "GPU" else "CPU"
+    sc.cycles.device = pick_device()
     sc.cycles.samples = samples
     sc.cycles.use_denoising = True
     sc.cycles.use_adaptive_sampling = True

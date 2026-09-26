@@ -687,6 +687,13 @@ python3.13 -m pip install --target ./bpylib52 bpy==5.2.2
 5.0-д тааралдсан бүх API өөрчлөлт (compositor бүлэг + RLayers, Glare-ийн
 "Type" сокет, `media_type='VIDEO'`) 5.2-т хэвээр.
 
+**Шинэ суулгасан Blender дээр НЭГ УДАА:** Edit → Preferences → System →
+Cycles Render Devices → **OptiX** (NVIDIA RTX) / CUDA (хуучин NVIDIA) /
+HIP (AMD) / Metal (Mac) сонгож GPU-гээ чагтлаад Save Preferences.
+Анхдагч нь "None" — тэгвэл `.blend` дотор GPU гэж бичсэн ч Blender
+чимээгүйхэн CPU-гаар рендерлэнэ. Командын мөрнөөс (`blender -b -P …`)
+ажиллуулахад гурван скрипт хоёулаа GPU-г өөрсдөө асаана (`pick_device`).
+
 **`.blend` файлууд** 5.2.2-оор дахин гаргагдсан. Blender 5.2 дээр
 нээнэ; 5.0 дээр нээвэл "шинэ хувилбараар хадгалсан" гэсэн анхааруулга
 гарна.
