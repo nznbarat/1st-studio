@@ -244,6 +244,11 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
 .lockbar.ok{border-color:rgba(87,217,138,.45);background:rgba(87,217,138,.07)} .lockbar.ok b{color:var(--ok)}
 .lockbar.warn{border-color:rgba(224,162,74,.45);background:rgba(224,162,74,.07)} .lockbar.warn b{color:var(--warn)}
 .lockbar.idle b{color:var(--dim)}
+.enprompt .tag{display:inline-block;font-size:10.5px;letter-spacing:.08em;color:var(--dim);margin:2px 0 4px}
+.enprompt .enpromptta{width:100%;min-height:150px;font-size:12.5px;line-height:1.6;resize:vertical}
+.enprompt .note.warn{color:var(--warn)}
+.enprompt .enmn{margin-top:12px}
+.enprompt .enmn .out{white-space:pre-wrap}
 .lockbar span b{font-family:inherit;font-size:inherit;color:var(--warn)}
 .lockbar .lockact{display:flex;flex-wrap:wrap;gap:6px;width:100%}
 .lockbar .lockact button{font-size:12px}

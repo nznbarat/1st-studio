@@ -529,6 +529,22 @@
   };
 
   el("masterCopy").onclick = (e) => UI.copy(B.masterPrompt(), e.target);
+
+  /* ── Тусдаа англи промт ── */
+  const enText = () => B.enPromptRaw();
+  el("enCopy").onclick = (e) => (enText() ? UI.copy(enText(), e.target) : U.toast("Англи промт хоосон байна", "info"));
+  el("enDl").onclick = () =>
+    enText()
+      ? S.download(U.slug(S.P.title) + "-prompt-en.txt", enText() + "\n", "text/plain")
+      : U.toast("Англи промт хоосон байна", "info");
+  el("enMNBtn").onclick = (e) =>
+    UI.withBtn(e.currentTarget, "Гаргаж байна…", async () => {
+      const ai = await B.enPromptMeaning();
+      U.toast(
+        ai ? "Монгол утга гарлаа (Claude)" : "Монгол утга гарлаа — толиор ойролцоо, Claude холбовол илүү зөв",
+        ai ? "good" : "info"
+      );
+    });
   el("masterDl").onclick = () =>
     S.download(U.slug(S.P.title) + "-brand-file.txt", B.masterPrompt(), "text/plain");
   el("brandDl").onclick = () =>

@@ -139,6 +139,135 @@
     "Do not add commentary, quotes, numbering or explanation."
   ].join("\n- ");
 
+  /* ── АНГЛИ → МОНГОЛ (зөвхөн дэлгэцэд унших утга) ─────────────
+     Англи промт үгчлэн үлдэнэ; монгол нь түүнийг ойлгоход л туслана. */
+  let rev = null;
+  /* Промтын түгээмэл нэр томьёо — урвуу толиос түрүүлж шалгана
+     (урвуу толь «cold»‑ыг «ханиад», «look»‑ыг «хараач» гэх мэт алддаг). */
+  const EN_MN = {
+    "photorealistic": "бодит зураг шиг", "photo-realistic": "бодит зураг шиг", "cinematic": "кино шиг",
+    "sci-fi": "шинжлэх ухааны уран зөгнөлт", "science fiction": "шинжлэх ухааны уран зөгнөлт",
+    "film grain": "хальсны ширхэг", "grain": "ширхэг", "anamorphic": "анаморф", "anamorphic look": "анаморф харагдац",
+    "look": "харагдац", "style": "хэв маяг", "mood": "уур амьсгал", "tone": "өнгө аяс", "aesthetic": "хэв маяг",
+    "shot": "кадр", "take": "дүрс авалт", "continuous take": "тасралтгүй авалт", "one continuous take": "нэг тасралтгүй авалт",
+    "cut": "таслал", "cuts": "таслал", "tracking": "дагах хөдөлгөөн", "wide shot": "өргөн кадр", "close-up": "ойрын кадр",
+    "lens": "линз", "depth of field": "гүний хурц байдал", "shallow depth of field": "гүехэн гүний хурц", "motion blur": "хөдөлгөөний бүдгэрэл",
+    "light": "гэрэл", "lighting": "гэрэлтүүлэг", "lit": "гэрэлтсэн", "backlight": "ар гэрэл", "backlights": "араас гэрэлтүүлнэ",
+    "rim light": "хүрээ гэрэл", "volumetric": "эзэлхүүнт", "rays": "туяа", "light rays": "гэрлийн туяа", "glow": "туяа",
+    "glowing": "гэрэлтэх", "shadow": "сүүдэр", "shadows": "сүүдэр", "flare": "гялбаа", "lens flare": "линзийн гялбаа",
+    "cold": "хүйтэн", "cool": "сэрүүн", "warm": "дулаан", "deep": "гүн", "faint": "бүдэг", "dim": "бүдэг", "bright": "тод",
+    "dark": "бараан", "black": "хар", "white": "цагаан", "grey": "саарал", "gray": "саарал", "blue": "цэнхэр",
+    "red": "улаан", "gold": "алт", "golden": "алтан", "amber": "хув шар", "beige": "цайвар шаргал", "sand-colored": "элсэн өнгийн",
+    "space": "сансар", "star": "од", "stars": "одод", "planet": "гариг", "gas giant": "хийн аварга гариг", "nebula": "мананцар",
+    "haze": "униар", "asteroid": "астероид", "asteroids": "астероид", "hull": "их бие", "spaceship": "сансрын хөлөг",
+    "ship": "хөлөг", "cargo": "ачааны", "engine": "хөдөлгүүр", "window": "цонх", "windows": "цонх",
+    "realistic": "бодит", "realistic scale": "бодит хэмжээ", "scale": "хэмжээ", "slow": "удаан", "heavy": "хүнд",
+    "ominous": "түгшүүртэй", "text": "бичвэр", "people": "хүн", "explosion": "дэлбэрэлт", "overkill": "хэтрүүлэл",
+    "neon": "неон", "cartoon": "хүүхэлдэйн", "video-game": "видео тоглоомын", "narration": "өгүүлэмж", "dialogue": "яриа",
+    "distant": "алсын", "thin": "нимгэн", "sharp": "хурц", "dense": "шигүү", "weathered": "элэгдсэн", "metal": "металл",
+    "panels": "хавтан", "armored": "хуягт", "small": "жижиг", "large": "том", "round": "бөөрөнхий", "long": "урт"
+  };
+  const STOP = new Set("a an the of with and at to in on from for by its it into through toward towards as is are yet".split(" "));
+  function reverseMap() {
+    if (rev) return rev;
+    rev = Object.create(null);
+    const M = WB.dict.map;
+    for (const mn in M) {
+      const en = String(M[mn].en || "").toLowerCase().trim();
+      if (!en || en.length > 40) continue;
+      /* хамгийн богино монгол хувилбарыг сонгоно */
+      if (!rev[en] || mn.length < rev[en].length) rev[en] = mn;
+    }
+    return rev;
+  }
+  function revWord(w) {
+    const R = reverseMap();
+    return EN_MN[w] || R[w] || (w.endsWith("es") && R[w.slice(0, -2)]) || (w.endsWith("s") && R[w.slice(0, -1)]) ||
+      (w.endsWith("ing") && (R[w.slice(0, -3)] || R[w.slice(0, -3) + "e"])) || (w.endsWith("ed") && R[w.slice(0, -2)]) || "";
+  }
+  /**
+   * Офлайн, толиор — англи текстийн ойролцоо монгол утга (мөр бүрээр).
+   * @returns {{mn:string, unknown:string[]}}
+   */
+  T.roughMN = function (en) {
+    const R = reverseMap();
+    const unknown = [];
+    const lines = String(en || "").split(/\r?\n/);
+    const outLines = lines.map((line) => {
+      const phrases = line.split(/\s*,\s*/).filter(Boolean);
+      return phrases
+        .map((ph) => {
+          const w = ph.toLowerCase().replace(/[^a-z0-9\s\-'–]/g, " ").split(/\s+/).filter(Boolean);
+          const res = [];
+          let neg = false; /* «no text» → «бичвэргүй» (хэллэгийн төгсгөлд) */
+          for (let i = 0; i < w.length; ) {
+            let hit = "";
+            let n = 0;
+            for (let k = Math.min(4, w.length - i); k >= 2 && !hit; k--) {
+              const key = w.slice(i, i + k).join(" ");
+              if (EN_MN[key] || R[key]) {
+                hit = EN_MN[key] || R[key];
+                n = k;
+              }
+            }
+            if (!hit) {
+              if (w[i] === "no" || w[i] === "without") {
+                neg = true;
+                i++;
+                continue;
+              }
+              if (STOP.has(w[i])) {
+                i++;
+                continue;
+              }
+              hit = revWord(w[i]);
+              n = 1;
+              if (!hit) {
+                if (/[a-z]/.test(w[i])) unknown.push(w[i]);
+                hit = w[i];
+              }
+            }
+            res.push(hit);
+            i += n;
+          }
+          const out = res.join(" ");
+          return neg && out ? out + "гүй" : out;
+        })
+        .join(", ");
+    });
+    return { mn: outLines.join("\n"), unknown: [...new Set(unknown)] };
+  };
+
+  /**
+   * Англи текстүүдийн монгол утга. Claude холбогдсон бол түүгээр (зөвхөн
+   * орчуулна, англи эхийг өөрчлөхгүй), эс бөгөөс толиор ойролцоо.
+   * @param {string[]} list
+   * @returns {Promise<{mn:string[], ai:boolean}>}
+   */
+  T.toMN = async function (list) {
+    const items = (list || []).map((x) => String(x || "").trim());
+    if (!items.some(Boolean)) return { mn: items.map(() => ""), ai: false };
+    if (WB.api.live()) {
+      try {
+        const prompt =
+          "Translate each English text below into natural, simple Mongolian (Cyrillic). " +
+          "It is only a reading aid for a Mongolian filmmaker — keep the meaning exact: no exaggeration, " +
+          "keep sizes, numbers, timings and proportions as written; keep line breaks; keep technical film terms understandable " +
+          "(e.g. anamorphic → анаморф, film grain → хальсны ширхэг). Keep [@image1]-style references unchanged.\n" +
+          'Return ONLY a JSON object {"p0":"…","p1":"…"}.\n\n' +
+          items.map((t, i) => "[p" + i + "]\n" + t).join("\n\n");
+        const o = await WB.api.askJSON(prompt, Math.min(6000, 400 + items.join(" ").length * 3));
+        if (o && typeof o === "object") {
+          const mn = items.map((t, i) => (typeof o["p" + i] === "string" ? o["p" + i].trim() : ""));
+          if (mn.some(Boolean)) return { mn: mn.map((m, i) => m || T.roughMN(items[i]).mn), ai: true };
+        }
+      } catch (e) {
+        WB.api.state.lastError = e.message;
+      }
+    }
+    return { mn: items.map((t) => T.roughMN(t).mn), ai: false };
+  };
+
   /** Нэг талбарыг AI‑аар орчуулна. */
   T.aiOne = async function (text, kind) {
     const prompt =

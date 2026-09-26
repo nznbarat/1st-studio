@@ -315,7 +315,27 @@
     } else {
       L.push("(Checkpoint disabled — generate directly without waiting for approval.)");
     }
+
+    /* Тусдаа англи промт — хатуу, үгчлэн: хуваахгүй, орчуулахгүй, мөр
+       таслалтыг хэвээр нь. Зөвхөн эхний ба төгсгөлийн хоосон мөрийг авна. */
+    const ep = B.enPromptRaw();
+    if (ep) {
+      L.push(
+        "",
+        "=== ENGLISH PROMPT · VERBATIM ===",
+        "Use the prompt below exactly as written — do not rewrite, split, translate, shorten or add to it.",
+        "",
+        ep
+      );
+    }
     return L.join("\n");
+  };
+
+  /** Англи промт яг бичсэнээр нь (зөвхөн эхэн, төгсгөлийн хоосон зай хасна). */
+  B.enPromptRaw = function () {
+    return String(S.P.brand.enPrompt || "")
+      .replace(/^\s*\n/, "")
+      .replace(/\s+$/, "");
   };
 
   /**
@@ -574,6 +594,58 @@
     });
   }
 
+  /* ── Тусдаа англи промт ─────────────────────────────────── */
+  /** Үгийн тоо, монгол үсэг орсон эсэх, монгол утга хуучирсан эсэх. */
+  function paintEnPrompt() {
+    const b = S.P.brand;
+    const en = String(b.enPrompt || "").trim();
+    const stat = el("enStat");
+    if (stat) {
+      if (!en) {
+        stat.textContent = "Хоосон — англи промтоо энд наа эсвэл бич. Брэндийн мөрүүдэд нөлөөлөхгүй.";
+        stat.className = "note";
+      } else {
+        const cyr = (en.match(/[а-яөүё]+/gi) || []).length;
+        stat.textContent =
+          en.split(/\s+/).length + " үг · " + en.length + " тэмдэгт" +
+          (cyr ? " · ⚠ " + cyr + " монгол үг байна — Seedance / Veo англи промт хүлээнэ" : " · ✓ бүхэлдээ англи");
+        stat.className = "note" + (cyr ? " warn" : "");
+      }
+    }
+    const box = el("enPromptMN");
+    const note = el("enMNNote");
+    const mn = String(b.enPromptMN || "").trim();
+    if (box) {
+      box.textContent = mn || "—";
+      box.classList.toggle("dimmed", !mn);
+    }
+    if (note) {
+      const stale = !!mn && en !== String(b.enPromptMNFor || "").trim();
+      note.textContent = !mn
+        ? "«⇄ Монгол утгыг гаргах» дарахад англи промтын утгыг монголоор харуулна. Англи промт өөрчлөгдөхгүй."
+        : stale
+          ? "⚠ Англи промт өөрчлөгдсөн — монгол утгыг дахин гаргана уу."
+          : (b.enPromptMNai ? "Claude орчуулсан" : "Толиор ойролцоо — Claude холбовол илүү зөв") +
+            " · зөвхөн унших зориулалттай, англи промт хэвээрээ.";
+      note.className = "note" + (stale ? " warn" : "");
+    }
+  }
+
+  /** Англи промтын монгол утгыг гаргана (догол мөр бүрээр). Англи хөндөгдөхгүй. */
+  B.enPromptMeaning = async function () {
+    const b = S.P.brand;
+    const en = String(b.enPrompt || "").trim();
+    if (!en) throw new Error("Англи промт хоосон байна.");
+    const paras = en.split(/\n\s*\n/);
+    const tr = await WB.tr.toMN(paras);
+    b.enPromptMN = tr.mn.join("\n\n");
+    b.enPromptMNFor = en;
+    b.enPromptMNai = tr.ai;
+    S.touch();
+    paintEnPrompt();
+    return tr.ai;
+  };
+
   /** Түгжээний мөр — нэг фрэйм дүрмийн одоогийн байдал. */
   function paintLock() {
     const bar = el("lockBar");
@@ -625,6 +697,12 @@
 
     bindPlain(el("brandTopics"), () => b.meta.topics, (v) => (b.meta.topics = v));
     bindPlain(el("brandRef"), () => b.ref, (v) => (b.ref = v));
+    bindPlain(el("enPrompt"), () => b.enPrompt || "", (v) => {
+      b.enPrompt = v;
+      paintEnPrompt();
+      B.paintOutputs();
+    });
+    paintEnPrompt();
     const frameBox = el("frameSubjectField");
     if (frameBox) {
       frameBox.innerHTML = "";

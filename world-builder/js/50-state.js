@@ -127,6 +127,12 @@
       meta: meta,
       f: f,
       frameSubject: F(""),
+      /* Тусдаа англи промт — орчуулга, AI‑аар дамжихгүй, үгчлэн хадгалагдана.
+         enPromptMN нь зөвхөн унших зориулалттай монгол утга. */
+      enPrompt: "",
+      enPromptMN: "",
+      enPromptMNFor: "",
+      enPromptMNai: false,
       ref: "",
       locked: false,
       lockedAt: 0,
@@ -274,6 +280,10 @@
       out.frameSubject = /[а-яөүё]/i.test(fs) ? F(fs) : { mn: "", en: fs, auto: false, unk: [], src: "manual" };
     } else out.frameSubject = fixField(fs);
     out.ref = b.ref || "";
+    out.enPrompt = typeof b.enPrompt === "string" ? b.enPrompt : "";
+    out.enPromptMN = typeof b.enPromptMN === "string" ? b.enPromptMN : "";
+    out.enPromptMNFor = typeof b.enPromptMNFor === "string" ? b.enPromptMNFor : "";
+    out.enPromptMNai = !!b.enPromptMNai;
     out.locked = !!b.locked;
     out.lockedAt = b.lockedAt || 0;
     /* Хуучин хадгалалтад агшин зураг байхгүй — одоогийн харагдацад итгэнэ */

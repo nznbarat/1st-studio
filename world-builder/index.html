@@ -203,6 +203,25 @@
         <p class="note">Хөтчийн санд автоматаар хадгалагдана. <b>Camera Director</b> (<code>camera.html</code>) үүнийг шууд уншиж, камерын дүрмийг хоёр талдаа нийцүүлнэ — ижил домэйн дээр бол товч дарахад л ачаална, эс бөгөөс <code>brand.json</code> файлаар дамжуулна.</p>
       </div>
 
+      <!-- ── Англи промт — тусдаа, үгчлэн ── -->
+      <div class="aisec enprompt">
+        <h3>🇬🇧 Англи промт</h3>
+        <p class="note nb">Таны өөрийн англи промт — <b>орчуулга, AI‑аар дамжихгүй, үгчлэн</b> хадгалагдана. Seedance / Veo‑д шууд хуулна. Дээрх 4 давхаргат промтын төгсгөлд <b>хатуу, эвдрэлгүй</b> (хуваагдахгүй, мөр таслалт хэвээр) орно. Брэндийн мөрүүд хөндөгдөхгүй — <b>хоёулаа тусдаа</b>.</p>
+        <span class="tag">EN · промт</span>
+        <textarea id="enPrompt" class="lineIn ta enpromptta" rows="9" spellcheck="false" placeholder="Photorealistic cinematic sci-fi shot, 8 seconds, one continuous take, no cuts, no text.&#10;&#10;A long grey armored cargo spaceship…"></textarea>
+        <p class="note" id="enStat"></p>
+        <div class="toolrow" style="margin-top:8px">
+          <button class="tbtn2 acc" id="enCopy">📋 Хуулах</button>
+          <button class="tbtn2" id="enDl">⬇ prompt-en.txt</button>
+          <button class="tbtn2" id="enMNBtn">⇄ Монгол утгыг гаргах</button>
+        </div>
+        <div class="enmn">
+          <span class="tag">МН · утга</span>
+          <div class="out" id="enPromptMN"></div>
+          <p class="note" id="enMNNote"></p>
+        </div>
+      </div>
+
       <div class="hintgrid">
         <div class="hint"><b>Нэг фрэйм дүрэм</b>Стилээ ЗУРАГ дээр тогтооно, видео дээр биш. Нэг зураг = нэг кредит; нэг видео = олон дахин их. Буруу стилийг эрт барих тусам хямд.</div>
         <div class="hint"><b>Брэнд файл</b>Нэг удаа бичээд бүх ангид дахин ашиглана. Промт бүрд автоматаар шингэдэг тул 10 дахь видео чинь 1‑р видеотойгоо ижил төрхтэй байна.</div>

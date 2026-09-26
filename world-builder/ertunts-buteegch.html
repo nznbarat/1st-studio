@@ -258,6 +258,11 @@ h1,h2,h3{font-family:'Oswald',sans-serif}
 .lockbar.ok{border-color:rgba(87,217,138,.45);background:rgba(87,217,138,.07)} .lockbar.ok b{color:var(--ok)}
 .lockbar.warn{border-color:rgba(224,162,74,.45);background:rgba(224,162,74,.07)} .lockbar.warn b{color:var(--warn)}
 .lockbar.idle b{color:var(--dim)}
+.enprompt .tag{display:inline-block;font-size:10.5px;letter-spacing:.08em;color:var(--dim);margin:2px 0 4px}
+.enprompt .enpromptta{width:100%;min-height:150px;font-size:12.5px;line-height:1.6;resize:vertical}
+.enprompt .note.warn{color:var(--warn)}
+.enprompt .enmn{margin-top:12px}
+.enprompt .enmn .out{white-space:pre-wrap}
 .lockbar span b{font-family:inherit;font-size:inherit;color:var(--warn)}
 .lockbar .lockact{display:flex;flex-wrap:wrap;gap:6px;width:100%}
 .lockbar .lockact button{font-size:12px}
@@ -565,6 +570,25 @@ textarea.lineIn.ta{resize:vertical;line-height:1.6;font-family:inherit}
           <button class="tbtn2" id="brandDl">⬇ brand.json</button>
         </div>
         <p class="note">Хөтчийн санд автоматаар хадгалагдана. <b>Camera Director</b> (<code>camera.html</code>) үүнийг шууд уншиж, камерын дүрмийг хоёр талдаа нийцүүлнэ — ижил домэйн дээр бол товч дарахад л ачаална, эс бөгөөс <code>brand.json</code> файлаар дамжуулна.</p>
+      </div>
+
+      <!-- ── Англи промт — тусдаа, үгчлэн ── -->
+      <div class="aisec enprompt">
+        <h3>🇬🇧 Англи промт</h3>
+        <p class="note nb">Таны өөрийн англи промт — <b>орчуулга, AI‑аар дамжихгүй, үгчлэн</b> хадгалагдана. Seedance / Veo‑д шууд хуулна. Дээрх 4 давхаргат промтын төгсгөлд <b>хатуу, эвдрэлгүй</b> (хуваагдахгүй, мөр таслалт хэвээр) орно. Брэндийн мөрүүд хөндөгдөхгүй — <b>хоёулаа тусдаа</b>.</p>
+        <span class="tag">EN · промт</span>
+        <textarea id="enPrompt" class="lineIn ta enpromptta" rows="9" spellcheck="false" placeholder="Photorealistic cinematic sci-fi shot, 8 seconds, one continuous take, no cuts, no text.&#10;&#10;A long grey armored cargo spaceship…"></textarea>
+        <p class="note" id="enStat"></p>
+        <div class="toolrow" style="margin-top:8px">
+          <button class="tbtn2 acc" id="enCopy">📋 Хуулах</button>
+          <button class="tbtn2" id="enDl">⬇ prompt-en.txt</button>
+          <button class="tbtn2" id="enMNBtn">⇄ Монгол утгыг гаргах</button>
+        </div>
+        <div class="enmn">
+          <span class="tag">МН · утга</span>
+          <div class="out" id="enPromptMN"></div>
+          <p class="note" id="enMNNote"></p>
+        </div>
       </div>
 
       <div class="hintgrid">
@@ -5595,6 +5619,135 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     "Do not add commentary, quotes, numbering or explanation."
   ].join("\n- ");
 
+  /* ── АНГЛИ → МОНГОЛ (зөвхөн дэлгэцэд унших утга) ─────────────
+     Англи промт үгчлэн үлдэнэ; монгол нь түүнийг ойлгоход л туслана. */
+  let rev = null;
+  /* Промтын түгээмэл нэр томьёо — урвуу толиос түрүүлж шалгана
+     (урвуу толь «cold»‑ыг «ханиад», «look»‑ыг «хараач» гэх мэт алддаг). */
+  const EN_MN = {
+    "photorealistic": "бодит зураг шиг", "photo-realistic": "бодит зураг шиг", "cinematic": "кино шиг",
+    "sci-fi": "шинжлэх ухааны уран зөгнөлт", "science fiction": "шинжлэх ухааны уран зөгнөлт",
+    "film grain": "хальсны ширхэг", "grain": "ширхэг", "anamorphic": "анаморф", "anamorphic look": "анаморф харагдац",
+    "look": "харагдац", "style": "хэв маяг", "mood": "уур амьсгал", "tone": "өнгө аяс", "aesthetic": "хэв маяг",
+    "shot": "кадр", "take": "дүрс авалт", "continuous take": "тасралтгүй авалт", "one continuous take": "нэг тасралтгүй авалт",
+    "cut": "таслал", "cuts": "таслал", "tracking": "дагах хөдөлгөөн", "wide shot": "өргөн кадр", "close-up": "ойрын кадр",
+    "lens": "линз", "depth of field": "гүний хурц байдал", "shallow depth of field": "гүехэн гүний хурц", "motion blur": "хөдөлгөөний бүдгэрэл",
+    "light": "гэрэл", "lighting": "гэрэлтүүлэг", "lit": "гэрэлтсэн", "backlight": "ар гэрэл", "backlights": "араас гэрэлтүүлнэ",
+    "rim light": "хүрээ гэрэл", "volumetric": "эзэлхүүнт", "rays": "туяа", "light rays": "гэрлийн туяа", "glow": "туяа",
+    "glowing": "гэрэлтэх", "shadow": "сүүдэр", "shadows": "сүүдэр", "flare": "гялбаа", "lens flare": "линзийн гялбаа",
+    "cold": "хүйтэн", "cool": "сэрүүн", "warm": "дулаан", "deep": "гүн", "faint": "бүдэг", "dim": "бүдэг", "bright": "тод",
+    "dark": "бараан", "black": "хар", "white": "цагаан", "grey": "саарал", "gray": "саарал", "blue": "цэнхэр",
+    "red": "улаан", "gold": "алт", "golden": "алтан", "amber": "хув шар", "beige": "цайвар шаргал", "sand-colored": "элсэн өнгийн",
+    "space": "сансар", "star": "од", "stars": "одод", "planet": "гариг", "gas giant": "хийн аварга гариг", "nebula": "мананцар",
+    "haze": "униар", "asteroid": "астероид", "asteroids": "астероид", "hull": "их бие", "spaceship": "сансрын хөлөг",
+    "ship": "хөлөг", "cargo": "ачааны", "engine": "хөдөлгүүр", "window": "цонх", "windows": "цонх",
+    "realistic": "бодит", "realistic scale": "бодит хэмжээ", "scale": "хэмжээ", "slow": "удаан", "heavy": "хүнд",
+    "ominous": "түгшүүртэй", "text": "бичвэр", "people": "хүн", "explosion": "дэлбэрэлт", "overkill": "хэтрүүлэл",
+    "neon": "неон", "cartoon": "хүүхэлдэйн", "video-game": "видео тоглоомын", "narration": "өгүүлэмж", "dialogue": "яриа",
+    "distant": "алсын", "thin": "нимгэн", "sharp": "хурц", "dense": "шигүү", "weathered": "элэгдсэн", "metal": "металл",
+    "panels": "хавтан", "armored": "хуягт", "small": "жижиг", "large": "том", "round": "бөөрөнхий", "long": "урт"
+  };
+  const STOP = new Set("a an the of with and at to in on from for by its it into through toward towards as is are yet".split(" "));
+  function reverseMap() {
+    if (rev) return rev;
+    rev = Object.create(null);
+    const M = WB.dict.map;
+    for (const mn in M) {
+      const en = String(M[mn].en || "").toLowerCase().trim();
+      if (!en || en.length > 40) continue;
+      /* хамгийн богино монгол хувилбарыг сонгоно */
+      if (!rev[en] || mn.length < rev[en].length) rev[en] = mn;
+    }
+    return rev;
+  }
+  function revWord(w) {
+    const R = reverseMap();
+    return EN_MN[w] || R[w] || (w.endsWith("es") && R[w.slice(0, -2)]) || (w.endsWith("s") && R[w.slice(0, -1)]) ||
+      (w.endsWith("ing") && (R[w.slice(0, -3)] || R[w.slice(0, -3) + "e"])) || (w.endsWith("ed") && R[w.slice(0, -2)]) || "";
+  }
+  /**
+   * Офлайн, толиор — англи текстийн ойролцоо монгол утга (мөр бүрээр).
+   * @returns {{mn:string, unknown:string[]}}
+   */
+  T.roughMN = function (en) {
+    const R = reverseMap();
+    const unknown = [];
+    const lines = String(en || "").split(/\r?\n/);
+    const outLines = lines.map((line) => {
+      const phrases = line.split(/\s*,\s*/).filter(Boolean);
+      return phrases
+        .map((ph) => {
+          const w = ph.toLowerCase().replace(/[^a-z0-9\s\-'–]/g, " ").split(/\s+/).filter(Boolean);
+          const res = [];
+          let neg = false; /* «no text» → «бичвэргүй» (хэллэгийн төгсгөлд) */
+          for (let i = 0; i < w.length; ) {
+            let hit = "";
+            let n = 0;
+            for (let k = Math.min(4, w.length - i); k >= 2 && !hit; k--) {
+              const key = w.slice(i, i + k).join(" ");
+              if (EN_MN[key] || R[key]) {
+                hit = EN_MN[key] || R[key];
+                n = k;
+              }
+            }
+            if (!hit) {
+              if (w[i] === "no" || w[i] === "without") {
+                neg = true;
+                i++;
+                continue;
+              }
+              if (STOP.has(w[i])) {
+                i++;
+                continue;
+              }
+              hit = revWord(w[i]);
+              n = 1;
+              if (!hit) {
+                if (/[a-z]/.test(w[i])) unknown.push(w[i]);
+                hit = w[i];
+              }
+            }
+            res.push(hit);
+            i += n;
+          }
+          const out = res.join(" ");
+          return neg && out ? out + "гүй" : out;
+        })
+        .join(", ");
+    });
+    return { mn: outLines.join("\n"), unknown: [...new Set(unknown)] };
+  };
+
+  /**
+   * Англи текстүүдийн монгол утга. Claude холбогдсон бол түүгээр (зөвхөн
+   * орчуулна, англи эхийг өөрчлөхгүй), эс бөгөөс толиор ойролцоо.
+   * @param {string[]} list
+   * @returns {Promise<{mn:string[], ai:boolean}>}
+   */
+  T.toMN = async function (list) {
+    const items = (list || []).map((x) => String(x || "").trim());
+    if (!items.some(Boolean)) return { mn: items.map(() => ""), ai: false };
+    if (WB.api.live()) {
+      try {
+        const prompt =
+          "Translate each English text below into natural, simple Mongolian (Cyrillic). " +
+          "It is only a reading aid for a Mongolian filmmaker — keep the meaning exact: no exaggeration, " +
+          "keep sizes, numbers, timings and proportions as written; keep line breaks; keep technical film terms understandable " +
+          "(e.g. anamorphic → анаморф, film grain → хальсны ширхэг). Keep [@image1]-style references unchanged.\n" +
+          'Return ONLY a JSON object {"p0":"…","p1":"…"}.\n\n' +
+          items.map((t, i) => "[p" + i + "]\n" + t).join("\n\n");
+        const o = await WB.api.askJSON(prompt, Math.min(6000, 400 + items.join(" ").length * 3));
+        if (o && typeof o === "object") {
+          const mn = items.map((t, i) => (typeof o["p" + i] === "string" ? o["p" + i].trim() : ""));
+          if (mn.some(Boolean)) return { mn: mn.map((m, i) => m || T.roughMN(items[i]).mn), ai: true };
+        }
+      } catch (e) {
+        WB.api.state.lastError = e.message;
+      }
+    }
+    return { mn: items.map((t) => T.roughMN(t).mn), ai: false };
+  };
+
   /** Нэг талбарыг AI‑аар орчуулна. */
   T.aiOne = async function (text, kind) {
     const prompt =
@@ -5937,6 +6090,12 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
       meta: meta,
       f: f,
       frameSubject: F(""),
+      /* Тусдаа англи промт — орчуулга, AI‑аар дамжихгүй, үгчлэн хадгалагдана.
+         enPromptMN нь зөвхөн унших зориулалттай монгол утга. */
+      enPrompt: "",
+      enPromptMN: "",
+      enPromptMNFor: "",
+      enPromptMNai: false,
       ref: "",
       locked: false,
       lockedAt: 0,
@@ -6084,6 +6243,10 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
       out.frameSubject = /[а-яөүё]/i.test(fs) ? F(fs) : { mn: "", en: fs, auto: false, unk: [], src: "manual" };
     } else out.frameSubject = fixField(fs);
     out.ref = b.ref || "";
+    out.enPrompt = typeof b.enPrompt === "string" ? b.enPrompt : "";
+    out.enPromptMN = typeof b.enPromptMN === "string" ? b.enPromptMN : "";
+    out.enPromptMNFor = typeof b.enPromptMNFor === "string" ? b.enPromptMNFor : "";
+    out.enPromptMNai = !!b.enPromptMNai;
     out.locked = !!b.locked;
     out.lockedAt = b.lockedAt || 0;
     /* Хуучин хадгалалтад агшин зураг байхгүй — одоогийн харагдацад итгэнэ */
@@ -6597,7 +6760,27 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     } else {
       L.push("(Checkpoint disabled — generate directly without waiting for approval.)");
     }
+
+    /* Тусдаа англи промт — хатуу, үгчлэн: хуваахгүй, орчуулахгүй, мөр
+       таслалтыг хэвээр нь. Зөвхөн эхний ба төгсгөлийн хоосон мөрийг авна. */
+    const ep = B.enPromptRaw();
+    if (ep) {
+      L.push(
+        "",
+        "=== ENGLISH PROMPT · VERBATIM ===",
+        "Use the prompt below exactly as written — do not rewrite, split, translate, shorten or add to it.",
+        "",
+        ep
+      );
+    }
     return L.join("\n");
+  };
+
+  /** Англи промт яг бичсэнээр нь (зөвхөн эхэн, төгсгөлийн хоосон зай хасна). */
+  B.enPromptRaw = function () {
+    return String(S.P.brand.enPrompt || "")
+      .replace(/^\s*\n/, "")
+      .replace(/\s+$/, "");
   };
 
   /**
@@ -6856,6 +7039,58 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
     });
   }
 
+  /* ── Тусдаа англи промт ─────────────────────────────────── */
+  /** Үгийн тоо, монгол үсэг орсон эсэх, монгол утга хуучирсан эсэх. */
+  function paintEnPrompt() {
+    const b = S.P.brand;
+    const en = String(b.enPrompt || "").trim();
+    const stat = el("enStat");
+    if (stat) {
+      if (!en) {
+        stat.textContent = "Хоосон — англи промтоо энд наа эсвэл бич. Брэндийн мөрүүдэд нөлөөлөхгүй.";
+        stat.className = "note";
+      } else {
+        const cyr = (en.match(/[а-яөүё]+/gi) || []).length;
+        stat.textContent =
+          en.split(/\s+/).length + " үг · " + en.length + " тэмдэгт" +
+          (cyr ? " · ⚠ " + cyr + " монгол үг байна — Seedance / Veo англи промт хүлээнэ" : " · ✓ бүхэлдээ англи");
+        stat.className = "note" + (cyr ? " warn" : "");
+      }
+    }
+    const box = el("enPromptMN");
+    const note = el("enMNNote");
+    const mn = String(b.enPromptMN || "").trim();
+    if (box) {
+      box.textContent = mn || "—";
+      box.classList.toggle("dimmed", !mn);
+    }
+    if (note) {
+      const stale = !!mn && en !== String(b.enPromptMNFor || "").trim();
+      note.textContent = !mn
+        ? "«⇄ Монгол утгыг гаргах» дарахад англи промтын утгыг монголоор харуулна. Англи промт өөрчлөгдөхгүй."
+        : stale
+          ? "⚠ Англи промт өөрчлөгдсөн — монгол утгыг дахин гаргана уу."
+          : (b.enPromptMNai ? "Claude орчуулсан" : "Толиор ойролцоо — Claude холбовол илүү зөв") +
+            " · зөвхөн унших зориулалттай, англи промт хэвээрээ.";
+      note.className = "note" + (stale ? " warn" : "");
+    }
+  }
+
+  /** Англи промтын монгол утгыг гаргана (догол мөр бүрээр). Англи хөндөгдөхгүй. */
+  B.enPromptMeaning = async function () {
+    const b = S.P.brand;
+    const en = String(b.enPrompt || "").trim();
+    if (!en) throw new Error("Англи промт хоосон байна.");
+    const paras = en.split(/\n\s*\n/);
+    const tr = await WB.tr.toMN(paras);
+    b.enPromptMN = tr.mn.join("\n\n");
+    b.enPromptMNFor = en;
+    b.enPromptMNai = tr.ai;
+    S.touch();
+    paintEnPrompt();
+    return tr.ai;
+  };
+
   /** Түгжээний мөр — нэг фрэйм дүрмийн одоогийн байдал. */
   function paintLock() {
     const bar = el("lockBar");
@@ -6907,6 +7142,12 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
 
     bindPlain(el("brandTopics"), () => b.meta.topics, (v) => (b.meta.topics = v));
     bindPlain(el("brandRef"), () => b.ref, (v) => (b.ref = v));
+    bindPlain(el("enPrompt"), () => b.enPrompt || "", (v) => {
+      b.enPrompt = v;
+      paintEnPrompt();
+      B.paintOutputs();
+    });
+    paintEnPrompt();
     const frameBox = el("frameSubjectField");
     if (frameBox) {
       frameBox.innerHTML = "";
@@ -9736,6 +9977,22 @@ WB.dict.add({ id:"noun-core", label:"Цөм · гэр ахуй, байгаль, 
   };
 
   el("masterCopy").onclick = (e) => UI.copy(B.masterPrompt(), e.target);
+
+  /* ── Тусдаа англи промт ── */
+  const enText = () => B.enPromptRaw();
+  el("enCopy").onclick = (e) => (enText() ? UI.copy(enText(), e.target) : U.toast("Англи промт хоосон байна", "info"));
+  el("enDl").onclick = () =>
+    enText()
+      ? S.download(U.slug(S.P.title) + "-prompt-en.txt", enText() + "\n", "text/plain")
+      : U.toast("Англи промт хоосон байна", "info");
+  el("enMNBtn").onclick = (e) =>
+    UI.withBtn(e.currentTarget, "Гаргаж байна…", async () => {
+      const ai = await B.enPromptMeaning();
+      U.toast(
+        ai ? "Монгол утга гарлаа (Claude)" : "Монгол утга гарлаа — толиор ойролцоо, Claude холбовол илүү зөв",
+        ai ? "good" : "info"
+      );
+    });
   el("masterDl").onclick = () =>
     S.download(U.slug(S.P.title) + "-brand-file.txt", B.masterPrompt(), "text/plain");
   el("brandDl").onclick = () =>
